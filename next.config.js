@@ -4,6 +4,9 @@
 const withTM = require('next-transpile-modules')(['lodash-es']);
 
 module.exports = withTM({
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   // async rewrites() {
   //   return [
   //     ...(process.env.NODE_ENV === 'development'
