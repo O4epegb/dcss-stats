@@ -24,7 +24,7 @@ const MainPage = (props: Props) => {
             <ul>
               {props.players.map((player) => (
                 <li key={player.id} className="flex justify-between">
-                  <Link href={getPlayerPageHref(player.name)}>
+                  <Link prefetch={false} href={getPlayerPageHref(player.name)}>
                     <a className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline">
                       {player.name}
                     </a>
@@ -39,7 +39,7 @@ const MainPage = (props: Props) => {
             <ul>
               {props.winners.map((player) => (
                 <li key={player.id} className="flex justify-between">
-                  <Link href={getPlayerPageHref(player.name)}>
+                  <Link prefetch={false} href={getPlayerPageHref(player.name)}>
                     <a className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline">
                       {player.name}
                     </a>
