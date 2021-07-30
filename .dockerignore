@@ -1,0 +1,11 @@
+.vs
+.vscode
+.git
+.next
+build
+out
+node_modules
+yarn-error.log
+npm-debug
+Dockerfile
+storybook-static
