@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
-import { throttle } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import { api } from '@api';
 import { addS, formatNumber, RaceConditionGuard } from '@utils';
 import { Player, Server } from '@types';
@@ -102,7 +102,7 @@ const Search = () => {
     });
 
   const fetchData = useCallback(
-    throttle((query) => {
+    debounce((query) => {
       setIsLoading(true);
 
       guard
@@ -116,7 +116,7 @@ const Search = () => {
           setItems(res.data.data);
           setIsLoading(false);
         });
-    }, 300),
+    }, 400),
     [],
   );
 
