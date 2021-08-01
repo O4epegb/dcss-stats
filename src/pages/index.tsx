@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
@@ -13,74 +13,114 @@ import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
 
 const MainPage = (props: Props) => {
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [query, setQuery] = useState('');
+
+  const onLinkClick = useCallback((name: string) => {
+    setIsNavigating(true);
+    setQuery(name);
+  }, []);
+
   return (
     <div className="container mx-auto px-4 min-h-screen flex flex-col pt-8 md:pt-0 md:justify-center items-center space-y-4">
       <h1 className="text-4xl text-center">DCSS Stats</h1>
       <div className="w-full max-w-md space-y-4">
-        <Search />
-        <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
-          <div className="space-y-1">
-            <h2 className="font-semibold">Top by games:</h2>
-            <ul>
-              {props.players.map((player) => (
-                <li key={player.id} className="flex justify-between">
-                  <Link prefetch={false} href={getPlayerPageHref(player.name)}>
-                    <a className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline">
-                      {player.name}
-                    </a>
-                  </Link>
-                  {formatNumber(player.games)}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="space-y-1">
-            <h2 className="font-semibold">Top by wins:</h2>
-            <ul>
-              {props.winners.map((player) => (
-                <li key={player.id} className="flex justify-between">
-                  <Link prefetch={false} href={getPlayerPageHref(player.name)}>
-                    <a className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline">
-                      {player.name}
-                    </a>
-                  </Link>
-                  {formatNumber(player.wins)}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <h2 className="font-semibold">Total games saved: {formatNumber(props.games)}</h2>
-          <h2 className="font-semibold">Total wins: {formatNumber(props.wins)}</h2>
-          <div className="text-xs text-gray-400">
-            Tracked servers:{' '}
-            {props.servers.map((s) => (
-              <a
-                key={s.abbreviation}
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                {s.abbreviation}
-              </a>
-            ))}
-          </div>
-        </div>
+        <Search
+          isNavigating={isNavigating}
+          setIsNavigating={setIsNavigating}
+          query={query}
+          setQuery={setQuery}
+        />
+        <Stats {...props} onLinkClick={onLinkClick} />
       </div>
     </div>
   );
 };
 
-export default MainPage;
+const Stats = memo(
+  ({
+    players,
+    servers,
+    wins,
+    winners,
+    games,
+    onLinkClick,
+  }: Props & { onLinkClick: (name: string) => void }) => {
+    return (
+      <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
+        <div className="space-y-1">
+          <h2 className="font-semibold">Top by games:</h2>
+          <ul>
+            {players.map((player) => (
+              <li key={player.id} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(player.name)}>
+                  <a
+                    className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                    onClick={() => onLinkClick(player.name)}
+                  >
+                    {player.name}
+                  </a>
+                </Link>
+                {formatNumber(player.games)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-1">
+          <h2 className="font-semibold">Top by wins:</h2>
+          <ul>
+            {winners.map((player) => (
+              <li key={player.id} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(player.name)}>
+                  <a
+                    className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                    onClick={() => onLinkClick(player.name)}
+                  >
+                    {player.name}
+                  </a>
+                </Link>
+                {formatNumber(player.wins)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <h2 className="font-semibold">Total games saved: {formatNumber(games)}</h2>
+        <h2 className="font-semibold">Total wins: {formatNumber(wins)}</h2>
+        <div className="text-xs text-gray-400">
+          Tracked servers:{' '}
+          {servers.map((s) => (
+            <a
+              key={s.abbreviation}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {s.abbreviation}
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  },
+);
 
 type SearchItem = Player & { games: number };
 
-const Search = () => {
+const Search = ({
+  isNavigating,
+  setIsNavigating,
+  query,
+  setQuery,
+}: {
+  isNavigating: boolean;
+  setIsNavigating: (state: boolean) => void;
+  query: string;
+  setQuery: (state: string) => void;
+}) => {
   const [items, setItems] = useState<SearchItem[]>([]);
-  const [query, setQuery] = useState('');
   const [guard] = useState(() => new RaceConditionGuard());
   const [isLoading, setIsLoading] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
 
   const goToPlayerPage = useCallback((slug: string) => {
@@ -112,7 +152,6 @@ const Search = () => {
           }),
         )
         .then((res) => {
-          console.log(res.data);
           setItems(res.data.data);
           setIsLoading(false);
         });
@@ -230,3 +269,5 @@ const getPlayerPageHref = (slug: string) => ({
     slug,
   },
 });
+
+export default MainPage;
