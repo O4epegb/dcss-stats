@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, Fragment } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
@@ -88,16 +88,19 @@ const Stats = memo(
         <h2 className="font-semibold">Total wins: {formatNumber(wins)}</h2>
         <div className="text-xs text-gray-400">
           Tracked servers:{' '}
-          {servers.map((s) => (
-            <a
-              key={s.abbreviation}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {s.abbreviation}
-            </a>
+          {servers.map((s, index) => (
+            <Fragment key={index}>
+              {index !== 0 && ', '}
+              <a
+                key={s.abbreviation}
+                href={s.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {s.abbreviation}
+              </a>
+            </Fragment>
           ))}
         </div>
       </div>
