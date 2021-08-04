@@ -17,7 +17,6 @@ export interface Response {
   stats: Stats;
   races: Race[];
   classes: Class[];
-  matrix: Matrix;
   titles: string[];
   firstGame: Game;
   lastGame: Game;

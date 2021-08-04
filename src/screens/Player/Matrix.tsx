@@ -2,6 +2,9 @@ import clsx from 'clsx';
 import { orderBy, reduce } from 'lodash-es';
 import { useEffect, useRef, Fragment, useMemo, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
+import { api } from '@api';
+import { Matrix as MatrixType } from '@types';
+import refreshSvg from '@refresh.svg';
 
 import { Props } from './index';
 
@@ -11,14 +14,30 @@ const items = [
   ['best XL', 'maxXl'],
 ] as const;
 
-export const Matrix = ({ classes, races, matrix }: Props) => {
+export const Matrix = ({ classes, races, player }: Props) => {
   const isWide = useMedia('(min-width: 1280px)');
   const [isSticky, setIsSticky] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [matrix, setMatrix] = useState<MatrixType>({});
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
   const [category, setCategory] = useState<keyof typeof matrix[string]>('wins');
   const orderedClasses = useMemo(() => orderBy(classes, (x) => x.abbr), [classes]);
   const orderedRaces = useMemo(() => orderBy(races, (x) => x.abbr), [races]);
+
+  useEffect(() => {
+    api
+      .get<{ matrix: MatrixType }>(`/players/${player.name}/matrix`)
+      .then((res) => setMatrix(res.data.matrix))
+      .catch((e) => {
+        alert('Error while loading matrix');
+
+        throw e;
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
@@ -78,7 +97,15 @@ export const Matrix = ({ classes, races, matrix }: Props) => {
         ))}
         :
       </div>
-      <div className="overflow-x-auto xl:overflow-x-visible">
+      <div className="overflow-x-auto xl:overflow-x-visible relative">
+        {isLoading && (
+          <div className="w-full h-full absolute flex items-center justify-center bg-white/80">
+            <div
+              className="w-5 h-5 animate-spin"
+              style={{ backgroundImage: `url(${refreshSvg.src})` }}
+            />
+          </div>
+        )}
         <table className="w-auto xl:w-full min-w-full text-center border-collapse text-sm 2xl:text-base">
           <thead>
             <tr>
