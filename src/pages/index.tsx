@@ -178,6 +178,7 @@ const Search = ({
       )}
 
       <input
+        autoFocus
         placeholder='Type player name, e.g. "MegaDestroyer3000"'
         className="block border rounded w-full border-gray-400 px-2 h-10"
         value={query}

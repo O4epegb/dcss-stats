@@ -1,9 +1,11 @@
-import { Response } from '@types';
+import { reduce } from 'lodash-es';
+import { useEffect, useMemo, useState } from 'react';
+import { api } from '@api';
+import { Matrix as MatrixType, Response } from '@types';
 import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
 import { Matrix } from './Matrix';
-
 import { Games } from './Games';
 
 export type Props = Response;
@@ -15,14 +17,70 @@ const Item = ({ title, text }: { title: string; text: string }) => (
 );
 
 export const Player = (props: Props) => {
-  const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(
-    props.titles,
-    10,
-  );
+  const { titles, player, firstGame, lastGame, races, classes } = props;
+  const [isLoading, setIsLoading] = useState(true);
+  const [matrix, setMatrix] = useState<MatrixType>({});
+  const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
   const { stats } = props;
   const winrate = formatNumber((stats.total.wins / stats.total.games) * 100, {
     maximumFractionDigits: 2,
   });
+
+  useEffect(() => {
+    api
+      .get<{ matrix: MatrixType }>(`/players/${player.name}/matrix`)
+      .then((res) => setMatrix(res.data.matrix))
+      .catch((e) => {
+        alert('Error while loading matrix');
+
+        throw e;
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
+  const summary = useMemo(
+    () =>
+      reduce(
+        matrix,
+        (acc, value, key) => {
+          const race = key.slice(0, 2);
+          const klass = key.slice(2, 4);
+
+          acc.classes[klass] = {
+            wins: (acc.classes[klass]?.wins || 0) + value.wins,
+            games: (acc.classes[klass]?.games || 0) + value.games,
+            maxXl: Math.max(acc.classes[klass]?.maxXl || 0, value.maxXl),
+          };
+
+          acc.races[race] = {
+            wins: (acc.races[race]?.wins || 0) + value.wins,
+            games: (acc.races[race]?.games || 0) + value.games,
+            maxXl: Math.max(acc.races[race]?.maxXl || 0, value.maxXl),
+          };
+
+          return acc;
+        },
+        {
+          races: {},
+          classes: {},
+        } as {
+          races: Record<string, typeof matrix[string]>;
+          classes: Record<string, typeof matrix[string]>;
+        },
+      ),
+    [matrix],
+  );
+
+  const isGreat = useMemo(
+    () => races.every((race) => summary.races[race.abbr]?.wins > 0),
+    [summary],
+  );
+  const isGreater = useMemo(
+    () => classes.every((klass) => summary.classes[klass.abbr]?.wins > 0),
+    [summary],
+  );
 
   return (
     <div className="container mx-auto px-4">
@@ -33,7 +91,25 @@ export const Player = (props: Props) => {
           </header>
           <div className="space-y-2">
             <section className="space-y-2">
-              <h2 className="text-3xl font-bold">{props.player.name}</h2>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 items-center">
+                <h2 className="text-3xl font-bold">{player.name}</h2>
+                {!isLoading && (
+                  <>
+                    {isGreat && isGreater && (
+                      <div className="text-sm py-0.5 px-1 bg-yellow-300 border-2 border-yellow-600">
+                        Greatest Player
+                      </div>
+                    )}
+                    {isGreat && !isGreater && (
+                      <div className="text-sm py-0.5 px-1 bg-yellow-300">Great Player</div>
+                    )}
+                    {isGreater && !isGreat && (
+                      <div className="text-sm py-0.5 px-1 bg-yellow-300">Greater Player</div>
+                    )}
+                  </>
+                )}
+              </div>
+
               <div className="flex space-x-4 text-xl font-bold">
                 <div className="text-blue-600 whitespace-nowrap">
                   {formatNumber(stats.total.games)}G
@@ -82,8 +158,8 @@ export const Player = (props: Props) => {
               </div>
               <ul className="text-xs">
                 {[
-                  ['First game', date(props.firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
-                  ['Most recent game', date(props.lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
+                  ['First game', date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
+                  ['Most recent game', date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
                 ].map(([title, text]) => (
                   <Item key={title} title={title} text={text} />
                 ))}
@@ -92,7 +168,7 @@ export const Player = (props: Props) => {
               {items.length > 0 && (
                 <div className="space-y-1">
                   <h2 className="font-bold">
-                    Collected {props.titles.length} {addS('title', props.titles.length)}:
+                    Collected {titles.length} {addS('title', titles.length)}:
                   </h2>
                   <ul className="flex flex-wrap gap-1 text-sm">
                     {items.map((title) => (
@@ -119,7 +195,7 @@ export const Player = (props: Props) => {
           </div>
         </div>
         <div className="xl:col-span-2 min-w-0">
-          <Matrix {...props} />
+          <Matrix {...props} matrix={matrix} isLoading={isLoading} summary={summary} />
         </div>
       </div>
     </div>

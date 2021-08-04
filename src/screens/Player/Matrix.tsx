@@ -1,11 +1,9 @@
 import clsx from 'clsx';
-import { orderBy, reduce } from 'lodash-es';
+import { orderBy } from 'lodash-es';
 import { useEffect, useRef, Fragment, useMemo, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
-import { api } from '@api';
-import { Matrix as MatrixType } from '@types';
+import { Matrix as MatrixType, Summary } from '@types';
 import refreshSvg from '@refresh.svg';
-
 import { Props } from './index';
 
 const items = [
@@ -14,11 +12,15 @@ const items = [
   ['best XL', 'maxXl'],
 ] as const;
 
-export const Matrix = ({ classes, races, player }: Props) => {
+export const Matrix = ({
+  classes,
+  races,
+  matrix,
+  summary,
+  isLoading,
+}: Props & { summary: Summary; isLoading: boolean; matrix: MatrixType }) => {
   const isWide = useMedia('(min-width: 1280px)');
   const [isSticky, setIsSticky] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [matrix, setMatrix] = useState<MatrixType>({});
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
   const [category, setCategory] = useState<keyof typeof matrix[string]>('wins');
@@ -26,56 +28,9 @@ export const Matrix = ({ classes, races, player }: Props) => {
   const orderedRaces = useMemo(() => orderBy(races, (x) => x.abbr), [races]);
 
   useEffect(() => {
-    api
-      .get<{ matrix: MatrixType }>(`/players/${player.name}/matrix`)
-      .then((res) => setMatrix(res.data.matrix))
-      .catch((e) => {
-        alert('Error while loading matrix');
-
-        throw e;
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
-
-  useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
     setIsSticky(Boolean(shouldBeSticky));
   }, [isWide]);
-
-  const summary = useMemo(
-    () =>
-      reduce(
-        matrix,
-        (acc, value, key) => {
-          const race = key.slice(0, 2);
-          const klass = key.slice(2, 4);
-
-          acc.classes[klass] = {
-            wins: (acc.classes[klass]?.wins || 0) + value.wins,
-            games: (acc.classes[klass]?.games || 0) + value.games,
-            maxXl: Math.max(acc.classes[klass]?.maxXl || 0, value.maxXl),
-          };
-
-          acc.races[race] = {
-            wins: (acc.races[race]?.wins || 0) + value.wins,
-            games: (acc.races[race]?.games || 0) + value.games,
-            maxXl: Math.max(acc.races[race]?.maxXl || 0, value.maxXl),
-          };
-
-          return acc;
-        },
-        {
-          races: {},
-          classes: {},
-        } as {
-          races: Record<string, typeof matrix[string]>;
-          classes: Record<string, typeof matrix[string]>;
-        },
-      ),
-    [matrix],
-  );
 
   return (
     <div ref={ref} className={clsx('w-full', isSticky && 'sticky top-0')}>
@@ -86,7 +41,7 @@ export const Matrix = ({ classes, races, player }: Props) => {
             {' '}
             <button
               className={clsx(
-                'rounded px-1 font-light',
+                'rounded px-2 py-0.5 font-light',
                 category === key ? 'bg-yellow-700 text-white' : 'bg-gray-100',
               )}
               onClick={() => setCategory(key)}
@@ -116,7 +71,7 @@ export const Matrix = ({ classes, races, player }: Props) => {
                   key={klass.abbr}
                   className={clsx(
                     'whitespace-nowrap min-w-[24px]',
-                    activeClass === klass.abbr && 'bg-yellow-200',
+                    activeClass === klass.abbr && 'bg-yellow-100',
                   )}
                   onMouseEnter={() => setActive(['', klass.abbr])}
                   onMouseLeave={() => setActive([])}
@@ -134,7 +89,7 @@ export const Matrix = ({ classes, races, player }: Props) => {
                 <td
                   key={klass.abbr}
                   className={clsx(
-                    activeClass === klass.abbr && 'bg-yellow-200',
+                    activeClass === klass.abbr && 'bg-yellow-100',
                     summary.classes[klass.abbr]?.wins > 0 && 'text-yellow-600',
                   )}
                   onMouseEnter={() => setActive(['', klass.abbr])}
@@ -149,7 +104,7 @@ export const Matrix = ({ classes, races, player }: Props) => {
                 <td
                   className={clsx(
                     'text-left font-bold',
-                    activeRace === race.abbr && 'bg-yellow-200',
+                    activeRace === race.abbr && 'bg-yellow-100',
                   )}
                   onMouseEnter={() => setActive([race.abbr])}
                   onMouseLeave={() => setActive([])}
@@ -158,7 +113,7 @@ export const Matrix = ({ classes, races, player }: Props) => {
                 </td>
                 <td
                   className={clsx(
-                    activeRace === race.abbr && 'bg-yellow-200',
+                    activeRace === race.abbr && 'bg-yellow-100',
                     summary.races[race.abbr]?.wins > 0 && 'text-yellow-600',
                   )}
                   onMouseEnter={() => setActive([race.abbr])}
@@ -174,7 +129,7 @@ export const Matrix = ({ classes, races, player }: Props) => {
                       key={char}
                       className={clsx(
                         'border',
-                        (activeClass === klass.abbr || activeRace === race.abbr) && 'bg-yellow-200',
+                        (activeClass === klass.abbr || activeRace === race.abbr) && 'bg-yellow-100',
                         summary.races[race.abbr]?.wins > 0 &&
                           summary.classes[klass.abbr]?.wins > 0 &&
                           'text-yellow-600',
