@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { Response } from '@types';
 import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
 import { useSlicedList } from '@hooks/useSlicedList';
+import { Logo } from '@components/Logo';
 import { Matrix } from './Matrix';
 
 import { Games } from './Games';
@@ -28,11 +28,9 @@ export const Player = (props: Props) => {
     <div className="container mx-auto px-4">
       <div className="grid xl:grid-cols-3 gap-4">
         <div className="min-w-0">
-          <h1 className="text-4xl pt-4 pb-2">
-            <Link href="/">
-              <a>DCSS Stats</a>
-            </Link>
-          </h1>
+          <header className="pt-4 pb-2">
+            <Logo />
+          </header>
           <div className="space-y-2">
             <section className="space-y-2">
               <h2 className="text-3xl font-bold">{props.player.name}</h2>

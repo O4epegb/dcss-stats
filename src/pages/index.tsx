@@ -11,6 +11,7 @@ import { Player, Server } from '@types';
 import refreshSvg from '@refresh.svg';
 import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
+import { Logo } from '@components/Logo';
 
 const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -23,7 +24,10 @@ const MainPage = (props: Props) => {
 
   return (
     <div className="container mx-auto px-4 min-h-screen flex flex-col pt-8 md:pt-0 md:justify-center items-center space-y-4">
-      <h1 className="text-4xl text-center">DCSS Stats</h1>
+      <header>
+        <Logo />
+      </header>
+
       <div className="w-full max-w-md space-y-4">
         <Search
           isNavigating={isNavigating}
