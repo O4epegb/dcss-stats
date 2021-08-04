@@ -79,7 +79,7 @@ export const Matrix = ({ classes, races, matrix }: Props) => {
         :
       </div>
       <div className="overflow-x-auto xl:overflow-x-visible">
-        <table className="w-auto xl:w-full text-center border-collapse text-sm 2xl:text-base">
+        <table className="w-auto xl:w-full min-w-full text-center border-collapse text-sm 2xl:text-base">
           <thead>
             <tr>
               <th className="min-w-[24px]"></th>
