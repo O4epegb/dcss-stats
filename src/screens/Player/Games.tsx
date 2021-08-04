@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { last, throttle } from 'lodash-es';
+import { first, last, throttle } from 'lodash-es';
 import { useState, useEffect } from 'react';
 import { addS, date } from '@utils';
 import { api } from '@api';
@@ -89,7 +89,7 @@ export const Games = (props: Props) => {
               <div className="font-light">
                 {game.god ? (
                   <>
-                    Was {getPietyLevel(game.piety)} of{' '}
+                    Was {getPietyLevel(game.piety, game.god)} of{' '}
                     <span className="font-normal">{game.god}</span>
                   </>
                 ) : (
@@ -175,11 +175,42 @@ const formatNumber = (n: number, options?: Intl.NumberFormatOptions) => {
   return n.toLocaleString('en-EN', options);
 };
 
+const getMorgueUrl = (game: Game, player: Player) => {
+  return `morgue-${player.name}-${date(game.endAt).utc().format('YYYYMMDD-HHmmss')}.txt`;
+};
+
 const breakpoints = [30, 50, 75, 100, 120, 160];
 const ranks = ['an Initiate', 'a Follower', 'a Believer', 'a Priest', 'an Elder', 'a High Priest'];
-const getPietyLevel = (piety: number | null) => {
+const xomBreakpoints = [20, 50, 80, 120, 150, 180];
+const xomRanks = [
+  'a very special plaything',
+  'a special plaything',
+  'a plaything',
+  'a toy',
+  'a favourite toy',
+  'a beloved toy',
+];
+
+const getPietyLevel = (piety: number | null, god?: string) => {
+  if (god === 'Gozag') {
+    return 'a Customer';
+  }
+
+  if (god === 'Xom') {
+    return getPietyLevelGeneric(piety, xomRanks, xomBreakpoints, 'a teddy bear');
+  }
+
+  return getPietyLevelGeneric(piety, ranks, breakpoints, 'the Champion');
+};
+
+const getPietyLevelGeneric = (
+  piety: number | null,
+  ranks: string[],
+  breakpoints: number[],
+  lastRank: string,
+) => {
   if (!piety) {
-    return last(ranks);
+    return first(ranks);
   }
 
   for (let i = 0; i < breakpoints.length; i++) {
@@ -188,9 +219,5 @@ const getPietyLevel = (piety: number | null) => {
     }
   }
 
-  return 'the Champion';
-};
-
-const getMorgueUrl = (game: Game, player: Player) => {
-  return `morgue-${player.name}-${date(game.endAt).utc().format('YYYYMMDD-HHmmss')}.txt`;
+  return lastRank;
 };
