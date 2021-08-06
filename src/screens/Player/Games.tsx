@@ -3,7 +3,7 @@ import { first, last, throttle } from 'lodash-es';
 import { useState, useEffect } from 'react';
 import { addS, date } from '@utils';
 import { api } from '@api';
-import { Game, Player } from '@types';
+import { Class, Game, Player, Race } from '@types';
 import externalLinkSvg from '@external.svg';
 import refreshSvg from '@refresh.svg';
 import { Props } from './index';
@@ -13,12 +13,22 @@ enum Filter {
   Wins = 'wins',
 }
 
-export const Games = ({ lastGames, stats, player }: Props) => {
+export const Games = ({
+  lastGames,
+  stats,
+  player,
+  allActualRaces,
+  allActualClasses,
+}: Props & { allActualRaces: Race[]; allActualClasses: Class[] }) => {
   const [games, setGames] = useState(lastGames);
   const [isLoading, setIsLoading] = useState(false);
   const [showUp, setShowUp] = useState(false);
-  const [filter, changeFilter] = useState(Filter.All);
   const [count, setCount] = useState(stats.total.games);
+  const [filter, setFilter] = useState(() => ({
+    isWin: Filter.All,
+    race: Filter.All,
+    class: Filter.All,
+  }));
 
   const hasMore = count > games.length;
 
@@ -46,7 +56,9 @@ export const Games = ({ lastGames, stats, player }: Props) => {
         params: {
           player: player.name,
           after: last(games)?.id,
-          isWin: filter === Filter.Wins || undefined,
+          isWin: filter.isWin === Filter.Wins || undefined,
+          race: filter.race === Filter.All ? undefined : filter.race,
+          class: filter.class === Filter.All ? undefined : filter.class,
         },
       })
       .then((res) => {
@@ -63,33 +75,63 @@ export const Games = ({ lastGames, stats, player }: Props) => {
       });
   }, [isLoading, filter]);
 
+  const changeFilter = (key: keyof typeof filter, value: string) => {
+    setGames([]);
+    setIsLoading(true);
+    setFilter((current) => ({ ...current, [key]: value }));
+  };
+
   return (
     <section className="space-y-1 relative pb-8">
-      <div className="flex justify-between items-center">
-        <h2 className="font-bold">
-          Recent games
-          {!isLoading &&
-            filter === Filter.All &&
-            ` (${games.length}G/${games.filter((g) => g.isWin).length}W)`}
-          :
-        </h2>
-        <div>
-          <label>
-            Show:{' '}
-            <select
-              className="rounded p-1 bg-gray-100"
-              value={filter}
-              onChange={(e) => {
-                setGames([]);
-                setIsLoading(true);
-                changeFilter(e.target.value as Filter);
-              }}
-            >
-              <option value={Filter.All}>all games</option>
-              <option value={Filter.Wins}>only wins</option>
-            </select>
-          </label>
-        </div>
+      <h2 className="font-bold">
+        Recent games
+        {!isLoading &&
+          filter.isWin === Filter.All &&
+          ` (${games.length}G/${games.filter((g) => g.isWin).length}W)`}
+        :
+      </h2>
+      <div className="flex justify-between items-center text-sm">
+        <label>
+          Show:{' '}
+          <select
+            className="rounded p-1 bg-gray-100"
+            value={filter.isWin}
+            onChange={(e) => changeFilter('isWin', e.target.value)}
+          >
+            <option value={Filter.All}>all games</option>
+            <option value={Filter.Wins}>only wins</option>
+          </select>
+        </label>
+        <label>
+          Race:{' '}
+          <select
+            className="rounded p-1 bg-gray-100"
+            value={filter.race}
+            onChange={(e) => changeFilter('race', e.target.value)}
+          >
+            <option value={Filter.All}>any</option>
+            {allActualRaces.map(({ abbr }) => (
+              <option key={abbr} value={abbr}>
+                {abbr}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Class:{' '}
+          <select
+            className="rounded p-1 bg-gray-100"
+            value={filter.class}
+            onChange={(e) => changeFilter('class', e.target.value)}
+          >
+            <option value={Filter.All}>any</option>
+            {allActualClasses.map(({ abbr }) => (
+              <option key={abbr} value={abbr}>
+                {abbr}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       {showUp && (
         <button

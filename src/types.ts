@@ -14,6 +14,7 @@ export type getSSProps<
 export type Summary = {
   races: Record<string, CharStat>;
   classes: Record<string, CharStat>;
+  combos: Record<string, CharStat>;
 };
 
 export interface Response {
@@ -89,11 +90,13 @@ export interface Stats {
 export interface Race {
   name: string;
   abbr: string;
+  trunk: boolean;
 }
 
 export interface Class {
   name: string;
   abbr: string;
+  trunk: boolean;
 }
 
 export type Matrix = Record<string, CharStat>;

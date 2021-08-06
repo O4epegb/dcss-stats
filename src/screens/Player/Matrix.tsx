@@ -1,8 +1,7 @@
 import clsx from 'clsx';
-import { orderBy } from 'lodash-es';
-import { useEffect, useRef, Fragment, useMemo, useState } from 'react';
+import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
-import { Matrix as MatrixType, Summary } from '@types';
+import { CharStat, Class, Race, Summary } from '@types';
 import refreshSvg from '@refresh.svg';
 import { Props } from './index';
 
@@ -13,19 +12,21 @@ const items = [
 ] as const;
 
 export const Matrix = ({
-  classes,
-  races,
-  matrix,
   summary,
   isLoading,
-}: Props & { summary: Summary; isLoading: boolean; matrix: MatrixType }) => {
+  allActualRaces,
+  allActualClasses,
+}: Props & {
+  summary: Summary;
+  isLoading: boolean;
+  allActualRaces: Race[];
+  allActualClasses: Class[];
+}) => {
   const isWide = useMedia('(min-width: 1280px)');
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
-  const [category, setCategory] = useState<keyof typeof matrix[string]>('wins');
-  const orderedClasses = useMemo(() => orderBy(classes, (x) => x.abbr), [classes]);
-  const orderedRaces = useMemo(() => orderBy(races, (x) => x.abbr), [races]);
+  const [category, setCategory] = useState<keyof CharStat>('wins');
 
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
@@ -66,12 +67,13 @@ export const Matrix = ({
             <tr>
               <th className="min-w-[24px]"></th>
               <th className="min-w-[24px]"></th>
-              {orderedClasses.map((klass) => (
+              {allActualClasses.map((klass) => (
                 <th
                   key={klass.abbr}
                   className={clsx(
                     'whitespace-nowrap min-w-[24px]',
                     activeClass === klass.abbr && 'bg-yellow-100',
+                    !klass.trunk && 'text-gray-400',
                   )}
                   onMouseEnter={() => setActive(['', klass.abbr])}
                   onMouseLeave={() => setActive([])}
@@ -85,7 +87,7 @@ export const Matrix = ({
             <tr className="h-[24px]">
               <td></td>
               <td></td>
-              {orderedClasses.map((klass) => (
+              {allActualClasses.map((klass) => (
                 <td
                   key={klass.abbr}
                   className={clsx(
@@ -99,12 +101,13 @@ export const Matrix = ({
                 </td>
               ))}
             </tr>
-            {orderedRaces.map((race) => (
+            {allActualRaces.map((race) => (
               <tr key={race.abbr} className="h-[24px]">
                 <td
                   className={clsx(
                     'text-left font-bold',
                     activeRace === race.abbr && 'bg-yellow-100',
+                    !race.trunk && 'text-gray-400',
                   )}
                   onMouseEnter={() => setActive([race.abbr])}
                   onMouseLeave={() => setActive([])}
@@ -121,7 +124,7 @@ export const Matrix = ({
                 >
                   {summary.races[race.abbr]?.[category] || '-'}
                 </td>
-                {orderedClasses.map((klass) => {
+                {allActualClasses.map((klass) => {
                   const char = race.abbr + klass.abbr;
 
                   return (
@@ -137,7 +140,7 @@ export const Matrix = ({
                       onMouseEnter={() => setActive([race.abbr, klass.abbr])}
                       onMouseLeave={() => setActive([])}
                     >
-                      {matrix[char]?.[category] || false}
+                      {summary.combos[char]?.[category] || false}
                     </td>
                   );
                 })}

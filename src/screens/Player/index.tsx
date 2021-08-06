@@ -1,4 +1,4 @@
-import { reduce } from 'lodash-es';
+import { keys, orderBy, reduce, uniqBy } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@api';
 import { Matrix as MatrixType, Response } from '@types';
@@ -65,21 +65,55 @@ export const Player = (props: Props) => {
         {
           races: {},
           classes: {},
+          combos: matrix,
         } as {
           races: Record<string, typeof matrix[string]>;
           classes: Record<string, typeof matrix[string]>;
+          combos: Record<string, typeof matrix[string]>;
         },
       ),
     [matrix],
   );
 
+  const trunkRaces = useMemo(() => races.filter((x) => x.trunk), [races]);
+  const trunkClasses = useMemo(() => classes.filter((x) => x.trunk), [classes]);
+
+  const allActualRaces = useMemo(
+    () =>
+      orderBy(
+        uniqBy(
+          [
+            ...trunkRaces,
+            ...keys(summary.races).map((abbr) => ({ trunk: false, abbr, name: abbr })),
+          ],
+          (x) => x.abbr,
+        ),
+        (x) => x.abbr,
+      ),
+    [trunkRaces, summary],
+  );
+  const allActualClasses = useMemo(
+    () =>
+      orderBy(
+        uniqBy(
+          [
+            ...trunkClasses,
+            ...keys(summary.classes).map((abbr) => ({ trunk: false, abbr, name: abbr })),
+          ],
+          (x) => x.abbr,
+        ),
+        (x) => x.abbr,
+      ),
+    [trunkClasses, summary],
+  );
+
   const isGreat = useMemo(
-    () => races.every((race) => summary.races[race.abbr]?.wins > 0),
-    [summary],
+    () => trunkRaces.every((race) => summary.races[race.abbr]?.wins > 0),
+    [trunkRaces, summary],
   );
   const isGreater = useMemo(
-    () => classes.every((klass) => summary.classes[klass.abbr]?.wins > 0),
-    [summary],
+    () => trunkClasses.every((klass) => summary.classes[klass.abbr]?.wins > 0),
+    [trunkClasses, summary],
   );
 
   return (
@@ -193,11 +227,17 @@ export const Player = (props: Props) => {
               )}
             </section>
 
-            <Games {...props} />
+            <Games {...props} allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
           </div>
         </div>
         <div className="xl:col-span-2 min-w-0">
-          <Matrix {...props} matrix={matrix} isLoading={isLoading} summary={summary} />
+          <Matrix
+            {...props}
+            isLoading={isLoading}
+            summary={summary}
+            allActualRaces={allActualRaces}
+            allActualClasses={allActualClasses}
+          />
         </div>
       </div>
     </div>
