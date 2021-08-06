@@ -96,15 +96,17 @@ export const Player = (props: Props) => {
                 {!isLoading && (
                   <>
                     {isGreat && isGreater && (
-                      <div className="text-sm py-0.5 px-1 bg-yellow-300 border-2 border-yellow-600">
+                      <div className="text-sm rounded py-0.5 px-1 bg-yellow-300 border-2 border-yellow-600">
                         Greatest Player
                       </div>
                     )}
                     {isGreat && !isGreater && (
-                      <div className="text-sm py-0.5 px-1 bg-yellow-300">Great Player</div>
+                      <div className="text-sm rounded py-0.5 px-1 bg-yellow-300">Great Player</div>
                     )}
                     {isGreater && !isGreat && (
-                      <div className="text-sm py-0.5 px-1 bg-yellow-300">Greater Player</div>
+                      <div className="text-sm rounded py-0.5 px-1 bg-yellow-300">
+                        Greater Player
+                      </div>
                     )}
                   </>
                 )}

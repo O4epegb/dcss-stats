@@ -60,7 +60,11 @@ const Stats = memo(
                 <Link prefetch={false} href={getPlayerPageHref(player.name)}>
                   <a
                     className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
-                    onClick={() => onLinkClick(player.name)}
+                    onClick={(e) => {
+                      if (!e.metaKey) {
+                        onLinkClick(player.name);
+                      }
+                    }}
                   >
                     {player.name}
                   </a>
@@ -78,7 +82,11 @@ const Stats = memo(
                 <Link prefetch={false} href={getPlayerPageHref(player.name)}>
                   <a
                     className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
-                    onClick={() => onLinkClick(player.name)}
+                    onClick={(e) => {
+                      if (!e.metaKey) {
+                        onLinkClick(player.name);
+                      }
+                    }}
                   >
                     {player.name}
                   </a>
