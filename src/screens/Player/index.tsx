@@ -1,12 +1,15 @@
-import { keys, orderBy, reduce, uniqBy } from 'lodash-es';
+import { keys, orderBy, uniqBy } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@api';
-import { Matrix as MatrixType, Response } from '@types';
+import { CharStat, Matrix as MatrixType, Race, Response } from '@types';
 import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
+import Tippy from '@tippyjs/react';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
 import { Matrix } from './Matrix';
 import { Games } from './Games';
+import { getSummary } from './utils';
+import 'tippy.js/dist/tippy.css';
 
 export type Props = Response;
 
@@ -40,81 +43,27 @@ export const Player = (props: Props) => {
       });
   }, []);
 
-  const summary = useMemo(
-    () =>
-      reduce(
-        matrix,
-        (acc, value, key) => {
-          const race = key.slice(0, 2);
-          const klass = key.slice(2, 4);
-
-          acc.classes[klass] = {
-            wins: (acc.classes[klass]?.wins || 0) + value.wins,
-            games: (acc.classes[klass]?.games || 0) + value.games,
-            maxXl: Math.max(acc.classes[klass]?.maxXl || 0, value.maxXl),
-          };
-
-          acc.races[race] = {
-            wins: (acc.races[race]?.wins || 0) + value.wins,
-            games: (acc.races[race]?.games || 0) + value.games,
-            maxXl: Math.max(acc.races[race]?.maxXl || 0, value.maxXl),
-          };
-
-          return acc;
-        },
-        {
-          races: {},
-          classes: {},
-          combos: matrix,
-        } as {
-          races: Record<string, typeof matrix[string]>;
-          classes: Record<string, typeof matrix[string]>;
-          combos: Record<string, typeof matrix[string]>;
-        },
-      ),
-    [matrix],
-  );
+  const summary = useMemo(() => getSummary(matrix), [matrix]);
 
   const trunkRaces = useMemo(() => races.filter((x) => x.trunk), [races]);
   const trunkClasses = useMemo(() => classes.filter((x) => x.trunk), [classes]);
 
-  const allActualRaces = useMemo(
-    () =>
-      orderBy(
-        uniqBy(
-          [
-            ...trunkRaces,
-            ...keys(summary.races).map((abbr) => ({ trunk: false, abbr, name: abbr })),
-          ],
-          (x) => x.abbr,
-        ),
-        (x) => x.abbr,
-      ),
-    [trunkRaces, summary],
-  );
+  const allActualRaces = useMemo(() => getList(trunkRaces, summary.races), [trunkRaces, summary]);
   const allActualClasses = useMemo(
-    () =>
-      orderBy(
-        uniqBy(
-          [
-            ...trunkClasses,
-            ...keys(summary.classes).map((abbr) => ({ trunk: false, abbr, name: abbr })),
-          ],
-          (x) => x.abbr,
-        ),
-        (x) => x.abbr,
-      ),
+    () => getList(trunkClasses, summary.classes),
     [trunkClasses, summary],
   );
 
   const isGreat = useMemo(
-    () => trunkRaces.every((race) => summary.races[race.abbr]?.wins > 0),
+    () => trunkRaces.every((x) => summary.races[x.abbr]?.wins > 0),
     [trunkRaces, summary],
   );
   const isGreater = useMemo(
-    () => trunkClasses.every((klass) => summary.classes[klass.abbr]?.wins > 0),
+    () => trunkClasses.every((x) => summary.classes[x.abbr]?.wins > 0),
     [trunkClasses, summary],
   );
+
+  const isGreatest = isGreat && isGreater;
 
   return (
     <div className="container mx-auto px-4">
@@ -124,28 +73,39 @@ export const Player = (props: Props) => {
             <Logo />
           </header>
           <div className="space-y-2">
-            <section className="space-y-2">
-              <div className="flex flex-wrap gap-x-4 gap-y-2 items-center">
-                <h2 className="text-3xl font-bold">{player.name}</h2>
-                {!isLoading && (
-                  <>
-                    {isGreat && isGreater && (
+            <section className="flex flex-wrap gap-x-4 gap-y-1 items-center">
+              <h2 className="text-3xl font-bold">{player.name}</h2>
+
+              {!isLoading && (
+                <>
+                  {isGreatest ? (
+                    <Tippy content="Has won with all races and all classes">
                       <div className="text-sm rounded py-0.5 px-1 bg-yellow-300 border-2 border-yellow-600">
                         Greatest Player
                       </div>
-                    )}
-                    {isGreat && !isGreater && (
-                      <div className="text-sm rounded py-0.5 px-1 bg-yellow-300">Great Player</div>
-                    )}
-                    {isGreater && !isGreat && (
-                      <div className="text-sm rounded py-0.5 px-1 bg-yellow-300">
-                        Greater Player
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-
+                    </Tippy>
+                  ) : (
+                    <>
+                      {isGreat && !isGreater && (
+                        <Tippy content="Has won with all races">
+                          <div className="text-sm rounded py-0.5 px-1 bg-yellow-300">
+                            Great Player
+                          </div>
+                        </Tippy>
+                      )}
+                      {isGreater && !isGreat && (
+                        <Tippy content="Has won with all classes">
+                          <div className="text-sm rounded py-0.5 px-1 bg-yellow-300">
+                            Greater Player
+                          </div>
+                        </Tippy>
+                      )}
+                    </>
+                  )}
+                </>
+              )}
+            </section>
+            <section className="space-y-2">
               <div className="flex space-x-4 text-xl font-bold">
                 <div className="text-blue-600 whitespace-nowrap">
                   {formatNumber(stats.total.games)}G
@@ -215,7 +175,7 @@ export const Player = (props: Props) => {
                     {hasMore && (
                       <li>
                         <button
-                          className="text-blue-300 text-sm px-1 py-0.5"
+                          className="text-blue-300 text-sm px-1 py-0.5 hover:underline"
                           onClick={toggleShowAll}
                         >
                           {showAll ? 'Show fewer' : `Show ${extraItemsCount} more`}
@@ -243,3 +203,12 @@ export const Player = (props: Props) => {
     </div>
   );
 };
+
+const getList = (trunkItems: Race[], summaryItems: Record<string, CharStat>) =>
+  orderBy(
+    uniqBy(
+      [...trunkItems, ...keys(summaryItems).map((abbr) => ({ trunk: false, abbr, name: abbr }))],
+      (x) => x.abbr,
+    ),
+    (x) => x.abbr,
+  );

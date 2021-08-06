@@ -12,6 +12,7 @@
   "dependencies": {
     "@bugsnag/js": "^7.11.0",
     "@bugsnag/plugin-react": "^7.11.0",
+    "@tippyjs/react": "^4.2.5",
     "axios": "^0.21.1",
     "clsx": "^1.1.1",
     "dayjs": "^1.10.6",

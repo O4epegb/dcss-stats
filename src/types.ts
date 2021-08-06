@@ -11,12 +11,6 @@ export type getSSProps<
   Q extends ParsedUrlQuery = ParsedUrlQuery,
 > = GetServerSideProps<P & AppData, Q>;
 
-export type Summary = {
-  races: Record<string, CharStat>;
-  classes: Record<string, CharStat>;
-  combos: Record<string, CharStat>;
-};
-
 export interface Response {
   player: Player;
   lastGames: Game[];
@@ -99,7 +93,7 @@ export interface Class {
   trunk: boolean;
 }
 
-export type Matrix = Record<string, CharStat>;
+export type Matrix = Record<string, CharStat & { winRate: number }>;
 
 export interface CharStat {
   wins: number;

@@ -1,8 +1,10 @@
 import clsx from 'clsx';
 import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
-import { CharStat, Class, Race, Summary } from '@types';
+import { CharStat, Class, Race } from '@types';
 import refreshSvg from '@refresh.svg';
+import Tippy from '@tippyjs/react';
+import { Summary } from './utils';
 import { Props } from './index';
 
 const items = [
@@ -27,11 +29,14 @@ export const Matrix = ({
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
   const [category, setCategory] = useState<keyof CharStat>('wins');
+  const tippyRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
     setIsSticky(Boolean(shouldBeSticky));
   }, [isWide, ref.current, isLoading]);
+
+  const activeCombo = activeRace + activeClass;
 
   return (
     <div ref={ref} className={clsx('w-full', isSticky && 'sticky top-0')}>
@@ -51,7 +56,6 @@ export const Matrix = ({
             </button>
           </Fragment>
         ))}
-        :
       </div>
       <div className="overflow-x-auto xl:overflow-x-visible relative">
         {isLoading && (
@@ -62,6 +66,33 @@ export const Matrix = ({
             />
           </div>
         )}
+
+        {activeClass && activeRace && (
+          <Tippy
+            reference={tippyRef.current}
+            content={
+              <div className="space-y-2">
+                <div>
+                  {allActualRaces.find((x) => x.abbr === activeRace)?.name}{' '}
+                  {allActualClasses.find((x) => x.abbr === activeClass)?.name}
+                </div>
+                {summary.combos[activeCombo]?.games > 0 ? (
+                  <div className="grid gap-x-2 grid-cols-2">
+                    <div>Games: {summary.combos[activeCombo]?.games}</div>
+                    <div className="text-right">
+                      Win rate: {summary.combos[activeCombo]?.winRate * 100}%
+                    </div>
+                    <div>Wins: {summary.combos[activeCombo]?.wins}</div>
+                    <div className="text-right">Max XL: {summary.combos[activeCombo]?.maxXl}</div>
+                  </div>
+                ) : (
+                  <div>No data yet</div>
+                )}
+              </div>
+            }
+          />
+        )}
+
         <table className="w-auto xl:w-full min-w-full text-center border-collapse text-sm 2xl:text-base">
           <thead>
             <tr>
@@ -137,7 +168,11 @@ export const Matrix = ({
                           summary.classes[klass.abbr]?.wins > 0 &&
                           'text-yellow-600',
                       )}
-                      onMouseEnter={() => setActive([race.abbr, klass.abbr])}
+                      onMouseEnter={(e) => {
+                        tippyRef.current = e.currentTarget;
+
+                        setActive([race.abbr, klass.abbr]);
+                      }}
                       onMouseLeave={() => setActive([])}
                     >
                       {summary.combos[char]?.[category] || false}
