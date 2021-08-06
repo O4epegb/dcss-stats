@@ -195,8 +195,9 @@ const GameItem = ({ game, player }: { game: Game; player: Player }) => {
         )}
         {game.race} {game.class} <span className="font-light">the {game.title}</span>
       </div>
-      <div>XL:{game.xl}</div>
+
       <div>
+        XL:{game.xl},{' '}
         <span className={clsx(game.isWin ? 'text-green-500' : 'text-red-500')}>
           {game.endMessage}
         </span>{' '}
@@ -232,7 +233,13 @@ const GameItem = ({ game, player }: { game: Game; player: Player }) => {
           {duration.format('HH:mm:ss')}
         </div>
         {game.server && (
-          <a target="_blank" href={game.server.url} rel="noopener noreferrer" className="underline">
+          <a
+            target="_blank"
+            href={game.server.url}
+            title={`Server: ${game.server.name}, ${game.server.url}`}
+            rel="noopener noreferrer"
+            className="underline"
+          >
             {game.server.abbreviation}
           </a>
         )}
