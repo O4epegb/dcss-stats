@@ -31,7 +31,7 @@ export const Matrix = ({
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
     setIsSticky(Boolean(shouldBeSticky));
-  }, [isWide]);
+  }, [isWide, ref.current, isLoading]);
 
   return (
     <div ref={ref} className={clsx('w-full', isSticky && 'sticky top-0')}>
