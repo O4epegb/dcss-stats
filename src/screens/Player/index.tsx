@@ -1,7 +1,7 @@
 import { keys, orderBy, uniqBy } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@api';
-import { CharStat, Matrix as MatrixType, Race, Response } from '@types';
+import { CharStat, Class, Matrix as MatrixType, Race, Response } from '@types';
 import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
 import Tippy from '@tippyjs/react';
 import { useSlicedList } from '@hooks/useSlicedList';
@@ -48,9 +48,9 @@ export const Player = (props: Props) => {
   const trunkRaces = useMemo(() => races.filter((x) => x.trunk), [races]);
   const trunkClasses = useMemo(() => classes.filter((x) => x.trunk), [classes]);
 
-  const allActualRaces = useMemo(() => getList(trunkRaces, summary.races), [trunkRaces, summary]);
+  const allActualRaces = useMemo(() => getList(races, summary.races), [trunkRaces, summary]);
   const allActualClasses = useMemo(
-    () => getList(trunkClasses, summary.classes),
+    () => getList(classes, summary.classes),
     [trunkClasses, summary],
   );
 
@@ -204,10 +204,13 @@ export const Player = (props: Props) => {
   );
 };
 
-const getList = (trunkItems: Race[], summaryItems: Record<string, CharStat>) =>
+const getList = (items: Array<Race | Class>, summaryItems: Record<string, CharStat>) =>
   orderBy(
     uniqBy(
-      [...trunkItems, ...keys(summaryItems).map((abbr) => ({ trunk: false, abbr, name: abbr }))],
+      [
+        ...items.filter((x) => x.trunk || summaryItems[x.abbr]),
+        ...keys(summaryItems).map((abbr) => ({ trunk: false, abbr, name: abbr })),
+      ],
       (x) => x.abbr,
     ),
     (x) => x.abbr,

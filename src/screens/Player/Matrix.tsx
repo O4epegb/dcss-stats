@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
 import { CharStat, Class, Race } from '@types';
+import { formatNumber } from '@utils';
 import refreshSvg from '@refresh.svg';
 import Tippy from '@tippyjs/react';
 import { Summary } from './utils';
@@ -78,9 +79,13 @@ export const Matrix = ({
                 </div>
                 {summary.combos[activeCombo]?.games > 0 ? (
                   <div className="grid gap-x-2 grid-cols-2">
-                    <div>Games: {summary.combos[activeCombo]?.games}</div>
+                    <div>Games: {formatNumber(summary.combos[activeCombo]?.games)}</div>
                     <div className="text-right">
-                      Win rate: {summary.combos[activeCombo]?.winRate * 100}%
+                      Win rate:{' '}
+                      {formatNumber(summary.combos[activeCombo]?.winRate * 100, {
+                        maximumFractionDigits: 2,
+                      })}
+                      %
                     </div>
                     <div>Wins: {summary.combos[activeCombo]?.wins}</div>
                     <div className="text-right">Max XL: {summary.combos[activeCombo]?.maxXl}</div>
