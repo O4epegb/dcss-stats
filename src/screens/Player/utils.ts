@@ -1,8 +1,8 @@
-import { reduce } from 'lodash-es';
-import { CharStat, Matrix } from '@types';
+import { keys, orderBy, reduce, uniqBy } from 'lodash-es';
+import { CharStat, Class, God, Matrix, Race } from '@types';
 
-export const getSummary = (matrix: Matrix) => {
-  return reduce(
+export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods: God[]) => {
+  const stats = reduce(
     matrix,
     (acc, value, key) => {
       const race = key.slice(0, 2);
@@ -32,6 +32,44 @@ export const getSummary = (matrix: Matrix) => {
       combos: Record<string, typeof matrix[string]>;
     },
   );
+
+  const trunkRaces = orderBy(
+    races.filter((x) => x.trunk),
+    (x) => x.abbr,
+  );
+  const trunkClasses = orderBy(
+    classes.filter((x) => x.trunk),
+    (x) => x.abbr,
+  );
+
+  return {
+    stats,
+    trunkRaces,
+    trunkClasses,
+    allActualRaces: getActual(races, stats.races),
+    allActualClasses: getActual(classes, stats.classes),
+    wonRaces: trunkRaces.filter((x) => stats.races[x.abbr]?.wins > 0),
+    wonClasses: trunkClasses.filter((x) => stats.classes[x.abbr]?.wins > 0),
+    wonGods: gods.filter((g) => g.win),
+    notWonRaces: trunkRaces.filter((x) => !(stats.races[x.abbr]?.wins > 0)),
+    notWonClasses: trunkClasses.filter((x) => !(stats.classes[x.abbr]?.wins > 0)),
+    notWonGods: orderBy(
+      gods.filter((g) => !g.win),
+      (x) => x.name,
+    ),
+  };
 };
+
+const getActual = (items: Array<Race | Class>, summaryItems: Record<string, CharStat>) =>
+  orderBy(
+    uniqBy(
+      [
+        ...items.filter((x) => x.trunk || summaryItems[x.abbr]),
+        ...keys(summaryItems).map((abbr) => ({ trunk: false, abbr, name: abbr })),
+      ],
+      (x) => x.abbr,
+    ),
+    (x) => x.abbr,
+  );
 
 export type Summary = ReturnType<typeof getSummary>;

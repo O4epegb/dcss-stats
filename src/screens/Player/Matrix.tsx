@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
-import { CharStat, Class, Race } from '@types';
+import { CharStat } from '@types';
 import { formatNumber } from '@utils';
 import refreshSvg from '@refresh.svg';
 import Tippy from '@tippyjs/react';
@@ -17,13 +17,9 @@ const items = [
 export const Matrix = ({
   summary,
   isLoading,
-  allActualRaces,
-  allActualClasses,
 }: Props & {
   summary: Summary;
   isLoading: boolean;
-  allActualRaces: Race[];
-  allActualClasses: Class[];
 }) => {
   const isWide = useMedia('(min-width: 1280px)');
   const [isSticky, setIsSticky] = useState(false);
@@ -31,6 +27,7 @@ export const Matrix = ({
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
   const [category, setCategory] = useState<keyof CharStat>('wins');
   const tippyRef = useRef<HTMLElement | null>(null);
+  const { allActualRaces, allActualClasses, stats } = summary;
 
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
@@ -77,18 +74,18 @@ export const Matrix = ({
                   {allActualRaces.find((x) => x.abbr === activeRace)?.name}{' '}
                   {allActualClasses.find((x) => x.abbr === activeClass)?.name}
                 </div>
-                {summary.combos[activeCombo]?.games > 0 ? (
+                {stats.combos[activeCombo]?.games > 0 ? (
                   <div className="grid gap-x-2 grid-cols-2">
-                    <div>Games: {formatNumber(summary.combos[activeCombo]?.games)}</div>
+                    <div>Games: {formatNumber(stats.combos[activeCombo]?.games)}</div>
                     <div className="text-right">
                       Win rate:{' '}
-                      {formatNumber(summary.combos[activeCombo]?.winRate * 100, {
+                      {formatNumber(stats.combos[activeCombo]?.winRate * 100, {
                         maximumFractionDigits: 2,
                       })}
                       %
                     </div>
-                    <div>Wins: {summary.combos[activeCombo]?.wins}</div>
-                    <div className="text-right">Max XL: {summary.combos[activeCombo]?.maxXl}</div>
+                    <div>Wins: {stats.combos[activeCombo]?.wins}</div>
+                    <div className="text-right">Max XL: {stats.combos[activeCombo]?.maxXl}</div>
                   </div>
                 ) : (
                   <div>No data yet</div>
@@ -128,12 +125,12 @@ export const Matrix = ({
                   key={klass.abbr}
                   className={clsx(
                     activeClass === klass.abbr && 'bg-yellow-100',
-                    summary.classes[klass.abbr]?.wins > 0 && 'text-yellow-600',
+                    stats.classes[klass.abbr]?.wins > 0 && 'text-yellow-600',
                   )}
                   onMouseEnter={() => setActive(['', klass.abbr])}
                   onMouseLeave={() => setActive([])}
                 >
-                  {summary.classes[klass.abbr]?.[category] || '-'}
+                  {stats.classes[klass.abbr]?.[category] || '-'}
                 </td>
               ))}
             </tr>
@@ -153,12 +150,12 @@ export const Matrix = ({
                 <td
                   className={clsx(
                     activeRace === race.abbr && 'bg-yellow-100',
-                    summary.races[race.abbr]?.wins > 0 && 'text-yellow-600',
+                    stats.races[race.abbr]?.wins > 0 && 'text-yellow-600',
                   )}
                   onMouseEnter={() => setActive([race.abbr])}
                   onMouseLeave={() => setActive([])}
                 >
-                  {summary.races[race.abbr]?.[category] || '-'}
+                  {stats.races[race.abbr]?.[category] || '-'}
                 </td>
                 {allActualClasses.map((klass) => {
                   const char = race.abbr + klass.abbr;
@@ -169,8 +166,8 @@ export const Matrix = ({
                       className={clsx(
                         'border',
                         (activeClass === klass.abbr || activeRace === race.abbr) && 'bg-yellow-100',
-                        summary.races[race.abbr]?.wins > 0 &&
-                          summary.classes[klass.abbr]?.wins > 0 &&
+                        stats.races[race.abbr]?.wins > 0 &&
+                          stats.classes[klass.abbr]?.wins > 0 &&
                           'text-yellow-600',
                       )}
                       onMouseEnter={(e) => {
@@ -180,7 +177,7 @@ export const Matrix = ({
                       }}
                       onMouseLeave={() => setActive([])}
                     >
-                      {summary.combos[char]?.[category] || false}
+                      {stats.combos[char]?.[category] || false}
                     </td>
                   );
                 })}

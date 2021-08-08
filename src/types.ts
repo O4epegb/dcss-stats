@@ -20,6 +20,8 @@ export interface Response {
   titles: string[];
   firstGame: Game;
   lastGame: Game;
+  matrix: Matrix;
+  gods: God[];
 }
 
 export interface Player {
@@ -107,4 +109,10 @@ export type Server = {
   morgueUrl: string;
   url: string;
   name: string;
+};
+
+export type God = {
+  name: string;
+  trunk: boolean;
+  win: boolean;
 };
