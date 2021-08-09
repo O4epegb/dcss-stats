@@ -98,7 +98,7 @@ const Stats = memo(
         </div>
         <h2 className="font-semibold">Total games saved: {formatNumber(games)}</h2>
         <h2 className="font-semibold">Total wins: {formatNumber(wins)}</h2>
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-gray-400 col-span-full">
           Tracked servers:{' '}
           {servers.map((s, index) => (
             <Fragment key={index}>
@@ -114,6 +114,10 @@ const Stats = memo(
               </a>
             </Fragment>
           ))}
+          {/* .{' '}
+          <Link prefetch={false} href="/servers">
+            <a className="hover:underline">more &gt;</a>
+          </Link> */}
         </div>
       </div>
     );

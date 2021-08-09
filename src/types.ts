@@ -116,3 +116,9 @@ export type God = {
   trunk: boolean;
   win: boolean;
 };
+
+export type Logfile = {
+  games: number;
+  path: string;
+  version: string;
+};
