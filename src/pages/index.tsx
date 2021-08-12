@@ -114,10 +114,10 @@ const Stats = memo(
               </a>
             </Fragment>
           ))}
-          {/* .{' '}
+          .{' '}
           <Link prefetch={false} href="/servers">
             <a className="hover:underline">more &gt;</a>
-          </Link> */}
+          </Link>
         </div>
       </div>
     );
