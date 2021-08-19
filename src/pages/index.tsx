@@ -6,7 +6,7 @@ import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
 import { debounce } from 'lodash-es';
 import { api } from '@api';
-import { addS, formatNumber, RaceConditionGuard } from '@utils';
+import { formatNumber, RaceConditionGuard } from '@utils';
 import { Player, Server } from '@types';
 import refreshSvg from '@refresh.svg';
 import { Highlighted } from '@components/Highlighted';
@@ -124,7 +124,7 @@ const Stats = memo(
   },
 );
 
-type SearchItem = Player & { games: number };
+type SearchItem = Player;
 
 const Search = ({
   isNavigating,
@@ -243,14 +243,13 @@ const Search = ({
                     return (
                       <li
                         key={index}
-                        className={clsx('px-2 flex justify-between', active && 'bg-gray-100')}
+                        className={clsx('px-2', active && 'bg-gray-100')}
                         {...getItemProps({
                           item,
                           index,
                         })}
                       >
-                        <Highlighted text={item.name} query={query} /> {item.games}{' '}
-                        {addS('game', item.games)}
+                        <Highlighted text={item.name} query={query} />
                       </li>
                     );
                   })}
