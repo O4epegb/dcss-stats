@@ -19,9 +19,14 @@ const ServersPage = (props: Props) => {
           const total = server.logfile.reduce((acc, item) => acc + item.games, 0);
 
           return (
-            <div key={server.id}>
+            <div key={server.id} className="border rounded px-2 py-1">
               <div className="flex justify-between">
-                <a href={server.url} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={server.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="white-nowrap overflow-hidden overflow-ellipsis"
+                >
                   <span className="font-medium">{server.abbreviation}</span> - {server.url}
                 </a>
                 <div className="whitespace-nowrap">
@@ -32,11 +37,17 @@ const ServersPage = (props: Props) => {
                 <summary>
                   {server.logfile.length} {addS('logfile', server.logfile.length)}
                 </summary>
-                <ul>
+                <ul className="text-sm">
                   {orderBy(server.logfile, (x) => Number(x.version)).map((file) => {
                     return (
-                      <li key={file.path} className="flex justify-between">
-                        <div>{file.path}</div>
+                      <li key={file.path} className="flex justify-between hover:bg-gray-100 px-1">
+                        <a
+                          href={server.baseUrl + file.path}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {file.path}
+                        </a>
                         <div className="whitespace-nowrap">
                           {formatNumber(file.games)} {addS('game', file.games)}
                         </div>

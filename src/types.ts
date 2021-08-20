@@ -108,6 +108,7 @@ export type Server = {
   id: string;
   morgueUrl: string;
   url: string;
+  baseUrl: string;
   name: string;
 };
 
