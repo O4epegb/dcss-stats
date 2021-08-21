@@ -4,7 +4,7 @@ import { useState, useCallback, memo, Fragment } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
-import { debounce } from 'lodash-es';
+import { debounce, orderBy, startsWith } from 'lodash-es';
 import { api } from '@api';
 import { formatNumber, RaceConditionGuard } from '@utils';
 import { Player, Server } from '@types';
@@ -161,7 +161,7 @@ const Search = ({
     });
 
   const fetchData = useCallback(
-    debounce((query) => {
+    debounce((query: any) => {
       setIsLoading(true);
 
       guard
@@ -171,7 +171,9 @@ const Search = ({
           }),
         )
         .then((res) => {
-          setItems(res.data.data);
+          const target = query.toLowerCase();
+
+          setItems(orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc'));
           setIsLoading(false);
         });
     }, 400),
