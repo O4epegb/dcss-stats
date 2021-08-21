@@ -161,7 +161,7 @@ const Search = ({
     });
 
   const fetchData = useCallback(
-    debounce((query: any) => {
+    debounce((query: string) => {
       setIsLoading(true);
 
       guard
