@@ -11,7 +11,7 @@ export type getSSProps<
   Q extends ParsedUrlQuery = ParsedUrlQuery,
 > = GetServerSideProps<P & AppData, Q>;
 
-export interface Response {
+export interface PlayerInfoResponse {
   player: Player;
   lastGames: Game[];
   stats: Stats;
@@ -20,6 +20,7 @@ export interface Response {
   titles: string[];
   firstGame: Game;
   lastGame: Game;
+  lowestXlWin: Game | null;
   matrix: Matrix;
   gods: God[];
 }
@@ -66,13 +67,16 @@ export interface Stats {
     runesLost: number | null;
     gameTime: number | null;
     winTime: number | null;
+    winTurnCount: number | null;
   };
   max: {
     score: number | null;
     winTime: number | null;
+    winTurnCount: number | null;
   };
   min: {
     winTime: number | null;
+    winTurnCount: number | null;
   };
   total: {
     score: number | null;
@@ -80,6 +84,7 @@ export interface Stats {
     runesLost: number | null;
     games: number;
     wins: number;
+    timePlayed: number | null;
   };
 }
 

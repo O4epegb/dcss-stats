@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import relativeTimePlugin from 'dayjs/plugin/relativeTime';
 import durationPlugin from 'dayjs/plugin/duration';
 import { GetStaticPaths, GetStaticProps } from 'next';
-import { Response } from '@types';
+import { PlayerInfoResponse } from '@types';
 import { createServerApi } from '@api/server';
 
 import { Player, Props } from '@screens/Player';
@@ -32,7 +32,7 @@ export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) 
   }
 
   try {
-    const res = await createServerApi().api.get<Response>(`/players/${params.slug}`);
+    const res = await createServerApi().api.get<PlayerInfoResponse>(`/players/${params.slug}`);
 
     if (res.data.player.name !== params.slug) {
       return {

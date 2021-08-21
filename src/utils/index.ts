@@ -34,8 +34,8 @@ export class RaceConditionGuard {
 
 export const addS = (string: string, count: number) => string + (count === 1 ? '' : 's');
 
-export const formatDuration = (n: number) => {
-  const d = date.duration(n, 'seconds');
+export const formatDuration = (seconds: number) => {
+  const d = date.duration(seconds, 'seconds');
   const days = d.get('days');
 
   return `${days > 0 ? `${days} ${addS('day', days)} ` : ''}${d.format('HH:mm:ss')}`;

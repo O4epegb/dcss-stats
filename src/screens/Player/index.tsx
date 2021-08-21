@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useMemo, useState } from 'react';
-import { Response } from '@types';
+import { PlayerInfoResponse } from '@types';
 import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
 import Tippy from '@tippyjs/react';
 import { useSlicedList } from '@hooks/useSlicedList';
@@ -10,10 +10,10 @@ import { Games } from './Games';
 import { getSummary } from './utils';
 import 'tippy.js/dist/tippy.css';
 
-export type Props = Response;
+export type Props = PlayerInfoResponse;
 
 export const Player = (props: Props) => {
-  const { titles, player, firstGame, lastGame, races, classes, matrix, gods } = props;
+  const { titles, player, firstGame, lastGame, races, classes, matrix, gods, lowestXlWin } = props;
   const [
     isLoading,
     // , setIsLoading
@@ -142,7 +142,7 @@ export const Player = (props: Props) => {
             </section>
           )}
           <section className="text-xs space-y-2">
-            <div className="gap-2 grid grid-cols-2">
+            <div className="grid grid-cols-2 gap-x-1 gap-y-2">
               <List
                 items={[
                   ['Total score', roundAndFormat(stats.total.score)],
@@ -150,14 +150,6 @@ export const Player = (props: Props) => {
                   [
                     'Average score',
                     roundAndFormat(stats.average.score, { maximumFractionDigits: 0 }),
-                  ],
-                  [
-                    'Average game time',
-                    stats.average.gameTime ? formatDuration(stats.average.gameTime) : 'n/a',
-                  ],
-                  [
-                    'Average win time',
-                    stats.average.winTime ? formatDuration(stats.average.winTime) : 'n/a',
                   ],
                 ]}
               />
@@ -169,17 +161,65 @@ export const Player = (props: Props) => {
                     'Average runes extracted',
                     roundAndFormat(stats.average.runesWon, { maximumFractionDigits: 1 }),
                   ],
-                  ['Fastest win', stats.min.winTime ? formatDuration(stats.min.winTime) : 'n/a'],
-                  ['Slowest win', stats.max.winTime ? formatDuration(stats.max.winTime) : 'n/a'],
                 ]}
               />
+              <List
+                items={[
+                  [
+                    'Average win duration',
+                    stats.average.winTime ? formatDuration(stats.average.winTime) : 'n/a',
+                  ],
+                  ['Fastest win', stats.min.winTime ? formatDuration(stats.min.winTime) : 'n/a'],
+                  ['Slowest win', stats.max.winTime ? formatDuration(stats.max.winTime) : 'n/a'],
+                  [
+                    'Average game duration',
+                    stats.average.gameTime ? formatDuration(stats.average.gameTime) : 'n/a',
+                  ],
+                ]}
+              />
+              <List
+                items={[
+                  [
+                    'Average win turn count',
+                    stats.average.winTurnCount
+                      ? roundAndFormat(stats.average.winTurnCount, { maximumFractionDigits: 0 })
+                      : 'n/a',
+                  ],
+                  [
+                    'Fastest win, TC',
+                    stats.min.winTurnCount ? roundAndFormat(stats.min.winTurnCount) : 'n/a',
+                  ],
+                  [
+                    'Slowest win, TC',
+                    stats.max.winTurnCount ? roundAndFormat(stats.max.winTurnCount) : 'n/a',
+                  ],
+                ]}
+              />
+              <div className="col-span-full">
+                <List
+                  items={[
+                    [
+                      'Total time played, hours',
+                      stats.total.timePlayed
+                        ? roundAndFormat(stats.total.timePlayed / 60 / 60, {
+                            maximumFractionDigits: 0,
+                          })
+                        : 'n/a',
+                    ],
+                    ['First game', date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
+                    ['Most recent game', date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
+                    [
+                      'Lowest XL win',
+                      lowestXlWin
+                        ? `${lowestXlWin.char} XL ${lowestXlWin.xl}, ${date(
+                            lowestXlWin.endAt,
+                          ).format('DD MMM YYYY, HH:mm:ss')}`
+                        : 'n/a',
+                    ],
+                  ]}
+                />
+              </div>
             </div>
-            <List
-              items={[
-                ['First game', date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
-                ['Most recent game', date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
-              ]}
-            />
           </section>
           {items.length > 0 && (
             <section className="space-y-1">
