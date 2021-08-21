@@ -42,34 +42,27 @@ const MainPage = (props: Props) => {
 };
 
 const Stats = memo(
-  ({
-    players,
-    servers,
-    wins,
-    winners,
-    games,
-    onLinkClick,
-  }: Props & { onLinkClick: (name: string) => void }) => {
+  ({ servers, wins, games, top, onLinkClick }: Props & { onLinkClick: (name: string) => void }) => {
     return (
       <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
         <div className="space-y-1">
           <h2 className="font-semibold">Top by games:</h2>
           <ul>
-            {players.map((player) => (
-              <li key={player.id} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(player.name)}>
+            {top.byGames.map((item) => (
+              <li key={item.name} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
                   <a
                     className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
                     onClick={(e) => {
                       if (!e.metaKey) {
-                        onLinkClick(player.name);
+                        onLinkClick(item.name);
                       }
                     }}
                   >
-                    {player.name}
+                    {item.name}
                   </a>
                 </Link>
-                {formatNumber(player.games)}
+                <span className="tabular-nums">{formatNumber(item.games)}</span>
               </li>
             ))}
           </ul>
@@ -77,27 +70,58 @@ const Stats = memo(
         <div className="space-y-1">
           <h2 className="font-semibold">Top by wins:</h2>
           <ul>
-            {winners.map((player) => (
-              <li key={player.id} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(player.name)}>
+            {top.byWins.map((item) => (
+              <li key={item.name} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
                   <a
                     className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
                     onClick={(e) => {
                       if (!e.metaKey) {
-                        onLinkClick(player.name);
+                        onLinkClick(item.name);
                       }
                     }}
                   >
-                    {player.name}
+                    {item.name}
                   </a>
                 </Link>
-                {formatNumber(player.wins)}
+                <span className="tabular-nums">{formatNumber(item.wins)}</span>
               </li>
             ))}
           </ul>
         </div>
-        <h2 className="font-semibold">Total games saved: {formatNumber(games)}</h2>
-        <h2 className="font-semibold">Total wins: {formatNumber(wins)}</h2>
+        <div className="space-y-1">
+          <h2 className="font-semibold ">Top by win rate, %:</h2>
+          <ul>
+            {top.byWinrate.map((item) => (
+              <li key={item.name} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
+                  <a
+                    className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                    onClick={(e) => {
+                      if (!e.metaKey) {
+                        onLinkClick(item.name);
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </a>
+                </Link>
+                <span className="tabular-nums">
+                  {formatNumber(item.winrate * 100, {
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>{/* placeholder */}</div>
+        <h2 className="font-semibold flex justify-between">
+          Total games: <span>{formatNumber(games)}</span>
+        </h2>
+        <h2 className="font-semibold flex justify-between">
+          Total wins: <span>{formatNumber(wins)}</span>
+        </h2>
         <div className="text-xs text-gray-400 col-span-full">
           Tracked servers:{' '}
           {servers.map((s, index) => (
@@ -268,11 +292,14 @@ const Search = ({
 type Props = Response;
 
 type Response = {
-  players: Array<Player & { games: number }>;
-  winners: Array<Player & { wins: number }>;
   games: number;
   wins: number;
   servers: Server[];
+  top: {
+    byGames: Array<Pick<Player, 'name'> & { games: number }>;
+    byWins: Array<Pick<Player, 'name'> & { wins: number }>;
+    byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>;
+  };
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
