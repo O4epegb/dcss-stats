@@ -36,6 +36,7 @@ export interface Game {
   startAt: string;
   endAt: string;
   playerId: string;
+  player?: Player;
   version: string;
   versionShort: string;
   score: number;
