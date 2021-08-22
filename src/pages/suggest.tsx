@@ -21,8 +21,22 @@ type Combos = Record<string, Stats>;
 type SuggestResponse = Stats & { combos: Combos };
 
 const SuggestPage = (props: Props) => {
-  const races = useMemo(() => orderBy(props.races, ['trunk', 'name'], ['desc', 'asc']), []);
-  const classes = useMemo(() => orderBy(props.classes, ['trunk', 'name'], ['desc', 'asc']), []);
+  const races = useMemo(
+    () =>
+      orderBy(
+        props.races.filter((x) => x.trunk),
+        (x) => x.name,
+      ),
+    [],
+  );
+  const classes = useMemo(
+    () =>
+      orderBy(
+        props.classes.filter((x) => x.trunk),
+        (x) => x.name,
+      ),
+    [],
+  );
   const gods = useMemo(() => orderBy(props.gods, (x) => x.name.toLowerCase()), []);
   const [isLoading, setIsLoading] = useState(false);
   const [showWins, setShowWins] = useState(true);
