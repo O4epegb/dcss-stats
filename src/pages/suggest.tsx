@@ -99,7 +99,7 @@ const SuggestPage = (props: Props) => {
       <header>
         <Logo />
       </header>
-      <div className="w-full m-auto max-w-md bg-blue-100 rounded px-2 py-1 text-sm">
+      <div className="w-full m-auto max-w-lg bg-blue-100 rounded px-2 py-1 text-sm">
         <span className="font-semibold">TL;DR:</span> pick race, class, or god you want to play (or
         even all of them). Hit the button to see win rate of your combo, as well as recent games of
         other players (only version 0.27 and 0.28 at this moment).
@@ -154,7 +154,7 @@ const SuggestPage = (props: Props) => {
           ))}
         </select>
       </div>
-      <div className="w-full m-auto max-w-md flex justify-evenly items-center gap-2">
+      <div className="w-full m-auto max-w-lg flex justify-evenly items-center gap-2">
         <Tippy
           hideOnClick={false}
           disabled={somethingSelected}
@@ -187,7 +187,7 @@ const SuggestPage = (props: Props) => {
 
       {data && (
         <>
-          <div className="m-auto w-full max-w-md space-y-2">
+          <div className="m-auto w-full max-w-lg space-y-2">
             <hr />
             <h2 className="text-center text-xl">
               {data.race?.name || 'Something'} {data.class?.name || 'Something'}{' '}
@@ -209,7 +209,7 @@ const SuggestPage = (props: Props) => {
           )}
           {data.total > 0 && (
             <>
-              <section className="flex justify-between items-center m-auto w-full max-w-md">
+              <section className="flex justify-between items-center m-auto w-full max-w-lg">
                 <div>
                   Show only games with wins:{' '}
                   <input
@@ -245,7 +245,7 @@ const SuggestPage = (props: Props) => {
                   ))}
                 </div>
               </section>
-              <section className="w-full m-auto max-w-md overflow-x-auto xl:overflow-x-visible">
+              <section className="w-full m-auto max-w-lg overflow-x-auto xl:overflow-x-visible">
                 {view === 'stats' ? (
                   <table className="w-full table-auto">
                     <thead>

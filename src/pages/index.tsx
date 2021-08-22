@@ -24,12 +24,19 @@ const MainPage = (props: Props) => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 min-h-screen flex flex-col pt-8 md:pt-0 md:justify-center items-center space-y-4">
-      <header>
-        <Logo />
-      </header>
-
-      <div className="w-full max-w-md space-y-4">
+    <div className="container mx-auto px-4 min-h-screen flex flex-col pt-8 md:pt-0 md:justify-center items-center">
+      <div className="w-full max-w-lg space-y-4">
+        <header className="w-full flex justify-between items-center">
+          <Logo />
+          <Link href="/suggest">
+            <a className="text-right group">
+              <span className="text-xs sm:text-base group-hover:underline">
+                Get combo suggestion
+              </span>{' '}
+              <span className="bg-green-400 text-white text-xs rounded px-1 py-0.5">new</span>
+            </a>
+          </Link>
+        </header>
         <Search
           isNavigating={isNavigating}
           setIsNavigating={setIsNavigating}

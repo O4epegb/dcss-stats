@@ -12,7 +12,7 @@ const ServersPage = (props: Props) => {
         <Logo />
       </header>
 
-      <div className="w-full max-w-md space-y-2">
+      <div className="w-full max-w-lg space-y-2">
         <h2 className="font-semibold text-lg">Tracking 12 {addS('server', 12)}:</h2>
 
         {props.servers.map((server) => {
