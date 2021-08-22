@@ -12,6 +12,14 @@ import 'tippy.js/dist/tippy.css';
 
 export type Props = PlayerInfoResponse;
 
+declare global {
+  interface Window {
+    splitbee?: {
+      track: (type: string, data?: Record<string, string>) => void;
+    };
+  }
+}
+
 export const Player = (props: Props) => {
   const { titles, player, firstGame, lastGame, races, classes, matrix, gods, lowestXlWin } = props;
   const [isLoading] = useState(false);
@@ -64,13 +72,19 @@ export const Player = (props: Props) => {
                   isFavorite ? 'text-yellow-400' : 'text-gray-300',
                 )}
                 onClick={() => {
-                  if (isFavorite) {
-                    removeFromFavorite(player.name);
-                  } else {
+                  const newIsFavorite = !isFavorite;
+
+                  if (newIsFavorite) {
                     addToFavorite(player.name);
+                  } else {
+                    removeFromFavorite(player.name);
                   }
 
-                  setIsFavorite(!isFavorite);
+                  window.splitbee?.track(newIsFavorite ? 'Add favorite' : 'Remove favorite', {
+                    name: player.name,
+                  });
+
+                  setIsFavorite(newIsFavorite);
                 }}
               >
                 <svg
