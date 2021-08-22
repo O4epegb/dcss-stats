@@ -96,6 +96,12 @@ const Stats = memo(
             ))}
           </ul>
         </div>
+        <h2 className="font-semibold flex justify-between">
+          Total games: <span>{formatNumber(games)}</span>
+        </h2>
+        <h2 className="font-semibold flex justify-between">
+          Total wins: <span>{formatNumber(wins)}</span>
+        </h2>
         <div className="space-y-1">
           <h2 className="font-semibold ">Top by win rate, %:</h2>
           <ul>
@@ -147,12 +153,6 @@ const Stats = memo(
             </ul>
           )}
         </div>
-        <h2 className="font-semibold flex justify-between">
-          Total games: <span>{formatNumber(games)}</span>
-        </h2>
-        <h2 className="font-semibold flex justify-between">
-          Total wins: <span>{formatNumber(wins)}</span>
-        </h2>
         <div className="text-xs text-gray-400 col-span-full">
           Tracked servers:{' '}
           {servers.map((s, index) => (
