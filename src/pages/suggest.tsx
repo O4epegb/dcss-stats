@@ -283,7 +283,7 @@ const SuggestPage = (props: Props) => {
                             <tr key={index} className="hover:bg-yellow-100">
                               {!data.race && <td>{item.race?.name}</td>}
                               {!data.class && <td>{item.class?.name}</td>}
-                              {!data.god && <td>{item.god ? `${item.god.name}` : 'No god'}</td>}
+                              {!data.god && <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>}
                               <td className="text-right">{item.total}</td>
                               <td className="text-right">{item.wins}</td>
                               <td className="text-right">

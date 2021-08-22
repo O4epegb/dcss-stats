@@ -195,7 +195,7 @@ const GameItem = ({
             <span className="font-normal">{game.god}</span>
           </>
         ) : (
-          'Was an Unbeliever'
+          'Was an Atheist'
         )}
       </div>
       <div className="pt-1 text-gray-400 text-xs flex justify-between">
