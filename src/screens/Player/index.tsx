@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { PlayerInfoResponse } from '@types';
 import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
 import Tippy from '@tippyjs/react';
@@ -7,41 +7,20 @@ import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
 import { Matrix } from './Matrix';
 import { Games } from './Games';
-import { getSummary } from './utils';
+import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
 import 'tippy.js/dist/tippy.css';
 
 export type Props = PlayerInfoResponse;
 
 export const Player = (props: Props) => {
   const { titles, player, firstGame, lastGame, races, classes, matrix, gods, lowestXlWin } = props;
-  const [
-    isLoading,
-    // , setIsLoading
-  ] = useState(false);
-  // const [matrix, setMatrix] = useState<MatrixType>({});
-  // const [gods, setGods] = useState<God[]>([]);
+  const [isLoading] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
   const { stats } = props;
   const winrate = formatNumber((stats.total.wins / stats.total.games) * 100, {
     maximumFractionDigits: 2,
   });
-
-  // useEffect(() => {
-  //   api
-  //     .get<{ matrix: MatrixType; gods: God[] }>(`/players/${player.name}/matrix`)
-  //     .then((res) => {
-  //       setMatrix(res.data.matrix);
-  //       setGods(res.data.gods);
-  //     })
-  //     .catch((e) => {
-  //       alert('Error while loading matrix');
-
-  //       throw e;
-  //     })
-  //     .finally(() => {
-  //       setIsLoading(false);
-  //     });
-  // }, []);
 
   const summary = useMemo(() => getSummary(matrix, races, classes, gods), [matrix]);
   const {
@@ -62,6 +41,10 @@ export const Player = (props: Props) => {
   const isGreatest = isGreat && isGreater;
   const isPolytheist = wonGods.length === gods.length;
 
+  useEffect(() => {
+    setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1);
+  }, []);
+
   return (
     <div className="container mx-auto px-4 grid xl:grid-cols-3 gap-4">
       <div className="min-w-0">
@@ -69,8 +52,37 @@ export const Player = (props: Props) => {
           <Logo />
         </header>
         <div className="space-y-2">
-          <section className="flex flex-wrap gap-x-4 gap-y-1 items-center">
+          <section className="flex flex-wrap gap-x-2 gap-y-1 items-center">
             <h2 className="text-3xl font-bold">{player.name}</h2>
+            <Tippy
+              hideOnClick={false}
+              content={isFavorite ? 'Remove from favorite' : 'Add to favorite'}
+            >
+              <button
+                className={clsx(
+                  'flex items-center justify-center w-6 h-6 hover:bg-gray-100 rounded transition-colors',
+                  isFavorite ? 'text-yellow-400' : 'text-gray-300',
+                )}
+                onClick={() => {
+                  if (isFavorite) {
+                    removeFromFavorite(player.name);
+                  } else {
+                    addToFavorite(player.name);
+                  }
+
+                  setIsFavorite(!isFavorite);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              </button>
+            </Tippy>
             {!isLoading && (
               <div className="flex flex-wrap gap-2 text-sm">
                 {isGreatest ? (

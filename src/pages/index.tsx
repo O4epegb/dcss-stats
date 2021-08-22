@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useState, useCallback, memo, Fragment } from 'react';
+import { useState, useCallback, memo, Fragment, useEffect } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
@@ -12,6 +12,7 @@ import refreshSvg from '@refresh.svg';
 import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
+import { getFavorites } from '@screens/Player/utils';
 
 const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -43,6 +44,12 @@ const MainPage = (props: Props) => {
 
 const Stats = memo(
   ({ servers, wins, games, top, onLinkClick }: Props & { onLinkClick: (name: string) => void }) => {
+    const [favorites, setFavorites] = useState<null | string[]>(null);
+
+    useEffect(() => {
+      setFavorites(getFavorites().split(',').filter(Boolean));
+    }, []);
+
     return (
       <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
         <div className="space-y-1">
@@ -109,13 +116,37 @@ const Stats = memo(
                 <span className="tabular-nums">
                   {formatNumber(item.winrate * 100, {
                     maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
                   })}
                 </span>
               </li>
             ))}
           </ul>
         </div>
-        <div>{/* placeholder */}</div>
+        <div className="space-y-1">
+          <h2 className="font-semibold ">Your favorites:</h2>
+          {favorites && (
+            <ul className="max-h-[200px] overflow-y-auto">
+              {favorites.length === 0 && <li className="text-gray-400">No one added yet</li>}
+              {favorites.map((name) => (
+                <li key={name}>
+                  <Link prefetch={false} href={getPlayerPageHref(name)}>
+                    <a
+                      className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                      onClick={(e) => {
+                        if (!e.metaKey) {
+                          onLinkClick(name);
+                        }
+                      }}
+                    >
+                      {name}
+                    </a>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
         <h2 className="font-semibold flex justify-between">
           Total games: <span>{formatNumber(games)}</span>
         </h2>
