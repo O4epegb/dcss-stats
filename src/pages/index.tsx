@@ -140,7 +140,16 @@ const Stats = memo(
           <h2 className="font-semibold ">Your favorites:</h2>
           {favorites && (
             <ul className="max-h-[200px] overflow-y-auto">
-              {favorites.length === 0 && <li className="text-gray-400">No one added yet</li>}
+              {favorites.length === 0 && (
+                <li className="text-gray-400">
+                  Nobody added yet
+                  <div>
+                    Use <span className="font-medium">star</span> icon on player page near their
+                    name
+                  </div>
+                  <div>Data stored locally on your device</div>
+                </li>
+              )}
               {favorites.map((name) => (
                 <li key={name}>
                   <Link prefetch={false} href={getPlayerPageHref(name)}>
