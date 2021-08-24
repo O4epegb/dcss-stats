@@ -1,12 +1,13 @@
 import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
 import { PlayerInfoResponse } from '@types';
-import { addS, date, formatDuration, formatNumber, roundAndFormat } from '@utils';
+import { addS, formatNumber } from '@utils';
 import Tippy from '@tippyjs/react';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
 import { Matrix } from './Matrix';
 import { Games } from './Games';
+import { Stats } from './Stats';
 import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
 import 'tippy.js/dist/tippy.css';
 
@@ -21,7 +22,7 @@ declare global {
 }
 
 export const Player = (props: Props) => {
-  const { titles, player, firstGame, lastGame, races, classes, matrix, gods, lowestXlWin } = props;
+  const { titles, player, races, classes, matrix, gods } = props;
   const [isLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
@@ -167,86 +168,7 @@ export const Player = (props: Props) => {
               )}
             </section>
           )}
-          <section className="text-xs space-y-2">
-            <div className="grid grid-cols-2 gap-x-1 gap-y-2">
-              <List
-                items={[
-                  ['Total score', roundAndFormat(stats.total.score)],
-                  ['Best score', roundAndFormat(stats.max.score)],
-                  [
-                    'Average score',
-                    roundAndFormat(stats.average.score, { maximumFractionDigits: 0 }),
-                  ],
-                ]}
-              />
-              <List
-                items={[
-                  ['Total runes extracted', roundAndFormat(stats.total.runesWon)],
-                  ['Total runes lost', roundAndFormat(stats.total.runesLost)],
-                  [
-                    'Average runes extracted',
-                    roundAndFormat(stats.average.runesWon, { maximumFractionDigits: 1 }),
-                  ],
-                ]}
-              />
-              <List
-                items={[
-                  [
-                    'Average win duration',
-                    stats.average.winTime ? formatDuration(stats.average.winTime) : 'n/a',
-                  ],
-                  ['Fastest win', stats.min.winTime ? formatDuration(stats.min.winTime) : 'n/a'],
-                  ['Slowest win', stats.max.winTime ? formatDuration(stats.max.winTime) : 'n/a'],
-                  [
-                    'Average game duration',
-                    stats.average.gameTime ? formatDuration(stats.average.gameTime) : 'n/a',
-                  ],
-                ]}
-              />
-              <List
-                items={[
-                  [
-                    'Average win turn count',
-                    stats.average.winTurnCount
-                      ? roundAndFormat(stats.average.winTurnCount, { maximumFractionDigits: 0 })
-                      : 'n/a',
-                  ],
-                  [
-                    'Fastest win, TC',
-                    stats.min.winTurnCount ? roundAndFormat(stats.min.winTurnCount) : 'n/a',
-                  ],
-                  [
-                    'Slowest win, TC',
-                    stats.max.winTurnCount ? roundAndFormat(stats.max.winTurnCount) : 'n/a',
-                  ],
-                ]}
-              />
-              <div className="col-span-full">
-                <List
-                  items={[
-                    [
-                      'Total time played, hours',
-                      stats.total.timePlayed
-                        ? roundAndFormat(stats.total.timePlayed / 60 / 60, {
-                            maximumFractionDigits: 0,
-                          })
-                        : 'n/a',
-                    ],
-                    ['First game', date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
-                    ['Most recent game', date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
-                    [
-                      'Lowest XL win',
-                      lowestXlWin
-                        ? `${lowestXlWin.char} XL ${lowestXlWin.xl}, ${date(
-                            lowestXlWin.endAt,
-                          ).format('DD MMM YYYY, HH:mm:ss')}`
-                        : 'n/a',
-                    ],
-                  ]}
-                />
-              </div>
-            </div>
-          </section>
+          <Stats {...props} />
           {items.length > 0 && (
             <section className="space-y-1">
               <h2 className="font-bold">
@@ -281,16 +203,6 @@ export const Player = (props: Props) => {
     </div>
   );
 };
-
-const List = ({ items }: { items: [string, string][] }) => (
-  <ul>
-    {items.map(([title, text]) => (
-      <li key={title}>
-        <span className="font-semibold">{title}:</span> {text}
-      </li>
-    ))}
-  </ul>
-);
 
 const Badge = ({
   playerItems,
