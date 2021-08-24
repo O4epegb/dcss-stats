@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
-import { capitalize, map, orderBy, some } from 'lodash-es';
+import { capitalize, flow, map, orderBy, some } from 'lodash-es';
 import { api } from '@api';
 import { formatNumber } from '@utils';
 import { Class, God, Race } from '@types';
@@ -19,8 +19,11 @@ enum Filter {
 type Stats = { wins: number; total: number };
 type Combos = Record<string, Stats>;
 type SuggestResponse = Stats & { combos: Combos };
+type Data = SuggestResponse & { race?: Race; class?: Class; god?: God };
 
 const SuggestPage = (props: Props) => {
+  type SortingKey = keyof ReturnType<typeof normalizeData>[number];
+
   const races = useMemo(
     () =>
       orderBy(
@@ -41,9 +44,11 @@ const SuggestPage = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showWins, setShowWins] = useState(true);
   const [view, setView] = useState<'stats' | 'games'>('stats');
-  const [data, setData] = useState<
-    null | (SuggestResponse & { race?: Race; class?: Class; god?: God })
-  >(null);
+  const [sorting, setSorting] = useState<{ key: SortingKey; direction: 'desc' | 'asc' }>(() => ({
+    key: 'total',
+    direction: 'desc',
+  }));
+  const [data, setData] = useState<null | Data>(null);
   const [filter, setFilter] = useState(() => ({
     race: Filter.Any,
     class: Filter.Any,
@@ -88,6 +93,20 @@ const SuggestPage = (props: Props) => {
         setIsLoading(false);
       });
   }, [isLoading]);
+
+  const normalizeData = ({ combos, race, class: klass, god }: Data) => {
+    return map(combos, (value, key) => {
+      const [raceAbbr, classAbbr, godName] = key.split(',');
+
+      return {
+        ...value,
+        race: race || races.find((x) => x.abbr === raceAbbr),
+        class: klass || classes.find((x) => x.abbr === classAbbr),
+        god: god || gods.find((x) => x.name === godName),
+        winrate: (value.wins / value.total) * 100,
+      };
+    });
+  };
 
   return (
     <div
@@ -250,52 +269,97 @@ const SuggestPage = (props: Props) => {
                   <table className="w-full table-auto">
                     <thead>
                       <tr>
-                        {[!data.class && 'Class', !data.race && 'Race', !data.god && 'God']
-                          .filter(Boolean)
-                          .map((name, index) => (
-                            <th key={index} className="text-left">
-                              {name}
-                            </th>
-                          ))}
-                        <th className="text-right">Games</th>
-                        <th className="text-right">Wins</th>
-                        <th className="text-right whitespace-nowrap">Win rate</th>
+                        {(
+                          [
+                            ['Class', 'class', 'text', data.class],
+                            ['Race', 'race', 'text', data.race],
+                            ['God', 'god', 'text', data.god],
+                            ['Games', 'total', 'numeric'],
+                            ['Wins', 'wins', 'numeric'],
+                            ['Win rate', 'winrate', 'numeric'],
+                          ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>
+                        ).map(
+                          ([title, sortingKey, type, isHidden]) =>
+                            !isHidden && (
+                              <th
+                                key={title}
+                                className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
+                              >
+                                <div
+                                  className="whitespace-nowrap inline-flex items-center cursor-pointer select-none"
+                                  onClick={() =>
+                                    setSorting({
+                                      key: sortingKey,
+                                      direction:
+                                        sorting.key === sortingKey
+                                          ? sorting.direction === 'desc'
+                                            ? 'asc'
+                                            : 'desc'
+                                          : sorting.direction,
+                                    })
+                                  }
+                                >
+                                  {title}
+
+                                  {sorting.key === sortingKey && (
+                                    <button>
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className={clsx(
+                                          'h-5 w-5 transition-transform',
+                                          sorting.direction === 'asc' ? 'rotate-180' : '',
+                                        )}
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    </button>
+                                  )}
+                                </div>
+                              </th>
+                            ),
+                        )}
                       </tr>
                     </thead>
                     <tbody>
-                      {orderBy(
-                        map(data.combos, (value, key) => {
-                          const [raceAbbr, classAbbr, godName] = key.split(',');
+                      {flow(
+                        () => normalizeData(data),
+                        (x) =>
+                          orderBy(
+                            x,
+                            (x) => {
+                              const data = x[sorting.key];
 
-                          return {
-                            ...value,
-                            race: data.race || races.find((x) => x.abbr === raceAbbr),
-                            class: data.class || classes.find((x) => x.abbr === classAbbr),
-                            god: data.god || gods.find((x) => x.name === godName),
-                          };
-                        }),
-                        (x) => x.total,
-                        'desc',
-                      )
-                        .filter((item) => !showWins || item.wins > 0)
-                        .map((item, index) => {
-                          return (
-                            <tr key={index} className="hover:bg-yellow-100">
-                              {!data.race && <td>{item.race?.name}</td>}
-                              {!data.class && <td>{item.class?.name}</td>}
-                              {!data.god && <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>}
-                              <td className="text-right">{item.total}</td>
-                              <td className="text-right">{item.wins}</td>
-                              <td className="text-right">
-                                {formatNumber((item.wins / item.total) * 100, {
-                                  maximumFractionDigits: 2,
-                                  minimumFractionDigits: 2,
-                                })}
-                                %
-                              </td>
-                            </tr>
-                          );
-                        })}
+                              return typeof data === 'number' ? data : data?.name.toLowerCase();
+                            },
+                            sorting.direction,
+                          ),
+                        (x) => x.filter((item) => !showWins || item.wins > 0),
+                        (x) =>
+                          x.map((item, index) => {
+                            return (
+                              <tr key={index} className="hover:bg-yellow-100">
+                                {!data.race && <td>{item.race?.name}</td>}
+                                {!data.class && <td>{item.class?.name}</td>}
+                                {!data.god && <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>}
+                                <td className="text-right">{item.total}</td>
+                                <td className="text-right">{item.wins}</td>
+                                <td className="text-right">
+                                  {formatNumber(item.winrate, {
+                                    maximumFractionDigits: 2,
+                                    minimumFractionDigits: 2,
+                                  })}{' '}
+                                  %
+                                </td>
+                              </tr>
+                            );
+                          }),
+                      )()}
                     </tbody>
                   </table>
                 ) : (
