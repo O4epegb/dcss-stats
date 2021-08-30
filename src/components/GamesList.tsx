@@ -248,7 +248,7 @@ const xomRanks = [
 
 const getPietyLevel = (piety: number | null, god?: string) => {
   if (god === 'Gozag') {
-    return 'a Customer';
+    return 'a Client';
   }
 
   if (god === 'Xom') {
