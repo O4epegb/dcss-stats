@@ -1,5 +1,8 @@
-import { PlayerInfoResponse } from '@types';
+import { ReactNode, FC } from 'react';
+import { Game, PlayerInfoResponse } from '@types';
 import { addS, date, formatDuration, roundAndFormat } from '@utils';
+import Tippy from '@tippyjs/react/headless';
+import { GameItem } from '@components/GamesList';
 
 export const Stats = (props: PlayerInfoResponse) => {
   const { firstGame, lastGame, lowestXlWin } = props;
@@ -64,15 +67,29 @@ export const Stats = (props: PlayerInfoResponse) => {
                 'Total time played',
                 stats.total.timePlayed ? formatTimePlayed(stats.total.timePlayed) : 'n/a',
               ],
-              ['First game', date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
-              ['Most recent game', date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')],
+              [
+                'First game',
+                <GameTooltip key="" game={firstGame}>
+                  {date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')}
+                </GameTooltip>,
+              ],
+              [
+                'Most recent game',
+                <GameTooltip key="" game={lastGame}>
+                  {date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')}
+                </GameTooltip>,
+              ],
               [
                 'Lowest XL win',
-                lowestXlWin
-                  ? `${lowestXlWin.char} XL ${lowestXlWin.xl}, ${date(lowestXlWin.endAt).format(
+                lowestXlWin ? (
+                  <GameTooltip key="" game={lowestXlWin}>
+                    {`${lowestXlWin.char} XL ${lowestXlWin.xl}, ${date(lowestXlWin.endAt).format(
                       'DD MMM YYYY, HH:mm:ss',
-                    )}`
-                  : 'n/a',
+                    )}`}
+                  </GameTooltip>
+                ) : (
+                  'n/a'
+                ),
               ],
             ]}
           />
@@ -82,7 +99,7 @@ export const Stats = (props: PlayerInfoResponse) => {
   );
 };
 
-const List = ({ items }: { items: [string, string][] }) => (
+const List = ({ items }: { items: [string, ReactNode][] }) => (
   <ul>
     {items.map(([title, text]) => (
       <li key={title}>
@@ -91,6 +108,23 @@ const List = ({ items }: { items: [string, string][] }) => (
     ))}
   </ul>
 );
+
+const GameTooltip: FC<{ game: Game }> = ({ game, children }) => {
+  return (
+    <Tippy
+      interactive
+      maxWidth="none"
+      offset={[0, 0]}
+      render={(attrs) => (
+        <ul tabIndex={-1} className="max-w-[375px]" {...attrs}>
+          <GameItem shadow game={game} />
+        </ul>
+      )}
+    >
+      <span>{children}</span>
+    </Tippy>
+  );
+};
 
 const formatTimePlayed = (seconds: number) => {
   const hours = seconds / 60 / 60;
