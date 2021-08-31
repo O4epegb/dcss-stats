@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
 import { PlayerInfoResponse } from '@types';
 import { addS, formatNumber } from '@utils';
+import { canUseDOM } from '@constants';
 import Tippy from '@tippyjs/react';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
@@ -141,7 +142,6 @@ export const Player = (props: Props) => {
             <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
               {!isGreat && (
                 <Badge
-                  tip=""
                   title="Great Player"
                   allItems={trunkRaces}
                   playerItems={wonRaces}
@@ -150,7 +150,6 @@ export const Player = (props: Props) => {
               )}
               {!isGreater && (
                 <Badge
-                  tip=""
                   title="Greater Player"
                   allItems={trunkClasses}
                   playerItems={wonClasses}
@@ -159,7 +158,6 @@ export const Player = (props: Props) => {
               )}
               {!isPolytheist && (
                 <Badge
-                  tip=""
                   title="Polytheist"
                   allItems={gods}
                   playerItems={wonGods}
@@ -209,28 +207,16 @@ const Badge = ({
   allItems,
   leftToWinWith,
   title,
-  tip,
-  className,
 }: {
   playerItems: unknown[];
   allItems: unknown[];
   leftToWinWith: Array<{ name: string }>;
   title: string;
-  tip: string;
-  className?: string;
 }) => {
-  const isDone = playerItems.length === allItems.length;
-
-  if (isDone) {
-    return (
-      <Tippy content={tip}>
-        <div className={clsx('rounded py-0.5 px-1', className)}>{title}</div>
-      </Tippy>
-    );
-  }
-
   return (
     <Tippy
+      interactive
+      appendTo={canUseDOM ? document.body : 'parent'}
       content={
         <div className="space-y-2">
           <div>Need to win with:</div>
