@@ -117,7 +117,7 @@ const GameTooltip: FC<{ game: Game }> = ({ game, children }) => {
       offset={[0, 0]}
       render={(attrs) => (
         <ul tabIndex={-1} className="max-w-[375px]" {...attrs}>
-          <GameItem shadow game={game} />
+          <GameItem shadow game={game} playerName={game.player?.name} />
         </ul>
       )}
     >
