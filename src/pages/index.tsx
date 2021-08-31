@@ -6,7 +6,7 @@ import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
 import { debounce, orderBy, startsWith } from 'lodash-es';
 import { api } from '@api';
-import { formatNumber, RaceConditionGuard } from '@utils';
+import { formatNumber, getPlayerPageHref, RaceConditionGuard } from '@utils';
 import { Player, Server } from '@types';
 import refreshSvg from '@refresh.svg';
 import { Highlighted } from '@components/Highlighted';
@@ -357,12 +357,5 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
     props: res.data.data,
   };
 };
-
-const getPlayerPageHref = (slug: string) => ({
-  pathname: `/players/[slug]`,
-  query: {
-    slug,
-  },
-});
 
 export default MainPage;

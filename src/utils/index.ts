@@ -48,3 +48,10 @@ export const formatNumber = (n: number, options?: Intl.NumberFormatOptions) => {
 export const roundAndFormat = (n: number | null, options?: Intl.NumberFormatOptions) => {
   return n !== null ? formatNumber(n, options) : '0';
 };
+
+export const getPlayerPageHref = (slug: string) => ({
+  pathname: `/players/[slug]`,
+  query: {
+    slug,
+  },
+});

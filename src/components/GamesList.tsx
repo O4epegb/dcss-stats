@@ -1,8 +1,9 @@
 import clsx from 'clsx';
+import Link from 'next/link';
 import { first, last, throttle } from 'lodash-es';
 import { useState, useEffect } from 'react';
 import { useFirstMountState } from 'react-use/lib/useFirstMountState';
-import { addS, date, formatNumber } from '@utils';
+import { addS, date, formatNumber, getPlayerPageHref } from '@utils';
 import { api } from '@api';
 import { Game } from '@types';
 import externalLinkSvg from '@external.svg';
@@ -168,7 +169,13 @@ const GameItem = ({
             }}
           />
         )}
-        {includePlayer && playerName && <div className="font-medium">{playerName}</div>}
+        {includePlayer && playerName && (
+          <div>
+            <Link href={getPlayerPageHref(playerName)}>
+              <a className="font-medium">{playerName}</a>
+            </Link>
+          </div>
+        )}
         {game.race} {game.class} <span className="font-light">the {game.title}</span>
       </div>
 
