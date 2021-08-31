@@ -14,6 +14,7 @@ const CustomApp = ({ Component, pageProps }: AppProps): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="format-detection" content="telephone=no" />
         <title>DCSS Stats</title>
+        <meta name="description" content="Online games stats for Dungeon Crawl Stone Soup" />
       </Head>
       <Component {...pageProps} />
     </ErrorBoundary>
