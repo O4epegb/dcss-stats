@@ -28,12 +28,12 @@ export const Streaks = ({ streaks, player }: Props) => {
         </h2>
       </header>
       {streaks.total > 0 && (
-        <div className="flex justify-between items-center gap-x-1 gap-y-2 text-sm whitespace-nowrap">
-          <List items={[['Best streak', `${streaks.best} ${addS('win', streaks.best)}`]]} />
+        <div className="flex items-center gap-x-4 gap-y-2 text-sm whitespace-nowrap">
+          <List items={[['Best', `${streaks.best} ${addS('win', streaks.best)}`]]} />
           <List
             items={[
               [
-                'Average streak',
+                'Average',
                 `${formatNumber(streaks.average, { maximumFractionDigits: 1 })} ${addS(
                   'win',
                   streaks.average,
@@ -43,7 +43,7 @@ export const Streaks = ({ streaks, player }: Props) => {
           />
           <button
             disabled={isLoading}
-            className="text-blue-400 text-sm py-0.5 hover:underline"
+            className="text-blue-400 text-sm py-0.5 hover:underline ml-auto"
             onClick={() => {
               if (streakGroups.length > 0) {
                 setIsVisible((state) => !state);
