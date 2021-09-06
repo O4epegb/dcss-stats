@@ -23,6 +23,13 @@ export interface PlayerInfoResponse {
   lowestXlWin: Game | null;
   matrix: Matrix;
   gods: God[];
+  streaks: StreaksInfo;
+}
+
+export interface StreaksInfo {
+  total: number;
+  best: number;
+  average: number;
 }
 
 export interface Player {

@@ -99,7 +99,7 @@ export const Stats = (props: PlayerInfoResponse) => {
   );
 };
 
-const List = ({ items }: { items: [string, ReactNode][] }) => (
+export const List = ({ items }: { items: [string, ReactNode][] }) => (
   <ul>
     {items.map(([title, text]) => (
       <li key={title}>

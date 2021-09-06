@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, Fragment } from 'react';
 import { PlayerInfoResponse } from '@types';
 import { addS, formatNumber } from '@utils';
 import { canUseDOM } from '@constants';
@@ -11,6 +11,7 @@ import { Games } from './Games';
 import { Stats } from './Stats';
 import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
 import 'tippy.js/dist/tippy.css';
+import { Streaks } from './Streaks';
 
 export type Props = PlayerInfoResponse;
 
@@ -166,7 +167,9 @@ export const Player = (props: Props) => {
               )}
             </section>
           )}
+
           <Stats {...props} />
+
           {items.length > 0 && (
             <section className="space-y-1">
               <h2 className="font-bold">
@@ -181,7 +184,7 @@ export const Player = (props: Props) => {
                 {hasMore && (
                   <li>
                     <button
-                      className="text-blue-300 text-sm px-1 py-0.5 hover:underline"
+                      className="text-blue-400 text-sm px-1 py-0.5 hover:underline"
                       onClick={toggleShowAll}
                     >
                       {showAll ? 'Show fewer' : `Show ${extraItemsCount} more`}
@@ -192,6 +195,7 @@ export const Player = (props: Props) => {
             </section>
           )}
 
+          <Streaks {...props} />
           <Games {...props} allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
         </div>
       </div>
