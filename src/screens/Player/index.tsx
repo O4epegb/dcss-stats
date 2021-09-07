@@ -1,11 +1,12 @@
 import clsx from 'clsx';
 import { useMemo, useState, useEffect, Fragment } from 'react';
 import { PlayerInfoResponse } from '@types';
-import { addS, formatNumber } from '@utils';
+import { addS } from '@utils';
 import { canUseDOM } from '@constants';
 import Tippy from '@tippyjs/react';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
+import { WinrateStats } from '@components/WinrateStats';
 import { Matrix } from './Matrix';
 import { Games } from './Games';
 import { Stats } from './Stats';
@@ -29,9 +30,6 @@ export const Player = (props: Props) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
   const { stats } = props;
-  const winrate = formatNumber((stats.total.wins / stats.total.games) * 100, {
-    maximumFractionDigits: 2,
-  });
 
   const summary = useMemo(() => getSummary(matrix, races, classes, gods), [matrix]);
   const {
@@ -130,15 +128,11 @@ export const Player = (props: Props) => {
               </div>
             )}
           </section>
-          <section className="flex space-x-4 text-xl font-bold">
-            <div className="text-blue-600 whitespace-nowrap">
-              {formatNumber(stats.total.games)}G
-            </div>
-            <div className="text-green-600 whitespace-nowrap">
-              {formatNumber(stats.total.wins)}W
-            </div>
-            <div className="text-pink-600 whitespace-nowrap">{winrate}% WR</div>
+
+          <section>
+            <WinrateStats wins={stats.total.wins} games={stats.total.games} />
           </section>
+
           {(!isPolytheist || !isGreat || !isGreater) && (
             <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
               {!isGreat && (

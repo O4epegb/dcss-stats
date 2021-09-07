@@ -10,6 +10,7 @@ import Tippy from '@tippyjs/react';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { GamesList } from '@components/GamesList';
+import { WinrateStats } from '@components/WinrateStats';
 import 'tippy.js/dist/tippy.css';
 
 enum Filter {
@@ -199,9 +200,6 @@ const SuggestPage = (props: Props) => {
             )}
           </button>
         </Tippy>
-        {/* <button className="rounded px-4 py-2 text-gray-400 border border-transparent hover:border-gray-200 transition-colors">
-          Or try random
-        </button> */}
       </div>
 
       {data && (
@@ -212,13 +210,8 @@ const SuggestPage = (props: Props) => {
               {data.race?.name || 'Something'} {data.class?.name || 'Something'}{' '}
               <span className="font-light">of</span> {data.god?.name || 'Something'}
             </h2>
-            <section className="flex space-x-4 text-xl font-bold justify-center">
-              <div className="text-blue-600 whitespace-nowrap">{formatNumber(data.total)}G</div>
-              <div className="text-green-600 whitespace-nowrap">{formatNumber(data.wins)}W</div>
-              <div className="text-pink-600 whitespace-nowrap">
-                {formatNumber((data.wins / (data.total || 1)) * 100, { maximumFractionDigits: 2 })}%
-                WR
-              </div>
+            <section className="flex justify-center">
+              <WinrateStats games={data.total} wins={data.wins} />
             </section>
           </div>
           {data.total === 0 && (
@@ -391,11 +384,11 @@ type Response = {
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const res = await createServerApi().api.get<Response>('/combos');
+  const { data } = await createServerApi().api.get<Response>('/combos');
 
   return {
     revalidate: 300,
-    props: res.data,
+    props: data,
   };
 };
 
