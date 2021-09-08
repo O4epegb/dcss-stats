@@ -83,49 +83,51 @@ export const Streaks = ({ streaks, player }: Props) => {
       )}
       {isVisible && (
         <div className="space-y-2">
-          {orderBy(streakGroups, (x) => x.length, 'desc').map((streak, index) => {
-            const isActive = streak.every((x) => x.isWin);
-            const lastGame = last(streak);
-            const firstGame = first(streak);
-            const breaker = lastGame && !lastGame.isWin;
-            const streakLength = isActive ? streak.length : streak.length - 1;
+          {orderBy(streakGroups, (streak) => streak.filter((x) => x.isWin).length, 'desc').map(
+            (streak, index) => {
+              const isActive = streak.every((x) => x.isWin);
+              const lastGame = last(streak);
+              const firstGame = first(streak);
+              const breaker = lastGame && !lastGame.isWin;
+              const streakLength = isActive ? streak.length : streak.length - 1;
 
-            return (
-              <div
-                key={index}
-                className="text-sm py-1 px-2 border rounded border-gray-200 bg-white text-black"
-              >
-                <div>
-                  <span className="font-medium">{streakLength} wins:</span>{' '}
-                  <span>
-                    {streak
-                      .filter((game) => game.isWin)
-                      .map((game, index) => (
-                        <Fragment key={game.id}>
-                          {index !== 0 && ', '}
-                          {game.char}
-                        </Fragment>
-                      ))}
-                  </span>
-                </div>
-                {breaker && lastGame && (
+              return (
+                <div
+                  key={index}
+                  className="text-sm py-1 px-2 border rounded border-gray-200 bg-white text-black"
+                >
                   <div>
-                    <span className="font-light">Streak breaker:</span> {lastGame.char}
+                    <span className="font-medium">{streakLength} wins:</span>{' '}
+                    <span>
+                      {streak
+                        .filter((game) => game.isWin)
+                        .map((game, index) => (
+                          <Fragment key={game.id}>
+                            {index !== 0 && ', '}
+                            {game.char}
+                          </Fragment>
+                        ))}
+                    </span>
                   </div>
-                )}
-                {firstGame && (
-                  <div className="text-gray-400 text-xs pt-0.5">
-                    From <span>{date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')}</span>{' '}
-                    {breaker && lastGame && (
-                      <>
-                        to <span>{date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')}</span>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                  {breaker && lastGame && (
+                    <div>
+                      <span className="font-light">Streak breaker:</span> {lastGame.char}
+                    </div>
+                  )}
+                  {firstGame && (
+                    <div className="text-gray-400 text-xs pt-0.5">
+                      From <span>{date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')}</span>{' '}
+                      {breaker && lastGame && (
+                        <>
+                          to <span>{date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')}</span>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            },
+          )}
         </div>
       )}
     </section>
