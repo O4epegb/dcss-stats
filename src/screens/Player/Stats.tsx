@@ -1,8 +1,8 @@
 import { ReactNode, FC } from 'react';
 import { Game, PlayerInfoResponse } from '@types';
 import { addS, date, formatDuration, roundAndFormat } from '@utils';
-import Tippy from '@tippyjs/react/headless';
 import { GameItem } from '@components/GamesList';
+import { HeadlessTooltip } from '@components/Tooltip';
 
 export const Stats = (props: PlayerInfoResponse) => {
   const { firstGame, lastGame, lowestXlWin } = props;
@@ -111,7 +111,7 @@ export const List = ({ items }: { items: [string, ReactNode][] }) => (
 
 const GameTooltip: FC<{ game: Game }> = ({ game, children }) => {
   return (
-    <Tippy
+    <HeadlessTooltip
       interactive
       maxWidth="none"
       offset={[0, 0]}
@@ -122,7 +122,7 @@ const GameTooltip: FC<{ game: Game }> = ({ game, children }) => {
       )}
     >
       <span>{children}</span>
-    </Tippy>
+    </HeadlessTooltip>
   );
 };
 

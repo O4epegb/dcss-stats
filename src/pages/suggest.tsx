@@ -5,13 +5,12 @@ import { capitalize, flow, map, orderBy, some } from 'lodash-es';
 import { api } from '@api';
 import { formatNumber } from '@utils';
 import { Class, God, Race } from '@types';
-import Tippy from '@tippyjs/react';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { GamesList } from '@components/GamesList';
 import { WinrateStats } from '@components/WinrateStats';
 import { Loader } from '@components/Loader';
-import 'tippy.js/dist/tippy.css';
+import { Tooltip } from '@components/Tooltip';
 
 enum Filter {
   Any = 'any',
@@ -175,7 +174,7 @@ const SuggestPage = (props: Props) => {
         </select>
       </div>
       <div className="w-full m-auto max-w-lg flex justify-evenly items-center gap-2">
-        <Tippy
+        <Tooltip
           hideOnClick={false}
           disabled={somethingSelected}
           content="Select at least one option"
@@ -194,7 +193,7 @@ const SuggestPage = (props: Props) => {
             Time to have some fun!
             {isLoading && <Loader />}
           </button>
-        </Tippy>
+        </Tooltip>
       </div>
 
       {data && (

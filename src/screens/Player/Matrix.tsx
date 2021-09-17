@@ -3,7 +3,7 @@ import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
 import { CharStat } from '@types';
 import { formatNumber } from '@utils';
-import Tippy from '@tippyjs/react';
+import { Tooltip } from '@components/Tooltip';
 import { Summary } from './utils';
 import { Props } from './index';
 
@@ -54,7 +54,7 @@ export const Matrix = ({
       </div>
       <div className="overflow-x-auto xl:overflow-x-visible relative">
         {activeClass && activeRace && (
-          <Tippy
+          <Tooltip
             reference={tippyRef.current}
             content={
               <div className="space-y-2">
