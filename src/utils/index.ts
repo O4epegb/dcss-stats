@@ -55,3 +55,15 @@ export const getPlayerPageHref = (slug: string) => ({
     slug,
   },
 });
+
+declare global {
+  interface Window {
+    splitbee?: {
+      track: typeof trackEvent;
+    };
+  }
+}
+
+export const trackEvent = (type: string, data?: Record<string, string>) => {
+  window.splitbee?.track(type, data);
+};

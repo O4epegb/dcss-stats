@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
-import { addS } from '@utils';
+import { addS, trackEvent } from '@utils';
 import { canUseDOM } from '@constants';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
@@ -12,14 +12,6 @@ import { Stats } from './Stats';
 import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
 import { Streaks } from './Streaks';
 import { usePlayerPageContext } from './context';
-
-declare global {
-  interface Window {
-    splitbee?: {
-      track: (type: string, data?: Record<string, string>) => void;
-    };
-  }
-}
 
 export const Player = () => {
   const { titles, player, races, classes, matrix, gods, stats } = usePlayerPageContext();
@@ -76,7 +68,7 @@ export const Player = () => {
                     removeFromFavorite(player.name);
                   }
 
-                  window.splitbee?.track(newIsFavorite ? 'Add favorite' : 'Remove favorite', {
+                  trackEvent(newIsFavorite ? 'Add favorite' : 'Remove favorite', {
                     name: player.name,
                   });
 
