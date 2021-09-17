@@ -7,7 +7,7 @@ import { addS, date, formatNumber, getPlayerPageHref } from '@utils';
 import { api } from '@api';
 import { Game } from '@types';
 import externalLinkSvg from '@external.svg';
-import refreshSvg from '@refresh.svg';
+import { Loader } from './Loader';
 
 export const GamesList = (props: {
   initialTotal: number;
@@ -125,12 +125,7 @@ export const GamesList = (props: {
             onClick={loadMore}
           >
             <span>{isLoading ? 'Loading' : 'Load more'}</span>
-            {isLoading && (
-              <span
-                className="w-5 h-5 animate-spin"
-                style={{ backgroundImage: `url(${refreshSvg.src})` }}
-              />
-            )}
+            {isLoading && <Loader />}
           </button>
         </div>
       )}

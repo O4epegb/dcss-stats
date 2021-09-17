@@ -26,7 +26,6 @@ declare global {
 
 export const Player = (props: Props) => {
   const { titles, player, races, classes, matrix, gods } = props;
-  const [isLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
   const { stats } = props;
@@ -98,35 +97,33 @@ export const Player = (props: Props) => {
                 </svg>
               </button>
             </Tippy>
-            {!isLoading && (
-              <div className="flex flex-wrap gap-2 text-sm">
-                {isGreatest ? (
-                  <Tippy content="Has won with all races and all classes">
-                    <div className="rounded py-0.5 px-1 bg-yellow-300 ring-inset ring-2 ring-yellow-600">
-                      Greatest Player
-                    </div>
-                  </Tippy>
-                ) : (
-                  <>
-                    {isGreat && (
-                      <Tippy content="Has won with all races">
-                        <div className="rounded py-0.5 px-1 bg-yellow-300">Great Player</div>
-                      </Tippy>
-                    )}
-                    {isGreater && (
-                      <Tippy content="Has won with all classes">
-                        <div className="rounded py-0.5 px-1 bg-yellow-300">Greater Player</div>
-                      </Tippy>
-                    )}
-                  </>
-                )}
-                {isPolytheist && (
-                  <Tippy content="Has won with all gods">
-                    <div className="rounded py-0.5 px-1 bg-purple-300">Polytheist</div>
-                  </Tippy>
-                )}
-              </div>
-            )}
+            <div className="flex flex-wrap gap-2 text-sm">
+              {isGreatest ? (
+                <Tippy content="Has won with all races and all classes">
+                  <div className="rounded py-0.5 px-1 bg-yellow-300 ring-inset ring-2 ring-yellow-600">
+                    Greatest Player
+                  </div>
+                </Tippy>
+              ) : (
+                <>
+                  {isGreat && (
+                    <Tippy content="Has won with all races">
+                      <div className="rounded py-0.5 px-1 bg-yellow-300">Great Player</div>
+                    </Tippy>
+                  )}
+                  {isGreater && (
+                    <Tippy content="Has won with all classes">
+                      <div className="rounded py-0.5 px-1 bg-yellow-300">Greater Player</div>
+                    </Tippy>
+                  )}
+                </>
+              )}
+              {isPolytheist && (
+                <Tippy content="Has won with all gods">
+                  <div className="rounded py-0.5 px-1 bg-purple-300">Polytheist</div>
+                </Tippy>
+              )}
+            </div>
           </section>
 
           <section>
@@ -194,7 +191,7 @@ export const Player = (props: Props) => {
         </div>
       </div>
       <div className="xl:col-span-2 min-w-0">
-        <Matrix {...props} isLoading={isLoading} summary={summary} />
+        <Matrix {...props} summary={summary} />
       </div>
     </div>
   );

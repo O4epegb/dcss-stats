@@ -8,11 +8,11 @@ import { debounce, orderBy, startsWith } from 'lodash-es';
 import { api } from '@api';
 import { formatNumber, getPlayerPageHref, RaceConditionGuard } from '@utils';
 import { Player, Server } from '@types';
-import refreshSvg from '@refresh.svg';
 import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { getFavorites } from '@screens/Player/utils';
+import { Loader } from '@components/Loader';
 
 const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -255,10 +255,7 @@ const Search = ({
     <div {...getComboboxProps({ className: 'relative' })}>
       {isNavigating && (
         <div className="absolute right-2 top-[50%] -translate-y-1/2">
-          <div
-            className="w-5 h-5 animate-spin"
-            style={{ backgroundImage: `url(${refreshSvg.src})` }}
-          />
+          <Loader />
         </div>
       )}
 

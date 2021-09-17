@@ -3,7 +3,6 @@ import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
 import { CharStat } from '@types';
 import { formatNumber } from '@utils';
-import refreshSvg from '@refresh.svg';
 import Tippy from '@tippyjs/react';
 import { Summary } from './utils';
 import { Props } from './index';
@@ -16,10 +15,8 @@ const items = [
 
 export const Matrix = ({
   summary,
-  isLoading,
 }: Props & {
   summary: Summary;
-  isLoading: boolean;
 }) => {
   const isWide = useMedia('(min-width: 1280px)');
   const [isSticky, setIsSticky] = useState(false);
@@ -32,7 +29,7 @@ export const Matrix = ({
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
     setIsSticky(Boolean(shouldBeSticky));
-  }, [isWide, ref.current, isLoading]);
+  }, [isWide, ref.current]);
 
   const activeCombo = activeRace + activeClass;
 
@@ -56,15 +53,6 @@ export const Matrix = ({
         ))}
       </div>
       <div className="overflow-x-auto xl:overflow-x-visible relative">
-        {isLoading && (
-          <div className="w-full h-full absolute flex items-center justify-center bg-white/80">
-            <div
-              className="w-5 h-5 animate-spin"
-              style={{ backgroundImage: `url(${refreshSvg.src})` }}
-            />
-          </div>
-        )}
-
         {activeClass && activeRace && (
           <Tippy
             reference={tippyRef.current}

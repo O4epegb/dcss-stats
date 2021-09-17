@@ -5,12 +5,12 @@ import { capitalize, flow, map, orderBy, some } from 'lodash-es';
 import { api } from '@api';
 import { formatNumber } from '@utils';
 import { Class, God, Race } from '@types';
-import refreshSvg from '@refresh.svg';
 import Tippy from '@tippyjs/react';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { GamesList } from '@components/GamesList';
 import { WinrateStats } from '@components/WinrateStats';
+import { Loader } from '@components/Loader';
 import 'tippy.js/dist/tippy.css';
 
 enum Filter {
@@ -192,12 +192,7 @@ const SuggestPage = (props: Props) => {
             }}
           >
             Time to have some fun!
-            {isLoading && (
-              <div
-                className="w-5 h-5 animate-spin"
-                style={{ backgroundImage: `url(${refreshSvg.src})` }}
-              />
-            )}
+            {isLoading && <Loader />}
           </button>
         </Tippy>
       </div>

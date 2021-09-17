@@ -3,7 +3,7 @@ import { last, first, orderBy } from 'lodash-es';
 import { Game } from '@types';
 import { api } from '@api';
 import { addS, date, formatNumber } from '@utils';
-import refreshSvg from '@refresh.svg';
+import { Loader } from '@components/Loader';
 import { List } from './Stats';
 import { Props } from './index';
 
@@ -73,14 +73,7 @@ export const Streaks = ({ streaks, player }: Props) => {
           </button>
         </div>
       )}
-      {isLoading && (
-        <div className="flex items-center justify-center">
-          <span
-            className="w-5 h-5 animate-spin"
-            style={{ backgroundImage: `url(${refreshSvg.src})` }}
-          />
-        </div>
-      )}
+      {isLoading && <Loader />}
       {isVisible && (
         <div className="space-y-2">
           {orderBy(streakGroups, (streak) => streak.filter((x) => x.isWin).length, 'desc').map(
