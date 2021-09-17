@@ -252,21 +252,24 @@ export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
           <ServerLink game={game} />
         </div>
         <div className="flex justify-between text-gray-400 text-xs gap-2">
-          <TimeAndVersion game={game} />
+          <TimeAndVersion compact game={game} />
         </div>
       </li>
     );
   },
 );
 
-const TimeAndVersion = ({ game }: { game: Game }) => {
+const TimeAndVersion = ({ compact, game }: { compact?: boolean; game: Game }) => {
   if (!game.server) {
     return null;
   }
 
   return (
     <>
-      <div>{date(game.endAt).format('DD MMM YYYY [at] HH:mm:ss')}</div>
+      <div>
+        {!compact && <>{date(game.endAt).fromNow()}, </>}{' '}
+        {date(game.endAt).format('DD MMM YYYY [at] HH:mm:ss')}
+      </div>
       <div>v{game.version}</div>
     </>
   );
