@@ -37,7 +37,6 @@ export const Games = ({
             ` (${games.length}G/${games.filter((g) => g.isWin).length}W)`}
           :
         </h2>
-        <div>Compact view</div>
       </header>
       <div className="flex justify-between items-center text-sm">
         <label>
