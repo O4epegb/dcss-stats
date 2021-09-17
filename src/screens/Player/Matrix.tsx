@@ -149,9 +149,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                       className={clsx(
                         'border',
                         (activeClass === klass.abbr || activeRace === race.abbr) && 'bg-yellow-100',
-                        stats.races[race.abbr]?.wins > 0 &&
-                          stats.classes[klass.abbr]?.wins > 0 &&
-                          'text-yellow-600',
+                        stats.combos[char]?.wins > 0 && 'text-yellow-600',
                       )}
                       onMouseEnter={(e) => {
                         tippyRef.current = e.currentTarget;
