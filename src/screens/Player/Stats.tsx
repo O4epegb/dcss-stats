@@ -1,12 +1,12 @@
 import { ReactNode, FC } from 'react';
-import { Game, PlayerInfoResponse } from '@types';
+import { Game } from '@types';
 import { addS, date, formatDuration, roundAndFormat } from '@utils';
 import { GameItem } from '@components/GamesList';
 import { HeadlessTooltip } from '@components/Tooltip';
+import { usePlayerPageContext } from './context';
 
-export const Stats = (props: PlayerInfoResponse) => {
-  const { firstGame, lastGame, lowestXlWin } = props;
-  const { stats } = props;
+export const Stats = () => {
+  const { firstGame, lastGame, lowestXlWin, stats } = usePlayerPageContext();
 
   return (
     <section className="text-xs space-y-2">

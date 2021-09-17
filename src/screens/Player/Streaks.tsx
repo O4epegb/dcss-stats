@@ -5,11 +5,12 @@ import { api } from '@api';
 import { addS, date, formatNumber } from '@utils';
 import { Loader } from '@components/Loader';
 import { List } from './Stats';
-import { Props } from './index';
+import { usePlayerPageContext } from './context';
 
 type StreakGame = Pick<Game, 'id' | 'isWin' | 'endAt' | 'char'>;
 
-export const Streaks = ({ streaks, player }: Props) => {
+export const Streaks = () => {
+  const { streaks, player } = usePlayerPageContext();
   const [streakGroups, setStreakGroups] = useState<Array<StreakGame[]>>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

@@ -1,18 +1,18 @@
 import axios from 'axios';
-import dayjs from 'dayjs';
-import relativeTimePlugin from 'dayjs/plugin/relativeTime';
-import durationPlugin from 'dayjs/plugin/duration';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { PlayerInfoResponse } from '@types';
 import { createServerApi } from '@api/server';
+import { Player } from '@screens/Player';
+import { PlayerPageContext, useContextState } from '@screens/Player/context';
 
-import { Player, Props } from '@screens/Player';
+const PlayerPage = (props: PlayerInfoResponse) => {
+  const value = useContextState(props);
 
-dayjs.extend(relativeTimePlugin);
-dayjs.extend(durationPlugin);
-
-const PlayerPage = (props: Props) => {
-  return <Player {...props} />;
+  return (
+    <PlayerPageContext.Provider value={value}>
+      <Player />;
+    </PlayerPageContext.Provider>
+  );
 };
 
 type Params = { slug: string };
@@ -24,7 +24,7 @@ export const getStaticPaths: GetStaticPaths<Params> = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps<Props, Params> = async ({ params }) => {
+export const getStaticProps: GetStaticProps<PlayerInfoResponse, Params> = async ({ params }) => {
   if (!params) {
     return {
       notFound: true,

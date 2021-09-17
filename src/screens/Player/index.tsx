@@ -1,6 +1,5 @@
 import clsx from 'clsx';
-import { useMemo, useState, useEffect, Fragment } from 'react';
-import { PlayerInfoResponse } from '@types';
+import { useMemo, useState, useEffect } from 'react';
 import { addS } from '@utils';
 import { canUseDOM } from '@constants';
 import { useSlicedList } from '@hooks/useSlicedList';
@@ -12,8 +11,7 @@ import { Games } from './Games';
 import { Stats } from './Stats';
 import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
 import { Streaks } from './Streaks';
-
-export type Props = PlayerInfoResponse;
+import { usePlayerPageContext } from './context';
 
 declare global {
   interface Window {
@@ -23,11 +21,14 @@ declare global {
   }
 }
 
-export const Player = (props: Props) => {
-  const { titles, player, races, classes, matrix, gods } = props;
+export const Player = () => {
+  const { titles, player, races, classes, matrix, gods, stats } = usePlayerPageContext();
   const [isFavorite, setIsFavorite] = useState(false);
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
-  const { stats } = props;
+
+  useEffect(() => {
+    setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1);
+  }, []);
 
   const summary = useMemo(() => getSummary(matrix, races, classes, gods), [matrix]);
   const {
@@ -47,10 +48,6 @@ export const Player = (props: Props) => {
   const isGreater = wonClasses.length === trunkClasses.length;
   const isGreatest = isGreat && isGreater;
   const isPolytheist = wonGods.length === gods.length;
-
-  useEffect(() => {
-    setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1);
-  }, []);
 
   return (
     <div className="container mx-auto px-4 grid xl:grid-cols-3 gap-4">
@@ -158,7 +155,7 @@ export const Player = (props: Props) => {
             </section>
           )}
 
-          <Stats {...props} />
+          <Stats />
 
           {items.length > 0 && (
             <section className="space-y-1">
@@ -185,12 +182,12 @@ export const Player = (props: Props) => {
             </section>
           )}
 
-          <Streaks {...props} />
-          <Games {...props} allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
+          <Streaks />
+          <Games allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
         </div>
       </div>
       <div className="xl:col-span-2 min-w-0">
-        <Matrix {...props} summary={summary} />
+        <Matrix summary={summary} />
       </div>
     </div>
   );

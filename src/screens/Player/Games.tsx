@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Class, Race } from '@types';
 import { GamesList } from '../../components/GamesList';
-import { Props } from './index';
+import { usePlayerPageContext } from './context';
 
 enum Filter {
   All = 'all',
@@ -9,12 +9,13 @@ enum Filter {
 }
 
 export const Games = ({
-  lastGames,
-  stats,
-  player,
   allActualRaces,
   allActualClasses,
-}: Props & { allActualRaces: Race[]; allActualClasses: Class[] }) => {
+}: {
+  allActualRaces: Race[];
+  allActualClasses: Class[];
+}) => {
+  const { lastGames, stats, player, isCompact } = usePlayerPageContext();
   const [games, setGames] = useState(lastGames);
   const [filter, setFilter] = useState(() => ({
     isWin: Filter.All,
@@ -28,13 +29,16 @@ export const Games = ({
 
   return (
     <section className="space-y-1 relative pb-8">
-      <h2 className="font-bold">
-        Recent games
-        {games.length > 0 &&
-          filter.isWin === Filter.All &&
-          ` (${games.length}G/${games.filter((g) => g.isWin).length}W)`}
-        :
-      </h2>
+      <header className="flex justify-between">
+        <h2 className="font-bold">
+          Recent games
+          {games.length > 0 &&
+            filter.isWin === Filter.All &&
+            ` (${games.length}G/${games.filter((g) => g.isWin).length}W)`}
+          :
+        </h2>
+        <div>Compact view</div>
+      </header>
       <div className="flex justify-between items-center text-sm">
         <label>
           Show:{' '}
@@ -79,6 +83,7 @@ export const Games = ({
         </label>
       </div>
       <GamesList
+        isCompactView={isCompact}
         initialGames={lastGames}
         initialTotal={stats.total.games}
         playerName={player.name}

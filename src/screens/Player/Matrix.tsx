@@ -5,7 +5,6 @@ import { CharStat } from '@types';
 import { formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
 import { Summary } from './utils';
-import { Props } from './index';
 
 const items = [
   ['wins', 'wins'],
@@ -13,11 +12,7 @@ const items = [
   ['best XL', 'maxXl'],
 ] as const;
 
-export const Matrix = ({
-  summary,
-}: Props & {
-  summary: Summary;
-}) => {
+export const Matrix = ({ summary }: { summary: Summary }) => {
   const isWide = useMedia('(min-width: 1280px)');
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

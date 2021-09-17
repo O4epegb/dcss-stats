@@ -19,6 +19,7 @@ export const GamesList = (props: {
   god?: string;
   version?: string[];
   includePlayer?: boolean;
+  isCompactView?: boolean;
   onChange?: (games: Game[]) => void;
 }) => {
   const {
@@ -30,6 +31,7 @@ export const GamesList = (props: {
     isWin,
     version,
     includePlayer,
+    isCompactView,
     onChange,
   } = props;
   const isFirstMount = useFirstMountState();
@@ -104,18 +106,22 @@ export const GamesList = (props: {
           Return to top
         </button>
       )}
-      <ul className="space-y-2">
+      <ul className={clsx(isCompactView ? 'divide-y' : 'space-y-2')}>
         {!isLoading && games.length === 0 && (
           <li className="text-center py-8">No games found ¯\_(ツ)_/¯</li>
         )}
-        {games.map((game) => (
-          <GameItem
-            key={game.id}
-            game={game}
-            playerName={playerName || game.player?.name}
-            includePlayer={includePlayer}
-          />
-        ))}
+        {games.map((game) => {
+          const Component = isCompactView ? CompactGameItem : GameItem;
+
+          return (
+            <Component
+              key={game.id}
+              game={game}
+              playerName={playerName || game.player?.name}
+              includePlayer={includePlayer}
+            />
+          );
+        })}
       </ul>
       {(hasMore || isLoading) && (
         <div className="flex justify-center items-center pt-8 pb-4">
@@ -154,18 +160,7 @@ export const GameItem = forwardRef<HTMLLIElement, GameItemProps>(
         )}
       >
         <div className="font-medium">
-          {game.server && playerName && (
-            <a
-              className="float-right w-5 h-5 bg-no-repeat bg-center"
-              target="_blank"
-              href={`${game.server.morgueUrl}/${playerName}/${getMorgueUrl(game, playerName)}`}
-              rel="noopener noreferrer"
-              title="Morgue"
-              style={{
-                backgroundImage: `url(${externalLinkSvg.src})`,
-              }}
-            />
-          )}
+          <MorgueLink game={game} playerName={playerName} />
           {includePlayer && playerName && (
             <div>
               <Link href={getPlayerPageHref(playerName)}>
@@ -212,30 +207,109 @@ export const GameItem = forwardRef<HTMLLIElement, GameItemProps>(
             )}
             {duration.format('HH:mm:ss')}
           </div>
-          {game.server && (
-            <a
-              target="_blank"
-              href={game.server.url}
-              title={`Server: ${game.server.name}, ${game.server.url}`}
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              {game.server.abbreviation}
-            </a>
-          )}
+          <ServerLink game={game} />
         </div>
         <div className="flex pt-0.5 justify-between text-gray-400 text-xs gap-2">
-          <div>
-            {date(game.endAt).fromNow()}, {date(game.endAt).format('DD MMM YYYY [at] HH:mm:ss')}
-          </div>
-          <div>v{game.version}</div>
+          <TimeAndVersion game={game} />
         </div>
       </li>
     );
   },
 );
 
-const getMorgueUrl = (game: Game, playerName: string) => {
+export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
+  ({ game, playerName }, ref) => {
+    const duration = date.duration(game.duration, 'seconds');
+
+    return (
+      <li ref={ref} className="py-0.5">
+        <div className="text-sm">
+          <MorgueLink game={game} playerName={playerName} />
+          {game.char}
+          {game.god && <span className="font-light"> of {game.god}</span>},{' '}
+          <span className={clsx(game.isWin ? 'text-green-500' : 'text-red-500')}>
+            {game.endMessage}
+          </span>{' '}
+          {!game.isWin && game.lvl > 0 && (
+            <span>
+              in {game.branch}:{game.lvl}{' '}
+            </span>
+          )}
+          {game.uniqueRunes > 0 && (
+            <span className="text-indigo-600">
+              {game.isWin ? 'and' : 'with'} {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
+            </span>
+          )}
+        </div>
+        <div className="flex justify-between gap-2 text-gray-400 text-xs">
+          XL:{game.xl}, {formatNumber(game.score)} score, {formatNumber(game.turns)} tc, lasted for{' '}
+          {duration.format('D') !== '0' && (
+            <>
+              <span>{duration.format('D')} day</span> and{' '}
+            </>
+          )}
+          {duration.format('HH:mm:ss')}
+          <ServerLink game={game} />
+        </div>
+        <div className="flex justify-between text-gray-400 text-xs gap-2">
+          <TimeAndVersion game={game} />
+        </div>
+      </li>
+    );
+  },
+);
+
+const TimeAndVersion = ({ game }: { game: Game }) => {
+  if (!game.server) {
+    return null;
+  }
+
+  return (
+    <>
+      <div>{date(game.endAt).format('DD MMM YYYY [at] HH:mm:ss')}</div>
+      <div>v{game.version}</div>
+    </>
+  );
+};
+
+const ServerLink = ({ game }: { game: Game }) => {
+  if (!game.server) {
+    return null;
+  }
+
+  return (
+    <a
+      target="_blank"
+      href={game.server.url}
+      title={`Server: ${game.server.name}, ${game.server.url}`}
+      rel="noopener noreferrer"
+      className="underline"
+    >
+      {game.server.abbreviation}
+    </a>
+  );
+};
+
+const MorgueLink = ({ game, playerName }: { game: Game; playerName?: string }) => {
+  if (!game.server || !playerName) {
+    return null;
+  }
+
+  return (
+    <a
+      className="float-right w-5 h-5 bg-no-repeat bg-center"
+      target="_blank"
+      href={`${game.server.morgueUrl}/${playerName}/${getMorgueFileName(game, playerName)}`}
+      rel="noopener noreferrer"
+      title="Morgue"
+      style={{
+        backgroundImage: `url(${externalLinkSvg.src})`,
+      }}
+    />
+  );
+};
+
+const getMorgueFileName = (game: Game, playerName: string) => {
   return `morgue-${playerName}-${date(game.endAt).utc().format('YYYYMMDD-HHmmss')}.txt`;
 };
 
