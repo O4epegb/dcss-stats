@@ -2,23 +2,27 @@ import { keys, orderBy, reduce, uniqBy } from 'lodash-es';
 import { CharStat, Class, God, Matrix, Race } from '@types';
 
 export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods: God[]) => {
+  const countStat = (acc: CharStat | undefined, item: CharStat) => {
+    const stat = {
+      wins: (acc?.wins || 0) + item.wins,
+      games: (acc?.games || 0) + item.games,
+      maxXl: Math.max(acc?.maxXl || 0, item.maxXl),
+    };
+
+    return {
+      ...stat,
+      winRate: stat.wins / stat.games,
+    };
+  };
+
   const stats = reduce(
     matrix,
-    (acc, value, key) => {
+    (acc, item, key) => {
       const race = key.slice(0, 2);
       const klass = key.slice(2, 4);
 
-      acc.classes[klass] = {
-        wins: (acc.classes[klass]?.wins || 0) + value.wins,
-        games: (acc.classes[klass]?.games || 0) + value.games,
-        maxXl: Math.max(acc.classes[klass]?.maxXl || 0, value.maxXl),
-      };
-
-      acc.races[race] = {
-        wins: (acc.races[race]?.wins || 0) + value.wins,
-        games: (acc.races[race]?.games || 0) + value.games,
-        maxXl: Math.max(acc.races[race]?.maxXl || 0, value.maxXl),
-      };
+      acc.classes[klass] = countStat(acc.classes[klass], item);
+      acc.races[race] = countStat(acc.races[race], item);
 
       return acc;
     },
@@ -29,7 +33,7 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
     } as {
       races: Record<string, CharStat>;
       classes: Record<string, CharStat>;
-      combos: Record<string, typeof matrix[string]>;
+      combos: Record<string, CharStat>;
     },
   );
 

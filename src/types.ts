@@ -108,12 +108,13 @@ export interface Class {
   trunk: boolean;
 }
 
-export type Matrix = Record<string, CharStat & { winRate: number }>;
+export type Matrix = Record<string, CharStat>;
 
 export interface CharStat {
   wins: number;
   games: number;
   maxXl: number;
+  winRate: number;
 }
 
 export type Server = {

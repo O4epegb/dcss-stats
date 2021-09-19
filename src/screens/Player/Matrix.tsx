@@ -9,6 +9,7 @@ import { Summary } from './utils';
 const items = [
   ['wins', 'wins'],
   ['games', 'games'],
+  ['win rate %', 'winRate'],
   ['best XL', 'maxXl'],
 ] as const;
 
@@ -26,7 +27,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
     setIsSticky(Boolean(shouldBeSticky));
   }, [isWide, ref.current]);
 
-  const activeCombo = activeRace + activeClass;
+  const formatter = (value: number) =>
+    category === 'winRate' ? formatNumber(value * 100, { maximumFractionDigits: 0 }) : value;
+  const activeCombo = (activeRace || '') + (activeClass || '');
+  const tooltipStats =
+    stats[!activeRace ? 'classes' : !activeClass ? 'races' : 'combos'][activeCombo];
 
   return (
     <div ref={ref} className={clsx('w-full', isSticky && 'sticky top-0')}>
@@ -48,7 +53,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
         ))}
       </div>
       <div className="overflow-x-auto xl:overflow-x-visible relative">
-        {activeClass && activeRace && (
+        {(activeClass || activeRace) && (
           <Tooltip
             reference={tippyRef.current}
             content={
@@ -57,18 +62,18 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   {allActualRaces.find((x) => x.abbr === activeRace)?.name}{' '}
                   {allActualClasses.find((x) => x.abbr === activeClass)?.name}
                 </div>
-                {stats.combos[activeCombo]?.games > 0 ? (
+                {tooltipStats?.games > 0 ? (
                   <div className="grid gap-x-2 grid-cols-2">
-                    <div>Games: {formatNumber(stats.combos[activeCombo]?.games)}</div>
+                    <div>Games: {formatNumber(tooltipStats?.games)}</div>
                     <div className="text-right">
                       Win rate:{' '}
-                      {formatNumber(stats.combos[activeCombo]?.winRate * 100, {
+                      {formatNumber(tooltipStats?.winRate * 100, {
                         maximumFractionDigits: 2,
                       })}
                       %
                     </div>
-                    <div>Wins: {stats.combos[activeCombo]?.wins}</div>
-                    <div className="text-right">Max XL: {stats.combos[activeCombo]?.maxXl}</div>
+                    <div>Wins: {tooltipStats?.wins}</div>
+                    <div className="text-right">Max XL: {tooltipStats?.maxXl}</div>
                   </div>
                 ) : (
                   <div>No data yet</div>
@@ -91,7 +96,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     activeClass === klass.abbr && 'bg-yellow-100',
                     !klass.trunk && 'text-gray-400',
                   )}
-                  onMouseEnter={() => setActive(['', klass.abbr])}
+                  onMouseEnter={(e) => {
+                    setActive(['', klass.abbr]);
+
+                    tippyRef.current = e.currentTarget;
+                  }}
                   onMouseLeave={() => setActive([])}
                 >
                   {klass.abbr}
@@ -103,67 +112,89 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             <tr className="h-[24px]">
               <td></td>
               <td></td>
-              {allActualClasses.map((klass) => (
-                <td
-                  key={klass.abbr}
-                  className={clsx(
-                    activeClass === klass.abbr && 'bg-yellow-100',
-                    stats.classes[klass.abbr]?.wins > 0 && 'text-yellow-600',
-                  )}
-                  onMouseEnter={() => setActive(['', klass.abbr])}
-                  onMouseLeave={() => setActive([])}
-                >
-                  {stats.classes[klass.abbr]?.[category] || '-'}
-                </td>
-              ))}
+              {allActualClasses.map((klass) => {
+                const value = stats.classes[klass.abbr]?.[category];
+
+                return (
+                  <td
+                    key={klass.abbr}
+                    className={clsx(
+                      activeClass === klass.abbr && 'bg-yellow-100',
+                      stats.classes[klass.abbr]?.wins > 0 && 'text-yellow-600',
+                    )}
+                    onMouseEnter={(e) => {
+                      setActive(['', klass.abbr]);
+
+                      tippyRef.current = e.currentTarget;
+                    }}
+                    onMouseLeave={() => setActive([])}
+                  >
+                    {value ? formatter(value) : '-'}
+                  </td>
+                );
+              })}
             </tr>
-            {allActualRaces.map((race) => (
-              <tr key={race.abbr} className="h-[24px]">
-                <td
-                  className={clsx(
-                    'text-left font-bold',
-                    activeRace === race.abbr && 'bg-yellow-100',
-                    !race.trunk && 'text-gray-400',
-                  )}
-                  onMouseEnter={() => setActive([race.abbr])}
-                  onMouseLeave={() => setActive([])}
-                >
-                  {race.abbr}
-                </td>
-                <td
-                  className={clsx(
-                    activeRace === race.abbr && 'bg-yellow-100',
-                    stats.races[race.abbr]?.wins > 0 && 'text-yellow-600',
-                  )}
-                  onMouseEnter={() => setActive([race.abbr])}
-                  onMouseLeave={() => setActive([])}
-                >
-                  {stats.races[race.abbr]?.[category] || '-'}
-                </td>
-                {allActualClasses.map((klass) => {
-                  const char = race.abbr + klass.abbr;
+            {allActualRaces.map((race) => {
+              const value = stats.races[race.abbr]?.[category];
 
-                  return (
-                    <td
-                      key={char}
-                      className={clsx(
-                        'border',
-                        (activeClass === klass.abbr || activeRace === race.abbr) && 'bg-yellow-100',
-                        stats.combos[char]?.wins > 0 && 'text-yellow-600',
-                      )}
-                      onMouseEnter={(e) => {
-                        tippyRef.current = e.currentTarget;
+              return (
+                <tr key={race.abbr} className="h-[24px]">
+                  <td
+                    className={clsx(
+                      'text-left font-bold',
+                      activeRace === race.abbr && 'bg-yellow-100',
+                      !race.trunk && 'text-gray-400',
+                    )}
+                    onMouseEnter={(e) => {
+                      setActive([race.abbr]);
 
-                        setActive([race.abbr, klass.abbr]);
-                      }}
-                      onMouseLeave={() => setActive([])}
-                    >
-                      {stats.combos[char]?.[category] || false}
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+                      tippyRef.current = e.currentTarget;
+                    }}
+                    onMouseLeave={() => setActive([])}
+                  >
+                    {race.abbr}
+                  </td>
+                  <td
+                    className={clsx(
+                      activeRace === race.abbr && 'bg-yellow-100',
+                      stats.races[race.abbr]?.wins > 0 && 'text-yellow-600',
+                    )}
+                    onMouseEnter={(e) => {
+                      setActive([race.abbr]);
+
+                      tippyRef.current = e.currentTarget;
+                    }}
+                    onMouseLeave={() => setActive([])}
+                  >
+                    {value ? formatter(value) : '-'}
+                  </td>
+                  {allActualClasses.map((klass) => {
+                    const char = race.abbr + klass.abbr;
+                    const value = stats.combos[char]?.[category];
+
+                    return (
+                      <td
+                        key={char}
+                        className={clsx(
+                          'border',
+                          (activeClass === klass.abbr || activeRace === race.abbr) &&
+                            'bg-yellow-100',
+                          stats.combos[char]?.wins > 0 && 'text-yellow-600',
+                        )}
+                        onMouseEnter={(e) => {
+                          tippyRef.current = e.currentTarget;
+
+                          setActive([race.abbr, klass.abbr]);
+                        }}
+                        onMouseLeave={() => setActive([])}
+                      >
+                        {value ? formatter(value) : null}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
