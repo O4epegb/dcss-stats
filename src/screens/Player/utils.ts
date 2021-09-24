@@ -1,6 +1,8 @@
 import { keys, orderBy, reduce, uniqBy } from 'lodash-es';
 import { CharStat, Class, God, Matrix, Race } from '@types';
 
+export const cookieKey = 'dcss-compact-view';
+
 export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods: God[]) => {
   const countStat = (acc: CharStat | undefined, item: CharStat) => {
     const stat = {

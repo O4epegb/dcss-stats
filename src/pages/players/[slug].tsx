@@ -1,12 +1,16 @@
 import axios from 'axios';
-import { GetStaticPaths, GetStaticProps } from 'next';
+import nookies from 'nookies';
+import { GetServerSideProps } from 'next';
 import { PlayerInfoResponse } from '@types';
 import { createServerApi } from '@api/server';
 import { Player } from '@screens/Player';
 import { PlayerPageContext, useContextState } from '@screens/Player/context';
+import { cookieKey } from '@screens/Player/utils';
 
-const PlayerPage = (props: PlayerInfoResponse) => {
-  const value = useContextState(props);
+type Props = PlayerInfoResponse & { isCompact: boolean };
+
+const PlayerPage = (props: Props) => {
+  const value = useContextState(props, props.isCompact);
 
   return (
     <PlayerPageContext.Provider value={value}>
@@ -17,19 +21,16 @@ const PlayerPage = (props: PlayerInfoResponse) => {
 
 type Params = { slug: string };
 
-export const getStaticPaths: GetStaticPaths<Params> = async () => {
-  return {
-    fallback: 'blocking',
-    paths: [],
-  };
-};
+export const getServerSideProps: GetServerSideProps<Props, Params> = async (ctx) => {
+  const { params } = ctx;
 
-export const getStaticProps: GetStaticProps<PlayerInfoResponse, Params> = async ({ params }) => {
   if (!params) {
     return {
       notFound: true,
     };
   }
+
+  const cookies = nookies.get(ctx);
 
   try {
     const res = await createServerApi().api.get<PlayerInfoResponse>(`/players/${params.slug}`);
@@ -44,9 +45,9 @@ export const getStaticProps: GetStaticProps<PlayerInfoResponse, Params> = async 
     }
 
     return {
-      revalidate: 300,
       props: {
         ...res.data,
+        isCompact: Boolean(cookies[cookieKey]),
       },
     };
   } catch (error) {

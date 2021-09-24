@@ -228,7 +228,7 @@ export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
           {game.char}
           {game.god && <span className="font-light"> of {game.god}</span>},{' '}
           <span className={clsx(game.isWin ? 'text-green-500' : 'text-red-500')}>
-            {game.endMessage}
+            {game.isWin ? 'escaped' : game.endMessage}
           </span>{' '}
           {!game.isWin && game.lvl > 0 && (
             <span>
@@ -237,7 +237,7 @@ export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
           )}
           {game.uniqueRunes > 0 && (
             <span className="text-indigo-600">
-              {game.isWin ? 'and' : 'with'} {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
+              with {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
             </span>
           )}
         </div>
