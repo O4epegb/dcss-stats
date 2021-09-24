@@ -242,7 +242,8 @@ export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
           )}
         </div>
         <div className="flex justify-between gap-2 text-gray-400 text-xs">
-          XL:{game.xl}, {formatNumber(game.score)} score, {formatNumber(game.turns)} tc, lasted for{' '}
+          XL:{game.xl}; score {formatNumber(game.score)}; turns {formatNumber(game.turns)}; lasted
+          for{' '}
           {duration.format('D') !== '0' && (
             <>
               <span>{duration.format('D')} day</span> and{' '}

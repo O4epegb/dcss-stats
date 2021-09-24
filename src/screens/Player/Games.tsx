@@ -41,7 +41,7 @@ export const Games = ({
         </h2>
         <button
           className={clsx(
-            'transition',
+            'transition hover:text-green-500',
             showSettings ? 'text-green-600 rotate-180' : 'text-gray-400',
           )}
           onClick={() => setShowSettings((x) => !x)}

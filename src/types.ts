@@ -69,6 +69,10 @@ export interface Game {
 }
 
 export interface Stats {
+  lastMonth: {
+    wins: number;
+    total: number;
+  };
   average: {
     score: number | null;
     runesWon: number | null;

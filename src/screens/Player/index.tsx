@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
-import { addS, trackEvent } from '@utils';
+import { addS, formatNumber, trackEvent } from '@utils';
 import { canUseDOM } from '@constants';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
@@ -116,6 +116,20 @@ export const Player = () => {
 
           <section>
             <WinrateStats wins={stats.total.wins} games={stats.total.games} />
+            <div className="text-xs">
+              {stats.lastMonth.total} {addS('game', stats.lastMonth.total)} and{' '}
+              {stats.lastMonth.wins} {addS('win', stats.lastMonth.wins)}{' '}
+              {stats.lastMonth.wins > 0 && (
+                <>
+                  (
+                  {formatNumber((stats.lastMonth.wins / stats.lastMonth.total || 1) * 100, {
+                    maximumFractionDigits: 2,
+                  })}
+                  %){' '}
+                </>
+              )}
+              in the last 30 days
+            </div>
           </section>
 
           {(!isPolytheist || !isGreat || !isGreater) && (
