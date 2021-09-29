@@ -13,6 +13,7 @@ import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { getFavorites } from '@screens/Player/utils';
 import { Loader } from '@components/Loader';
+import { Tooltip } from '@components/Tooltip';
 
 const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -110,7 +111,9 @@ const Stats = memo(
           Total wins: <span>{formatNumber(wins)}</span>
         </h2>
         <div className="space-y-1">
-          <h2 className="font-semibold ">Top by win rate, %:</h2>
+          <Tooltip content="Minimum 75 games played">
+            <h2 className="font-semibold ">Top by win rate, %:</h2>
+          </Tooltip>
           <ul>
             {top.byWinrate.map((item) => (
               <li key={item.name} className="flex justify-between">
