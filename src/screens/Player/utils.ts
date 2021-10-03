@@ -1,9 +1,32 @@
-import { keys, orderBy, reduce, uniqBy } from 'lodash-es';
+import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es';
 import { CharStat, Class, God, Matrix, Race } from '@types';
 
 export const cookieKey = 'dcss-compact-view';
 
+const unavailableCombos = keyBy([
+  'GhTm',
+  'MuTm',
+  'DgMo',
+  'DgCK',
+  'DgCA',
+  'DgBe',
+  'DgAK',
+  'FeHu',
+  'FeGl',
+  'FeBr',
+  'FeAM',
+]);
+
 export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods: God[]) => {
+  const trunkRaces = orderBy(
+    races.filter((x) => x.trunk),
+    (x) => x.abbr,
+  );
+  const trunkClasses = orderBy(
+    classes.filter((x) => x.trunk),
+    (x) => x.abbr,
+  );
+
   const countStat = (acc: CharStat | undefined, item: CharStat) => {
     const stat = {
       wins: (acc?.wins || 0) + item.wins,
@@ -39,23 +62,35 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
     },
   );
 
-  const trunkRaces = orderBy(
-    races.filter((x) => x.trunk),
-    (x) => x.abbr,
-  );
-  const trunkClasses = orderBy(
-    classes.filter((x) => x.trunk),
-    (x) => x.abbr,
-  );
+  const wonRaces = trunkRaces.filter((x) => stats.races[x.abbr]?.wins > 0);
+  const wonClasses = trunkClasses.filter((x) => stats.classes[x.abbr]?.wins > 0);
+  const allActualRaces = getActual(races, stats.races);
+  const allActualClasses = getActual(classes, stats.classes);
+  const greatRaces = wonRaces.filter((race) => {
+    return trunkClasses.every((klass) => {
+      const combo = race.abbr + klass.abbr;
+
+      return unavailableCombos[combo] || matrix[combo]?.wins > 0;
+    });
+  });
+  const greatClasses = wonClasses.filter((klass) => {
+    return trunkRaces.every((race) => {
+      const combo = race.abbr + klass.abbr;
+
+      return unavailableCombos[combo] || matrix[combo]?.wins > 0;
+    });
+  });
 
   return {
     stats,
     trunkRaces,
     trunkClasses,
-    allActualRaces: getActual(races, stats.races),
-    allActualClasses: getActual(classes, stats.classes),
-    wonRaces: trunkRaces.filter((x) => stats.races[x.abbr]?.wins > 0),
-    wonClasses: trunkClasses.filter((x) => stats.classes[x.abbr]?.wins > 0),
+    allActualRaces,
+    allActualClasses,
+    wonRaces,
+    wonClasses,
+    greatRaces: keyBy(greatRaces, (x) => x.abbr),
+    greatClasses: keyBy(greatClasses, (x) => x.abbr),
     wonGods: gods.filter((g) => g.win),
     notWonRaces: trunkRaces.filter((x) => !(stats.races[x.abbr]?.wins > 0)),
     notWonClasses: trunkClasses.filter((x) => !(stats.classes[x.abbr]?.wins > 0)),

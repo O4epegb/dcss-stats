@@ -20,7 +20,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
   const [category, setCategory] = useState<keyof CharStat>('wins');
   const tippyRef = useRef<HTMLElement | null>(null);
-  const { allActualRaces, allActualClasses, stats } = summary;
+  const { stats, allActualRaces, allActualClasses, greatRaces, greatClasses } = summary;
 
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
@@ -59,25 +59,46 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             content={
               <div className="space-y-2">
                 <div>
-                  {allActualRaces.find((x) => x.abbr === activeRace)?.name}{' '}
-                  {allActualClasses.find((x) => x.abbr === activeClass)?.name}
+                  <span className={clsx(greatRaces[activeRace] && 'text-yellow-300')}>
+                    {greatRaces[activeRace] && !activeClass && 'Great '}
+                    {allActualRaces.find((x) => x.abbr === activeRace)?.name}
+                  </span>{' '}
+                  <span className={clsx(greatClasses[activeClass] && 'text-yellow-300')}>
+                    {greatClasses[activeClass] && !activeRace && 'Great '}
+                    {allActualClasses.find((x) => x.abbr === activeClass)?.name}
+                  </span>
                 </div>
                 {tooltipStats?.games > 0 ? (
-                  <div className="grid gap-x-2 grid-cols-2">
-                    <div>Games: {formatNumber(tooltipStats?.games)}</div>
+                  <div className="grid gap-x-2 grid-cols-2 font-light">
+                    <div>
+                      Games:{' '}
+                      <span className="font-medium">{formatNumber(tooltipStats?.games)}</span>
+                    </div>
                     <div className="text-right">
                       Win rate:{' '}
-                      {formatNumber(tooltipStats?.winRate * 100, {
-                        maximumFractionDigits: 2,
-                      })}
-                      %
+                      <span className="font-medium">
+                        {formatNumber(tooltipStats?.winRate * 100, {
+                          maximumFractionDigits: 2,
+                        })}
+                        %
+                      </span>
                     </div>
-                    <div>Wins: {tooltipStats?.wins}</div>
-                    <div className="text-right">Max XL: {tooltipStats?.maxXl}</div>
+                    <div>
+                      Wins: <span className="font-medium">{tooltipStats?.wins}</span>
+                    </div>
+                    <div className="text-right">
+                      Max XL: <span className="font-medium">{tooltipStats?.maxXl}</span>
+                    </div>
                   </div>
                 ) : (
                   <div>No data yet</div>
                 )}
+                {!(activeRace && activeClass) &&
+                  (greatClasses[activeClass] || greatRaces[activeRace]) && (
+                    <div className="text-xs">
+                      Great — won all possible combos with {activeRace ? 'race' : 'class'}
+                    </div>
+                  )}
               </div>
             }
           />
@@ -93,7 +114,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   key={klass.abbr}
                   className={clsx(
                     'whitespace-nowrap min-w-[24px]',
-                    activeClass === klass.abbr && 'bg-yellow-100',
+                    greatClasses[klass.abbr]
+                      ? 'bg-yellow-200'
+                      : activeClass === klass.abbr && 'bg-yellow-100',
                     !klass.trunk && 'text-gray-400',
                   )}
                   onMouseEnter={(e) => {
@@ -142,7 +165,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   <td
                     className={clsx(
                       'text-left font-bold',
-                      activeRace === race.abbr && 'bg-yellow-100',
+                      greatRaces[race.abbr]
+                        ? 'bg-yellow-200'
+                        : activeRace === race.abbr && 'bg-yellow-100',
                       !race.trunk && 'text-gray-400',
                     )}
                     onMouseEnter={(e) => {
