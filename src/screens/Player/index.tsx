@@ -24,6 +24,8 @@ export const Player = () => {
 
   const summary = useMemo(() => getSummary(matrix, races, classes, gods), [matrix]);
   const {
+    combosCompleted,
+    totalCombos,
     trunkClasses,
     trunkRaces,
     wonRaces,
@@ -132,34 +134,35 @@ export const Player = () => {
             </div>
           </section>
 
-          {(!isPolytheist || !isGreat || !isGreater) && (
-            <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
-              {!isGreat && (
-                <Badge
-                  title="Great Player"
-                  allItems={trunkRaces}
-                  playerItems={wonRaces}
-                  leftToWinWith={notWonRaces}
-                />
-              )}
-              {!isGreater && (
-                <Badge
-                  title="Greater Player"
-                  allItems={trunkClasses}
-                  playerItems={wonClasses}
-                  leftToWinWith={notWonClasses}
-                />
-              )}
-              {!isPolytheist && (
-                <Badge
-                  title="Polytheist"
-                  allItems={gods}
-                  playerItems={wonGods}
-                  leftToWinWith={notWonGods}
-                />
-              )}
-            </section>
-          )}
+          <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
+            {!isGreat && (
+              <Badge
+                title="Great Player"
+                total={trunkRaces.length}
+                completed={wonRaces.length}
+                leftToWinWith={notWonRaces}
+              />
+            )}
+            {!isGreater && (
+              <Badge
+                title="Greater Player"
+                total={trunkClasses.length}
+                completed={wonClasses.length}
+                leftToWinWith={notWonClasses}
+              />
+            )}
+            {isGreatest && (
+              <Badge title="Combos Completed" total={totalCombos} completed={combosCompleted} />
+            )}
+            {!isPolytheist && (
+              <Badge
+                title="Polytheist"
+                total={gods.length}
+                completed={wonGods.length}
+                leftToWinWith={notWonGods}
+              />
+            )}
+          </section>
 
           <Stats />
 
@@ -200,28 +203,31 @@ export const Player = () => {
 };
 
 const Badge = ({
-  playerItems,
-  allItems,
+  completed,
+  total,
   leftToWinWith,
   title,
 }: {
-  playerItems: unknown[];
-  allItems: unknown[];
-  leftToWinWith: Array<{ name: string }>;
+  completed: number;
+  total: number;
+  leftToWinWith?: Array<{ name: string }>;
   title: string;
 }) => {
   return (
     <Tooltip
       interactive
+      disabled={!leftToWinWith}
       appendTo={canUseDOM ? document.body : 'parent'}
       content={
         <div className="space-y-2">
           <div>Need to win with:</div>
-          <ul>
-            {leftToWinWith.map((item) => (
-              <li key={item.name}>{item.name}</li>
-            ))}
-          </ul>
+          {leftToWinWith && (
+            <ul>
+              {leftToWinWith.map((item) => (
+                <li key={item.name}>{item.name}</li>
+              ))}
+            </ul>
+          )}
         </div>
       }
     >
@@ -229,11 +235,11 @@ const Badge = ({
         <div
           className="bg-gray-200 absolute top-0 left-0 bottom-0"
           style={{
-            width: `${(playerItems.length / allItems.length) * 100}%`,
+            width: `${(completed / total) * 100}%`,
           }}
         />
         <span className="z-[1] relative">
-          {title} {playerItems.length} of {allItems.length}
+          {title} {completed} of {total}
         </span>
       </div>
     </Tooltip>

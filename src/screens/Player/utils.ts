@@ -1,5 +1,6 @@
 import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es';
 import { CharStat, Class, God, Matrix, Race } from '@types';
+import { notEmpty } from '@utils';
 
 export const cookieKey = 'dcss-compact-view';
 
@@ -81,8 +82,21 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
     });
   });
 
+  const combosCompleted = trunkRaces
+    .map((race) => {
+      return trunkClasses.map((klass) => {
+        const combo = race.abbr + klass.abbr;
+
+        return matrix[combo]?.wins > 0 ? combo : null;
+      });
+    })
+    .flat()
+    .filter(notEmpty).length;
+
   return {
     stats,
+    combosCompleted,
+    totalCombos: trunkRaces.length * trunkClasses.length - Object.keys(unavailableCombos).length,
     trunkRaces,
     trunkClasses,
     allActualRaces,

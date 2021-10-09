@@ -67,3 +67,7 @@ declare global {
 export const trackEvent = (type: string, data?: Record<string, string>) => {
   window.splitbee?.track(type, data);
 };
+
+export function notEmpty<T>(value: T | null | undefined): value is T {
+  return value !== null && value !== undefined;
+}
