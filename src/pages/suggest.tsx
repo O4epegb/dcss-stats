@@ -152,7 +152,7 @@ const SuggestPage = (props: Props) => {
           value={filter.class}
           onChange={(e) => changeFilter('class', e.target.value)}
         >
-          <option value={Filter.Any}>either class</option>
+          <option value={Filter.Any}>some class</option>
           {classes.map(({ name, abbr }) => (
             <option key={name} value={abbr}>
               {name}
