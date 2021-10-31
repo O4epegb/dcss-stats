@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "jsx": "preserve",
+    "incremental": true,
     "allowJs": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

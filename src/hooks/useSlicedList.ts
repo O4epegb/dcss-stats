@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const useSlicedList = <T extends unknown>(items: Array<T>, max = 3) => {
+export const useSlicedList = <T>(items: Array<T>, max = 3) => {
   const [showAll, setShowAll] = useState(false);
 
   const additionalItemsCount = items.length - max;
