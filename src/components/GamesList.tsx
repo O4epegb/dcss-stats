@@ -18,6 +18,7 @@ export const GamesList = (props: {
   class?: string;
   god?: string;
   version?: string[];
+  runes?: number[];
   includePlayer?: boolean;
   isCompactView?: boolean;
   onChange?: (games: Game[]) => void;
@@ -30,10 +31,12 @@ export const GamesList = (props: {
     god,
     isWin,
     version,
+    runes,
     includePlayer,
     isCompactView,
     onChange,
   } = props;
+
   const isFirstMount = useFirstMountState();
   const [games, setGames] = useState<Game[]>(props.initialGames || []);
   const [isLoading, setIsLoading] = useState(() => !props.initialGames);
@@ -56,6 +59,7 @@ export const GamesList = (props: {
           god,
           includePlayer,
           version,
+          runes,
         },
       })
       .then((res) => {
@@ -94,7 +98,7 @@ export const GamesList = (props: {
     }
 
     loadData();
-  }, [race, klass, god, isWin]);
+  }, [race, klass, god, isWin, version, runes]);
 
   return (
     <div className="relative">

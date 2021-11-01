@@ -5,12 +5,12 @@ import { PlayerInfoResponse } from '@types';
 import { createServerApi } from '@api/server';
 import { Player } from '@screens/Player';
 import { PlayerPageContext, useContextState } from '@screens/Player/context';
-import { cookieKey } from '@screens/Player/utils';
+import { cookieKeyCompactView, cookieKeyOpenFilters } from '@screens/Player/utils';
 
-type Props = PlayerInfoResponse & { isCompact: boolean };
+type Props = PlayerInfoResponse & { isCompact: boolean; isFiltersOpen: boolean };
 
 const PlayerPage = (props: Props) => {
-  const value = useContextState(props, props.isCompact);
+  const value = useContextState(props, props.isCompact, props.isFiltersOpen);
 
   return (
     <PlayerPageContext.Provider value={value}>
@@ -47,7 +47,8 @@ export const getServerSideProps: GetServerSideProps<Props, Params> = async (ctx)
     return {
       props: {
         ...res.data,
-        isCompact: Boolean(cookies[cookieKey]),
+        isCompact: Boolean(cookies[cookieKeyCompactView]),
+        isFiltersOpen: Boolean(cookies[cookieKeyOpenFilters]),
       },
     };
   } catch (error) {
