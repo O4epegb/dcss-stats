@@ -45,13 +45,58 @@ const MainPage = (props: Props) => {
           setQuery={setQuery}
         />
         <Stats {...props} onLinkClick={onLinkClick} />
+        <footer className="text-xs text-gray-400 space-y-1">
+          <div>
+            Tracked servers:{' '}
+            {props.servers.map((s, index) => (
+              <Fragment key={index}>
+                {index !== 0 && ', '}
+                <a
+                  key={s.abbreviation}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {s.abbreviation}
+                </a>
+              </Fragment>
+            ))}
+            .{' '}
+            <Link prefetch={false} href="/servers">
+              <a className="hover:underline">more &gt;</a>
+            </Link>
+          </div>
+          <div>
+            Made by <span className="text-gray-500 font-light">totalnoob</span>, DM on{' '}
+            <a
+              href="https://discord.gg/pKCNTunFeW"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              RL Discord
+            </a>{' '}
+            with bugs and suggestions
+          </div>
+          <div>
+            <a
+              href="https://github.com/O4epegb/dcss-stats"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              Github
+            </a>
+          </div>
+        </footer>
       </div>
     </div>
   );
 };
 
 const Stats = memo(
-  ({ servers, wins, games, top, onLinkClick }: Props & { onLinkClick: (name: string) => void }) => {
+  ({ wins, games, top, onLinkClick }: Props & { onLinkClick: (name: string) => void }) => {
     const [favorites, setFavorites] = useState<null | string[]>(null);
 
     useEffect(() => {
@@ -171,27 +216,6 @@ const Stats = memo(
               ))}
             </ul>
           )}
-        </div>
-        <div className="text-xs text-gray-400 col-span-full">
-          Tracked servers:{' '}
-          {servers.map((s, index) => (
-            <Fragment key={index}>
-              {index !== 0 && ', '}
-              <a
-                key={s.abbreviation}
-                href={s.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline"
-              >
-                {s.abbreviation}
-              </a>
-            </Fragment>
-          ))}
-          .{' '}
-          <Link prefetch={false} href="/servers">
-            <a className="hover:underline">more &gt;</a>
-          </Link>
         </div>
       </div>
     );
