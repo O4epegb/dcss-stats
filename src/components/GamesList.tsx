@@ -21,7 +21,7 @@ export const GamesList = (props: {
   runes?: number[];
   includePlayer?: boolean;
   isCompactView?: boolean;
-  onChange?: (games: Game[]) => void;
+  onChange?: (games: Game[], count: number) => void;
 }) => {
   const {
     initialTotal,
@@ -66,7 +66,7 @@ export const GamesList = (props: {
         const newGames = after ? [...games, ...res.data.data] : res.data.data;
         setGames(newGames);
         setCount(res.data.count);
-        onChange?.(newGames);
+        onChange?.(newGames, res.data.count);
       })
       .catch((e) => {
         alert('Error while loading games');

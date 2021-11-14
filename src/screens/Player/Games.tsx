@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { range, orderBy } from 'lodash-es';
+import { range, orderBy, some } from 'lodash-es';
 import { Class, Race } from '@types';
 import { Tooltip } from '@components/Tooltip';
 import { GamesList } from '../../components/GamesList';
@@ -33,7 +33,7 @@ export const Games = ({
 }) => {
   const { lastGames, stats, player, gods, isCompact, isFiltersOpen, toggleCompact, toggleFilters } =
     usePlayerPageContext();
-  const [games, setGames] = useState(lastGames);
+  const [data, setData] = useState(() => ({ games: lastGames, total: stats.total.games }));
   const [showSettings, setShowSettings] = useState(false);
   const sortedGods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), [gods]);
   const [filter, setFilter] = useState(() => ({
@@ -48,14 +48,17 @@ export const Games = ({
     setFilter((current) => ({ ...current, [key]: value }));
   };
 
+  const isDirty = some(filter, (value) => value !== Filter.All);
+
   return (
     <section className="space-y-1 relative pb-8">
       <header className="flex justify-between items-center">
         <h2 className="font-bold">
-          Recent games
-          {games.length > 0 &&
-            filter.isWin === Filter.All &&
-            ` (${games.length}G/${games.filter((g) => g.isWin).length}W)`}
+          {isDirty ? 'Filtered games' : 'Recent games'}
+          {data.games.length > 0 &&
+            (isDirty
+              ? ` (${data.total} total)`
+              : ` (${data.games.length}G/${data.games.filter((g) => g.isWin).length}W)`)}
           :
         </h2>
         <Tooltip content="Game list settings">
@@ -201,7 +204,7 @@ export const Games = ({
         class={filter.class === Filter.All ? undefined : filter.class}
         god={filter.god === Filter.All ? undefined : filter.god}
         runes={runeOptions.find((x) => x.name === filter.runes)?.value}
-        onChange={setGames}
+        onChange={(newGames, count) => setData({ games: newGames, total: count })}
       />
     </section>
   );
