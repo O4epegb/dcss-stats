@@ -28,7 +28,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
   }, [isWide, ref.current]);
 
   const formatter = (value: number) =>
-    category === 'winRate' ? formatNumber(value * 100, { maximumFractionDigits: 0 }) : value;
+    category === 'winRate'
+      ? formatNumber(value * 100, { maximumFractionDigits: 0 })
+      : String(value);
   const activeCombo = (activeRace || '') + (activeClass || '');
   const tooltipStats =
     stats[!activeRace ? 'classes' : !activeClass ? 'races' : 'combos'][activeCombo];
@@ -196,6 +198,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   {allActualClasses.map((klass) => {
                     const char = race.abbr + klass.abbr;
                     const value = stats.combos[char]?.[category];
+                    const content = value ? formatter(value) : null;
 
                     return (
                       <td
@@ -205,6 +208,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                           (activeClass === klass.abbr || activeRace === race.abbr) &&
                             'bg-yellow-100',
                           stats.combos[char]?.wins > 0 && 'text-yellow-600',
+                          content && content?.length > 2 && 'text-xs 2xl:text-sm',
                         )}
                         onMouseEnter={(e) => {
                           tippyRef.current = e.currentTarget;
@@ -213,7 +217,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         }}
                         onMouseLeave={() => setActive([])}
                       >
-                        {value ? formatter(value) : null}
+                        {content}
                       </td>
                     );
                   })}

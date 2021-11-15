@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
-import { capitalize, flow, map, orderBy, some } from 'lodash-es';
+import { capitalize, flow, map, orderBy, some, every, castArray, pickBy } from 'lodash-es';
+import { useRouter } from 'next/router';
 import { api } from '@api';
 import { formatNumber } from '@utils';
 import { Class, God, Race } from '@types';
@@ -21,26 +22,29 @@ type Combos = Record<string, Stats>;
 type SuggestResponse = Stats & { combos: Combos };
 type Data = SuggestResponse & { race?: Race; class?: Class; god?: God };
 
-const SuggestPage = (props: Props) => {
+const SuggestPage = ({ races, classes, gods }: Props) => {
   type SortingKey = keyof ReturnType<typeof normalizeData>[number];
 
-  const races = useMemo(
+  const router = useRouter();
+
+  races = useMemo(
     () =>
       orderBy(
-        props.races.filter((x) => x.trunk),
+        races.filter((x) => x.trunk),
         (x) => x.name,
       ),
     [],
   );
-  const classes = useMemo(
+  classes = useMemo(
     () =>
       orderBy(
-        props.classes.filter((x) => x.trunk),
+        classes.filter((x) => x.trunk),
         (x) => x.name,
       ),
     [],
   );
-  const gods = useMemo(() => orderBy(props.gods, (x) => x.name.toLowerCase()), []);
+  gods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), []);
+
   const [isLoading, setIsLoading] = useState(false);
   const [showWins, setShowWins] = useState(true);
   const [view, setView] = useState<'stats' | 'games'>('stats');
@@ -50,9 +54,9 @@ const SuggestPage = (props: Props) => {
   }));
   const [data, setData] = useState<null | Data>(null);
   const [filter, setFilter] = useState(() => ({
-    race: Filter.Any,
-    class: Filter.Any,
-    god: Filter.Any,
+    race: Filter.Any as string,
+    class: Filter.Any as string,
+    god: Filter.Any as string,
   }));
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
@@ -62,16 +66,48 @@ const SuggestPage = (props: Props) => {
   const somethingSelected = some(filter, (value) => value !== Filter.Any);
   const buttonEnabled = !isLoading && somethingSelected;
 
-  const selected = {
-    race: races.find((x) => x.abbr === filter.race),
-    class: classes.find((x) => x.abbr === filter.class),
-    god: gods.find((x) => x.name === filter.god),
-  };
-
   useEffect(() => {
-    if (!isLoading) {
+    const qRace = castArray(router.query.race)[0];
+    const qClass = castArray(router.query.class)[0];
+    const qGod = castArray(router.query.god)[0];
+
+    const race = races.find((x) => x.name === qRace);
+    const klass = classes.find((x) => x.name === qClass);
+    const god = gods.find((x) => x.name === qGod);
+
+    const somethingInvalid = [
+      [qRace, race],
+      [qClass, klass],
+      [qGod, god],
+    ].some(([qItem, item]) => qItem && !item);
+
+    if (somethingInvalid) {
+      router.replace({
+        query: {},
+      });
+
       return;
     }
+
+    const newFilter = {
+      race: race?.name || Filter.Any,
+      class: klass?.name || Filter.Any,
+      god: god?.name || Filter.Any,
+    };
+
+    setFilter(newFilter);
+
+    const selected = {
+      race,
+      class: klass,
+      god,
+    };
+
+    if (every(newFilter, (value) => value === Filter.Any) || isLoading) {
+      return;
+    }
+
+    setIsLoading(true);
 
     api
       .get<SuggestResponse>('/suggest', {
@@ -92,7 +128,7 @@ const SuggestPage = (props: Props) => {
       .finally(() => {
         setIsLoading(false);
       });
-  }, [isLoading]);
+  }, [router.query]);
 
   const normalizeData = ({ combos, race, class: klass, god }: Data) => {
     return map(combos, (value, key) => {
@@ -141,8 +177,8 @@ const SuggestPage = (props: Props) => {
           onChange={(e) => changeFilter('race', e.target.value)}
         >
           <option value={Filter.Any}>any race</option>
-          {races.map(({ name, abbr }) => (
-            <option key={name} value={abbr}>
+          {races.map(({ name }) => (
+            <option key={name} value={name}>
               {name}
             </option>
           ))}
@@ -153,8 +189,8 @@ const SuggestPage = (props: Props) => {
           onChange={(e) => changeFilter('class', e.target.value)}
         >
           <option value={Filter.Any}>some class</option>
-          {classes.map(({ name, abbr }) => (
-            <option key={name} value={abbr}>
+          {classes.map(({ name }) => (
+            <option key={name} value={name}>
               {name}
             </option>
           ))}
@@ -177,16 +213,25 @@ const SuggestPage = (props: Props) => {
         <Tooltip
           hideOnClick={false}
           disabled={somethingSelected}
-          content="Select at least one option"
+          content="Select at least one option above"
         >
           <button
             className={clsx(
-              'flex items-center gap-x-2 rounded border px-4 py-2 transition-colors',
-              buttonEnabled && 'hover:bg-gray-100',
+              'flex items-center gap-x-2 rounded border px-4 py-2 transition-colors bg-gray-800 text-white',
+              buttonEnabled && 'hover:bg-gray-700',
             )}
             onClick={() => {
               if (buttonEnabled) {
-                setIsLoading(true);
+                router.replace({
+                  query: pickBy(
+                    {
+                      race: filter.race,
+                      class: filter.class,
+                      god: filter.god,
+                    },
+                    (value) => value !== Filter.Any,
+                  ),
+                });
               }
             }}
           >
