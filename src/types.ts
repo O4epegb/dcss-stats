@@ -140,4 +140,5 @@ export type Logfile = {
   games: number;
   path: string;
   version: string;
+  lastFetched?: string;
 };

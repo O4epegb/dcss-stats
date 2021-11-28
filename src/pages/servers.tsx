@@ -1,9 +1,10 @@
 import { GetStaticProps } from 'next';
 import { orderBy } from 'lodash-es';
-import { addS, formatNumber } from '@utils';
+import { addS, date, formatNumber } from '@utils';
 import { Logfile, Server } from '@types';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
+import { Tooltip } from '@components/Tooltip';
 
 const ServersPage = (props: Props) => {
   return (
@@ -40,18 +41,25 @@ const ServersPage = (props: Props) => {
                 <ul className="text-sm">
                   {orderBy(server.logfile, (x) => Number(x.version)).map((file) => {
                     return (
-                      <li key={file.path} className="flex justify-between hover:bg-gray-100 px-1">
-                        <a
-                          href={server.baseUrl + file.path}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {file.path}
-                        </a>
-                        <div className="whitespace-nowrap">
-                          {formatNumber(file.games)} {addS('game', file.games)}
-                        </div>
-                      </li>
+                      <Tooltip
+                        key={file.path}
+                        content={
+                          file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
+                        }
+                      >
+                        <li className="flex justify-between hover:bg-gray-100 px-1">
+                          <a
+                            href={server.baseUrl + file.path}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {file.path}
+                          </a>
+                          <div className="whitespace-nowrap">
+                            {formatNumber(file.games)} {addS('game', file.games)}
+                          </div>
+                        </li>
+                      </Tooltip>
                     );
                   })}
                 </ul>
