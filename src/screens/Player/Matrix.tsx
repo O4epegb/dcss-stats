@@ -45,7 +45,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             <button
               className={clsx(
                 'rounded px-2 py-0.5 font-light',
-                category === key ? 'bg-yellow-700 text-white' : 'bg-gray-100',
+                category === key ? 'bg-amber-700 text-white' : 'bg-gray-100',
               )}
               onClick={() => setCategory(key)}
             >
@@ -61,11 +61,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             content={
               <div className="space-y-2">
                 <div>
-                  <span className={clsx(greatRaces[activeRace] && 'text-yellow-300')}>
+                  <span className={clsx(greatRaces[activeRace] && 'text-amber-300')}>
                     {greatRaces[activeRace] && !activeClass && 'Great '}
                     {allActualRaces.find((x) => x.abbr === activeRace)?.name}
                   </span>{' '}
-                  <span className={clsx(greatClasses[activeClass] && 'text-yellow-300')}>
+                  <span className={clsx(greatClasses[activeClass] && 'text-amber-300')}>
                     {greatClasses[activeClass] && !activeRace && 'Great '}
                     {allActualClasses.find((x) => x.abbr === activeClass)?.name}
                   </span>
@@ -117,8 +117,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   className={clsx(
                     'whitespace-nowrap min-w-[24px]',
                     greatClasses[klass.abbr]
-                      ? 'bg-yellow-200'
-                      : activeClass === klass.abbr && 'bg-yellow-100',
+                      ? 'bg-amber-200'
+                      : activeClass === klass.abbr && 'bg-amber-100',
                     !klass.trunk && 'text-gray-400',
                   )}
                   onMouseEnter={(e) => {
@@ -144,8 +144,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   <td
                     key={klass.abbr}
                     className={clsx(
-                      activeClass === klass.abbr && 'bg-yellow-100',
-                      stats.classes[klass.abbr]?.wins > 0 && 'text-yellow-600',
+                      activeClass === klass.abbr && 'bg-amber-100',
+                      stats.classes[klass.abbr]?.wins > 0 && 'text-amber-600',
                     )}
                     onMouseEnter={(e) => {
                       setActive(['', klass.abbr]);
@@ -168,8 +168,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     className={clsx(
                       'text-left font-bold',
                       greatRaces[race.abbr]
-                        ? 'bg-yellow-200'
-                        : activeRace === race.abbr && 'bg-yellow-100',
+                        ? 'bg-amber-200'
+                        : activeRace === race.abbr && 'bg-amber-100',
                       !race.trunk && 'text-gray-400',
                     )}
                     onMouseEnter={(e) => {
@@ -183,8 +183,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   </td>
                   <td
                     className={clsx(
-                      activeRace === race.abbr && 'bg-yellow-100',
-                      stats.races[race.abbr]?.wins > 0 && 'text-yellow-600',
+                      activeRace === race.abbr && 'bg-amber-100',
+                      stats.races[race.abbr]?.wins > 0 && 'text-amber-600',
                     )}
                     onMouseEnter={(e) => {
                       setActive([race.abbr]);
@@ -206,8 +206,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         className={clsx(
                           'border',
                           (activeClass === klass.abbr || activeRace === race.abbr) &&
-                            'bg-yellow-100',
-                          stats.combos[char]?.wins > 0 && 'text-yellow-600',
+                            'bg-amber-100',
+                          stats.combos[char]?.wins > 0 && 'text-amber-600',
                           content && content?.length > 2 && 'text-xs 2xl:text-sm',
                         )}
                         onMouseEnter={(e) => {

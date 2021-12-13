@@ -58,7 +58,7 @@ export const Player = () => {
               <button
                 className={clsx(
                   'flex items-center justify-center w-6 h-6 hover:bg-gray-100 rounded transition-colors',
-                  isFavorite ? 'text-yellow-400' : 'text-gray-300',
+                  isFavorite ? 'text-amber-400' : 'text-gray-300',
                 )}
                 onClick={() => {
                   const newIsFavorite = !isFavorite;
@@ -89,7 +89,7 @@ export const Player = () => {
             <div className="flex flex-wrap gap-2 text-sm">
               {isGreatest ? (
                 <Tooltip content="Has won with all races and all classes">
-                  <div className="rounded py-0.5 px-1 bg-yellow-300 ring-inset ring-2 ring-yellow-600">
+                  <div className="rounded py-0.5 px-1 bg-amber-300 ring-inset ring-2 ring-amber-600">
                     Greatest Player
                   </div>
                 </Tooltip>
@@ -97,19 +97,19 @@ export const Player = () => {
                 <>
                   {isGreat && (
                     <Tooltip content="Has won with all races">
-                      <div className="rounded py-0.5 px-1 bg-yellow-300">Great Player</div>
+                      <div className="rounded py-0.5 px-1 bg-amber-300">Great Player</div>
                     </Tooltip>
                   )}
                   {isGreater && (
                     <Tooltip content="Has won with all classes">
-                      <div className="rounded py-0.5 px-1 bg-yellow-300">Greater Player</div>
+                      <div className="rounded py-0.5 px-1 bg-amber-300">Greater Player</div>
                     </Tooltip>
                   )}
                 </>
               )}
               {isPolytheist && (
                 <Tooltip content="Has won with all gods">
-                  <div className="rounded py-0.5 px-1 bg-purple-300">Polytheist</div>
+                  <div className="rounded py-0.5 px-1 bg-violet-300">Polytheist</div>
                 </Tooltip>
               )}
             </div>

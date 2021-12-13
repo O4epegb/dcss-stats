@@ -34,7 +34,7 @@ const MainPage = (props: Props) => {
               <span className="text-xs sm:text-base group-hover:underline">
                 Get combo suggestion
               </span>{' '}
-              <span className="bg-green-400 text-white text-xs rounded px-1 py-0.5">new</span>
+              <span className="bg-emerald-400 text-white text-xs rounded px-1 py-0.5">new</span>
             </a>
           </Link>
         </header>

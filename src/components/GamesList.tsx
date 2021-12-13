@@ -159,7 +159,7 @@ export const GameItem = forwardRef<HTMLLIElement, GameItemProps>(
         ref={ref}
         className={clsx(
           'py-1 px-2 border rounded border-gray-200 text-sm bg-white text-black',
-          game.isWin && 'border-l-green-500 border-l-2',
+          game.isWin && 'border-l-emerald-500 border-l-2',
           shadow && 'shadow-md',
         )}
       >
@@ -177,7 +177,7 @@ export const GameItem = forwardRef<HTMLLIElement, GameItemProps>(
 
         <div>
           XL:{game.xl},{' '}
-          <span className={clsx(game.isWin ? 'text-green-500' : 'text-red-500')}>
+          <span className={clsx(game.isWin ? 'text-emerald-500' : 'text-red-500')}>
             {game.endMessage}
           </span>{' '}
           {!game.isWin && game.lvl > 0 && (
@@ -231,7 +231,7 @@ export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
           <MorgueLink game={game} playerName={playerName} />
           {game.char}
           {game.god && <span className="font-light"> of {game.god}</span>},{' '}
-          <span className={clsx(game.isWin ? 'text-green-500' : 'text-red-500')}>
+          <span className={clsx(game.isWin ? 'text-emerald-500' : 'text-red-500')}>
             {game.isWin ? 'escaped' : game.endMessage}
           </span>{' '}
           {!game.isWin && game.lvl > 0 && (

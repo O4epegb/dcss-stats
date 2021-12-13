@@ -31,7 +31,7 @@ export const Streaks = () => {
             'Has no streaks of wins yet'
           )}
         </h2>
-        {isOnStreak && <div className="text-sm text-green-500">On streak right now!</div>}
+        {isOnStreak && <div className="text-sm text-emerald-500">On streak right now!</div>}
       </header>
       {streaks.total > 0 && (
         <div className="flex items-center gap-x-4 gap-y-2 text-sm whitespace-nowrap">
@@ -97,10 +97,10 @@ export const Streaks = () => {
                 key={index}
                 className={clsx(
                   'text-sm py-1 px-2 border rounded border-gray-200 bg-white text-black',
-                  isActive && 'border-l-2 border-l-green-500',
+                  isActive && 'border-l-2 border-l-emerald-500',
                 )}
               >
-                {isActive && <div className="text-green-500">Active streak</div>}
+                {isActive && <div className="text-emerald-500">Active streak</div>}
                 <div>
                   <span className="font-medium">{streakLength} wins:</span>{' '}
                   <span>

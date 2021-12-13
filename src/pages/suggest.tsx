@@ -375,7 +375,7 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
                         (x) =>
                           x.map((item, index) => {
                             return (
-                              <tr key={index} className="hover:bg-yellow-100">
+                              <tr key={index} className="hover:bg-amber-100">
                                 {!data.race && <td>{item.race?.name}</td>}
                                 {!data.class && <td>{item.class?.name}</td>}
                                 {!data.god && <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>}

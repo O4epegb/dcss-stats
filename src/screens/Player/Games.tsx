@@ -64,8 +64,8 @@ export const Games = ({
         <Tooltip content="Game list settings">
           <button
             className={clsx(
-              'transition hover:text-green-500',
-              showSettings ? 'text-green-600 rotate-180' : 'text-gray-400',
+              'transition hover:text-emerald-500',
+              showSettings ? 'text-emerald-600 rotate-180' : 'text-gray-400',
             )}
             onClick={() => setShowSettings((x) => !x)}
           >
@@ -140,8 +140,8 @@ export const Games = ({
         <Tooltip content="Show more filters">
           <button
             className={clsx(
-              'transition-colors hover:text-green-500',
-              isFiltersOpen ? 'text-green-600' : 'text-gray-400',
+              'transition-colors hover:text-emerald-500',
+              isFiltersOpen ? 'text-emerald-600' : 'text-gray-400',
             )}
             onClick={toggleFilters}
           >
