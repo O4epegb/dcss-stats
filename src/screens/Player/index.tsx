@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
 import { addS, formatNumber, trackEvent } from '@utils';
 import { canUseDOM } from '@constants';
-import { useSlicedList } from '@hooks/useSlicedList';
 import { Logo } from '@components/Logo';
 import { WinrateStats } from '@components/WinrateStats';
 import { Tooltip } from '@components/Tooltip';
@@ -12,11 +11,11 @@ import { Stats } from './Stats';
 import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
 import { Streaks } from './Streaks';
 import { usePlayerPageContext } from './context';
+import { Titles } from './Titles';
 
 export const Player = () => {
-  const { titles, player, races, classes, matrix, gods, stats } = usePlayerPageContext();
+  const { player, races, classes, matrix, gods, stats } = usePlayerPageContext();
   const [isFavorite, setIsFavorite] = useState(false);
-  const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
 
   useEffect(() => {
     setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1);
@@ -165,32 +164,7 @@ export const Player = () => {
           </section>
 
           <Stats />
-
-          {items.length > 0 && (
-            <section className="space-y-1">
-              <h2 className="font-bold">
-                Collected {titles.length} {addS('title', titles.length)}:
-              </h2>
-              <ul className="flex flex-wrap gap-1 text-sm">
-                {items.map((title) => (
-                  <li key={title} className="bg-gray-600 text-white rounded px-1 py-0.5">
-                    {title}
-                  </li>
-                ))}
-                {hasMore && (
-                  <li>
-                    <button
-                      className="text-blue-400 text-sm px-1 py-0.5 hover:underline"
-                      onClick={toggleShowAll}
-                    >
-                      {showAll ? 'Show fewer' : `Show ${extraItemsCount} more`}
-                    </button>
-                  </li>
-                )}
-              </ul>
-            </section>
-          )}
-
+          <Titles />
           <Streaks />
           <Games allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
         </div>
