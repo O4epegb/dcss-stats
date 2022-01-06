@@ -14,7 +14,7 @@ const items = [
 ] as const;
 
 export const Matrix = ({ summary }: { summary: Summary }) => {
-  const isWide = useMedia('(min-width: 1280px)');
+  const isWide = useMedia('(min-width: 1280px)', false);
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
