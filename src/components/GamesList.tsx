@@ -44,6 +44,7 @@ export const GamesList = (props: {
   const [count, setCount] = useState(initialTotal);
 
   const hasMore = count > games.length;
+  const GameComponent = isCompactView ? CompactGameItem : GameItem;
 
   const loadData = (after?: string) => {
     setIsLoading(true);
@@ -115,15 +116,14 @@ export const GamesList = (props: {
           <li className="text-center py-8">No games found ¯\_(ツ)_/¯</li>
         )}
         {games.map((game) => {
-          const Component = isCompactView ? CompactGameItem : GameItem;
-
           return (
-            <Component
-              key={game.id}
-              game={game}
-              playerName={playerName || game.player?.name}
-              includePlayer={includePlayer}
-            />
+            <li key={game.id}>
+              <GameComponent
+                game={game}
+                playerName={playerName || game.player?.name}
+                includePlayer={includePlayer}
+              />
+            </li>
           );
         })}
       </ul>
@@ -150,12 +150,12 @@ type GameItemProps = {
   shadow?: boolean;
 };
 
-export const GameItem = forwardRef<HTMLLIElement, GameItemProps>(
+export const GameItem = forwardRef<HTMLDivElement, GameItemProps>(
   ({ game, playerName, includePlayer, shadow }, ref) => {
     const duration = date.duration(game.duration, 'seconds');
 
     return (
-      <li
+      <div
         ref={ref}
         className={clsx(
           'py-1 px-2 border rounded border-gray-200 text-sm bg-white text-black',
@@ -216,17 +216,17 @@ export const GameItem = forwardRef<HTMLLIElement, GameItemProps>(
         <div className="flex pt-0.5 justify-between text-gray-400 text-xs gap-2">
           <TimeAndVersion game={game} />
         </div>
-      </li>
+      </div>
     );
   },
 );
 
-export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
+export const CompactGameItem = forwardRef<HTMLDivElement, GameItemProps>(
   ({ game, playerName }, ref) => {
     const duration = date.duration(game.duration, 'seconds');
 
     return (
-      <li ref={ref} className="py-0.5">
+      <div ref={ref} className="py-0.5">
         <div className="text-sm">
           <MorgueLink game={game} playerName={playerName} />
           {game.char}
@@ -259,7 +259,7 @@ export const CompactGameItem = forwardRef<HTMLLIElement, GameItemProps>(
         <div className="flex justify-between text-gray-400 text-xs gap-2">
           <TimeAndVersion compact game={game} />
         </div>
-      </li>
+      </div>
     );
   },
 );

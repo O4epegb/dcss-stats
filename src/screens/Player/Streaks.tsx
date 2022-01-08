@@ -5,6 +5,7 @@ import { Game } from '@types';
 import { api } from '@api';
 import { addS, date, formatNumber } from '@utils';
 import { Loader } from '@components/Loader';
+import { GameTooltip } from '@components/GameTooltip';
 import { List } from './Stats';
 import { usePlayerPageContext } from './context';
 
@@ -107,16 +108,21 @@ export const Streaks = () => {
                     {streak
                       .filter((game) => game.isWin)
                       .map((game, index) => (
-                        <Fragment key={game.id}>
-                          {index !== 0 && ', '}
-                          {game.char}
-                        </Fragment>
+                        <GameTooltip key={game.id} id={game.id} player={player.name}>
+                          <span>
+                            {index !== 0 && ', '}
+                            {game.char}
+                          </span>
+                        </GameTooltip>
                       ))}
                   </span>
                 </div>
                 {!isActive && lastGame && (
                   <div>
-                    <span className="font-light">Streak breaker:</span> {lastGame.char}
+                    <span className="font-light">Streak breaker:</span>{' '}
+                    <GameTooltip id={lastGame.id} player={player.name}>
+                      <span>{lastGame.char}</span>
+                    </GameTooltip>
                   </div>
                 )}
                 {firstGame && (

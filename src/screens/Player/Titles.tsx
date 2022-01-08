@@ -1,9 +1,10 @@
 import { addS, trackEvent } from '@utils';
 import { useSlicedList } from '@hooks/useSlicedList';
+import { GameTooltip } from '@components/GameTooltip';
 import { usePlayerPageContext } from './context';
 
 export const Titles = () => {
-  const { titles } = usePlayerPageContext();
+  const { titles, player } = usePlayerPageContext();
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
 
   if (items.length === 0) {
@@ -15,10 +16,13 @@ export const Titles = () => {
       <h2 className="font-bold">
         Collected {titles.length} {addS('title', titles.length)}:
       </h2>
+
       <ul className="flex flex-wrap gap-1 text-sm">
         {items.map((title) => (
-          <li key={title} className="bg-gray-600 text-white rounded px-1 py-0.5">
-            {title}
+          <li key={title}>
+            <GameTooltip isWin title={title} player={player.name}>
+              <div className="bg-gray-600 text-white rounded px-1 py-0.5">{title}</div>
+            </GameTooltip>
           </li>
         ))}
         {hasMore && (
