@@ -58,7 +58,6 @@ export const GamesList = (props: {
           race,
           class: klass,
           god,
-          includePlayer,
           version,
           runes,
         },
@@ -118,11 +117,7 @@ export const GamesList = (props: {
         {games.map((game) => {
           return (
             <li key={game.id}>
-              <GameComponent
-                game={game}
-                playerName={playerName || game.player?.name}
-                includePlayer={includePlayer}
-              />
+              <GameComponent game={game} includePlayer={includePlayer} />
             </li>
           );
         })}
@@ -145,13 +140,12 @@ export const GamesList = (props: {
 
 type GameItemProps = {
   game: Game;
-  playerName?: string;
   includePlayer?: boolean;
   shadow?: boolean;
 };
 
 export const GameItem = forwardRef<HTMLDivElement, GameItemProps>(
-  ({ game, playerName, includePlayer, shadow }, ref) => {
+  ({ game, includePlayer, shadow }, ref) => {
     const duration = date.duration(game.duration, 'seconds');
 
     return (
@@ -164,11 +158,11 @@ export const GameItem = forwardRef<HTMLDivElement, GameItemProps>(
         )}
       >
         <div className="font-medium">
-          <MorgueLink game={game} playerName={playerName} />
-          {includePlayer && playerName && (
+          <MorgueLink game={game} />
+          {includePlayer && (
             <div>
-              <Link href={getPlayerPageHref(playerName)}>
-                <a className="font-medium">{playerName}</a>
+              <Link href={getPlayerPageHref(game.name)}>
+                <a className="font-medium">{game.name}</a>
               </Link>
             </div>
           )}
@@ -221,48 +215,45 @@ export const GameItem = forwardRef<HTMLDivElement, GameItemProps>(
   },
 );
 
-export const CompactGameItem = forwardRef<HTMLDivElement, GameItemProps>(
-  ({ game, playerName }, ref) => {
-    const duration = date.duration(game.duration, 'seconds');
+export const CompactGameItem = forwardRef<HTMLDivElement, GameItemProps>(({ game }, ref) => {
+  const duration = date.duration(game.duration, 'seconds');
 
-    return (
-      <div ref={ref} className="py-0.5">
-        <div className="text-sm">
-          <MorgueLink game={game} playerName={playerName} />
-          {game.char}
-          {game.god && <span className="font-light"> of {game.god}</span>},{' '}
-          <span className={clsx(game.isWin ? 'text-emerald-500' : 'text-red-500')}>
-            {game.isWin ? 'escaped' : game.endMessage}
-          </span>{' '}
-          {!game.isWin && game.lvl > 0 && (
-            <span>
-              in {game.branch}:{game.lvl}{' '}
-            </span>
-          )}
-          {game.uniqueRunes > 0 && (
-            <span className="text-indigo-600">
-              with {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
-            </span>
-          )}
-        </div>
-        <div className="flex justify-between gap-2 text-gray-400 text-xs">
-          XL:{game.xl}; score {formatNumber(game.score)}; turns {formatNumber(game.turns)}; lasted
-          for{' '}
-          {duration.format('D') !== '0' && (
-            <>
-              <span>{duration.format('D')} day</span> and{' '}
-            </>
-          )}
-          {duration.format('HH:mm:ss')}
-          <ServerLink game={game} />
-        </div>
-        <div className="flex justify-between text-gray-400 text-xs gap-2">
-          <TimeAndVersion compact game={game} />
-        </div>
+  return (
+    <div ref={ref} className="py-0.5">
+      <div className="text-sm">
+        <MorgueLink game={game} />
+        {game.char}
+        {game.god && <span className="font-light"> of {game.god}</span>},{' '}
+        <span className={clsx(game.isWin ? 'text-emerald-500' : 'text-red-500')}>
+          {game.isWin ? 'escaped' : game.endMessage}
+        </span>{' '}
+        {!game.isWin && game.lvl > 0 && (
+          <span>
+            in {game.branch}:{game.lvl}{' '}
+          </span>
+        )}
+        {game.uniqueRunes > 0 && (
+          <span className="text-indigo-600">
+            with {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
+          </span>
+        )}
       </div>
-    );
-  },
-);
+      <div className="flex justify-between gap-2 text-gray-400 text-xs">
+        XL:{game.xl}; score {formatNumber(game.score)}; turns {formatNumber(game.turns)}; lasted for{' '}
+        {duration.format('D') !== '0' && (
+          <>
+            <span>{duration.format('D')} day</span> and{' '}
+          </>
+        )}
+        {duration.format('HH:mm:ss')}
+        <ServerLink game={game} />
+      </div>
+      <div className="flex justify-between text-gray-400 text-xs gap-2">
+        <TimeAndVersion compact game={game} />
+      </div>
+    </div>
+  );
+});
 
 const TimeAndVersion = ({ compact, game }: { compact?: boolean; game: Game }) => {
   if (!game.server) {
@@ -298,8 +289,8 @@ const ServerLink = ({ game }: { game: Game }) => {
   );
 };
 
-const MorgueLink = ({ game, playerName }: { game: Game; playerName?: string }) => {
-  if (!game.server || !playerName) {
+const MorgueLink = ({ game }: { game: Game }) => {
+  if (!game.server) {
     return null;
   }
 
@@ -307,7 +298,7 @@ const MorgueLink = ({ game, playerName }: { game: Game; playerName?: string }) =
     <a
       className="float-right w-5 h-5 bg-no-repeat bg-center"
       target="_blank"
-      href={`${game.server.morgueUrl}/${playerName}/${getMorgueFileName(game, playerName)}`}
+      href={`${game.server.morgueUrl}/${game.name}/${getMorgueFileName(game)}`}
       rel="noopener noreferrer"
       title="Morgue"
       style={{
@@ -317,8 +308,8 @@ const MorgueLink = ({ game, playerName }: { game: Game; playerName?: string }) =
   );
 };
 
-const getMorgueFileName = (game: Game, playerName: string) => {
-  return `morgue-${playerName}-${date(game.endAt).utc().format('YYYYMMDD-HHmmss')}.txt`;
+const getMorgueFileName = (game: Game) => {
+  return `morgue-${game.name}-${date(game.endAt).utc().format('YYYYMMDD-HHmmss')}.txt`;
 };
 
 const breakpoints = [30, 50, 75, 100, 120, 160];

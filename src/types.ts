@@ -65,6 +65,15 @@ export interface Game {
   lvl: number;
   runes: number;
   uniqueRunes: number;
+  fifteenskills: string[];
+  maxskills: string[];
+  name: string;
+  str: number;
+  int: number;
+  dex: number;
+  ac?: number;
+  ev?: number;
+  sh?: number;
   server?: Server;
 }
 

@@ -37,7 +37,7 @@ export const GameTooltip = ({
       content={
         data ? (
           data.data.length > 0 ? (
-            <GameItem game={data.data[0]} playerName={rest.player} />
+            <GameItem game={data.data[0]} />
           ) : (
             'Game not found'
           )
