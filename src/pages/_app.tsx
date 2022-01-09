@@ -14,7 +14,14 @@ const CustomApp = ({ Component, pageProps }: AppProps): JSX.Element => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="format-detection" content="telephone=no" />
         <title>DCSS Stats</title>
-        <meta name="description" content="Online games stats for Dungeon Crawl Stone Soup" />
+        <meta
+          name="description"
+          content="Player and game statistics for Dungeon Crawl Stone Soup Online"
+        />
+        <meta
+          name="keywords"
+          content="Dungeon Crawl Stone Soup, DCSS Online, Dungeon Crawl Online, DCSS Webtiles, Linley's Dungeon Crawl, Dungeon Crawl Stone Soup Stats, DCSS Stats, DCSS statistics"
+        />
       </Head>
       <Component {...pageProps} />
     </ErrorBoundary>
