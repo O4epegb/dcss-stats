@@ -1,8 +1,8 @@
 import { ReactNode, FC } from 'react';
 import { Game } from '@types';
 import { addS, date, formatDuration, roundAndFormat } from '@utils';
-import { GameItem } from '@components/GamesList';
 import { HeadlessTooltip } from '@components/Tooltip';
+import { GameItem } from '@components/GameItem';
 import { usePlayerPageContext } from './context';
 
 export const Stats = () => {

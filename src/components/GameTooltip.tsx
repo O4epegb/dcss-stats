@@ -5,7 +5,7 @@ import { Game } from '@types';
 import { canUseDOM } from '@constants';
 import { TippyProps } from '@tippyjs/react';
 import { Tooltip } from '@components/Tooltip';
-import { GameItem } from '@components/GamesList';
+import { GameItem } from './GameItem';
 
 export const GameTooltip = ({
   children,
