@@ -255,16 +255,19 @@ export const CompactGameItem = forwardRef<HTMLDivElement, GameItemProps>(({ game
   );
 });
 
+const format = 'DD MMM YYYY [at] HH:mm:ss';
 const TimeAndVersion = ({ compact, game }: { compact?: boolean; game: Game }) => {
   if (!game.server) {
     return null;
   }
 
+  const start = date(game.startAt).format(format);
+  const end = date(game.endAt).format(format);
+
   return (
     <>
-      <div>
-        {!compact && <>{date(game.endAt).fromNow()}, </>}{' '}
-        {date(game.endAt).format('DD MMM YYYY [at] HH:mm:ss')}
+      <div title={`Start: ${start}\nEnd: ${end}`}>
+        {!compact && <>{date(game.endAt).fromNow()}, </>} {end}
       </div>
       <div>v{game.version}</div>
     </>
@@ -280,7 +283,7 @@ const ServerLink = ({ game }: { game: Game }) => {
     <a
       target="_blank"
       href={game.server.url}
-      title={`Server: ${game.server.name}, ${game.server.url}`}
+      title={`Server: ${game.server.name}\n${game.server.url}`}
       rel="noopener noreferrer"
       className="underline"
     >
