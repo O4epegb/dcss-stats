@@ -6,7 +6,7 @@ export const WinrateStats = ({ games, wins }: { games: number; wins: number }) =
       <div className="text-blue-600 whitespace-nowrap">{formatNumber(games)}G</div>
       <div className="text-emerald-600 whitespace-nowrap">{formatNumber(wins)}W</div>
       <div className="text-pink-600 whitespace-nowrap">
-        {formatNumber((wins / games) * 100, {
+        {formatNumber((wins / games || 0) * 100, {
           maximumFractionDigits: 2,
         })}
         % WR

@@ -1,7 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
-import { capitalize, flow, map, orderBy, some, every, castArray, pickBy } from 'lodash-es';
+import {
+  capitalize,
+  flow,
+  map,
+  orderBy,
+  some,
+  every,
+  castArray,
+  pickBy,
+  groupBy,
+  noop,
+} from 'lodash-es';
 import { useRouter } from 'next/router';
 import { api } from '@api';
 import { formatNumber } from '@utils';
@@ -22,28 +33,17 @@ type Combos = Record<string, Stats>;
 type SuggestResponse = Stats & { combos: Combos };
 type Data = SuggestResponse & { race?: Race; class?: Class; god?: God };
 
-const SuggestPage = ({ races, classes, gods }: Props) => {
+const SuggestPage = (props: Props) => {
   type SortingKey = keyof ReturnType<typeof normalizeData>[number];
 
   const router = useRouter();
 
-  races = useMemo(
-    () =>
-      orderBy(
-        races.filter((x) => x.trunk),
-        (x) => x.name,
-      ),
-    [],
-  );
-  classes = useMemo(
-    () =>
-      orderBy(
-        classes.filter((x) => x.trunk),
-        (x) => x.name,
-      ),
-    [],
-  );
-  gods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), []);
+  const allRaces = props.races;
+  const allClasses = props.classes;
+  const allGods = props.gods;
+  const races = useMemo(() => props.races.filter((x) => x.trunk), []);
+  const classes = useMemo(() => props.classes.filter((x) => x.trunk), []);
+  const gods = props.gods;
 
   const [isLoading, setIsLoading] = useState(false);
   const [showWins, setShowWins] = useState(true);
@@ -58,6 +58,7 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
     class: Filter.Any as string,
     god: Filter.Any as string,
   }));
+  const [groupingKey, setGroupingKey] = useState<keyof typeof filter>();
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
     setFilter((current) => ({ ...current, [key]: value }));
@@ -119,6 +120,13 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
       })
       .then((res) => {
         setData({ ...res.data, ...selected });
+
+        const onlyOneFilterWasSelected =
+          [selected.race, selected.class, selected.god].filter((x) => x !== undefined).length === 1;
+
+        if (!onlyOneFilterWasSelected || (groupingKey && selected[groupingKey])) {
+          setGroupingKey(undefined);
+        }
       })
       .catch((e) => {
         alert('Error while loading data');
@@ -131,18 +139,52 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
   }, [router.query]);
 
   const normalizeData = ({ combos, race, class: klass, god }: Data) => {
-    return map(combos, (value, key) => {
+    let data = map(combos, (value, key) => {
       const [raceAbbr, classAbbr, godName] = key.split(',');
 
       return {
         ...value,
-        race: race || races.find((x) => x.abbr === raceAbbr),
-        class: klass || classes.find((x) => x.abbr === classAbbr),
-        god: god || gods.find((x) => x.name === godName),
+        race: race || allRaces.find((x) => x.abbr === raceAbbr),
+        class: klass || allClasses.find((x) => x.abbr === classAbbr),
+        god: god || allGods.find((x) => x.name === godName),
         winrate: (value.wins / value.total) * 100,
       };
     });
+
+    if (groupingKey) {
+      const grouped = groupBy(data, (x) => x[groupingKey]?.name);
+      data = map(grouped, (items) => {
+        return items.reduce((acc, item) => {
+          const wins = acc.wins + item.wins;
+          const total = acc.total + item.total;
+          const winrate = (wins / total || 0) * 100;
+
+          return {
+            ...acc,
+            wins,
+            total,
+            winrate,
+          };
+        });
+      });
+    }
+
+    return data;
   };
+
+  const onlyOneFilterWasSelected =
+    data && [data.race, data.class, data.god].filter((x) => x !== undefined).length === 1;
+
+  const columns =
+    data &&
+    ([
+      ['Race', 'race', 'text', data.race || (groupingKey && groupingKey !== 'race')],
+      ['Class', 'class', 'text', data.class || (groupingKey && groupingKey !== 'class')],
+      ['God', 'god', 'text', data.god || (groupingKey && groupingKey !== 'god')],
+      ['Games', 'total', 'numeric'],
+      ['Wins', 'wins', 'numeric'],
+      ['Win rate', 'winrate', 'numeric'],
+    ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>);
 
   return (
     <div
@@ -155,9 +197,9 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
         <Logo />
       </header>
       <div className="w-full m-auto max-w-lg bg-blue-100 rounded px-2 py-1 text-sm">
-        <span className="font-semibold">TL;DR:</span> pick race, class, or god you want to play (or
-        even all of them). Hit the button to see win rate of your combo, as well as recent games of
-        other players (only version 0.27 and 0.28 at this moment).
+        <span className="font-semibold">TL;DR:</span> pick race, class, or god that you want to play
+        (or even all of them). Hit the button to see win rate of your combo, as well as recent games
+        of other players (only version 0.27 and 0.28 at this moment).
         <br />
         This tool in under development, with bugs and suggestions DM @totalnoob on{' '}
         <a
@@ -258,17 +300,40 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
               {data.total === 0 && 'No recent games recorded for this combo, try another one'}
             </div>
           )}
-          {data.total > 0 && (
+          {data.total > 0 && columns && (
             <>
-              <section className="flex justify-between items-center m-auto w-full max-w-lg">
-                <div>
-                  Show only games with wins:{' '}
+              <section className="flex flex-wrap justify-between items-center m-auto w-full max-w-lg">
+                {view === 'stats' && onlyOneFilterWasSelected && (
+                  <div className="w-full flex gap-4">
+                    {(['race', 'class', 'god'] as const).map(
+                      (key) =>
+                        !data[key] && (
+                          <label
+                            key={key}
+                            className={clsx('flex items-center gap-1 cursor-pointer')}
+                          >
+                            <input
+                              type="radio"
+                              className="cursor-pointer"
+                              checked={groupingKey === key}
+                              onChange={noop}
+                              onClick={() => setGroupingKey((x) => (x === key ? undefined : key))}
+                            />
+                            Group by {key}
+                          </label>
+                        ),
+                    )}
+                  </div>
+                )}
+                <label className="flex items-center gap-1 cursor-pointer">
                   <input
                     checked={showWins}
+                    className="cursor-pointer"
                     type="checkbox"
                     onChange={(e) => setShowWins(e.target.checked)}
                   />
-                </div>
+                  Show only games with wins
+                </label>
                 <div className="group p-0.5 rounded-lg flex bg-gray-100 hover:bg-gray-200 transition-colors">
                   {(['stats', 'games'] as const).map((item) => (
                     <button
@@ -301,16 +366,7 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
                   <table className="w-full table-auto">
                     <thead>
                       <tr>
-                        {(
-                          [
-                            ['Class', 'class', 'text', data.class],
-                            ['Race', 'race', 'text', data.race],
-                            ['God', 'god', 'text', data.god],
-                            ['Games', 'total', 'numeric'],
-                            ['Wins', 'wins', 'numeric'],
-                            ['Win rate', 'winrate', 'numeric'],
-                          ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>
-                        ).map(
+                        {columns.map(
                           ([title, sortingKey, type, isHidden]) =>
                             !isHidden && (
                               <th
@@ -376,9 +432,11 @@ const SuggestPage = ({ races, classes, gods }: Props) => {
                           x.map((item, index) => {
                             return (
                               <tr key={index} className="hover:bg-amber-100">
-                                {!data.race && <td>{item.race?.name}</td>}
-                                {!data.class && <td>{item.class?.name}</td>}
-                                {!data.god && <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>}
+                                {!columns[0][3] && <td>{item.race?.name}</td>}
+                                {!columns[1][3] && <td>{item.class?.name}</td>}
+                                {!columns[2][3] && (
+                                  <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>
+                                )}
                                 <td className="text-right">{item.total}</td>
                                 <td className="text-right">{item.wins}</td>
                                 <td className="text-right">
@@ -427,7 +485,11 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
 
   return {
     revalidate: 300,
-    props: data,
+    props: {
+      races: orderBy(data.races, (x) => x.name),
+      classes: orderBy(data.classes, (x) => x.name),
+      gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
+    },
   };
 };
 
