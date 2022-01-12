@@ -29,14 +29,19 @@ const MainPage = (props: Props) => {
       <div className="w-full max-w-lg space-y-4">
         <header className="w-full flex justify-between items-center">
           <Logo />
-          <Link href="/suggest">
-            <a className="text-right group">
-              <span className="text-xs sm:text-base group-hover:underline">
-                Get combo suggestion
-              </span>{' '}
-              {/* <span className="bg-emerald-400 text-white text-xs rounded px-1 py-0.5">new</span> */}
-            </a>
-          </Link>
+          <div className="flex gap-5">
+            <Link href="/suggest">
+              <a className="group">
+                <span className="text-xs sm:text-base group-hover:underline">Combos</span>
+              </a>
+            </Link>
+            <Link href="/search">
+              <a className="group">
+                <span className="text-xs sm:text-base group-hover:underline">Search</span>{' '}
+                <span className="bg-indigo-400 text-white text-xs rounded px-1 py-0.5">beta</span>
+              </a>
+            </Link>
+          </div>
         </header>
         <Search
           isNavigating={isNavigating}
