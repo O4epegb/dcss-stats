@@ -4,7 +4,7 @@ import { first } from 'lodash-es';
 import { forwardRef } from 'react';
 import { addS, date, formatNumber, getPlayerPageHref } from '@utils';
 import { Game } from '@types';
-import externalLinkSvg from '@external.svg';
+import externalLinkSvg from '@icons/external.svg';
 
 type Props = {
   game: Game;

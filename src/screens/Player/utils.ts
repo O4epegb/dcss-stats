@@ -111,7 +111,7 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
     notWonClasses: trunkClasses.filter((x) => !(stats.classes[x.abbr]?.wins > 0)),
     notWonGods: orderBy(
       gods.filter((g) => !g.win),
-      (x) => x.name,
+      (x) => x.name.toLowerCase(),
     ),
   };
 };

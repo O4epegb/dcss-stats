@@ -208,7 +208,7 @@ const SuggestPage = (props: Props) => {
           rel="noopener noreferrer"
           className="underline"
         >
-          discord
+          RL Discord
         </a>
       </div>
       <div className="flex flex-wrap gap-2 md:justify-center w-full">
