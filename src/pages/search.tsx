@@ -12,12 +12,20 @@ import { Logo } from '@components/Logo';
 import { Loader } from '@components/Loader';
 import { GameItem } from '@components/GameItem';
 import { Tooltip } from '@components/Tooltip';
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
 import {
   useSortable,
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
+  sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
@@ -75,7 +83,12 @@ const SortableItem: FC<{ id: string; className: string }> = ({ id, className, ch
 
 const SearchPage = ({ races, classes, gods }: Props) => {
   const router = useRouter();
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
   const [isDragging, setIsDragging] = useState(false);
 
   const operators = ['and', 'or'] as [string, string];
