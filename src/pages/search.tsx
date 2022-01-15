@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
 import { orderBy, castArray, pickBy, last, flatten, first } from 'lodash-es';
@@ -12,16 +12,71 @@ import { Logo } from '@components/Logo';
 import { Loader } from '@components/Loader';
 import { GameItem } from '@components/GameItem';
 import { Tooltip } from '@components/Tooltip';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import {
+  useSortable,
+  arrayMove,
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 
 // Order by
 // Hotkey for submit
 // Add version filter?
-// Change default filters set
 // send options from BE
 // send maximum filters from the backend
+// use endAt date for search, not startAt
+
+const SortableItem: FC<{ id: string; className: string }> = ({ id, className, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={clsx(className, 'relative', isDragging && 'z-10')}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className="absolute right-full mr-2 flex items-center justify-center w-6 h-6 text-gray-300 hover:text-black hover:bg-gray-200 rounded transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="9" cy="12" r="1"></circle>
+          <circle cx="9" cy="5" r="1"></circle>
+          <circle cx="9" cy="19" r="1"></circle>
+          <circle cx="15" cy="12" r="1"></circle>
+          <circle cx="15" cy="5" r="1"></circle>
+          <circle cx="15" cy="19" r="1"></circle>
+        </svg>
+      </button>
+      {children}
+    </div>
+  );
+};
 
 const SearchPage = ({ races, classes, gods }: Props) => {
   const router = useRouter();
+  const sensors = useSensors(useSensor(PointerSensor));
+  const [isDragging, setIsDragging] = useState(false);
 
   const operators = ['and', 'or'] as [string, string];
   const conditions = ['is', 'is not'];
@@ -58,6 +113,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
   ] as const;
 
   type Filter = {
+    id: string;
     option: string;
     condition: string;
     value: string | undefined;
@@ -96,6 +152,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
   const getDefaultFilters = () =>
     options.map(({ name, conditions }) => {
       return {
+        id: Math.random().toString(),
         option: name,
         condition: conditions[0],
         operator: operators[0],
@@ -127,6 +184,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
         }
 
         return {
+          id: Math.random().toString(),
           option,
           condition,
           value,
@@ -241,175 +299,208 @@ const SearchPage = ({ races, classes, gods }: Props) => {
               </button>
             </div>
             <div className="space-y-3">
-              {filterGroups.length > 0 && (
-                <div className="-m-1.5">
-                  {filterGroups.map((group, groupIndex) => {
-                    const firstItem = first(group);
-                    const firstItemIndex = filters.findIndex((x) => x === firstItem);
-                    const singleFilter = filters.length === 1;
+              <DndContext
+                sensors={sensors}
+                modifiers={[restrictToVerticalAxis]}
+                collisionDetection={closestCenter}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={(event) => {
+                  const { active, over } = event;
 
-                    const colors = ['bg-amber-50', 'bg-teal-50', 'bg-purple-50'];
+                  setIsDragging(false);
 
-                    const color =
-                      !singleFilter && firstItem && firstItem.operator === 'or'
-                        ? colors[firstItemIndex % 3]
-                        : null;
+                  if (over && active.id !== over.id) {
+                    setFilters((items) => {
+                      const oldIndex = items.findIndex((x) => x.id === active.id);
+                      const newIndex = items.findIndex((x) => x.id === over.id);
 
-                    return (
-                      <div key={groupIndex} className={clsx('p-1.5 space-y-3', color)}>
-                        {group.map((filter, index) => {
-                          const option = options.find((x) => x.name === filter.option);
+                      return arrayMove(items, oldIndex, newIndex);
+                    });
+                  }
+                }}
+              >
+                <SortableContext items={filters} strategy={verticalListSortingStrategy}>
+                  {filterGroups.length > 0 && (
+                    <div className="-m-1.5">
+                      {filterGroups.map((group, groupIndex) => {
+                        const firstItem = first(group);
+                        const firstItemIndex = filters.findIndex((x) => x === firstItem);
+                        const singleFilter = filters.length === 1;
 
-                          if (!option) {
-                            return null;
-                          }
+                        const colors = ['bg-amber-50', 'bg-teal-50', 'bg-purple-50'];
 
-                          const disabled = !singleFilter && filter === last(filters);
+                        const color =
+                          !singleFilter && firstItem && firstItem.operator === 'or'
+                            ? colors[firstItemIndex % 3]
+                            : null;
 
-                          return (
-                            <div key={index} className="flex items-center gap-2">
-                              <select
-                                className={clsx(
-                                  'rounded py-1 pl-1 bg-gray-200 transition-transform',
-                                  !singleFilter && 'translate-y-5',
-                                  disabled && 'opacity-0',
-                                )}
-                                disabled={disabled}
-                                value={filter.operator}
-                                onChange={(e) => {
-                                  setFilters((state) => {
-                                    const filterIndex = state.findIndex((x) => x === filter);
-                                    const shouldUpdateLastFilter = filterIndex === state.length - 2;
-                                    const lastFilter = last(state);
+                        return (
+                          <div key={groupIndex} className={clsx('p-1.5 space-y-3', color)}>
+                            {group.map((filter) => {
+                              const option = options.find((x) => x.name === filter.option);
 
-                                    return state.map((x) => {
-                                      return x === filter ||
-                                        (shouldUpdateLastFilter && x === lastFilter)
-                                        ? { ...x, operator: e.target.value }
-                                        : x;
-                                    });
-                                  });
-                                }}
-                              >
-                                {operators.map((item) => (
-                                  <option key={item} value={item}>
-                                    {item}
-                                  </option>
-                                ))}
-                              </select>
+                              if (!option) {
+                                return null;
+                              }
 
-                              <select
-                                className="rounded py-1 pl-1 bg-gray-200"
-                                value={filter.option}
-                                onChange={(e) => {
-                                  setFilters((state) =>
-                                    state.map((x) => {
-                                      return x !== filter
-                                        ? x
-                                        : { ...filter, option: e.target.value, value: undefined };
-                                    }),
-                                  );
-                                }}
-                              >
-                                {options.map(({ name }) => (
-                                  <option key={name} value={name}>
-                                    {name}
-                                  </option>
-                                ))}
-                              </select>
+                              const disabled = !singleFilter && filter === last(filters);
 
-                              <select
-                                className="rounded py-1 pl-1 bg-gray-200"
-                                value={filter.condition}
-                                disabled={!filter.option}
-                                onChange={(e) => {
-                                  setFilters((state) =>
-                                    state.map((x) => {
-                                      return x !== filter
-                                        ? x
-                                        : { ...filter, condition: e.target.value };
-                                    }),
-                                  );
-                                }}
-                              >
-                                {option.conditions.map((item) => (
-                                  <option key={item} value={item}>
-                                    {item}
-                                  </option>
-                                ))}
-                              </select>
-                              {option.type === 'select' && (
-                                <select
-                                  className="min-w-0 rounded flex-1 py-1 pl-1 bg-gray-200"
-                                  value={filter.value}
-                                  disabled={!filter.condition}
-                                  onChange={(e) => {
-                                    setFilters((state) =>
-                                      state.map((x) => {
-                                        return x !== filter
-                                          ? x
-                                          : { ...filter, value: e.target.value };
-                                      }),
-                                    );
-                                  }}
+                              return (
+                                <SortableItem
+                                  key={filter.id}
+                                  id={filter.id}
+                                  className="flex items-center gap-2"
                                 >
-                                  <option value="">any</option>
-                                  {option.values.map(({ name }) => (
-                                    <option key={name} value={name}>
-                                      {name}
-                                    </option>
-                                  ))}
-                                </select>
-                              )}
-                              {option.type === 'text' && (
-                                <div className="flex-1">
-                                  <input
-                                    type="text"
-                                    placeholder="Enter player name"
-                                    className="w-full rounded py-0.5 px-2 bg-gray-200"
-                                    value={filter.value}
+                                  <select
+                                    className="rounded py-1 pl-1 bg-gray-200"
+                                    value={filter.option}
                                     onChange={(e) => {
                                       setFilters((state) =>
                                         state.map((x) => {
                                           return x !== filter
                                             ? x
-                                            : { ...filter, value: e.target.value };
+                                            : {
+                                                ...filter,
+                                                option: e.target.value,
+                                                value: undefined,
+                                              };
                                         }),
                                       );
                                     }}
-                                  />
-                                </div>
-                              )}
-
-                              <Tooltip content="Remove filter">
-                                <button
-                                  className="flex shrink-0 items-center justify-center ml-auto w-6 h-6 bg-gray-200 rounded text-xs text-red-900"
-                                  onClick={() => {
-                                    setFilters((state) => state.filter((x) => x !== filter));
-                                  }}
-                                >
-                                  <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
                                   >
-                                    <path
-                                      fillRule="evenodd"
-                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                                      clipRule="evenodd"
-                                    />
-                                  </svg>
-                                </button>
-                              </Tooltip>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+                                    {options.map(({ name }) => (
+                                      <option key={name} value={name}>
+                                        {name}
+                                      </option>
+                                    ))}
+                                  </select>
+
+                                  <select
+                                    className="rounded py-1 pl-1 bg-gray-200"
+                                    value={filter.condition}
+                                    disabled={!filter.option}
+                                    onChange={(e) => {
+                                      setFilters((state) =>
+                                        state.map((x) => {
+                                          return x !== filter
+                                            ? x
+                                            : { ...filter, condition: e.target.value };
+                                        }),
+                                      );
+                                    }}
+                                  >
+                                    {option.conditions.map((item) => (
+                                      <option key={item} value={item}>
+                                        {item}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  {option.type === 'select' && (
+                                    <select
+                                      className="min-w-0 rounded flex-1 py-1 pl-1 bg-gray-200"
+                                      value={filter.value}
+                                      disabled={!filter.condition}
+                                      onChange={(e) => {
+                                        setFilters((state) =>
+                                          state.map((x) => {
+                                            return x !== filter
+                                              ? x
+                                              : { ...filter, value: e.target.value };
+                                          }),
+                                        );
+                                      }}
+                                    >
+                                      <option value="">any</option>
+                                      {option.values.map(({ name }) => (
+                                        <option key={name} value={name}>
+                                          {name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  )}
+                                  {option.type === 'text' && (
+                                    <div className="flex-1">
+                                      <input
+                                        type="text"
+                                        placeholder="Enter player name"
+                                        className="w-full rounded py-0.5 px-2 bg-gray-200"
+                                        value={filter.value}
+                                        onChange={(e) => {
+                                          setFilters((state) =>
+                                            state.map((x) => {
+                                              return x !== filter
+                                                ? x
+                                                : { ...filter, value: e.target.value };
+                                            }),
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+
+                                  <select
+                                    className={clsx(
+                                      'rounded py-1 pl-1 bg-gray-200 transition-all',
+                                      !isDragging && !singleFilter && 'translate-y-5',
+                                      !isDragging && disabled && 'opacity-0',
+                                    )}
+                                    disabled={disabled}
+                                    value={filter.operator}
+                                    onChange={(e) => {
+                                      setFilters((state) => {
+                                        const filterIndex = state.findIndex((x) => x === filter);
+                                        const shouldUpdateLastFilter =
+                                          filterIndex === state.length - 2;
+                                        const lastFilter = last(state);
+
+                                        return state.map((x) => {
+                                          return x === filter ||
+                                            (shouldUpdateLastFilter && x === lastFilter)
+                                            ? { ...x, operator: e.target.value }
+                                            : x;
+                                        });
+                                      });
+                                    }}
+                                  >
+                                    {operators.map((item) => (
+                                      <option key={item} value={item}>
+                                        {item}
+                                      </option>
+                                    ))}
+                                  </select>
+
+                                  <Tooltip content="Remove filter">
+                                    <button
+                                      className="flex shrink-0 items-center justify-center ml-auto w-6 h-6 bg-gray-200 rounded text-xs text-red-900"
+                                      onClick={() => {
+                                        setFilters((state) => state.filter((x) => x !== filter));
+                                      }}
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-4 w-4"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    </button>
+                                  </Tooltip>
+                                </SortableItem>
+                              );
+                            })}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </SortableContext>
+              </DndContext>
+
               <div className="flex justify-between items-center">
                 <Tooltip content="Maximum 10 filters at this moment" disabled={filters.length < 10}>
                   <div>
@@ -428,6 +519,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                           return [
                             ...state,
                             {
+                              id: Math.random().toString(),
                               operator: operator ?? operators[0],
                               option: option?.name ?? options[0].name,
                               condition: option?.conditions[0] ?? options[0].conditions[0],
