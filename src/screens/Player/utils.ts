@@ -1,5 +1,5 @@
 import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es';
-import { CharStat, Class, God, Matrix, Race } from '@types';
+import { CharStat, Class, GamesToFirstWin, God, Matrix, Race } from '@types';
 import { notEmpty } from '@utils';
 
 export const cookieKeyCompactView = 'dcss-compact-view';
@@ -19,7 +19,13 @@ const unavailableCombos = keyBy([
   'FeAM',
 ]);
 
-export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods: God[]) => {
+export const getSummary = (
+  matrix: Matrix,
+  races: Race[],
+  classes: Class[],
+  gods: God[],
+  gamesToFirstWin: GamesToFirstWin,
+) => {
   const trunkRaces = orderBy(
     races.filter((x) => x.trunk),
     (x) => x.abbr,
@@ -29,7 +35,7 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
     (x) => x.abbr,
   );
 
-  const countStat = (acc: CharStat | undefined, item: CharStat) => {
+  const countStat = (acc: CharStat | undefined, item: CharStat, gamesToWin: number | undefined) => {
     const stat = {
       wins: (acc?.wins || 0) + item.wins,
       games: (acc?.games || 0) + item.games,
@@ -39,6 +45,7 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
     return {
       ...stat,
       winRate: stat.wins / stat.games,
+      gamesToFirstWin: gamesToWin ?? 0,
     };
   };
 
@@ -48,8 +55,8 @@ export const getSummary = (matrix: Matrix, races: Race[], classes: Class[], gods
       const race = key.slice(0, 2);
       const klass = key.slice(2, 4);
 
-      acc.classes[klass] = countStat(acc.classes[klass], item);
-      acc.races[race] = countStat(acc.races[race], item);
+      acc.classes[klass] = countStat(acc.classes[klass], item, gamesToFirstWin.classes[klass]);
+      acc.races[race] = countStat(acc.races[race], item, gamesToFirstWin.races[race]);
 
       return acc;
     },

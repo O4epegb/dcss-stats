@@ -1,12 +1,23 @@
 import { ReactNode, FC } from 'react';
+import { filter } from 'lodash-es';
 import { Game } from '@types';
 import { addS, date, formatDuration, roundAndFormat } from '@utils';
-import { HeadlessTooltip } from '@components/Tooltip';
+import { HeadlessTooltip, Tooltip } from '@components/Tooltip';
 import { GameItem } from '@components/GameItem';
 import { usePlayerPageContext } from './context';
+import { Summary } from './utils';
 
-export const Stats = () => {
+export const Stats = ({ summary }: { summary: Summary }) => {
   const { firstGame, lastGame, lowestXlWin, stats } = usePlayerPageContext();
+  const {
+    combosCompleted,
+    totalCombos,
+    stats: { combos, races, classes },
+  } = summary;
+
+  const oneAndWons = filter(combos, (value) => value.gamesToFirstWin === 1).length;
+  const oneAndWonsRace = filter(races, (value) => value.gamesToFirstWin === 1).length;
+  const oneAndWonsClass = filter(classes, (value) => value.gamesToFirstWin === 1).length;
 
   return (
     <section className="text-xs space-y-2">
@@ -16,6 +27,7 @@ export const Stats = () => {
             ['Total score', roundAndFormat(stats.total.score)],
             ['Best score', roundAndFormat(stats.max.score)],
             ['Average score', roundAndFormat(stats.average.score, { maximumFractionDigits: 0 })],
+            ['Combos completed', `${combosCompleted} of ${totalCombos}`],
           ]}
         />
         <List
@@ -25,6 +37,26 @@ export const Stats = () => {
             [
               'Average runes extracted',
               roundAndFormat(stats.average.runesWon, { maximumFractionDigits: 1 }),
+            ],
+            [
+              <Tooltip
+                key=""
+                content={
+                  <div className="space-y-2">
+                    <div>One-and-won means won on the first try</div>
+                    <div>
+                      Race: {oneAndWonsRace} {addS('time', oneAndWonsRace)}
+                      <br />
+                      Class: {oneAndWonsClass} {addS('time', oneAndWonsClass)}
+                      <br />
+                      Combo: {oneAndWons} {addS('time', oneAndWons)}
+                    </div>
+                  </div>
+                }
+              >
+                <span>One-and-won</span>
+              </Tooltip>,
+              `${oneAndWons} ${addS('time', oneAndWons)}`,
             ],
           ]}
         />
@@ -99,10 +131,10 @@ export const Stats = () => {
   );
 };
 
-export const List = ({ items }: { items: [string, ReactNode][] }) => (
+export const List = ({ items }: { items: [ReactNode, ReactNode][] }) => (
   <ul>
-    {items.map(([title, text]) => (
-      <li key={title}>
+    {items.map(([title, text], index) => (
+      <li key={index}>
         <span className="font-semibold">{title}:</span> {text}
       </li>
     ))}

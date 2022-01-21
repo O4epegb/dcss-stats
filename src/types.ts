@@ -22,9 +22,15 @@ export interface PlayerInfoResponse {
   lastGame: Game;
   lowestXlWin: Game | null;
   matrix: Matrix;
+  gamesToFirstWin: GamesToFirstWin;
   gods: God[];
   streaks: StreaksInfo;
 }
+
+export type GamesToFirstWin = {
+  classes: Record<string, number>;
+  races: Record<string, number>;
+};
 
 export interface StreaksInfo {
   total: number;
@@ -128,6 +134,7 @@ export interface CharStat {
   games: number;
   maxXl: number;
   winRate: number;
+  gamesToFirstWin: number;
 }
 
 export type Server = {

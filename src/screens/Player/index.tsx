@@ -14,17 +14,18 @@ import { usePlayerPageContext } from './context';
 import { Titles } from './Titles';
 
 export const Player = () => {
-  const { player, races, classes, matrix, gods, stats } = usePlayerPageContext();
+  const { player, races, classes, matrix, gods, stats, gamesToFirstWin } = usePlayerPageContext();
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1);
   }, []);
 
-  const summary = useMemo(() => getSummary(matrix, races, classes, gods), [matrix]);
+  const summary = useMemo(
+    () => getSummary(matrix, races, classes, gods, gamesToFirstWin),
+    [matrix],
+  );
   const {
-    combosCompleted,
-    totalCombos,
     trunkClasses,
     trunkRaces,
     wonRaces,
@@ -133,37 +134,36 @@ export const Player = () => {
             </div>
           </section>
 
-          <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
-            {!isGreat && (
-              <Badge
-                title="Great Player"
-                total={trunkRaces.length}
-                completed={wonRaces.length}
-                leftToWinWith={notWonRaces}
-              />
-            )}
-            {!isGreater && (
-              <Badge
-                title="Greater Player"
-                total={trunkClasses.length}
-                completed={wonClasses.length}
-                leftToWinWith={notWonClasses}
-              />
-            )}
-            {isGreatest && (
-              <Badge title="Combos Completed" total={totalCombos} completed={combosCompleted} />
-            )}
-            {!isPolytheist && (
-              <Badge
-                title="Polytheist"
-                total={gods.length}
-                completed={wonGods.length}
-                leftToWinWith={notWonGods}
-              />
-            )}
-          </section>
+          {!(isGreat && isGreater && isPolytheist) && (
+            <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
+              {!isGreat && (
+                <Badge
+                  title="Great Player"
+                  total={trunkRaces.length}
+                  completed={wonRaces.length}
+                  leftToWinWith={notWonRaces}
+                />
+              )}
+              {!isGreater && (
+                <Badge
+                  title="Greater Player"
+                  total={trunkClasses.length}
+                  completed={wonClasses.length}
+                  leftToWinWith={notWonClasses}
+                />
+              )}
+              {!isPolytheist && (
+                <Badge
+                  title="Polytheist"
+                  total={gods.length}
+                  completed={wonGods.length}
+                  leftToWinWith={notWonGods}
+                />
+              )}
+            </section>
+          )}
 
-          <Stats />
+          <Stats summary={summary} />
           <Titles />
           <Streaks />
           <Games allActualRaces={allActualRaces} allActualClasses={allActualClasses} />

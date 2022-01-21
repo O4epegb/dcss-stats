@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
 import { CharStat } from '@types';
-import { formatNumber } from '@utils';
+import { addS, formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
 import { Summary } from './utils';
 
@@ -11,6 +11,7 @@ const items = [
   ['games', 'games'],
   ['win rate %', 'winRate'],
   ['best XL', 'maxXl'],
+  ['first win', 'gamesToFirstWin'],
 ] as const;
 
 export const Matrix = ({ summary }: { summary: Summary }) => {
@@ -31,6 +32,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
     category === 'winRate'
       ? formatNumber(value * 100, { maximumFractionDigits: 0 })
       : String(value);
+
   const activeCombo = (activeRace || '') + (activeClass || '');
   const tooltipStats =
     stats[!activeRace ? 'classes' : !activeClass ? 'races' : 'combos'][activeCombo];
@@ -91,6 +93,13 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     <div className="text-right">
                       Max XL: <span className="font-medium">{tooltipStats?.maxXl}</span>
                     </div>
+                    {tooltipStats.gamesToFirstWin > 0 && (
+                      <div className="col-span-full">
+                        First win after{' '}
+                        <span className="font-medium">{tooltipStats.gamesToFirstWin}</span>{' '}
+                        {addS('game', tooltipStats.gamesToFirstWin)}
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div>No data yet</div>
@@ -116,6 +125,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   key={klass.abbr}
                   className={clsx(
                     'whitespace-nowrap min-w-[24px]',
+
                     greatClasses[klass.abbr]
                       ? 'bg-amber-200'
                       : activeClass === klass.abbr && 'bg-amber-100',
@@ -144,7 +154,10 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   <td
                     key={klass.abbr}
                     className={clsx(
-                      activeClass === klass.abbr && 'bg-amber-100',
+                      category === 'gamesToFirstWin' &&
+                        stats.classes[klass.abbr]?.gamesToFirstWin === 1
+                        ? 'bg-amber-200'
+                        : activeClass === klass.abbr && 'bg-amber-100',
                       stats.classes[klass.abbr]?.wins > 0 && 'text-amber-600',
                     )}
                     onMouseEnter={(e) => {
@@ -183,7 +196,10 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   </td>
                   <td
                     className={clsx(
-                      activeRace === race.abbr && 'bg-amber-100',
+                      category === 'gamesToFirstWin' &&
+                        stats.races[race.abbr]?.gamesToFirstWin === 1
+                        ? 'bg-amber-200'
+                        : activeRace === race.abbr && 'bg-amber-100',
                       stats.races[race.abbr]?.wins > 0 && 'text-amber-600',
                     )}
                     onMouseEnter={(e) => {
@@ -205,8 +221,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         key={char}
                         className={clsx(
                           'border',
-                          (activeClass === klass.abbr || activeRace === race.abbr) &&
-                            'bg-amber-100',
+                          category === 'gamesToFirstWin' &&
+                            stats.combos[char]?.gamesToFirstWin === 1
+                            ? 'bg-amber-200'
+                            : (activeClass === klass.abbr || activeRace === race.abbr) &&
+                                'bg-amber-100',
                           stats.combos[char]?.wins > 0 && 'text-amber-600',
                           content && content?.length > 2 && 'text-xs 2xl:text-sm',
                         )}
