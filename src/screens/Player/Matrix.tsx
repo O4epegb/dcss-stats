@@ -4,7 +4,7 @@ import useMedia from 'react-use/lib/useMedia';
 import { CharStat } from '@types';
 import { addS, formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
-import { Summary } from './utils';
+import { Summary, unavailableCombos } from './utils';
 
 const items = [
   ['wins', 'wins'],
@@ -102,8 +102,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     )}
                   </div>
                 ) : (
-                  <div>No data yet</div>
+                  !unavailableCombos[activeCombo] && <div>No data yet</div>
                 )}
+                {unavailableCombos[activeCombo] && <div>Combo is not playable</div>}
                 {!(activeRace && activeClass) &&
                   (greatClasses[activeClass] || greatRaces[activeRace]) && (
                     <div className="text-xs">
@@ -224,10 +225,12 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                           category === 'gamesToFirstWin' &&
                             stats.combos[char]?.gamesToFirstWin === 1
                             ? 'bg-amber-200'
-                            : (activeClass === klass.abbr || activeRace === race.abbr) &&
-                                'bg-amber-100',
+                            : activeClass === klass.abbr || activeRace === race.abbr
+                            ? 'bg-amber-100'
+                            : unavailableCombos[char] && 'bg-gray-50',
                           stats.combos[char]?.wins > 0 && 'text-amber-600',
                           content && content?.length > 2 && 'text-xs 2xl:text-sm',
+                          unavailableCombos[char] && 'text-gray-200',
                         )}
                         onMouseEnter={(e) => {
                           tippyRef.current = e.currentTarget;
@@ -236,7 +239,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         }}
                         onMouseLeave={() => setActive([])}
                       >
-                        {content}
+                        {content || (unavailableCombos[char] && 'x')}
                       </td>
                     );
                   })}

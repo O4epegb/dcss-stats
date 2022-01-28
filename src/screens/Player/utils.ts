@@ -5,7 +5,7 @@ import { notEmpty } from '@utils';
 export const cookieKeyCompactView = 'dcss-compact-view';
 export const cookieKeyOpenFilters = 'dcss-open-filters';
 
-const unavailableCombos = keyBy([
+export const unavailableCombos = keyBy([
   'GhTm',
   'MuTm',
   'DgMo',
