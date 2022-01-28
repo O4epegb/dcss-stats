@@ -36,6 +36,7 @@ export interface StreaksInfo {
   total: number;
   best: number;
   average: number;
+  current: number;
 }
 
 export interface Player {

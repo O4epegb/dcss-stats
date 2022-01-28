@@ -13,12 +13,10 @@ type StreakGame = Pick<Game, 'id' | 'isWin' | 'endAt' | 'char'>;
 type StreakGroups = Array<StreakGame[]>;
 
 export const Streaks = () => {
-  const { streaks, player, lastGames } = usePlayerPageContext();
+  const { streaks, player } = usePlayerPageContext();
   const [streakGroups, setStreakGroups] = useState<StreakGroups>([]);
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const isOnStreak = lastGames[0]?.isWin && lastGames[1]?.isWin;
 
   return (
     <section className="space-y-1">
@@ -32,22 +30,28 @@ export const Streaks = () => {
             'Has no streaks of wins yet'
           )}
         </h2>
-        {isOnStreak && <div className="text-sm text-emerald-500">On streak right now!</div>}
+        {streaks.current > 0 && (
+          <div className="text-sm text-emerald-500 text-right">
+            🔥 On streak: {streaks.current} wins in a row
+          </div>
+        )}
       </header>
       {streaks.total > 0 && (
-        <div className="flex items-center gap-x-4 gap-y-2 text-sm whitespace-nowrap">
-          <List items={[['Best', `${streaks.best} ${addS('win', streaks.best)}`]]} />
-          <List
-            items={[
-              [
-                'Average',
-                `${formatNumber(streaks.average, { maximumFractionDigits: 1 })} ${addS(
-                  'win',
-                  streaks.average,
-                )}`,
-              ],
-            ]}
-          />
+        <div className="flex items-center gap-2 text-sm whitespace-nowrap">
+          <div className="flex gap-4">
+            <List items={[['Best', `${streaks.best} ${addS('win', streaks.best)}`]]} />
+            <List
+              items={[
+                [
+                  'Average',
+                  `${formatNumber(streaks.average, { maximumFractionDigits: 1 })} ${addS(
+                    'win',
+                    streaks.average,
+                  )}`,
+                ],
+              ]}
+            />
+          </div>
           <button
             disabled={isLoading}
             className="text-blue-400 text-sm py-0.5 hover:underline ml-auto"

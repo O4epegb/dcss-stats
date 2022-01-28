@@ -62,12 +62,12 @@ export const Stats = ({ summary }: { summary: Summary }) => {
         />
         <List
           items={[
+            ['Fastest win', stats.min.winTime ? formatDuration(stats.min.winTime) : 'n/a'],
+            ['Slowest win', stats.max.winTime ? formatDuration(stats.max.winTime) : 'n/a'],
             [
               'Average win duration',
               stats.average.winTime ? formatDuration(stats.average.winTime) : 'n/a',
             ],
-            ['Fastest win', stats.min.winTime ? formatDuration(stats.min.winTime) : 'n/a'],
-            ['Slowest win', stats.max.winTime ? formatDuration(stats.max.winTime) : 'n/a'],
             [
               'Average game duration',
               stats.average.gameTime ? formatDuration(stats.average.gameTime) : 'n/a',
@@ -77,18 +77,18 @@ export const Stats = ({ summary }: { summary: Summary }) => {
         <List
           items={[
             [
-              'Average win turn count',
-              stats.average.winTurnCount
-                ? roundAndFormat(stats.average.winTurnCount, { maximumFractionDigits: 0 })
-                : 'n/a',
-            ],
-            [
               'Fastest win, TC',
               stats.min.winTurnCount ? roundAndFormat(stats.min.winTurnCount) : 'n/a',
             ],
             [
               'Slowest win, TC',
               stats.max.winTurnCount ? roundAndFormat(stats.max.winTurnCount) : 'n/a',
+            ],
+            [
+              'Average win turn count',
+              stats.average.winTurnCount
+                ? roundAndFormat(stats.average.winTurnCount, { maximumFractionDigits: 0 })
+                : 'n/a',
             ],
           ]}
         />
@@ -115,7 +115,7 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                 'Lowest XL win',
                 lowestXlWin ? (
                   <GameTooltip key="" game={lowestXlWin}>
-                    {`${lowestXlWin.char} XL ${lowestXlWin.xl}, ${date(lowestXlWin.endAt).format(
+                    {`${lowestXlWin.char} XL:${lowestXlWin.xl}, ${date(lowestXlWin.endAt).format(
                       'DD MMM YYYY, HH:mm:ss',
                     )}`}
                   </GameTooltip>

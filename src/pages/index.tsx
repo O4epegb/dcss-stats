@@ -7,7 +7,7 @@ import { GetStaticProps } from 'next';
 import { debounce, orderBy, startsWith } from 'lodash-es';
 import { api } from '@api';
 import { formatNumber, getPlayerPageHref, RaceConditionGuard } from '@utils';
-import { Player, Server } from '@types';
+import { Player } from '@types';
 import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
@@ -367,7 +367,6 @@ type Props = Response;
 type Response = {
   games: number;
   wins: number;
-  servers: Server[];
   top: {
     byGames: Array<Pick<Player, 'name'> & { games: number }>;
     byWins: Array<Pick<Player, 'name'> & { wins: number }>;
