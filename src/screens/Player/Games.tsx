@@ -51,8 +51,8 @@ export const Games = ({
   const isDirty = some(filter, (value) => value !== Filter.All);
 
   return (
-    <section className="space-y-1 relative pb-8">
-      <header className="flex justify-between items-center">
+    <section className="relative space-y-1 pb-8">
+      <header className="flex items-center justify-between">
         <h2 className="font-bold">
           {isDirty ? 'Filtered games' : 'Recent games'}
           {data.games.length > 0 &&
@@ -65,7 +65,7 @@ export const Games = ({
           <button
             className={clsx(
               'transition hover:text-emerald-500',
-              showSettings ? 'text-emerald-600 rotate-180' : 'text-gray-400',
+              showSettings ? 'rotate-180 text-emerald-600' : 'text-gray-400',
             )}
             onClick={() => setShowSettings((x) => !x)}
           >
@@ -86,7 +86,7 @@ export const Games = ({
       </header>
       {showSettings && (
         <section className="py-2">
-          <div className="border rounded p-2">
+          <div className="rounded border p-2">
             <label className="inline-flex items-center gap-1">
               <input checked={isCompact} type="checkbox" onChange={toggleCompact} /> Show compact
               game list
@@ -94,11 +94,11 @@ export const Games = ({
           </div>
         </section>
       )}
-      <div className="flex justify-between items-center text-sm">
+      <div className="flex items-center justify-between text-sm">
         <label>
           Show:{' '}
           <select
-            className="rounded p-1 bg-gray-100"
+            className="rounded bg-gray-100 p-1"
             value={filter.isWin}
             onChange={(e) => changeFilter('isWin', e.target.value)}
           >
@@ -110,7 +110,7 @@ export const Games = ({
         <label>
           Race:{' '}
           <select
-            className="rounded p-1 bg-gray-100"
+            className="rounded bg-gray-100 p-1"
             value={filter.race}
             onChange={(e) => changeFilter('race', e.target.value)}
           >
@@ -125,7 +125,7 @@ export const Games = ({
         <label>
           Class:{' '}
           <select
-            className="rounded p-1 bg-gray-100"
+            className="rounded bg-gray-100 p-1"
             value={filter.class}
             onChange={(e) => changeFilter('class', e.target.value)}
           >
@@ -161,11 +161,11 @@ export const Games = ({
         </Tooltip>
       </div>
       {isFiltersOpen && (
-        <div className="flex gap-4 items-center text-sm">
+        <div className="flex items-center gap-4 text-sm">
           <label>
             God:{' '}
             <select
-              className="rounded p-1 bg-gray-100"
+              className="rounded bg-gray-100 p-1"
               value={filter.god}
               onChange={(e) => changeFilter('god', e.target.value)}
             >
@@ -180,7 +180,7 @@ export const Games = ({
           <label>
             Runes:{' '}
             <select
-              className="rounded p-1 bg-gray-100"
+              className="rounded bg-gray-100 p-1"
               value={filter.runes}
               onChange={(e) => changeFilter('runes', e.target.value)}
             >

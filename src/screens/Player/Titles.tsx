@@ -21,14 +21,14 @@ export const Titles = () => {
         {items.map((title) => (
           <li key={title}>
             <GameTooltip isWin title={title} player={player.name}>
-              <div className="bg-gray-600 text-white rounded px-1 py-0.5">{title}</div>
+              <div className="rounded bg-gray-600 px-1 py-0.5 text-white">{title}</div>
             </GameTooltip>
           </li>
         ))}
         {hasMore && (
           <li>
             <button
-              className="text-blue-400 text-sm px-1 py-0.5 hover:underline"
+              className="px-1 py-0.5 text-sm text-blue-400 hover:underline"
               onClick={() => {
                 toggleShowAll();
                 trackEvent('show titles');

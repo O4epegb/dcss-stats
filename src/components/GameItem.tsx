@@ -20,8 +20,8 @@ export const GameItem = forwardRef<HTMLDivElement, Props>(
       <div
         ref={ref}
         className={clsx(
-          'py-1 px-2 border rounded border-gray-200 text-sm bg-white text-black',
-          game.isWin && 'border-l-emerald-500 border-l-2',
+          'rounded border border-gray-200 bg-white py-1 px-2 text-sm text-black',
+          game.isWin && 'border-l-2 border-l-emerald-500',
           shadow && 'shadow-md',
         )}
       >
@@ -71,7 +71,7 @@ export const GameItem = forwardRef<HTMLDivElement, Props>(
           {game.ev != null && <span className="text-violet-800">ev:{game.ev}</span>}{' '}
           {game.sh != null && <span className="text-sky-800">sh:{game.sh}</span>}
         </div>
-        <div className="pt-0.5 text-gray-400 text-xs flex justify-between gap-2">
+        <div className="flex justify-between gap-2 pt-0.5 text-xs text-gray-400">
           <div>
             {formatNumber(game.score)} score points, {formatNumber(game.turns)} turns, lasted for{' '}
             {duration.format('D') !== '0' && (
@@ -83,7 +83,7 @@ export const GameItem = forwardRef<HTMLDivElement, Props>(
           </div>
           <ServerLink game={game} />
         </div>
-        <div className="flex pt-0.5 justify-between text-gray-400 text-xs gap-2">
+        <div className="flex justify-between gap-2 pt-0.5 text-xs text-gray-400">
           <TimeAndVersion game={game} />
         </div>
       </div>
@@ -114,7 +114,7 @@ export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref)
           </span>
         )}
       </div>
-      <div className="flex justify-between gap-2 text-gray-400 text-xs">
+      <div className="flex justify-between gap-2 text-xs text-gray-400">
         XL:{game.xl}; score {formatNumber(game.score)}; turns {formatNumber(game.turns)}; lasted for{' '}
         {duration.format('D') !== '0' && (
           <>
@@ -124,7 +124,7 @@ export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref)
         {duration.format('HH:mm:ss')}
         <ServerLink game={game} />
       </div>
-      <div className="flex justify-between text-gray-400 text-xs gap-2">
+      <div className="flex justify-between gap-2 text-xs text-gray-400">
         <TimeAndVersion compact game={game} />
       </div>
     </div>
@@ -175,7 +175,7 @@ const MorgueLink = ({ game }: { game: Game }) => {
 
   return (
     <a
-      className="float-right w-5 h-5 bg-no-repeat bg-center"
+      className="float-right h-5 w-5 bg-center bg-no-repeat"
       target="_blank"
       href={`${game.server.morgueUrl}/${game.name}/${getMorgueFileName(game)}`}
       rel="noopener noreferrer"

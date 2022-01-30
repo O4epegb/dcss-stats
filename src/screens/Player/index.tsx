@@ -44,13 +44,13 @@ export const Player = () => {
   const isPolytheist = wonGods.length === gods.length;
 
   return (
-    <div className="container mx-auto px-4 grid xl:grid-cols-3 gap-4">
+    <div className="container mx-auto grid gap-4 px-4 xl:grid-cols-3">
       <div className="min-w-0">
         <header className="pt-4 pb-2">
           <Logo />
         </header>
         <div className="space-y-2">
-          <section className="flex flex-wrap gap-x-2 gap-y-1 items-center">
+          <section className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <h2 className="text-3xl font-bold">{player.name}</h2>
             <Tooltip
               hideOnClick={false}
@@ -58,7 +58,7 @@ export const Player = () => {
             >
               <button
                 className={clsx(
-                  'flex items-center justify-center w-6 h-6 hover:bg-gray-100 rounded transition-colors',
+                  'flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-100',
                   isFavorite ? 'text-amber-400' : 'text-gray-300',
                 )}
                 onClick={() => {
@@ -90,7 +90,7 @@ export const Player = () => {
             <div className="flex flex-wrap gap-2 text-sm">
               {isGreatest ? (
                 <Tooltip content="Has won with all races and all classes">
-                  <div className="rounded py-0.5 px-1 bg-amber-300 ring-inset ring-2 ring-amber-600">
+                  <div className="rounded bg-amber-300 py-0.5 px-1 ring-2 ring-inset ring-amber-600">
                     Greatest Player
                   </div>
                 </Tooltip>
@@ -98,19 +98,19 @@ export const Player = () => {
                 <>
                   {isGreat && (
                     <Tooltip content="Has won with all races">
-                      <div className="rounded py-0.5 px-1 bg-amber-300">Great Player</div>
+                      <div className="rounded bg-amber-300 py-0.5 px-1">Great Player</div>
                     </Tooltip>
                   )}
                   {isGreater && (
                     <Tooltip content="Has won with all classes">
-                      <div className="rounded py-0.5 px-1 bg-amber-300">Greater Player</div>
+                      <div className="rounded bg-amber-300 py-0.5 px-1">Greater Player</div>
                     </Tooltip>
                   )}
                 </>
               )}
               {isPolytheist && (
                 <Tooltip content="Has won with all gods">
-                  <div className="rounded py-0.5 px-1 bg-violet-300">Polytheist</div>
+                  <div className="rounded bg-violet-300 py-0.5 px-1">Polytheist</div>
                 </Tooltip>
               )}
             </div>
@@ -135,7 +135,7 @@ export const Player = () => {
           </section>
 
           {!(isGreat && isGreater && isPolytheist) && (
-            <section className="flex flex-row flex-wrap gap-2 items-start text-xs">
+            <section className="flex flex-row flex-wrap items-start gap-2 text-xs">
               {!isGreat && (
                 <Badge
                   title="Great Player"
@@ -169,7 +169,7 @@ export const Player = () => {
           <Games allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
         </div>
       </div>
-      <div className="xl:col-span-2 min-w-0">
+      <div className="min-w-0 xl:col-span-2">
         <Matrix summary={summary} />
       </div>
     </div>
@@ -205,14 +205,14 @@ const Badge = ({
         </div>
       }
     >
-      <div className="rounded py-0.5 px-1 relative overflow-hidden bg-gray-100">
+      <div className="relative overflow-hidden rounded bg-gray-100 py-0.5 px-1">
         <div
-          className="bg-gray-200 absolute top-0 left-0 bottom-0"
+          className="absolute top-0 left-0 bottom-0 bg-gray-200"
           style={{
             width: `${(completed / total) * 100}%`,
           }}
         />
-        <span className="z-[1] relative">
+        <span className="relative z-[1]">
           {title} {completed} of {total}
         </span>
       </div>

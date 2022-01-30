@@ -56,11 +56,11 @@ const SortableItem: FC<{ id: string; className: string }> = ({ id, className, ch
       <button
         {...attributes}
         {...listeners}
-        className="absolute right-full mr-2 flex items-center justify-center w-6 h-6 text-gray-300 hover:text-black hover:bg-gray-200 rounded transition-colors"
+        className="absolute right-full mr-2 flex h-6 w-6 items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="w-4 h-4"
+          className="h-4 w-4"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -251,14 +251,14 @@ const SearchPage = ({ races, classes, gods }: Props) => {
     .filter((x) => x.length > 0);
 
   return (
-    <div className="container mx-auto px-4 min-h-screen flex flex-col pt-4 pb-4 space-y-4 h-screen max-h-screen">
+    <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pt-4 pb-4">
       <header className="flex items-center gap-2 divide-x">
         <Logo />
         <h2 className="pl-2 text-2xl">Search</h2>
       </header>
-      <div className="grid sm:grid-cols-2 gap-4 flex-1 min-h-0">
+      <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
-          <div className="w-full bg-blue-100 rounded px-2 py-1 text-sm">
+          <div className="w-full rounded bg-blue-100 px-2 py-1 text-sm">
             This page in under development, with bugs and suggestions DM @totalnoob on{' '}
             <a
               href="https://discord.gg/pKCNTunFeW"
@@ -305,7 +305,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                 </svg>
               </Tooltip>
               <button
-                className="ml-auto p-1 -mr-1 rounded hover:bg-gray-100"
+                className="ml-auto -mr-1 rounded p-1 hover:bg-gray-100"
                 onClick={() => setFilters(getDefaultFilters())}
               >
                 Reset
@@ -348,7 +348,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                             : null;
 
                         return (
-                          <div key={groupIndex} className={clsx('p-1.5 space-y-3', color)}>
+                          <div key={groupIndex} className={clsx('space-y-3 p-1.5', color)}>
                             {group.map((filter) => {
                               const option = options.find((x) => x.name === filter.option);
 
@@ -365,7 +365,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                   className="flex items-center gap-2"
                                 >
                                   <select
-                                    className="rounded py-1 pl-1 bg-gray-200"
+                                    className="rounded bg-gray-200 py-1 pl-1"
                                     value={filter.option}
                                     onChange={(e) => {
                                       setFilters((state) =>
@@ -389,7 +389,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                   </select>
 
                                   <select
-                                    className="rounded py-1 pl-1 bg-gray-200"
+                                    className="rounded bg-gray-200 py-1 pl-1"
                                     value={filter.condition}
                                     disabled={!filter.option}
                                     onChange={(e) => {
@@ -410,7 +410,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                   </select>
                                   {option.type === 'select' && (
                                     <select
-                                      className="min-w-0 rounded flex-1 py-1 pl-1 bg-gray-200"
+                                      className="min-w-0 flex-1 rounded bg-gray-200 py-1 pl-1"
                                       value={filter.value}
                                       disabled={!filter.condition}
                                       onChange={(e) => {
@@ -436,7 +436,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                       <input
                                         type="text"
                                         placeholder="Enter player name"
-                                        className="w-full rounded py-0.5 px-2 bg-gray-200"
+                                        className="w-full rounded bg-gray-200 py-0.5 px-2"
                                         value={filter.value}
                                         onChange={(e) => {
                                           setFilters((state) =>
@@ -453,7 +453,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
 
                                   <select
                                     className={clsx(
-                                      'rounded py-1 pl-1 bg-gray-200 transition-all',
+                                      'rounded bg-gray-200 py-1 pl-1 transition-all',
                                       !isDragging && !singleFilter && 'translate-y-5',
                                       !isDragging && disabled && 'opacity-0',
                                     )}
@@ -484,7 +484,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
 
                                   <Tooltip content="Remove filter">
                                     <button
-                                      className="flex shrink-0 items-center justify-center ml-auto w-6 h-6 bg-gray-200 rounded text-xs text-red-900"
+                                      className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded bg-gray-200 text-xs text-red-900"
                                       onClick={() => {
                                         setFilters((state) => state.filter((x) => x !== filter));
                                       }}
@@ -514,7 +514,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                 </SortableContext>
               </DndContext>
 
-              <div className="flex justify-between items-center">
+              <div className="flex items-center justify-between">
                 <Tooltip content="Maximum 10 filters at this moment" disabled={filters.length < 10}>
                   <div>
                     <button
@@ -548,7 +548,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                 </Tooltip>
 
                 <button
-                  className="rounded border border-current px-4 py-2 transition-colors bg-gray-800 text-white hover:bg-gray-700"
+                  className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
                   onClick={() => {
                     const nonEmptyFilters = filters.filter((x) => x.value && x.condition);
 
@@ -577,11 +577,11 @@ const SearchPage = ({ races, classes, gods }: Props) => {
           </div>
         </div>
 
-        <div className="flex flex-col min-h-0">
+        <div className="flex min-h-0 flex-col">
           <div className="text-xl">Total: {formatNumber(first(data)?.count ?? 0)}</div>
-          <div className="flex-1 sm:overflow-y-auto py-2 pr-2">
+          <div className="flex-1 py-2 pr-2 sm:overflow-y-auto">
             {isEmpty ? (
-              <div className="flex justify-center items-center py-16">Nothing found ¯\_(ツ)_/¯</div>
+              <div className="flex items-center justify-center py-16">Nothing found ¯\_(ツ)_/¯</div>
             ) : (
               <ul className="space-y-2">
                 {games.map((game) => {
@@ -595,9 +595,9 @@ const SearchPage = ({ races, classes, gods }: Props) => {
             )}
 
             {!isEmpty && !error && (
-              <div className="flex justify-center items-center pt-8 pb-4">
+              <div className="flex items-center justify-center pt-8 pb-4">
                 <button
-                  className="flex justify-center items-center space-x-1"
+                  className="flex items-center justify-center space-x-1"
                   disabled={isLoadingMore || isReachingEnd}
                   onClick={() => setSize(size + 1)}
                 >
@@ -610,9 +610,9 @@ const SearchPage = ({ races, classes, gods }: Props) => {
             )}
 
             {error && (
-              <div className="flex flex-col justify-center items-center pt-8 pb-4">
+              <div className="flex flex-col items-center justify-center pt-8 pb-4">
                 <div>Error occured, try to reload the page</div>
-                {error.message && <code className="p-2 bg-gray-100">{String(error.message)}</code>}
+                {error.message && <code className="bg-gray-100 p-2">{String(error.message)}</code>}
               </div>
             )}
           </div>

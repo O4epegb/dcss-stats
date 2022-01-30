@@ -14,7 +14,7 @@ export const Highlighted = ({ text, query }: { text: string; query: string }) =>
     <span>
       {parts.filter(Boolean).map((part, i) =>
         regex.test(part) ? (
-          <mark key={i} className="font-bold bg-transparent">
+          <mark key={i} className="bg-transparent font-bold">
             {part}
           </mark>
         ) : (

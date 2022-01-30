@@ -189,14 +189,14 @@ const SuggestPage = (props: Props) => {
   return (
     <div
       className={clsx(
-        'container mx-auto px-4 min-h-screen flex flex-col pt-8 pb-8 items-center space-y-4',
+        'container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pt-8 pb-8',
         !data && 'md:justify-center md:pt-0',
       )}
     >
       <header>
         <Logo />
       </header>
-      <div className="w-full m-auto max-w-lg bg-blue-100 rounded px-2 py-1 text-sm">
+      <div className="m-auto w-full max-w-lg rounded bg-blue-100 px-2 py-1 text-sm">
         <span className="font-semibold">TL;DR:</span> pick race, class, or god that you want to play
         (or even all of them). Hit the button to see win rate of your combo, as well as recent games
         of other players (only version 0.27 and 0.28 at this moment).
@@ -211,10 +211,10 @@ const SuggestPage = (props: Props) => {
           RL Discord
         </a>
       </div>
-      <div className="flex flex-wrap gap-2 md:justify-center w-full">
+      <div className="flex w-full flex-wrap gap-2 md:justify-center">
         I want to play
         <select
-          className="rounded p-1 bg-gray-100 hover:bg-gray-200 transition-colors"
+          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
           value={filter.race}
           onChange={(e) => changeFilter('race', e.target.value)}
         >
@@ -226,7 +226,7 @@ const SuggestPage = (props: Props) => {
           ))}
         </select>
         <select
-          className="rounded p-1 bg-gray-100 hover:bg-gray-200 transition-colors"
+          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
           value={filter.class}
           onChange={(e) => changeFilter('class', e.target.value)}
         >
@@ -239,7 +239,7 @@ const SuggestPage = (props: Props) => {
         </select>
         and
         <select
-          className="rounded p-1 bg-gray-100 hover:bg-gray-200 transition-colors"
+          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
           value={filter.god}
           onChange={(e) => changeFilter('god', e.target.value)}
         >
@@ -251,7 +251,7 @@ const SuggestPage = (props: Props) => {
           ))}
         </select>
       </div>
-      <div className="w-full m-auto max-w-lg flex justify-evenly items-center gap-2">
+      <div className="m-auto flex w-full max-w-lg items-center justify-evenly gap-2">
         <Tooltip
           hideOnClick={false}
           disabled={somethingSelected}
@@ -259,7 +259,7 @@ const SuggestPage = (props: Props) => {
         >
           <button
             className={clsx(
-              'flex items-center gap-x-2 rounded border px-4 py-2 transition-colors bg-gray-800 text-white',
+              'flex items-center gap-x-2 rounded border bg-gray-800 px-4 py-2 text-white transition-colors',
               buttonEnabled && 'hover:bg-gray-700',
             )}
             onClick={() => {
@@ -302,15 +302,15 @@ const SuggestPage = (props: Props) => {
           )}
           {data.total > 0 && columns && (
             <>
-              <section className="flex flex-wrap justify-between items-center m-auto w-full max-w-lg">
+              <section className="m-auto flex w-full max-w-lg flex-wrap items-center justify-between">
                 {view === 'stats' && onlyOneFilterWasSelected && (
-                  <div className="w-full flex gap-4">
+                  <div className="flex w-full gap-4">
                     {(['race', 'class', 'god'] as const).map(
                       (key) =>
                         !data[key] && (
                           <label
                             key={key}
-                            className={clsx('flex items-center gap-1 cursor-pointer')}
+                            className={clsx('flex cursor-pointer items-center gap-1')}
                           >
                             <input
                               type="radio"
@@ -325,7 +325,7 @@ const SuggestPage = (props: Props) => {
                     )}
                   </div>
                 )}
-                <label className="flex items-center gap-1 cursor-pointer">
+                <label className="flex cursor-pointer items-center gap-1">
                   <input
                     checked={showWins}
                     className="cursor-pointer"
@@ -334,16 +334,16 @@ const SuggestPage = (props: Props) => {
                   />
                   Show only games with wins
                 </label>
-                <div className="group p-0.5 rounded-lg flex bg-gray-100 hover:bg-gray-200 transition-colors">
+                <div className="group flex rounded-lg bg-gray-100 p-0.5 transition-colors hover:bg-gray-200">
                   {(['stats', 'games'] as const).map((item) => (
                     <button
                       key={item}
-                      className="flex focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded-md focus:outline-none focus-visible:ring-offset-gray-100"
+                      className="flex rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100"
                       onClick={() => setView(item)}
                     >
                       <span
                         className={clsx(
-                          'p-1.5 lg:pl-2.5 lg:pr-2.5 rounded-md text-sm font-medium',
+                          'rounded-md p-1.5 text-sm font-medium lg:pl-2.5 lg:pr-2.5',
                           view === item && 'bg-white shadow-sm ring-1 ring-black ring-opacity-5',
                         )}
                       >
@@ -361,7 +361,7 @@ const SuggestPage = (props: Props) => {
                   ))}
                 </div>
               </section>
-              <section className="w-full m-auto max-w-lg overflow-x-auto xl:overflow-x-visible">
+              <section className="m-auto w-full max-w-lg overflow-x-auto xl:overflow-x-visible">
                 {view === 'stats' ? (
                   <table className="w-full table-auto">
                     <thead>
@@ -374,7 +374,7 @@ const SuggestPage = (props: Props) => {
                                 className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
                               >
                                 <div
-                                  className="whitespace-nowrap inline-flex items-center cursor-pointer select-none"
+                                  className="inline-flex cursor-pointer select-none items-center whitespace-nowrap"
                                   onClick={() =>
                                     setSorting({
                                       key: sortingKey,

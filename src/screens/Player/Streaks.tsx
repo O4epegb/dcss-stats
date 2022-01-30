@@ -20,7 +20,7 @@ export const Streaks = () => {
 
   return (
     <section className="space-y-1">
-      <header className="flex justify-between items-center">
+      <header className="flex items-center justify-between">
         <h2 className="font-bold">
           {streaks.total > 0 ? (
             <>
@@ -31,13 +31,13 @@ export const Streaks = () => {
           )}
         </h2>
         {streaks.current > 0 && (
-          <div className="text-sm text-emerald-500 text-right">
+          <div className="text-right text-sm text-emerald-500">
             🔥 On streak: {streaks.current} wins in a row
           </div>
         )}
       </header>
       {streaks.total > 0 && (
-        <div className="flex items-center gap-2 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-2 whitespace-nowrap text-sm">
           <div className="flex gap-4">
             <List items={[['Best', `${streaks.best} ${addS('win', streaks.best)}`]]} />
             <List
@@ -54,7 +54,7 @@ export const Streaks = () => {
           </div>
           <button
             disabled={isLoading}
-            className="text-blue-400 text-sm py-0.5 hover:underline ml-auto"
+            className="ml-auto py-0.5 text-sm text-blue-400 hover:underline"
             onClick={() => {
               if (streakGroups.length > 0) {
                 setIsVisible((state) => !state);
@@ -101,7 +101,7 @@ export const Streaks = () => {
               <div
                 key={index}
                 className={clsx(
-                  'text-sm py-1 px-2 border rounded border-gray-200 bg-white text-black',
+                  'rounded border border-gray-200 bg-white py-1 px-2 text-sm text-black',
                   isActive && 'border-l-2 border-l-emerald-500',
                 )}
               >
@@ -130,7 +130,7 @@ export const Streaks = () => {
                   </div>
                 )}
                 {firstGame && (
-                  <div className="text-gray-400 text-xs pt-0.5">
+                  <div className="pt-0.5 text-xs text-gray-400">
                     From <span>{date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')}</span>{' '}
                     {!isActive && lastGame && (
                       <>

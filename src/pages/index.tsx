@@ -25,20 +25,20 @@ const MainPage = (props: Props) => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 min-h-screen flex flex-col pt-8 md:pt-0 md:justify-center items-center">
+    <div className="container mx-auto flex min-h-screen flex-col items-center px-4 pt-8 md:justify-center md:pt-0">
       <div className="w-full max-w-lg space-y-4">
-        <header className="w-full flex justify-between items-center">
+        <header className="flex w-full items-center justify-between">
           <Logo />
           <div className="flex gap-5">
             <Link href="/suggest">
               <a className="group">
-                <span className="text-xs sm:text-base group-hover:underline">Combos</span>
+                <span className="text-xs group-hover:underline sm:text-base">Combos</span>
               </a>
             </Link>
             <Link href="/search">
               <a className="group">
-                <span className="text-xs sm:text-base group-hover:underline">Search</span>{' '}
-                <span className="bg-indigo-400 text-white text-xs rounded px-1 py-0.5">beta</span>
+                <span className="text-xs group-hover:underline sm:text-base">Search</span>{' '}
+                <span className="rounded bg-indigo-400 px-1 py-0.5 text-xs text-white">beta</span>
               </a>
             </Link>
           </div>
@@ -50,9 +50,9 @@ const MainPage = (props: Props) => {
           setQuery={setQuery}
         />
         <Stats {...props} onLinkClick={onLinkClick} />
-        <footer className="text-xs text-gray-400 space-y-1">
+        <footer className="space-y-1 text-xs text-gray-400">
           <div>
-            Made by <span className="text-gray-500 font-light">totalnoob</span>, DM on{' '}
+            Made by <span className="font-light text-gray-500">totalnoob</span>, DM on{' '}
             <a
               href="https://discord.gg/pKCNTunFeW"
               target="_blank"
@@ -100,7 +100,7 @@ const Stats = memo(
               <li key={item.name} className="flex justify-between">
                 <Link prefetch={false} href={getPlayerPageHref(item.name)}>
                   <a
-                    className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
                     onClick={(e) => {
                       if (!e.metaKey) {
                         onLinkClick(item.name);
@@ -122,7 +122,7 @@ const Stats = memo(
               <li key={item.name} className="flex justify-between">
                 <Link prefetch={false} href={getPlayerPageHref(item.name)}>
                   <a
-                    className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
                     onClick={(e) => {
                       if (!e.metaKey) {
                         onLinkClick(item.name);
@@ -137,10 +137,10 @@ const Stats = memo(
             ))}
           </ul>
         </div>
-        <h2 className="font-semibold flex justify-between">
+        <h2 className="flex justify-between font-semibold">
           Total games: <span>{formatNumber(games)}</span>
         </h2>
-        <h2 className="font-semibold flex justify-between">
+        <h2 className="flex justify-between font-semibold">
           Total wins: <span>{formatNumber(wins)}</span>
         </h2>
         <div className="space-y-1">
@@ -166,7 +166,7 @@ const Stats = memo(
               <li key={item.name} className="flex justify-between">
                 <Link prefetch={false} href={getPlayerPageHref(item.name)}>
                   <a
-                    className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
                     onClick={(e) => {
                       if (!e.metaKey) {
                         onLinkClick(item.name);
@@ -204,7 +204,7 @@ const Stats = memo(
                 <li key={name}>
                   <Link prefetch={false} href={getPlayerPageHref(name)}>
                     <a
-                      className="overflow-ellipsis overflow-hidden whitespace-nowrap hover:underline"
+                      className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
                       onClick={(e) => {
                         if (!e.metaKey) {
                           onLinkClick(name);
@@ -291,7 +291,7 @@ const Search = ({
       <input
         autoFocus
         placeholder='Type player name, e.g. "MegaDestroyer3000"'
-        className="block border rounded w-full border-gray-400 px-2 h-10"
+        className="block h-10 w-full rounded border border-gray-400 px-2"
         value={query}
         {...getInputProps({
           disabled: isNavigating,
@@ -320,11 +320,11 @@ const Search = ({
 
       <div
         className={clsx(
-          'absolute top-full left-0 z-20 w-full mt-2 overflow-hidden rounded shadow',
+          'absolute top-full left-0 z-20 mt-2 w-full overflow-hidden rounded shadow',
           isOpen ? 'block' : 'hidden',
         )}
       >
-        <ul {...getMenuProps()} className="max-h-64 bg-white py-2 overflow-y-auto">
+        <ul {...getMenuProps()} className="max-h-64 overflow-y-auto bg-white py-2">
           {isOpen && (
             <>
               {isLoading ? (

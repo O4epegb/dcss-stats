@@ -20,7 +20,7 @@ export const Stats = ({ summary }: { summary: Summary }) => {
   const oneAndWonsClass = filter(classes, (value) => value.gamesToFirstWin === 1).length;
 
   return (
-    <section className="text-xs space-y-2">
+    <section className="space-y-2 text-xs">
       <div className="grid grid-cols-2 gap-x-1 gap-y-2">
         <List
           items={[

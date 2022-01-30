@@ -8,19 +8,19 @@ import { Tooltip } from '@components/Tooltip';
 
 const ServersPage = (props: Props) => {
   return (
-    <div className="container mx-auto px-4 min-h-screen flex flex-col pt-4 items-center space-y-4">
+    <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pt-4">
       <header>
         <Logo />
       </header>
 
       <div className="w-full max-w-lg space-y-2">
-        <h2 className="font-semibold text-lg">Tracking 12 {addS('server', 12)}:</h2>
+        <h2 className="text-lg font-semibold">Tracking 12 {addS('server', 12)}:</h2>
 
         {props.servers.map((server) => {
           const total = server.logfile.reduce((acc, item) => acc + item.games, 0);
 
           return (
-            <div key={server.id} className="border rounded px-2 py-1">
+            <div key={server.id} className="rounded border px-2 py-1">
               <div className="flex justify-between">
                 <a
                   href={server.url}
@@ -47,7 +47,7 @@ const ServersPage = (props: Props) => {
                           file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
                         }
                       >
-                        <li className="flex justify-between hover:bg-gray-100 px-1">
+                        <li className="flex justify-between px-1 hover:bg-gray-100">
                           <a
                             href={server.baseUrl + file.path}
                             target="_blank"

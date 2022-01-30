@@ -102,7 +102,7 @@ export const GamesList = (props: {
     <div className="relative">
       {showUp && (
         <button
-          className="w-full sticky top-0 py-4 bg-white/80"
+          className="sticky top-0 w-full bg-white/80 py-4"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           Return to top
@@ -110,7 +110,7 @@ export const GamesList = (props: {
       )}
       <ul className={clsx(isCompactView ? 'divide-y' : 'space-y-2')}>
         {!isLoading && games.length === 0 && (
-          <li className="text-center py-8">No games found ¯\_(ツ)_/¯</li>
+          <li className="py-8 text-center">No games found ¯\_(ツ)_/¯</li>
         )}
         {games.map((game) => {
           return (
@@ -121,9 +121,9 @@ export const GamesList = (props: {
         })}
       </ul>
       {(hasMore || isLoading) && (
-        <div className="flex justify-center items-center pt-8 pb-4">
+        <div className="flex items-center justify-center pt-8 pb-4">
           <button
-            className="flex justify-center items-center space-x-1"
+            className="flex items-center justify-center space-x-1"
             disabled={isLoading}
             onClick={loadMore}
           >

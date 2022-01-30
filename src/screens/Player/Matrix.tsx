@@ -56,7 +56,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
           </Fragment>
         ))}
       </div>
-      <div className="overflow-x-auto xl:overflow-x-visible relative">
+      <div className="relative overflow-x-auto xl:overflow-x-visible">
         {(activeClass || activeRace) && (
           <Tooltip
             reference={tippyRef.current}
@@ -73,7 +73,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   </span>
                 </div>
                 {tooltipStats?.games > 0 ? (
-                  <div className="grid gap-x-2 grid-cols-2 font-light">
+                  <div className="grid grid-cols-2 gap-x-2 font-light">
                     <div>
                       Games:{' '}
                       <span className="font-medium">{formatNumber(tooltipStats?.games)}</span>
@@ -116,7 +116,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
           />
         )}
 
-        <table className="w-auto xl:w-full min-w-full text-center border-collapse text-sm 2xl:text-base">
+        <table className="w-auto min-w-full border-collapse text-center text-sm xl:w-full 2xl:text-base">
           <thead>
             <tr>
               <th className="min-w-[24px]"></th>
@@ -125,7 +125,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                 <th
                   key={klass.abbr}
                   className={clsx(
-                    'whitespace-nowrap min-w-[24px]',
+                    'min-w-[24px] whitespace-nowrap',
 
                     greatClasses[klass.abbr]
                       ? 'bg-amber-200'
