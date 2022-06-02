@@ -55,5 +55,6 @@
       "eslint --max-warnings 0",
       "prettier --write"
     ]
-  }
+  },
+  "packageManager": "yarn@3.2.1"
 }
