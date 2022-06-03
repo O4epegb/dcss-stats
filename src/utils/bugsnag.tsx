@@ -1,4 +1,4 @@
-import React, { ComponentType, ErrorInfo } from 'react';
+import React, { ComponentType, ErrorInfo, ReactNode } from 'react';
 import Bugsnag from '@bugsnag/js';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
 
@@ -13,7 +13,7 @@ if (useBugsnag) {
 }
 
 class DevErrorBoundary extends React.Component<
-  { FallbackComponent: ComponentType },
+  { FallbackComponent: ComponentType; children: ReactNode },
   { error: Error | null; info: ErrorInfo | null }
 > {
   state = {

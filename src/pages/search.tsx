@@ -1,4 +1,4 @@
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, ReactNode } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
 import { orderBy, castArray, pickBy, last, flatten, first } from 'lodash-es';
@@ -37,7 +37,11 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 // send maximum filters from the backend
 // use endAt date for search, not startAt
 
-const SortableItem: FC<{ id: string; className: string }> = ({ id, className, children }) => {
+const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
+  id,
+  className,
+  children,
+}) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
   });

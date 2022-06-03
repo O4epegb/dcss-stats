@@ -141,7 +141,7 @@ export const List = ({ items }: { items: [ReactNode, ReactNode][] }) => (
   </ul>
 );
 
-const GameTooltip: FC<{ game: Game }> = ({ game, children }) => {
+const GameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
   return (
     <HeadlessTooltip
       interactive
