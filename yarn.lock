@@ -97,53 +97,53 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@dnd-kit/core@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "@dnd-kit/core@npm:5.0.3"
+"@dnd-kit/core@npm:^6.0.3":
+  version: 6.0.3
+  resolution: "@dnd-kit/core@npm:6.0.3"
   dependencies:
     "@dnd-kit/accessibility": ^3.0.0
-    "@dnd-kit/utilities": ^3.1.0
+    "@dnd-kit/utilities": ^3.2.0
     tslib: ^2.0.0
   peerDependencies:
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 4ace7c45057ed0a7257ab16b8b0ebf76b135e8d5675d6dd285138b99a17b0edf7f57e02f251b1b17efb055bad32d7c90b96616b6c77b4e775afbfbaddea401c5
+  checksum: c7279e20bd2e15a529a77338c4abaf85e766b94bac55e4924c59ce430e8bb220b4e0871c9f96bb5f50d15a04a3f88b121b103a46f831fb3e98006800dd95fc8b
   languageName: node
   linkType: hard
 
-"@dnd-kit/modifiers@npm:^5.0.0":
-  version: 5.0.0
-  resolution: "@dnd-kit/modifiers@npm:5.0.0"
+"@dnd-kit/modifiers@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@dnd-kit/modifiers@npm:6.0.0"
   dependencies:
-    "@dnd-kit/utilities": ^3.1.0
+    "@dnd-kit/utilities": ^3.2.0
     tslib: ^2.0.0
   peerDependencies:
-    "@dnd-kit/core": ^5.0.0
-  checksum: 93889b8cfc3ba787f8bddaddd4428c121065a02752a5f8dfa38774441c3466b7a9f24555144aced93e2c051087deb01bd073d91654ff1eda28e564591bf700aa
+    "@dnd-kit/core": ^6.0.0
+  checksum: 82c2640627aa9d04641fce2a48e8a374d2c6be6f96d75a110eaf69c043cce84685914e58453d54254b9bfc6041668ee3c34f8c4294b1ce367435900b210336e6
   languageName: node
   linkType: hard
 
-"@dnd-kit/sortable@npm:^6.0.1":
-  version: 6.0.1
-  resolution: "@dnd-kit/sortable@npm:6.0.1"
+"@dnd-kit/sortable@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "@dnd-kit/sortable@npm:7.0.0"
   dependencies:
-    "@dnd-kit/utilities": ^3.1.0
+    "@dnd-kit/utilities": ^3.2.0
     tslib: ^2.0.0
   peerDependencies:
-    "@dnd-kit/core": ^5.0.2
+    "@dnd-kit/core": ^6.0.0
     react: ">=16.8.0"
-  checksum: beb80a229a50885a654ff15ee98af3b34b02826cadd6bc2f94b79dd103a140f70c35d0a3bf422adf87327573ff15dc3e26e9e5769e0f67b68943d8eaa9560183
+  checksum: b7474ce2701c3cd472460ae0fc5ec42044831b006deb8293a26006e114ea7d4a79862205d983ff5cf24331fdd2fa679a4d5e024cb114322f432459d3b0f66f03
   languageName: node
   linkType: hard
 
-"@dnd-kit/utilities@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@dnd-kit/utilities@npm:3.1.0"
+"@dnd-kit/utilities@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@dnd-kit/utilities@npm:3.2.0"
   dependencies:
     tslib: ^2.0.0
   peerDependencies:
     react: ">=16.8.0"
-  checksum: b9cb87dd4a26389aeb667d6b11e3854e00479e4f2842f36d9abc4dfee67fd06e0f75525ab9475462d57b055094a7723169c95362affdd84b0e656b96424c0f8c
+  checksum: 575e554992c5ff26622854b889b6288580f308e1125620a4aae55d0a113d47f05fdb7c6e2023ce51c58d5a206091fc1deac868222dd5f9c35c80c3e2f99db9af
   languageName: node
   linkType: hard
 
@@ -390,10 +390,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0.38":
-  version: 17.0.38
-  resolution: "@types/node@npm:17.0.38"
-  checksum: 9db1c39d603850ced665ab60b8f8ebce674ff9d762dfff0f776d520e71e4d73fdcd4c7f69213b804d878cf3e726911b09cae4ee66e35ae2724538de9f4838681
+"@types/node@npm:^17.0.40":
+  version: 17.0.40
+  resolution: "@types/node@npm:17.0.40"
+  checksum: e3b2fe876672fbe4be84ce17773944eb2f5eaba50e2c6c0536bdf6d4972ed6488581580581f154183fdc8f2d56fa42a42e3d6e83b9b71ee25adea16a84765e92
   languageName: node
   linkType: hard
 
@@ -411,14 +411,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.0.10":
-  version: 18.0.10
-  resolution: "@types/react@npm:18.0.10"
+"@types/react@npm:^18.0.11":
+  version: 18.0.11
+  resolution: "@types/react@npm:18.0.11"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 333c99bd46cc2190ec6f6e4f3fa6cdee07e1d4d028fb2bd895d3927d9de6e86ede57befdc79d9acbfb7b1c058091bf3b38b8de3703f83e0f8cd8d15d7457b3d8
+  checksum: a2138d6929c36a398b0b43eb815b4e67c4f15aeebbdf8b1959edac56b8662d7409020a00540369b4eb1054579b1e8c9549447ae9b0335d5d1ec4ed4e1be2d628
   languageName: node
   linkType: hard
 
@@ -1611,9 +1611,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^8.16.0":
-  version: 8.16.0
-  resolution: "eslint@npm:8.16.0"
+"eslint@npm:^8.17.0":
+  version: 8.17.0
+  resolution: "eslint@npm:8.17.0"
   dependencies:
     "@eslint/eslintrc": ^1.3.0
     "@humanwhocodes/config-array": ^0.9.2
@@ -1652,7 +1652,7 @@ __metadata:
     v8-compile-cache: ^2.0.3
   bin:
     eslint: bin/eslint.js
-  checksum: 654a0200b49dc07280673fee13cdfb04326466790e031dfa9660b69fba3b1cf766a51504328f9de56bd18e6b5eb7578985cf29dc7f016c5ec851220ff9db95eb
+  checksum: b484c96681c6b19f5b437f664623f1cd310d3ee9be88400d8450e086e664cd968a9dc202f0b0678578fd50e7a445b92586efe8c787de5073ff2f83213b00bb7b
   languageName: node
   linkType: hard
 
@@ -3680,14 +3680,14 @@ __metadata:
   dependencies:
     "@bugsnag/js": ^7.16.7
     "@bugsnag/plugin-react": ^7.16.7
-    "@dnd-kit/core": ^5.0.3
-    "@dnd-kit/modifiers": ^5.0.0
-    "@dnd-kit/sortable": ^6.0.1
+    "@dnd-kit/core": ^6.0.3
+    "@dnd-kit/modifiers": ^6.0.0
+    "@dnd-kit/sortable": ^7.0.0
     "@tippyjs/react": ^4.2.6
     "@types/lodash-es": ^4.17.6
-    "@types/node": ^17.0.38
+    "@types/node": ^17.0.40
     "@types/qs": ^6.9.7
-    "@types/react": ^18.0.10
+    "@types/react": ^18.0.11
     "@typescript-eslint/eslint-plugin": ^5.27.0
     "@typescript-eslint/parser": ^5.27.0
     autoprefixer: ^10.4.7
@@ -3695,7 +3695,7 @@ __metadata:
     clsx: ^1.1.1
     dayjs: ^1.11.2
     downshift: ^6.1.7
-    eslint: ^8.16.0
+    eslint: ^8.17.0
     eslint-config-prettier: ^8.5.0
     eslint-plugin-import: ^2.26.0
     eslint-plugin-react: ^7.30.0
@@ -3713,7 +3713,7 @@ __metadata:
     react-use: ^17.4.0
     swr: ^1.3.0
     tailwindcss: ^3.0.24
-    typescript: ^4.7.2
+    typescript: ^4.7.3
   languageName: unknown
   linkType: soft
 
@@ -4339,23 +4339,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.7.2":
-  version: 4.7.2
-  resolution: "typescript@npm:4.7.2"
+"typescript@npm:^4.7.3":
+  version: 4.7.3
+  resolution: "typescript@npm:4.7.3"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 5163585e6b56410f77d5483b698d9489bbee8902c99029eb70cf6d21525a186530ce19a00951af84eefd4a131cc51d0959f5118e25e70ab61f45ac4057dbd1ef
+  checksum: fd13a1ce53790a36bb8350e1f5e5e384b5f6cb9b0635114a6d01d49cb99916abdcfbc13c7521cdae2f2d3f6d8bc4a8ae7625edf645a04ee940588cd5e7597b2f
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.7.2#~builtin<compat/typescript>":
-  version: 4.7.2
-  resolution: "typescript@patch:typescript@npm%3A4.7.2#~builtin<compat/typescript>::version=4.7.2&hash=7ad353"
+"typescript@patch:typescript@^4.7.3#~builtin<compat/typescript>":
+  version: 4.7.3
+  resolution: "typescript@patch:typescript@npm%3A4.7.3#~builtin<compat/typescript>::version=4.7.3&hash=7ad353"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 7e2b9a9f4a70fb7616f1b0d986977f8e34a74f046202fa7f24fdee79589598277810fa216b3776c20c0683a9235872c73be34fdb93f67f98c1efaca40999422f
+  checksum: 137d18a77f52254a284960b16ab53d0619f57b69b5d585804b8413f798a1175ce3e774fb95e6a101868577aafe357d8fcfc9171f0dc9fc0c210e9ae59d107cc0
   languageName: node
   linkType: hard
 

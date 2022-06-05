@@ -60,7 +60,10 @@ const SortableItem: FC<{ id: string; className: string; children: ReactNode }> =
       <button
         {...attributes}
         {...listeners}
-        className="absolute right-full mr-2 flex h-6 w-6 items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black"
+        className={clsx(
+          isDragging ? 'cursor-grabbing' : 'cursor-grab',
+          'absolute right-full mr-2 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
+        )}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
