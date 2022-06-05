@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useState, useCallback, memo, Fragment, useEffect } from 'react';
+import { useState, useCallback, memo, useEffect, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
@@ -93,71 +93,27 @@ const Stats = memo(
 
     return (
       <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
-        <div className="space-y-1">
-          <div className="flex justify-between gap-1">
-            <h2 className="font-semibold ">Top by win rate, %:</h2>
-            <Tooltip content="Minimum 75 games played">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-gray-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </Tooltip>
-          </div>
-          <ul>
-            {top.byWinrate.map((item) => (
-              <li key={item.name} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
-                  <a
-                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
-                    onClick={(e) => {
-                      if (!e.metaKey) {
-                        onLinkClick(item.name);
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-                <span className="tabular-nums">
-                  {formatNumber(item.winrate * 100, {
-                    maximumFractionDigits: 2,
-                    minimumFractionDigits: 2,
-                  })}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="space-y-1">
-          <h2 className="font-semibold">Top by wins:</h2>
-          <ul>
-            {top.byWins.map((item) => (
-              <li key={item.name} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
-                  <a
-                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
-                    onClick={(e) => {
-                      if (!e.metaKey) {
-                        onLinkClick(item.name);
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-                <span className="tabular-nums">{formatNumber(item.wins)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <List
+          title="Top by win rate, %"
+          tooltip="Minimum 75 games played"
+          items={top.byWinrate.map((item) => ({
+            name: item.name,
+            count: formatNumber(item.winrate * 100, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            }),
+          }))}
+          onLinkClick={onLinkClick}
+        />
+        <List
+          title="Top by wins"
+          items={top.byWins.map((item) => ({
+            name: item.name,
+            count: formatNumber(item.wins),
+          }))}
+          onLinkClick={onLinkClick}
+        />
+
         <h2 className="flex justify-between font-semibold">
           Total games: <span>{formatNumber(games)}</span>
         </h2>
@@ -165,65 +121,98 @@ const Stats = memo(
           Total wins: <span>{formatNumber(wins)}</span>
         </h2>
 
-        <div className="space-y-1">
-          <h2 className="font-semibold">Top by distinct titles earned:</h2>
-          <ul>
-            {top.byTitles.map((item) => (
-              <li key={item.name} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
-                  <a
-                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
-                    onClick={(e) => {
-                      if (!e.metaKey) {
-                        onLinkClick(item.name);
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-                <span className="tabular-nums">{formatNumber(item.titles)}</span>
+        <List
+          title="Top by distinct titles earned"
+          items={top.byTitles.map((item) => ({
+            name: item.name,
+            count: formatNumber(item.titles),
+          }))}
+          onLinkClick={onLinkClick}
+        />
+
+        <List
+          title="Your favorites"
+          placeholder={
+            favorites && favorites.length === 0 ? (
+              <li className="text-gray-400">
+                Nobody added yet
+                <div>
+                  Use <span className="font-medium">star</span> icon on player page near their name
+                </div>
+                <div>Data stored locally on your device</div>
               </li>
-            ))}
-          </ul>
-        </div>
-        <div className="space-y-1">
-          <h2 className="font-semibold ">Your favorites:</h2>
-          {favorites && (
-            <ul className="max-h-[200px] overflow-y-auto">
-              {favorites.length === 0 && (
-                <li className="text-gray-400">
-                  Nobody added yet
-                  <div>
-                    Use <span className="font-medium">star</span> icon on player page near their
-                    name
-                  </div>
-                  <div>Data stored locally on your device</div>
-                </li>
-              )}
-              {favorites.map((name) => (
-                <li key={name}>
-                  <Link prefetch={false} href={getPlayerPageHref(name)}>
-                    <a
-                      className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
-                      onClick={(e) => {
-                        if (!e.metaKey) {
-                          onLinkClick(name);
-                        }
-                      }}
-                    >
-                      {name}
-                    </a>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+            ) : undefined
+          }
+          items={(favorites ?? []).map((name) => ({
+            name,
+          }))}
+          onLinkClick={onLinkClick}
+        />
       </div>
     );
   },
 );
+
+const List = ({
+  title,
+  tooltip,
+  items,
+  placeholder,
+  onLinkClick,
+}: {
+  title: string;
+  items: Array<{
+    name: string;
+    count?: string;
+  }>;
+  onLinkClick: (name: string) => void;
+  placeholder?: ReactNode;
+  tooltip?: string;
+}) => {
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between gap-1">
+        <h2 className="font-semibold ">{title}:</h2>
+        {tooltip && (
+          <Tooltip content={tooltip}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </Tooltip>
+        )}
+      </div>
+      <div>
+        {placeholder}
+        {items.map((item) => (
+          <Link key={item.name} prefetch={false} href={getPlayerPageHref(item.name)}>
+            <a
+              className=" round -mx-1 flex justify-between px-1 hover:bg-amber-100"
+              onClick={(e) => {
+                if (!e.metaKey && !e.ctrlKey) {
+                  onLinkClick(item.name);
+                }
+              }}
+            >
+              <span className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
+                {item.name}
+              </span>
+              {item.count && <span className="tabular-nums">{item.count}</span>}
+            </a>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 type SearchItem = Player;
 
