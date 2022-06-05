@@ -19,6 +19,7 @@ export const GamesList = (props: {
   runes?: number[];
   includePlayer?: boolean;
   isCompactView?: boolean;
+  orderBy?: keyof Pick<Game, 'startAt' | 'endAt'>;
   onChange?: (games: Game[], count: number) => void;
 }) => {
   const {
@@ -32,6 +33,7 @@ export const GamesList = (props: {
     runes,
     includePlayer,
     isCompactView,
+    orderBy,
     onChange,
   } = props;
 
@@ -58,6 +60,7 @@ export const GamesList = (props: {
           god,
           version,
           runes,
+          orderBy,
         },
       })
       .then((res) => {
@@ -96,7 +99,7 @@ export const GamesList = (props: {
     }
 
     loadData();
-  }, [race, klass, god, isWin, version, runes]);
+  }, [race, klass, god, isWin, String(version), runes]);
 
   return (
     <div className="relative">

@@ -6,12 +6,13 @@ import {
   flow,
   map,
   orderBy,
-  some,
   every,
   castArray,
   pickBy,
   groupBy,
   noop,
+  omit,
+  filter as _filter,
 } from 'lodash-es';
 import { useRouter } from 'next/router';
 import { api } from '@api';
@@ -31,13 +32,14 @@ enum Filter {
 type Stats = { wins: number; total: number };
 type Combos = Record<string, Stats>;
 type SuggestResponse = Stats & { combos: Combos };
-type Data = SuggestResponse & { race?: Race; class?: Class; god?: God };
+type Data = SuggestResponse & { race?: Race; class?: Class; god?: God; version?: string };
 
 const SuggestPage = (props: Props) => {
   type SortingKey = keyof ReturnType<typeof normalizeData>[number];
 
   const router = useRouter();
 
+  const versions = props.versions;
   const allRaces = props.races;
   const allClasses = props.classes;
   const allGods = props.gods;
@@ -57,29 +59,35 @@ const SuggestPage = (props: Props) => {
     race: Filter.Any as string,
     class: Filter.Any as string,
     god: Filter.Any as string,
+    version: versions[0],
   }));
-  const [groupingKey, setGroupingKey] = useState<keyof typeof filter>();
+  const [groupingKey, setGroupingKey] = useState<keyof Omit<typeof filter, 'version'>>();
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
     setFilter((current) => ({ ...current, [key]: value }));
   };
 
-  const somethingSelected = some(filter, (value) => value !== Filter.Any);
+  const somethingSelected = _filter(filter, (value) => value !== Filter.Any).length > 1;
   const buttonEnabled = !isLoading && somethingSelected;
 
   useEffect(() => {
-    const qRace = castArray(router.query.race)[0];
-    const qClass = castArray(router.query.class)[0];
-    const qGod = castArray(router.query.god)[0];
+    const [qRace, qClass, qGod, qVersion] = [
+      router.query.race,
+      router.query.class,
+      router.query.god,
+      router.query.version,
+    ].map((x) => castArray(x)[0]);
 
     const race = races.find((x) => x.name === qRace);
     const klass = classes.find((x) => x.name === qClass);
     const god = gods.find((x) => x.name === qGod);
+    const version = versions.find((x) => x === qVersion);
 
     const somethingInvalid = [
       [qRace, race],
       [qClass, klass],
       [qGod, god],
+      [qVersion, version],
     ].some(([qItem, item]) => qItem && !item);
 
     if (somethingInvalid) {
@@ -94,7 +102,8 @@ const SuggestPage = (props: Props) => {
       race: race?.name || Filter.Any,
       class: klass?.name || Filter.Any,
       god: god?.name || Filter.Any,
-    };
+      version: version || versions[0],
+    } as const;
 
     setFilter(newFilter);
 
@@ -102,9 +111,10 @@ const SuggestPage = (props: Props) => {
       race,
       class: klass,
       god,
+      version,
     };
 
-    if (every(newFilter, (value) => value === Filter.Any) || isLoading) {
+    if (every(omit(newFilter, 'version'), (value) => value === Filter.Any) || isLoading) {
       return;
     }
 
@@ -116,6 +126,7 @@ const SuggestPage = (props: Props) => {
           race: selected.race?.abbr,
           class: selected.class?.abbr,
           god: selected.god?.name,
+          version: selected.version,
         },
       })
       .then((res) => {
@@ -196,10 +207,11 @@ const SuggestPage = (props: Props) => {
       <header>
         <Logo />
       </header>
-      <div className="m-auto w-full max-w-lg rounded bg-blue-100 px-2 py-1 text-sm">
+      <div className="m-auto w-full max-w-md rounded bg-blue-100 px-2 py-1 text-sm">
         <span className="font-semibold">TL;DR:</span> pick race, class, or god that you want to play
-        (or even all of them). Hit the button to see win rate of your combo, as well as recent games
-        of other players (only version 0.27 and 0.28 at this moment).
+        (or any combination of them). Hit the button to see win rate of your combo, as well as games
+        of other players.
+        <br />
         <br />
         This tool in under development, with bugs and suggestions DM @totalnoob on{' '}
         <a
@@ -251,13 +263,14 @@ const SuggestPage = (props: Props) => {
           ))}
         </select>
       </div>
-      <div className="m-auto flex w-full max-w-lg items-center justify-evenly gap-2">
+      <div className="m-auto flex w-full max-w-lg items-center justify-center gap-2">
         <Tooltip
           hideOnClick={false}
           disabled={somethingSelected}
           content="Select at least one option above"
         >
           <button
+            type="button"
             className={clsx(
               'flex items-center gap-x-2 rounded border bg-gray-800 px-4 py-2 text-white transition-colors',
               buttonEnabled && 'hover:bg-gray-700',
@@ -270,6 +283,7 @@ const SuggestPage = (props: Props) => {
                       race: filter.race,
                       class: filter.class,
                       god: filter.god,
+                      version: filter.version,
                     },
                     (value) => value !== Filter.Any,
                   ),
@@ -281,6 +295,18 @@ const SuggestPage = (props: Props) => {
             {isLoading && <Loader />}
           </button>
         </Tooltip>
+
+        <select
+          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
+          value={filter.version}
+          onChange={(e) => changeFilter('version', e.target.value)}
+        >
+          {versions.map((version) => (
+            <option key={version} value={version}>
+              v{version}
+            </option>
+          ))}
+        </select>
       </div>
 
       {data && (
@@ -297,7 +323,7 @@ const SuggestPage = (props: Props) => {
           </div>
           {data.total === 0 && (
             <div>
-              {data.total === 0 && 'No recent games recorded for this combo, try another one'}
+              {data.total === 0 && 'No games recorded for this combination, try another one'}
             </div>
           )}
           {data.total > 0 && columns && (
@@ -437,9 +463,9 @@ const SuggestPage = (props: Props) => {
                                 {!columns[2][3] && (
                                   <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>
                                 )}
-                                <td className="text-right">{item.total}</td>
-                                <td className="text-right">{item.wins}</td>
-                                <td className="text-right">
+                                <td className="text-right tabular-nums">{item.total}</td>
+                                <td className="text-right tabular-nums">{item.wins}</td>
+                                <td className="text-right tabular-nums">
                                   {formatNumber(item.winrate, {
                                     maximumFractionDigits: 2,
                                     minimumFractionDigits: 2,
@@ -455,12 +481,13 @@ const SuggestPage = (props: Props) => {
                 ) : (
                   <GamesList
                     includePlayer
+                    orderBy="endAt"
                     initialTotal={0}
                     isWin={showWins || undefined}
                     race={data.race?.abbr}
                     class={data.class?.abbr}
                     god={data.god?.name}
-                    version={['0.27', '0.28']}
+                    version={data.version ? [data.version] : []}
                   />
                 )}
               </section>
@@ -478,6 +505,7 @@ type Response = {
   races: Race[];
   classes: Class[];
   gods: God[];
+  versions: string[];
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -489,6 +517,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       races: orderBy(data.races, (x) => x.name),
       classes: orderBy(data.classes, (x) => x.name),
       gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
+      versions: data.versions,
     },
   };
 };
