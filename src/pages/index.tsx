@@ -94,56 +94,6 @@ const Stats = memo(
     return (
       <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
         <div className="space-y-1">
-          <h2 className="font-semibold">Top by games:</h2>
-          <ul>
-            {top.byGames.map((item) => (
-              <li key={item.name} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
-                  <a
-                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
-                    onClick={(e) => {
-                      if (!e.metaKey) {
-                        onLinkClick(item.name);
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-                <span className="tabular-nums">{formatNumber(item.games)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="space-y-1">
-          <h2 className="font-semibold">Top by wins:</h2>
-          <ul>
-            {top.byWins.map((item) => (
-              <li key={item.name} className="flex justify-between">
-                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
-                  <a
-                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
-                    onClick={(e) => {
-                      if (!e.metaKey) {
-                        onLinkClick(item.name);
-                      }
-                    }}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-                <span className="tabular-nums">{formatNumber(item.wins)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <h2 className="flex justify-between font-semibold">
-          Total games: <span>{formatNumber(games)}</span>
-        </h2>
-        <h2 className="flex justify-between font-semibold">
-          Total wins: <span>{formatNumber(wins)}</span>
-        </h2>
-        <div className="space-y-1">
           <div className="flex justify-between gap-1">
             <h2 className="font-semibold ">Top by win rate, %:</h2>
             <Tooltip content="Minimum 75 games played">
@@ -182,6 +132,57 @@ const Stats = memo(
                     minimumFractionDigits: 2,
                   })}
                 </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="space-y-1">
+          <h2 className="font-semibold">Top by wins:</h2>
+          <ul>
+            {top.byWins.map((item) => (
+              <li key={item.name} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
+                  <a
+                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
+                    onClick={(e) => {
+                      if (!e.metaKey) {
+                        onLinkClick(item.name);
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </a>
+                </Link>
+                <span className="tabular-nums">{formatNumber(item.wins)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <h2 className="flex justify-between font-semibold">
+          Total games: <span>{formatNumber(games)}</span>
+        </h2>
+        <h2 className="flex justify-between font-semibold">
+          Total wins: <span>{formatNumber(wins)}</span>
+        </h2>
+
+        <div className="space-y-1">
+          <h2 className="font-semibold">Top by distinct titles earned:</h2>
+          <ul>
+            {top.byTitles.map((item) => (
+              <li key={item.name} className="flex justify-between">
+                <Link prefetch={false} href={getPlayerPageHref(item.name)}>
+                  <a
+                    className="overflow-hidden overflow-ellipsis whitespace-nowrap hover:underline"
+                    onClick={(e) => {
+                      if (!e.metaKey) {
+                        onLinkClick(item.name);
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </a>
+                </Link>
+                <span className="tabular-nums">{formatNumber(item.titles)}</span>
               </li>
             ))}
           </ul>
@@ -368,9 +369,9 @@ type Response = {
   games: number;
   wins: number;
   top: {
-    byGames: Array<Pick<Player, 'name'> & { games: number }>;
     byWins: Array<Pick<Player, 'name'> & { wins: number }>;
     byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>;
+    byTitles: Array<Pick<Player, 'name'> & { titles: number }>;
   };
 };
 
