@@ -195,7 +195,7 @@ const List = ({
         {items.map((item) => (
           <Link key={item.name} prefetch={false} href={getPlayerPageHref(item.name)}>
             <a
-              className=" round -mx-1 flex justify-between px-1 hover:bg-amber-100"
+              className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100"
               onClick={(e) => {
                 if (!e.metaKey && !e.ctrlKey) {
                   onLinkClick(item.name);

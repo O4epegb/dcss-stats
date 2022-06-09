@@ -481,6 +481,7 @@ const SuggestPage = (props: Props) => {
                 ) : (
                   <GamesList
                     includePlayer
+                    showSkills
                     orderBy="endAt"
                     initialTotal={0}
                     isWin={showWins || undefined}

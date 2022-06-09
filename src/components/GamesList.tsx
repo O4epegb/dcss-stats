@@ -19,6 +19,7 @@ export const GamesList = (props: {
   runes?: number[];
   includePlayer?: boolean;
   isCompactView?: boolean;
+  showSkills?: boolean;
   orderBy?: keyof Pick<Game, 'startAt' | 'endAt'>;
   onChange?: (games: Game[], count: number) => void;
 }) => {
@@ -33,6 +34,7 @@ export const GamesList = (props: {
     runes,
     includePlayer,
     isCompactView,
+    showSkills,
     orderBy,
     onChange,
   } = props;
@@ -118,7 +120,7 @@ export const GamesList = (props: {
         {games.map((game) => {
           return (
             <li key={game.id}>
-              <GameComponent game={game} includePlayer={includePlayer} />
+              <GameComponent game={game} includePlayer={includePlayer} showSkills={showSkills} />
             </li>
           );
         })}

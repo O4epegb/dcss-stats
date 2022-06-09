@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import Link from 'next/link';
-import { first } from 'lodash-es';
-import { forwardRef } from 'react';
+import { first, without } from 'lodash-es';
+import { forwardRef, memo } from 'react';
 import { addS, date, formatNumber, getPlayerPageHref } from '@utils';
 import { Game } from '@types';
 import externalLinkSvg from '@icons/external.svg';
@@ -10,17 +10,25 @@ type Props = {
   game: Game;
   includePlayer?: boolean;
   shadow?: boolean;
+  showSkills?: boolean;
 };
 
-export const GameItem = forwardRef<HTMLDivElement, Props>(
-  ({ game, includePlayer, shadow }, ref) => {
+export const GameItem = memo(
+  forwardRef<HTMLDivElement, Props>(({ game, includePlayer, shadow, showSkills }, ref) => {
     const duration = date.duration(game.duration, 'seconds');
+
+    const skills = showSkills
+      ? without(game.fifteenskills, ...game.maxskills)
+          .map((name) => ({ name, isMax: false }))
+          .concat(game.maxskills.map((name) => ({ name, isMax: true })))
+          .sort((a, b) => a.name.localeCompare(b.name))
+      : [];
 
     return (
       <div
         ref={ref}
         className={clsx(
-          'rounded border border-gray-200 bg-white py-1 px-2 text-sm text-black',
+          'flex-1 rounded border border-gray-200 bg-white py-1 px-2 text-sm text-black',
           game.isWin && 'border-l-2 border-l-emerald-500',
           shadow && 'shadow-md',
         )}
@@ -63,7 +71,7 @@ export const GameItem = forwardRef<HTMLDivElement, Props>(
             'Was an Atheist'
           )}
         </div>
-        <div className="">
+        <div>
           <span className="text-red-800">str:{game.str}</span>{' '}
           <span className="text-blue-800">int:{game.int}</span>{' '}
           <span className="text-green-800">dex:{game.dex}</span>{' '}
@@ -71,6 +79,15 @@ export const GameItem = forwardRef<HTMLDivElement, Props>(
           {game.ev != null && <span className="text-violet-800">ev:{game.ev}</span>}{' '}
           {game.sh != null && <span className="text-sky-800">sh:{game.sh}</span>}
         </div>
+        {skills.length > 0 && (
+          <div className="flex flex-wrap gap-x-2">
+            {skills.map(({ name, isMax }) => (
+              <div key={name} className={clsx(isMax ? 'text-amber-700' : 'text-gray-700')}>
+                {name}
+              </div>
+            ))}
+          </div>
+        )}
         <div className="flex justify-between gap-2 pt-0.5 text-xs text-gray-400">
           <div>
             {formatNumber(game.score)} score points, {formatNumber(game.turns)} turns, lasted for{' '}
@@ -88,14 +105,14 @@ export const GameItem = forwardRef<HTMLDivElement, Props>(
         </div>
       </div>
     );
-  },
+  }),
 );
 
 export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
   const duration = date.duration(game.duration, 'seconds');
 
   return (
-    <div ref={ref} className="py-0.5">
+    <div ref={ref} className="flex-1 py-0.5">
       <div className="text-sm">
         <MorgueLink game={game} />
         {game.char}
