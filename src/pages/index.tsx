@@ -76,6 +76,15 @@ const MainPage = (props: Props) => {
             >
               Github
             </a>
+
+            <a
+              href="https://www.buymeacoffee.com/totalnoob"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              Donate to support this site
+            </a>
           </div>
         </footer>
       </div>
