@@ -54,20 +54,20 @@ const MainPage = (props: Props) => {
         />
         <Stats {...props} onLinkClick={onLinkClick} />
 
-        <footer className="space-y-1 text-xs text-gray-400">
+        <footer className="grid justify-between gap-1 text-xs text-gray-400 md:grid-cols-2">
           <div>
-            Made by <span className="font-light text-gray-500">totalnoob</span>, DM on{' '}
+            Player and game statistics for{' '}
             <a
-              href="https://discord.gg/pKCNTunFeW"
+              href="https://crawl.develz.org/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:underline"
             >
-              RL Discord
-            </a>{' '}
-            with bugs and suggestions
+              Dungeon Crawl Stone Soup
+            </a>
           </div>
-          <div className="flex gap-4">
+
+          <div className="flex gap-4 md:justify-end">
             <Link prefetch={false} href="/servers">
               <a className="hover:underline">Tracked servers</a>
             </Link>
@@ -89,6 +89,19 @@ const MainPage = (props: Props) => {
             >
               Donate to support this site
             </a>
+          </div>
+
+          <div>
+            Made by <span className="font-light text-gray-500">totalnoob</span>, DM on{' '}
+            <a
+              href="https://discord.gg/pKCNTunFeW"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              RL Discord
+            </a>{' '}
+            with bugs and suggestions
           </div>
         </footer>
       </div>
