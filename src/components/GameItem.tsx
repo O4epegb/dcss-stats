@@ -194,7 +194,7 @@ const MorgueLink = ({ game }: { game: Game }) => {
     <a
       className="float-right h-5 w-5 bg-center bg-no-repeat"
       target="_blank"
-      href={`${game.server.morgueUrl}/${game.name}/${getMorgueFileName(game)}`}
+      href={getMorgueUrl(game.server.morgueUrl, game)}
       rel="noopener noreferrer"
       title="Morgue"
       style={{
@@ -204,8 +204,10 @@ const MorgueLink = ({ game }: { game: Game }) => {
   );
 };
 
-const getMorgueFileName = (game: Game) => {
-  return `morgue-${game.name}-${date(game.endAt).utc().format('YYYYMMDD-HHmmss')}.txt`;
+export const getMorgueUrl = (morgueUrl: string, game: Game) => {
+  return `${morgueUrl}/${game.name}/morgue-${game.name}-${date(game.endAt)
+    .utc()
+    .format('YYYYMMDD-HHmmss')}.txt`;
 };
 
 const breakpoints = [30, 50, 75, 100, 120, 160];

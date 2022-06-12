@@ -4,16 +4,19 @@ import { useState, useCallback, memo, useEffect, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
-import { debounce, orderBy, startsWith } from 'lodash-es';
+import { debounce, map, orderBy, startsWith } from 'lodash-es';
+import dayjs from 'dayjs';
 import { api } from '@api';
-import { formatNumber, getPlayerPageHref, RaceConditionGuard } from '@utils';
-import { Player } from '@types';
+import { formatDuration, formatNumber, getPlayerPageHref, RaceConditionGuard } from '@utils';
+import { Class, Game, God, Player, Race } from '@types';
 import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { getFavorites } from '@screens/Player/utils';
 import { Loader } from '@components/Loader';
 import { Tooltip } from '@components/Tooltip';
+import { getMorgueUrl } from '@components/GameItem';
+import { WinrateStats } from '@components/WinrateStats';
 
 const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -26,7 +29,7 @@ const MainPage = (props: Props) => {
 
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center px-4 pt-8 md:justify-center md:pt-0">
-      <div className="w-full max-w-lg space-y-4">
+      <div className="w-full max-w-5xl space-y-4 py-4">
         <header className="flex w-full items-center justify-between">
           <Logo />
           <div className="flex gap-5">
@@ -50,6 +53,7 @@ const MainPage = (props: Props) => {
           setQuery={setQuery}
         />
         <Stats {...props} onLinkClick={onLinkClick} />
+
         <footer className="space-y-1 text-xs text-gray-400">
           <div>
             Made by <span className="font-light text-gray-500">totalnoob</span>, DM on{' '}
@@ -92,75 +96,332 @@ const MainPage = (props: Props) => {
   );
 };
 
+type NormalizedData = {
+  race: Race | undefined;
+  class: Class | undefined;
+  god: God | undefined;
+  winrate: number;
+  wins: number;
+  total: number;
+}[];
+
 const Stats = memo(
-  ({ wins, games, top, onLinkClick }: Props & { onLinkClick: (name: string) => void }) => {
+  ({
+    wins,
+    games,
+    top,
+    races,
+    classes,
+    gods,
+    combosData,
+    onLinkClick,
+  }: Props & { onLinkClick: (name: string) => void }) => {
     const [favorites, setFavorites] = useState<null | string[]>(null);
 
     useEffect(() => {
       setFavorites(getFavorites().split(',').filter(Boolean));
     }, []);
 
+    const data: NormalizedData = map(combosData.combos, (value, key) => {
+      const [raceAbbr, classAbbr, godName] = key.split(',');
+
+      return {
+        ...value,
+        race: races.find((x) => x.abbr === raceAbbr),
+        class: classes.find((x) => x.abbr === classAbbr),
+        god: gods.find((x) => x.name === godName),
+        winrate: (value.wins / value.total) * 100,
+      };
+    });
+
     return (
-      <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
-        <List
-          title="Top by win rate, %"
-          tooltip="Minimum 75 games played"
-          items={top.byWinrate.map((item) => ({
-            name: item.name,
-            count: formatNumber(item.winrate * 100, {
-              maximumFractionDigits: 2,
-              minimumFractionDigits: 2,
-            }),
-          }))}
+      <div className="flex flex-col gap-x-10 gap-y-4">
+        <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-2">
+          <div className="grid grid-cols-2 gap-x-10 gap-y-4 text-sm">
+            <List
+              title="Top by win rate, %"
+              tooltip="Minimum 75 games played"
+              items={top.byWinrate.map((item) => ({
+                name: item.name,
+                count: formatNumber(item.winrate * 100, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                }),
+              }))}
+              onLinkClick={onLinkClick}
+            />
+            <List
+              title="Top by wins"
+              items={top.byWins.map((item) => ({
+                name: item.name,
+                count: formatNumber(item.wins),
+              }))}
+              onLinkClick={onLinkClick}
+            />
+
+            <h2 className="flex justify-between font-semibold">
+              Total games: <span>{formatNumber(games)}</span>
+            </h2>
+            <h2 className="flex justify-between font-semibold">
+              Total wins: <span>{formatNumber(wins)}</span>
+            </h2>
+
+            <List
+              title="Top by distinct titles earned"
+              items={top.byTitles.map((item) => ({
+                name: item.name,
+                count: formatNumber(item.titles),
+              }))}
+              onLinkClick={onLinkClick}
+            />
+
+            <List
+              title="Your favorites"
+              placeholder={
+                favorites && favorites.length === 0 ? (
+                  <li className="text-gray-400">
+                    Nobody added yet
+                    <div>
+                      Use <span className="font-medium">star</span> icon on player page near their
+                      name
+                    </div>
+                    <div>Data stored locally on your device</div>
+                  </li>
+                ) : undefined
+              }
+              items={(favorites ?? []).map((name) => ({
+                name,
+              }))}
+              onLinkClick={onLinkClick}
+            />
+          </div>
+
+          <hr className="md:hidden" />
+
+          <div className="space-y-1 text-sm">
+            <h2 className="font-semibold">Popular picks in the last 7 days</h2>
+            <div className="space-y-2">
+              <PopularList title="By wins" data={orderBy(data, (x) => x.wins, 'desc')} />
+              <PopularList
+                title="By winrate"
+                tooltip="Minimum 10 games played"
+                data={orderBy(
+                  data.filter((x) => x.total > 10),
+                  (x) => x.winrate,
+                  'desc',
+                )}
+              />
+              <PopularList
+                title="By total amount of games"
+                data={orderBy(data, (x) => x.total, 'desc')}
+              />
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <div className="rounded bg-indigo-400 p-2 text-white">
+          [WIP] Bot games will be excluded soon
+        </div>
+
+        <Table
+          games={top.gamesByTC}
+          title="Fastest wins by turn count"
+          highlight="Turns"
           onLinkClick={onLinkClick}
         />
-        <List
-          title="Top by wins"
-          items={top.byWins.map((item) => ({
-            name: item.name,
-            count: formatNumber(item.wins),
-          }))}
+        <Table
+          games={top.gamesByDuration}
+          title="Fastest wins by realtime"
+          highlight="Duration"
           onLinkClick={onLinkClick}
         />
-
-        <h2 className="flex justify-between font-semibold">
-          Total games: <span>{formatNumber(games)}</span>
-        </h2>
-        <h2 className="flex justify-between font-semibold">
-          Total wins: <span>{formatNumber(wins)}</span>
-        </h2>
-
-        <List
-          title="Top by distinct titles earned"
-          items={top.byTitles.map((item) => ({
-            name: item.name,
-            count: formatNumber(item.titles),
-          }))}
-          onLinkClick={onLinkClick}
-        />
-
-        <List
-          title="Your favorites"
-          placeholder={
-            favorites && favorites.length === 0 ? (
-              <li className="text-gray-400">
-                Nobody added yet
-                <div>
-                  Use <span className="font-medium">star</span> icon on player page near their name
-                </div>
-                <div>Data stored locally on your device</div>
-              </li>
-            ) : undefined
-          }
-          items={(favorites ?? []).map((name) => ({
-            name,
-          }))}
+        <Table
+          games={top.gamesByScore}
+          title="Top highscores"
+          highlight="Score"
           onLinkClick={onLinkClick}
         />
       </div>
     );
   },
 );
+
+const PopularList = ({
+  title,
+  data,
+  tooltip,
+}: {
+  title: string;
+  data: NormalizedData;
+  tooltip?: string;
+}) => {
+  return (
+    <div>
+      <div className="flex gap-1">
+        <div className="font-semibold">{title}:</div>
+        {tooltip && (
+          <Tooltip content={tooltip}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-400"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </Tooltip>
+        )}
+      </div>
+      <div>
+        {data.slice(0, 5).map((x, index) => (
+          <div key={index} className="flex justify-between">
+            <div>
+              {x.race?.abbr}
+              {x.class?.abbr} {x.god?.name && `of ${x.god?.name}`}
+            </div>
+            <WinrateStats small games={x.total} wins={x.wins} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const Table = ({
+  games,
+  title,
+  highlight,
+  onLinkClick,
+}: {
+  games: Game[];
+  title: string;
+  highlight: typeof tableData[number]['title'];
+  onLinkClick: (name: string) => void;
+}) => {
+  const tableData = [
+    {
+      title: 'Player',
+      type: 'string',
+      getter: (game: Game) => (
+        <>
+          {game.server && (
+            <a
+              className="absolute top-0 left-0 bottom-0 right-0"
+              href={getMorgueUrl(game.server.morgueUrl, game)}
+              target="_blank"
+              rel="noreferrer"
+            ></a>
+          )}
+          <Link key={game.name} prefetch={false} href={getPlayerPageHref(game.name)}>
+            <a
+              className="relative hover:underline"
+              onClick={(e) => {
+                if (!e.metaKey && !e.ctrlKey) {
+                  onLinkClick(game.name);
+                }
+              }}
+            >
+              {game.name}
+            </a>
+          </Link>
+        </>
+      ),
+    },
+    {
+      title: 'Score',
+      type: 'number',
+      getter: (game: Game) => formatNumber(game.score),
+    },
+    {
+      title: 'Char',
+      type: 'string',
+      getter: (game: Game) => game.char,
+    },
+    {
+      title: 'God',
+      type: 'string',
+      getter: (game: Game) => game.god,
+    },
+    {
+      title: 'XL',
+      type: 'number',
+      getter: (game: Game) => game.xl,
+    },
+    {
+      title: 'Turns',
+      type: 'number',
+      getter: (game: Game) => formatNumber(game.turns),
+    },
+    {
+      title: 'Duration',
+      type: 'string',
+      getter: (game: Game) => formatDuration(game.duration),
+    },
+    {
+      title: 'Runes',
+      type: 'number',
+      getter: (game: Game) => game.runes,
+    },
+    {
+      title: 'Date',
+      type: 'string',
+      getter: (game: Game) => dayjs(game.endAt).format('DD MMM YYYY'),
+    },
+    {
+      title: 'Version',
+      type: 'string',
+      getter: (game: Game) => game.version,
+    },
+  ] as const;
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <caption className="pb-1 text-left font-semibold">{title}:</caption>
+        <thead>
+          <tr>
+            {tableData.map(({ title }, index) => (
+              <th
+                key={title}
+                className={clsx(
+                  'w-[10%] whitespace-nowrap text-left font-medium md:overflow-visible',
+                  index === 0 && 'w-[15%]',
+                  index !== 0 && index !== tableData.length && 'px-1',
+                )}
+              >
+                {title}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {games.map((game) => (
+            <tr key={game.id} className="relative odd:bg-gray-50 hover:bg-amber-100">
+              {tableData.map(({ title, getter }, index) => (
+                <td
+                  key={title}
+                  className={clsx(
+                    'whitespace-nowrap text-left tabular-nums md:overflow-visible',
+                    highlight === title && 'text-amber-700',
+                    index !== 0 && index !== tableData.length && 'px-1',
+                  )}
+                >
+                  {getter(game)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+};
 
 const List = ({
   title,
@@ -181,7 +442,7 @@ const List = ({
   return (
     <div className="space-y-1">
       <div className="flex justify-between gap-1">
-        <h2 className="font-semibold ">{title}:</h2>
+        <h2 className="font-semibold">{title}:</h2>
         {tooltip && (
           <Tooltip content={tooltip}>
             <svg
@@ -363,13 +624,24 @@ const Search = ({
 
 type Props = Response;
 
+type Stats = { wins: number; total: number };
+type Combos = Record<string, Stats>;
+type CombosData = Stats & { combos: Combos };
+
 type Response = {
   games: number;
   wins: number;
+  races: Race[];
+  classes: Class[];
+  gods: God[];
+  combosData: CombosData;
   top: {
     byWins: Array<Pick<Player, 'name'> & { wins: number }>;
     byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>;
     byTitles: Array<Pick<Player, 'name'> & { titles: number }>;
+    gamesByTC: Array<Game>;
+    gamesByDuration: Array<Game>;
+    gamesByScore: Array<Game>;
   };
 };
 
