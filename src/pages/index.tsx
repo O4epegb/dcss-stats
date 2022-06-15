@@ -250,10 +250,6 @@ const Stats = memo(
 
         <hr />
 
-        <div className="rounded bg-indigo-400 p-2 text-white">
-          [WIP] Bot games will be excluded soon
-        </div>
-
         <Table
           games={top.gamesByTC}
           title="Fastest wins by turn count"
@@ -308,7 +304,7 @@ const PopularList = ({
         )}
       </div>
       <div>
-        {data.slice(0, 5).map((x, index) => (
+        {data.slice(0, 7).map((x, index) => (
           <div key={index} className="flex justify-between">
             <div>
               {x.race?.abbr}
