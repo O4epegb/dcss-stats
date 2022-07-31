@@ -19,7 +19,8 @@ export interface PlayerInfoResponse {
   classes: Class[];
   titlesCount: Record<string, number>;
   firstGame: Game;
-  lastGame: Game;
+  firstWin?: Game;
+  gamesBeforeFirstWin: number;
   lowestXlWin: Game | null;
   matrix: Matrix;
   gamesToFirstWin: GamesToFirstWin;

@@ -4,11 +4,13 @@ import { Game } from '@types';
 import { pluralize, date, formatDuration, roundAndFormat } from '@utils';
 import { HeadlessTooltip, Tooltip } from '@components/Tooltip';
 import { GameItem } from '@components/GameItem';
+import { GameTooltip } from '@components/GameTooltip';
 import { usePlayerPageContext } from './context';
 import { Summary } from './utils';
 
 export const Stats = ({ summary }: { summary: Summary }) => {
-  const { firstGame, lastGame, lowestXlWin, stats } = usePlayerPageContext();
+  const { firstGame, firstWin, gamesBeforeFirstWin, lowestXlWin, stats, player } =
+    usePlayerPageContext();
   const {
     combosCompleted,
     totalCombos,
@@ -101,24 +103,35 @@ export const Stats = ({ summary }: { summary: Summary }) => {
               ],
               [
                 'First game',
-                <GameTooltip key="" game={firstGame}>
-                  {date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')}
-                </GameTooltip>,
+                <StatsGameTooltip key="" game={firstGame}>
+                  {firstGame.char}
+                  {firstGame.god ? ` of ${firstGame.god}` : ''},{' '}
+                  {date(firstGame.endAt).format('DD MMM YYYY')}
+                </StatsGameTooltip>,
               ],
               [
-                'Most recent game',
-                <GameTooltip key="" game={lastGame}>
-                  {date(lastGame.endAt).format('DD MMM YYYY, HH:mm:ss')}
-                </GameTooltip>,
+                'First win',
+                firstWin ? (
+                  <GameTooltip key="" id={firstWin.id} player={player.name}>
+                    <span>
+                      {firstWin.char}
+                      {firstWin.god ? ` of ${firstWin.god}` : ''}, won after {gamesBeforeFirstWin}{' '}
+                      {pluralize('game', gamesBeforeFirstWin)},{' '}
+                      {date(firstWin.endAt).format('DD MMM YYYY')}
+                    </span>
+                  </GameTooltip>
+                ) : (
+                  'n/a'
+                ),
               ],
               [
                 'Lowest XL win',
                 lowestXlWin ? (
-                  <GameTooltip key="" game={lowestXlWin}>
-                    {`${lowestXlWin.char} XL:${lowestXlWin.xl}, ${date(lowestXlWin.endAt).format(
-                      'DD MMM YYYY, HH:mm:ss',
-                    )}`}
-                  </GameTooltip>
+                  <StatsGameTooltip key="" game={lowestXlWin}>
+                    {`${lowestXlWin.char}${lowestXlWin.god ? ` of ${lowestXlWin.god}` : ''}, XL:${
+                      lowestXlWin.xl
+                    }, ${date(lowestXlWin.endAt).format('DD MMM YYYY')}`}
+                  </StatsGameTooltip>
                 ) : (
                   'n/a'
                 ),
@@ -141,7 +154,7 @@ export const List = ({ items }: { items: [ReactNode, ReactNode][] }) => (
   </ul>
 );
 
-const GameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
+const StatsGameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
   return (
     <HeadlessTooltip
       interactive
