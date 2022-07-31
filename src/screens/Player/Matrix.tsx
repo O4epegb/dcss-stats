@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, Fragment, useState } from 'react';
 import useMedia from 'react-use/lib/useMedia';
 import { CharStat } from '@types';
-import { addS, formatNumber } from '@utils';
+import { pluralize, formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
 import { Summary, unavailableCombos } from './utils';
 
@@ -97,7 +97,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                       <div className="col-span-full">
                         First win after{' '}
                         <span className="font-medium">{tooltipStats.gamesToFirstWin}</span>{' '}
-                        {addS('game', tooltipStats.gamesToFirstWin)}
+                        {pluralize('game', tooltipStats.gamesToFirstWin)}
                       </div>
                     )}
                   </div>

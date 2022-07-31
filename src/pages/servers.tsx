@@ -1,6 +1,6 @@
 import { GetStaticProps } from 'next';
 import { orderBy } from 'lodash-es';
-import { addS, date, formatNumber } from '@utils';
+import { pluralize, date, formatNumber } from '@utils';
 import { Logfile, Server } from '@types';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
@@ -14,7 +14,7 @@ const ServersPage = (props: Props) => {
       </header>
 
       <div className="w-full max-w-lg space-y-2">
-        <h2 className="text-lg font-semibold">Tracking 12 {addS('server', 12)}:</h2>
+        <h2 className="text-lg font-semibold">Tracking 12 {pluralize('server', 12)}:</h2>
 
         {props.servers.map((server) => {
           const total = server.logfile.reduce((acc, item) => acc + item.games, 0);
@@ -31,12 +31,12 @@ const ServersPage = (props: Props) => {
                   <span className="font-medium">{server.abbreviation}</span> - {server.url}
                 </a>
                 <div className="whitespace-nowrap">
-                  {formatNumber(total)} {addS('game', total)}
+                  {formatNumber(total)} {pluralize('game', total)}
                 </div>
               </div>
               <details>
                 <summary>
-                  {server.logfile.length} {addS('logfile', server.logfile.length)}
+                  {server.logfile.length} {pluralize('logfile', server.logfile.length)}
                 </summary>
                 <ul className="text-sm">
                   {orderBy(server.logfile, (x) => Number(x.version)).map((file) => {
@@ -56,7 +56,7 @@ const ServersPage = (props: Props) => {
                             {file.path}
                           </a>
                           <div className="whitespace-nowrap">
-                            {formatNumber(file.games)} {addS('game', file.games)}
+                            {formatNumber(file.games)} {pluralize('game', file.games)}
                           </div>
                         </li>
                       </Tooltip>

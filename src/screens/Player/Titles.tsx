@@ -1,4 +1,4 @@
-import { addS, trackEvent } from '@utils';
+import { pluralize, trackEvent } from '@utils';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { GameTooltip } from '@components/GameTooltip';
 import { usePlayerPageContext } from './context';
@@ -14,7 +14,7 @@ export const Titles = () => {
   return (
     <section className="space-y-1">
       <h2 className="font-bold">
-        Collected {titles.length} {addS('title', titles.length)}:
+        Collected {titles.length} {pluralize('title', titles.length)}:
       </h2>
 
       <ul className="flex flex-wrap gap-1 text-sm">

@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import { first, without } from 'lodash-es';
 import { forwardRef, memo } from 'react';
-import { addS, date, formatNumber, getPlayerPageHref } from '@utils';
+import { pluralize, date, formatNumber, getPlayerPageHref } from '@utils';
 import { Game } from '@types';
 import externalLinkSvg from '@icons/external.svg';
 
@@ -57,7 +57,8 @@ export const GameItem = memo(
           )}
           {game.uniqueRunes > 0 && (
             <span className="text-indigo-600">
-              {game.isWin ? 'and' : 'with'} {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
+              {game.isWin ? 'and' : 'with'} {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}
+              !
             </span>
           )}
         </div>
@@ -127,7 +128,7 @@ export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref)
         )}
         {game.uniqueRunes > 0 && (
           <span className="text-indigo-600">
-            with {game.uniqueRunes} {addS('rune', game.uniqueRunes)}!
+            with {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}!
           </span>
         )}
       </div>

@@ -32,13 +32,13 @@ export class RaceConditionGuard {
   };
 }
 
-export const addS = (string: string, count: number) => string + (count === 1 ? '' : 's');
+export const pluralize = (string: string, count: number) => string + (count === 1 ? '' : 's');
 
 export const formatDuration = (seconds: number) => {
   const d = date.duration(seconds, 'seconds');
   const days = d.get('days');
 
-  return `${days > 0 ? `${days} ${addS('day', days)} ` : ''}${d.format('HH:mm:ss')}`;
+  return `${days > 0 ? `${days} ${pluralize('day', days)} ` : ''}${d.format('HH:mm:ss')}`;
 };
 
 export const formatNumber = (n: number, options?: Intl.NumberFormatOptions) => {

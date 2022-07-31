@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
-import { addS, formatNumber, trackEvent } from '@utils';
+import { pluralize, formatNumber, trackEvent } from '@utils';
 import { canUseDOM } from '@constants';
 import { Logo } from '@components/Logo';
 import { WinrateStats } from '@components/WinrateStats';
@@ -119,8 +119,8 @@ export const Player = () => {
           <section>
             <WinrateStats wins={stats.total.wins} games={stats.total.games} />
             <div className="text-xs">
-              {stats.lastMonth.total} {addS('game', stats.lastMonth.total)} and{' '}
-              {stats.lastMonth.wins} {addS('win', stats.lastMonth.wins)}{' '}
+              {stats.lastMonth.total} {pluralize('game', stats.lastMonth.total)} and{' '}
+              {stats.lastMonth.wins} {pluralize('win', stats.lastMonth.wins)}{' '}
               {stats.lastMonth.wins > 0 && (
                 <>
                   (

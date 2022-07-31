@@ -4,10 +4,12 @@ import { useState, useCallback, memo, useEffect, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
-import { debounce, map, orderBy, startsWith } from 'lodash-es';
+import { map, orderBy, startsWith } from 'lodash-es';
 import dayjs from 'dayjs';
+import useSWRImmutable from 'swr/immutable';
+import useDebounce from 'react-use/lib/useDebounce';
 import { api } from '@api';
-import { formatDuration, formatNumber, getPlayerPageHref, RaceConditionGuard } from '@utils';
+import { formatDuration, formatNumber, getPlayerPageHref } from '@utils';
 import { Class, Game, God, Player, Race } from '@types';
 import { Highlighted } from '@components/Highlighted';
 import { createServerApi } from '@api/server';
@@ -522,10 +524,20 @@ const Search = ({
   query: string;
   setQuery: (state: string) => void;
 }) => {
-  const [items, setItems] = useState<SearchItem[]>([]);
-  const [guard] = useState(() => new RaceConditionGuard());
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  useDebounce(() => setDebouncedQuery(query), 400, [query]);
+
+  const { data, isValidating: isLoading } = useSWRImmutable(
+    debouncedQuery ? ['/players', { query: debouncedQuery }] : null,
+    (url, params) =>
+      api.get<{ data: Array<SearchItem> }>(url, { params }).then((res) => {
+        const target = params.query.toLowerCase();
+        return orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc');
+      }),
+  );
+  const items = data ?? [];
 
   const goToPlayerPage = useCallback((slug: string) => {
     setIsNavigating(true);
@@ -544,26 +556,6 @@ const Search = ({
         }
       },
     });
-
-  const fetchData = useCallback(
-    debounce((query: string) => {
-      setIsLoading(true);
-
-      guard
-        .getGuardedPromise(
-          api.get<{ data: Array<SearchItem> }>('/players', {
-            params: { query },
-          }),
-        )
-        .then((res) => {
-          const target = query.toLowerCase();
-
-          setItems(orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc'));
-          setIsLoading(false);
-        });
-    }, 400),
-    [],
-  );
 
   return (
     <div {...getComboboxProps({ className: 'relative' })}>
@@ -590,15 +582,7 @@ const Search = ({
             }
           },
           onChange: (e) => {
-            const query = e.currentTarget.value.trim();
-            setIsLoading(Boolean(query));
-            setQuery(query);
-
-            if (query) {
-              fetchData(query);
-            } else {
-              setItems([]);
-            }
+            setQuery(e.currentTarget.value.trim());
           },
         })}
       />
@@ -647,8 +631,6 @@ const Search = ({
   );
 };
 
-type Props = Response;
-
 type Stats = { wins: number; total: number };
 type Combos = Record<string, Stats>;
 type CombosData = Stats & { combos: Combos };
@@ -669,6 +651,8 @@ type Response = {
     gamesByScore: Array<Game>;
   };
 };
+
+type Props = Response;
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const res = await createServerApi().api.get<{ data: Response }>('/stats');

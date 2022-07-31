@@ -3,7 +3,7 @@ import { last, first, orderBy } from 'lodash-es';
 import clsx from 'clsx';
 import { Game } from '@types';
 import { api } from '@api';
-import { addS, date, formatNumber } from '@utils';
+import { pluralize, date, formatNumber } from '@utils';
 import { Loader } from '@components/Loader';
 import { GameTooltip } from '@components/GameTooltip';
 import { List } from './Stats';
@@ -24,7 +24,7 @@ export const Streaks = () => {
         <h2 className="font-bold">
           {streaks.total > 0 ? (
             <>
-              Has {streaks.total} {addS('streak', streaks.total)} of wins:
+              Has {streaks.total} {pluralize('streak', streaks.total)} of wins:
             </>
           ) : (
             'Has no streaks of wins yet'
@@ -39,12 +39,12 @@ export const Streaks = () => {
       {streaks.total > 0 && (
         <div className="flex items-center gap-2 whitespace-nowrap text-sm">
           <div className="flex gap-4">
-            <List items={[['Best', `${streaks.best} ${addS('win', streaks.best)}`]]} />
+            <List items={[['Best', `${streaks.best} ${pluralize('win', streaks.best)}`]]} />
             <List
               items={[
                 [
                   'Average',
-                  `${formatNumber(streaks.average, { maximumFractionDigits: 1 })} ${addS(
+                  `${formatNumber(streaks.average, { maximumFractionDigits: 1 })} ${pluralize(
                     'win',
                     streaks.average,
                   )}`,

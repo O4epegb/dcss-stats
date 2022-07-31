@@ -1,7 +1,7 @@
 import { ReactNode, FC } from 'react';
 import { filter } from 'lodash-es';
 import { Game } from '@types';
-import { addS, date, formatDuration, roundAndFormat } from '@utils';
+import { pluralize, date, formatDuration, roundAndFormat } from '@utils';
 import { HeadlessTooltip, Tooltip } from '@components/Tooltip';
 import { GameItem } from '@components/GameItem';
 import { usePlayerPageContext } from './context';
@@ -45,18 +45,18 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                   <div className="space-y-2">
                     <div>One-and-won means won on the first try</div>
                     <div>
-                      Race: {oneAndWonsRace} {addS('time', oneAndWonsRace)}
+                      Race: {oneAndWonsRace} {pluralize('time', oneAndWonsRace)}
                       <br />
-                      Class: {oneAndWonsClass} {addS('time', oneAndWonsClass)}
+                      Class: {oneAndWonsClass} {pluralize('time', oneAndWonsClass)}
                       <br />
-                      Combo: {oneAndWons} {addS('time', oneAndWons)}
+                      Combo: {oneAndWons} {pluralize('time', oneAndWons)}
                     </div>
                   </div>
                 }
               >
                 <span>One-and-won</span>
               </Tooltip>,
-              `${oneAndWons} ${addS('time', oneAndWons)}`,
+              `${oneAndWons} ${pluralize('time', oneAndWons)}`,
             ],
           ]}
         />
@@ -164,10 +164,10 @@ const formatTimePlayed = (seconds: number) => {
   const hoursRemainder = Math.round(hours - days * 24);
 
   return [
-    days && `${days} ${addS('day', days)}`,
+    days && `${days} ${pluralize('day', days)}`,
     `${roundAndFormat(hoursRemainder, {
       maximumFractionDigits: 0,
-    })} ${addS('hour', hoursRemainder)}`,
+    })} ${pluralize('hour', hoursRemainder)}`,
   ]
     .filter(Boolean)
     .join(' and ');
