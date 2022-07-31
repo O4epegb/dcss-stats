@@ -25,6 +25,10 @@ export interface PlayerInfoResponse {
   gamesToFirstWin: GamesToFirstWin;
   gods: God[];
   streaks: StreaksInfo;
+  tiamat: {
+    total: number;
+    unwon: string[];
+  };
 }
 
 export type GamesToFirstWin = {

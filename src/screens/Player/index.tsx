@@ -14,7 +14,8 @@ import { usePlayerPageContext } from './context';
 import { Titles } from './Titles';
 
 export const Player = () => {
-  const { player, races, classes, matrix, gods, stats, gamesToFirstWin } = usePlayerPageContext();
+  const { player, races, classes, matrix, gods, stats, gamesToFirstWin, tiamat } =
+    usePlayerPageContext();
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
@@ -42,6 +43,7 @@ export const Player = () => {
   const isGreater = wonClasses.length === trunkClasses.length;
   const isGreatest = isGreat && isGreater;
   const isPolytheist = wonGods.length === gods.length;
+  const isTiamat = tiamat.unwon.length === 0;
 
   return (
     <div className="container mx-auto grid gap-4 px-4 xl:grid-cols-3">
@@ -110,7 +112,12 @@ export const Player = () => {
               )}
               {isPolytheist && (
                 <Tooltip content="Has won with all gods">
-                  <div className="rounded bg-violet-300 py-0.5 px-1">Polytheist</div>
+                  <div className="rounded bg-sky-300 py-0.5 px-1">Polytheist</div>
+                </Tooltip>
+              )}
+              {isTiamat && (
+                <Tooltip content="Has won with every Draconian color">
+                  <div className="rounded bg-purple-300 py-0.5 px-1">Tiamat</div>
                 </Tooltip>
               )}
             </div>
@@ -158,6 +165,14 @@ export const Player = () => {
                   total={gods.length}
                   completed={wonGods.length}
                   leftToWinWith={notWonGods}
+                />
+              )}
+              {!isTiamat && (
+                <Badge
+                  title="Tiamat"
+                  total={tiamat.total}
+                  completed={tiamat.total - tiamat.unwon.length}
+                  leftToWinWith={tiamat.unwon.map((name) => ({ name }))}
                 />
               )}
             </section>
