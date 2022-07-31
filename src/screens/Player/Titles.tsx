@@ -1,10 +1,12 @@
+import { map } from 'lodash-es';
 import { pluralize, trackEvent } from '@utils';
 import { useSlicedList } from '@hooks/useSlicedList';
 import { GameTooltip } from '@components/GameTooltip';
 import { usePlayerPageContext } from './context';
 
 export const Titles = () => {
-  const { titles, player } = usePlayerPageContext();
+  const { titlesCount, player } = usePlayerPageContext();
+  const titles = map(titlesCount, (count, name) => ({ name, count }));
   const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
 
   if (items.length === 0) {
@@ -19,9 +21,12 @@ export const Titles = () => {
 
       <ul className="flex flex-wrap gap-1 text-sm">
         {items.map((title) => (
-          <li key={title}>
-            <GameTooltip isWin title={title} player={player.name}>
-              <div className="rounded bg-gray-600 px-1 py-0.5 text-white">{title}</div>
+          <li key={title.name}>
+            <GameTooltip isWin title={title.name} player={player.name}>
+              <div className="rounded bg-gray-600 px-1 py-0.5 text-white">
+                {title.name}
+                {title.count > 1 ? ` (${title.count})` : ''}
+              </div>
             </GameTooltip>
           </li>
         ))}

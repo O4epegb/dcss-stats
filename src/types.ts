@@ -17,7 +17,7 @@ export interface PlayerInfoResponse {
   stats: Stats;
   races: Race[];
   classes: Class[];
-  titles: string[];
+  titlesCount: Record<string, number>;
   firstGame: Game;
   lastGame: Game;
   lowestXlWin: Game | null;
