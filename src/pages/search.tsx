@@ -1,7 +1,7 @@
 import { useState, useEffect, FC, ReactNode } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
-import { orderBy, castArray, pickBy, last, flatten, first } from 'lodash-es';
+import { orderBy, castArray, last, flatten, first, omit } from 'lodash-es';
 import { useRouter } from 'next/router';
 import useSWRInfinite from 'swr/infinite';
 import { api } from '@api';
@@ -152,8 +152,10 @@ const SearchPage = ({ races, classes, gods }: Props) => {
 
       return ['/search', { filter: filterForSearch, after: last(previousPageData?.data)?.id }];
     },
-    (url, params) =>
-      api.get(url, { params: pickBy(params, (value) => value != null) }).then((res) => res.data),
+    (url, { filter, after }) =>
+      api
+        .get(url, { params: { filter: filter.map((x: Filter) => omit(x, 'id')), after } })
+        .then((res) => res.data),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
@@ -292,7 +294,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
               <Tooltip
                 content={
                   <>
-                    Filters are grouped by `OR` operator
+                    Filters are grouped by <code>`OR`</code> operator
                     <br />
                     Groups are color coded for convenience
                   </>

@@ -5,5 +5,5 @@ import { rootUrl } from '@constants';
 export const api = axios.create({
   baseURL: `${rootUrl}/api`,
   withCredentials: true,
-  paramsSerializer: (params) => qs.stringify(params),
+  paramsSerializer: (params) => qs.stringify(params, { skipNulls: true }),
 });
