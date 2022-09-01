@@ -158,6 +158,11 @@ export type God = {
   win: boolean;
 };
 
+export type Skill = {
+  name: string;
+  trunk: boolean;
+};
+
 export type Logfile = {
   games: number;
   path: string;

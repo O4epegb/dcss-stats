@@ -5,7 +5,7 @@ import { orderBy, castArray, last, flatten, first, omit, isError } from 'lodash-
 import { useRouter } from 'next/router';
 import useSWRInfinite from 'swr/infinite';
 import { api } from '@api';
-import { Class, Game, God, Race } from '@types';
+import { Class, Game, God, Race, Skill } from '@types';
 import { formatNumber, notEmpty } from '@utils';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
@@ -37,58 +37,21 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 // send maximum filters from the backend
 // use endAt date for search, not startAt
 
-const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
-  id,
-  className,
-  children,
-}) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
+type Condition = 'is' | 'is not';
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={clsx(className, 'relative', isDragging && 'z-10')}
-    >
-      <button
-        {...attributes}
-        {...listeners}
-        className={clsx(
-          isDragging ? 'cursor-grabbing' : 'cursor-grab',
-          'absolute right-full mr-2 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
-        )}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="9" cy="12" r="1"></circle>
-          <circle cx="9" cy="5" r="1"></circle>
-          <circle cx="9" cy="19" r="1"></circle>
-          <circle cx="15" cy="12" r="1"></circle>
-          <circle cx="15" cy="5" r="1"></circle>
-          <circle cx="15" cy="19" r="1"></circle>
-        </svg>
-      </button>
-      {children}
-    </div>
-  );
+type Filter = {
+  id: string;
+  option: string;
+  suboption: string | undefined;
+  condition: string;
+  value: string | undefined;
+  operator: string;
 };
 
-const SearchPage = ({ races, classes, gods }: Props) => {
+const operators = ['and', 'or'] as [string, string];
+const conditions: Condition[] = ['is', 'is not'];
+
+const SearchPage = ({ races, classes, gods, skills }: Props) => {
   const router = useRouter();
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -98,47 +61,49 @@ const SearchPage = ({ races, classes, gods }: Props) => {
   );
   const [isDragging, setIsDragging] = useState(false);
 
-  const operators = ['and', 'or'] as [string, string];
-  const conditions = ['is', 'is not'];
   const options = [
     {
       name: 'Race',
       type: 'select',
+      suboptions: [],
       conditions,
       values: races.map((x) => ({ name: x.name })),
     },
     {
       name: 'Class',
       type: 'select',
+      suboptions: [],
       conditions,
       values: classes.map((x) => ({ name: x.name })),
     },
     {
       name: 'God',
       type: 'select',
+      suboptions: [],
       conditions,
       values: gods.map((x) => ({ name: x.name })),
     },
     {
       name: 'End',
       type: 'select',
+      suboptions: [],
       conditions,
       values: ['Escaped', 'Defeated'].map((x) => ({ name: x })),
     },
     {
       name: 'Player',
       type: 'text',
+      suboptions: [],
       conditions,
     },
+    {
+      name: 'Skill',
+      type: 'select',
+      suboptions: skills.map((x) => x.name),
+      conditions: ['is'] as Condition[],
+      values: ['Level 15 or more', 'Level 27'].map((x) => ({ name: x })),
+    },
   ] as const;
-
-  type Filter = {
-    id: string;
-    option: string;
-    condition: string;
-    value: string | undefined;
-    operator: string;
-  };
 
   const [filters, setFilters] = useState<Filter[]>(() => []);
   const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null);
@@ -171,10 +136,11 @@ const SearchPage = ({ races, classes, gods }: Props) => {
   const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10);
 
   const getDefaultFilters = () =>
-    options.map(({ name, conditions }) => {
+    options.map(({ name, conditions, suboptions }) => {
       return {
         id: Math.random().toString(),
         option: name,
+        suboption: suboptions[0],
         condition: conditions[0],
         operator: operators[0],
         value: '',
@@ -190,15 +156,21 @@ const SearchPage = ({ races, classes, gods }: Props) => {
 
     let potentialFilters: Filter[] = queryFilters
       .map((item) => {
-        const [option, condition, value, operator] = item.split('_');
+        const parts = item.split('_');
+        let [option, condition, value, operator, suboption] = parts;
+
+        if (parts[0] === 'Skill') {
+          [option, suboption, condition, value, operator] = parts;
+        }
 
         const optionItem = options.find((x) => x.name === option);
 
         const isValid =
           optionItem &&
           (optionItem.type !== 'select' || optionItem.values.find((x) => x.name === value)) &&
-          optionItem.conditions.includes(condition) &&
-          (!operator || operators.includes(operator));
+          optionItem.conditions.includes(condition as Condition) &&
+          (!operator || operators.includes(operator)) &&
+          (!suboption || optionItem.suboptions.some((x) => x === suboption));
 
         if (!isValid) {
           return;
@@ -207,6 +179,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
         return {
           id: Math.random().toString(),
           option,
+          suboption,
           condition,
           value,
           operator: operator ?? operators[0],
@@ -334,13 +307,13 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                       {filterGroups.map((group, groupIndex) => {
                         const firstItem = first(group);
                         const firstItemIndex = filters.findIndex((x) => x === firstItem);
-                        const singleFilter = filters.length === 1;
+                        const isSingleFilter = filters.length === 1;
 
-                        const colors = ['bg-amber-50', 'bg-teal-50', 'bg-purple-50'];
+                        const groupColors = ['bg-amber-50', 'bg-teal-50', 'bg-purple-50'];
 
                         const color =
-                          !singleFilter && firstItem && firstItem.operator === 'or'
-                            ? colors[firstItemIndex % 3]
+                          !isSingleFilter && firstItem && firstItem.operator === 'or'
+                            ? groupColors[firstItemIndex % 3]
                             : null;
 
                         return (
@@ -352,7 +325,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                 return null;
                               }
 
-                              const disabled = !singleFilter && filter === last(filters);
+                              const operatorDisabled = filter === last(filters);
 
                               return (
                                 <SortableItem
@@ -371,6 +344,9 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                             : {
                                                 ...filter,
                                                 option: e.target.value,
+                                                suboption: options.find(
+                                                  (x) => x.name === e.target.value,
+                                                )?.suboptions[0],
                                                 value: undefined,
                                               };
                                         }),
@@ -384,10 +360,31 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                     ))}
                                   </select>
 
+                                  {option.suboptions.length > 0 && (
+                                    <select
+                                      className="rounded bg-gray-200 py-1 pl-1"
+                                      value={filter.suboption}
+                                      onChange={(e) => {
+                                        setFilters((state) =>
+                                          state.map((x) => {
+                                            return x !== filter
+                                              ? x
+                                              : { ...filter, suboption: e.target.value };
+                                          }),
+                                        );
+                                      }}
+                                    >
+                                      {option.suboptions.map((name) => (
+                                        <option key={name} value={name}>
+                                          {name}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  )}
+
                                   <select
                                     className="rounded bg-gray-200 py-1 pl-1"
                                     value={filter.condition}
-                                    disabled={!filter.option}
                                     onChange={(e) => {
                                       setFilters((state) =>
                                         state.map((x) => {
@@ -404,6 +401,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                       </option>
                                     ))}
                                   </select>
+
                                   {option.type === 'select' && (
                                     <select
                                       className="min-w-0 flex-1 rounded bg-gray-200 py-1 pl-1"
@@ -450,10 +448,10 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                                   <select
                                     className={clsx(
                                       'rounded bg-gray-200 py-1 pl-1 transition-all',
-                                      !isDragging && !singleFilter && 'translate-y-5',
-                                      !isDragging && disabled && 'opacity-0',
+                                      !isDragging && !isSingleFilter && 'translate-y-5',
+                                      !isDragging && operatorDisabled && 'opacity-0',
                                     )}
-                                    disabled={disabled}
+                                    disabled={operatorDisabled}
                                     value={filter.operator}
                                     onChange={(e) => {
                                       setFilters((state) => {
@@ -521,18 +519,23 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                           const lastFilter = last(state);
                           const operator = last(state)?.operator;
                           const option =
-                            operator === 'and'
-                              ? options.find((x) => !filters.find((f) => f.option === x.name))
-                              : options.find((x) => x.name === lastFilter?.option);
+                            (operator === 'and' &&
+                              options.find((x) => !filters.find((f) => f.option === x.name))) ??
+                            options.find((x) => x.name === lastFilter?.option);
+
+                          if (!option) {
+                            return state;
+                          }
 
                           return [
                             ...state,
                             {
                               id: Math.random().toString(),
-                              operator: operator ?? operators[0],
-                              option: option?.name ?? options[0].name,
-                              condition: option?.conditions[0] ?? options[0].conditions[0],
+                              option: option.name,
+                              suboption: option.suboptions[0],
+                              condition: option.conditions[0],
                               value: '',
+                              operator: operator ?? operators[0],
                             },
                           ];
                         });
@@ -546,14 +549,15 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                 <button
                   className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
                   onClick={() => {
-                    const nonEmptyFilters = filters.filter((x) => x.value && x.condition);
+                    const nonEmptyFilters = filters.filter((x) => x.value);
 
-                    setFilterForSearch(nonEmptyFilters.length ? nonEmptyFilters : []);
+                    setFilterForSearch(nonEmptyFilters);
 
                     const filter = nonEmptyFilters.map(
-                      ({ option, condition, value, operator }, index) => {
+                      ({ option, suboption, condition, value, operator }, index) => {
                         return [
                           option,
+                          suboption,
                           condition,
                           value,
                           index === nonEmptyFilters.length - 1 ? null : operator,
@@ -583,7 +587,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
                 {games.map((game) => {
                   return (
                     <li key={game.id}>
-                      <GameItem includePlayer game={game} />
+                      <GameItem showSkills includePlayer game={game} />
                     </li>
                   );
                 })}
@@ -606,7 +610,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
             )}
 
             {isError(error) && (
-              <div className="flex flex-col items-center justify-center pt-8 pb-4">
+              <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
                 <div>Error occured, try to reload the page</div>
                 {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
               </div>
@@ -618,12 +622,64 @@ const SearchPage = ({ races, classes, gods }: Props) => {
   );
 };
 
+const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
+  id,
+  className,
+  children,
+}) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={clsx(className, 'relative', isDragging && 'z-10')}
+    >
+      <button
+        {...attributes}
+        {...listeners}
+        className={clsx(
+          isDragging ? 'cursor-grabbing' : 'cursor-grab',
+          'absolute right-full mr-2 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
+        )}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="9" cy="12" r="1"></circle>
+          <circle cx="9" cy="5" r="1"></circle>
+          <circle cx="9" cy="19" r="1"></circle>
+          <circle cx="15" cy="12" r="1"></circle>
+          <circle cx="15" cy="5" r="1"></circle>
+          <circle cx="15" cy="19" r="1"></circle>
+        </svg>
+      </button>
+      {children}
+    </div>
+  );
+};
+
 type Props = Response;
 
 type Response = {
   races: Race[];
   classes: Class[];
   gods: God[];
+  skills: Skill[];
 };
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
@@ -635,6 +691,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       races: orderBy(data.races, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
       classes: orderBy(data.classes, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
       gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
+      skills: data.skills,
     },
   };
 };
