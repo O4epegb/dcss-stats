@@ -1,7 +1,7 @@
 import { ReactNode, FC } from 'react';
 import { filter } from 'lodash-es';
 import { Game } from '@types';
-import { pluralize, date, formatDuration, roundAndFormat } from '@utils';
+import { pluralize, date, formatDuration, roundAndFormat, formatNumber } from '@utils';
 import { HeadlessTooltip, Tooltip } from '@components/Tooltip';
 import { GameItem } from '@components/GameItem';
 import { GameTooltip } from '@components/GameTooltip';
@@ -99,7 +99,23 @@ export const Stats = ({ summary }: { summary: Summary }) => {
             items={[
               [
                 'Total time played',
-                stats.total.timePlayed ? formatTimePlayed(stats.total.timePlayed) : 'n/a',
+                <Tooltip
+                  key=""
+                  disabled={!stats.total.timePlayed}
+                  content={
+                    <span>
+                      {stats.total.timePlayed
+                        ? `${formatNumber(stats.total.timePlayed / 60 / 60, {
+                            maximumFractionDigits: 1,
+                          })} ${pluralize('hour', stats.total.timePlayed / 60 / 60)}`
+                        : ''}
+                    </span>
+                  }
+                >
+                  <span>
+                    {stats.total.timePlayed ? formatTimePlayed(stats.total.timePlayed) : 'n/a'}
+                  </span>
+                </Tooltip>,
               ],
               [
                 'First game',
