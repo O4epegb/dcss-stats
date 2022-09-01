@@ -122,7 +122,6 @@ export const Player = () => {
               )}
             </div>
           </section>
-
           <section>
             <WinrateStats wins={stats.total.wins} games={stats.total.games} />
             <div className="text-xs">
@@ -141,43 +140,40 @@ export const Player = () => {
             </div>
           </section>
 
-          {!(isGreat && isGreater && isPolytheist) && (
-            <section className="flex flex-row flex-wrap items-start gap-2 text-xs">
-              {!isGreat && (
-                <Badge
-                  title="Great Player"
-                  total={trunkRaces.length}
-                  completed={wonRaces.length}
-                  leftToWinWith={notWonRaces}
-                />
-              )}
-              {!isGreater && (
-                <Badge
-                  title="Greater Player"
-                  total={trunkClasses.length}
-                  completed={wonClasses.length}
-                  leftToWinWith={notWonClasses}
-                />
-              )}
-              {!isPolytheist && (
-                <Badge
-                  title="Polytheist"
-                  total={gods.length}
-                  completed={wonGods.length}
-                  leftToWinWith={notWonGods}
-                />
-              )}
-              {!isTiamat && (
-                <Badge
-                  title="Tiamat"
-                  total={tiamat.total}
-                  completed={tiamat.total - tiamat.unwon.length}
-                  leftToWinWith={tiamat.unwon.map((name) => ({ name }))}
-                />
-              )}
-            </section>
-          )}
-
+          <section className="flex flex-row flex-wrap items-start gap-2 text-xs empty:hidden">
+            {!isGreat && (
+              <Badge
+                title="Great Player"
+                total={trunkRaces.length}
+                completed={wonRaces.length}
+                leftToWinWith={notWonRaces}
+              />
+            )}
+            {!isGreater && (
+              <Badge
+                title="Greater Player"
+                total={trunkClasses.length}
+                completed={wonClasses.length}
+                leftToWinWith={notWonClasses}
+              />
+            )}
+            {!isPolytheist && (
+              <Badge
+                title="Polytheist"
+                total={gods.length}
+                completed={wonGods.length}
+                leftToWinWith={notWonGods}
+              />
+            )}
+            {!isTiamat && (
+              <Badge
+                title="Tiamat"
+                total={tiamat.total}
+                completed={tiamat.total - tiamat.unwon.length}
+                leftToWinWith={tiamat.unwon.map((name) => ({ name }))}
+              />
+            )}
+          </section>
           <Stats summary={summary} />
           <Titles />
           <Streaks />
