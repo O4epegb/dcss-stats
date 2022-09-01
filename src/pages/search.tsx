@@ -1,7 +1,7 @@
 import { useState, useEffect, FC, ReactNode } from 'react';
 import clsx from 'clsx';
 import { GetStaticProps } from 'next';
-import { orderBy, castArray, last, flatten, first, omit } from 'lodash-es';
+import { orderBy, castArray, last, flatten, first, omit, isError } from 'lodash-es';
 import { useRouter } from 'next/router';
 import useSWRInfinite from 'swr/infinite';
 import { api } from '@api';
@@ -11,7 +11,7 @@ import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { Loader } from '@components/Loader';
 import { GameItem } from '@components/GameItem';
-import { Tooltip } from '@components/Tooltip';
+import { HelpBubble, Tooltip } from '@components/Tooltip';
 import {
   DndContext,
   closestCenter,
@@ -143,8 +143,7 @@ const SearchPage = ({ races, classes, gods }: Props) => {
   const [filters, setFilters] = useState<Filter[]>(() => []);
   const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null);
 
-  // TODO error isAxiosError
-  const { data, error, size, setSize } = useSWRInfinite<{ data: Game[]; count: number }>(
+  const { data, error, size, setSize } = useSWRInfinite<{ data: Game[]; count: number }, unknown>(
     (pageIndex, previousPageData) => {
       if (!filterForSearch || (previousPageData && previousPageData.data.length === 0)) {
         return null;
@@ -291,28 +290,16 @@ const SearchPage = ({ races, classes, gods }: Props) => {
           <div className="space-y-2">
             <div className="flex items-center gap-1">
               <div className="text-xl">Filters</div>
-              <Tooltip
+              <HelpBubble
                 content={
                   <>
-                    Filters are grouped by <code>`OR`</code> operator
+                    Filters are grouped by <code className="rounded bg-slate-600 px-1">OR</code>{' '}
+                    operator
                     <br />
                     Groups are color coded for convenience
                   </>
                 }
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-400"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </Tooltip>
+              />
               <button
                 className="ml-auto -mr-1 rounded p-1 hover:bg-gray-100"
                 onClick={() => setFilters(getDefaultFilters())}
@@ -618,10 +605,10 @@ const SearchPage = ({ races, classes, gods }: Props) => {
               </div>
             )}
 
-            {error && (
+            {isError(error) && (
               <div className="flex flex-col items-center justify-center pt-8 pb-4">
                 <div>Error occured, try to reload the page</div>
-                {error.message && <code className="bg-gray-100 p-2">{String(error.message)}</code>}
+                {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
               </div>
             )}
           </div>
