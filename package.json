@@ -52,8 +52,10 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --max-warnings 0",
-      "prettier --write"
+      "eslint --max-warnings 0"
+    ],
+    "*": [
+      "prettier --write --ignore-unknown"
     ]
   },
   "packageManager": "yarn@3.2.1"
