@@ -196,7 +196,7 @@ const Stats = memo(
                 favorites && favorites.length === 0 ? (
                   <div className="text-gray-400">
                     Nobody added yet
-                    <div>
+                    <div className="mt-1">
                       Use <span className="font-medium">star</span> icon on player page next to
                       their name
                     </div>
