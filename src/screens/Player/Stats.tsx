@@ -41,24 +41,18 @@ export const Stats = ({ summary }: { summary: Summary }) => {
               roundAndFormat(stats.average.runesWon, { maximumFractionDigits: 1 }),
             ],
             [
-              <Tooltip
-                key=""
-                content={
-                  <div className="space-y-2">
-                    <div>One-and-won means won on the first try</div>
-                    <div>
-                      Race: {oneAndWonsRace} {pluralize('time', oneAndWonsRace)}
-                      <br />
-                      Class: {oneAndWonsClass} {pluralize('time', oneAndWonsClass)}
-                      <br />
-                      Combo: {oneAndWons} {pluralize('time', oneAndWons)}
-                    </div>
-                  </div>
-                }
-              >
-                <span>One-and-won</span>
-              </Tooltip>,
+              <span key="">One-and-won</span>,
               `${oneAndWons} ${pluralize('time', oneAndWons)}`,
+              <div key="" className="space-y-2">
+                <div>One-and-won means won on the first try</div>
+                <div>
+                  Race: {oneAndWonsRace} {pluralize('time', oneAndWonsRace)}
+                  <br />
+                  Class: {oneAndWonsClass} {pluralize('time', oneAndWonsClass)}
+                  <br />
+                  Combo: {oneAndWons} {pluralize('time', oneAndWons)}
+                </div>
+              </div>,
             ],
           ]}
         />
@@ -99,23 +93,19 @@ export const Stats = ({ summary }: { summary: Summary }) => {
             items={[
               [
                 'Total time played',
-                <Tooltip
-                  key=""
-                  disabled={!stats.total.timePlayed}
-                  content={
-                    <span>
-                      {stats.total.timePlayed
-                        ? `${formatNumber(stats.total.timePlayed / 60 / 60, {
-                            maximumFractionDigits: 1,
-                          })} ${pluralize('hour', stats.total.timePlayed / 60 / 60)}`
-                        : ''}
-                    </span>
-                  }
-                >
-                  <span>
-                    {stats.total.timePlayed ? formatTimePlayed(stats.total.timePlayed) : 'n/a'}
+
+                <span key="">
+                  {stats.total.timePlayed ? formatTimePlayed(stats.total.timePlayed) : 'n/a'}
+                </span>,
+                stats.total.timePlayed && (
+                  <span key="">
+                    {stats.total.timePlayed
+                      ? `${formatNumber(stats.total.timePlayed / 60 / 60, {
+                          maximumFractionDigits: 1,
+                        })} ${pluralize('hour', stats.total.timePlayed / 60 / 60)}`
+                      : ''}
                   </span>
-                </Tooltip>,
+                ),
               ],
               [
                 'First game',
@@ -160,13 +150,23 @@ export const Stats = ({ summary }: { summary: Summary }) => {
   );
 };
 
-export const List = ({ items }: { items: [ReactNode, ReactNode][] }) => (
-  <ul>
-    {items.map(([title, text], index) => (
-      <li key={index}>
-        <span className="font-semibold">{title}:</span> {text}
-      </li>
-    ))}
+export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] }) => (
+  <ul className="flex flex-col items-start">
+    {items.map(([title, text, tooltip], index) => {
+      const content = (
+        <li key={index}>
+          <span className="font-semibold">{title}:</span> {text}
+        </li>
+      );
+
+      return tooltip ? (
+        <Tooltip key={index} content={tooltip}>
+          {content}
+        </Tooltip>
+      ) : (
+        content
+      );
+    })}
   </ul>
 );
 
