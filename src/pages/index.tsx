@@ -194,14 +194,14 @@ const Stats = memo(
               title="Your favorites"
               placeholder={
                 favorites && favorites.length === 0 ? (
-                  <li className="text-gray-400">
+                  <div className="text-gray-400">
                     Nobody added yet
                     <div>
-                      Use <span className="font-medium">star</span> icon on player page near their
-                      name
+                      Use <span className="font-medium">star</span> icon on player page next to
+                      their name
                     </div>
-                    <div>Data stored locally on your device</div>
-                  </li>
+                    <div>Data is stored locally on your device</div>
+                  </div>
                 ) : undefined
               }
               items={(favorites ?? []).map((name) => ({
