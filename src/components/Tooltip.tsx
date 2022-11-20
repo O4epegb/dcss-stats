@@ -155,7 +155,7 @@ export const Tooltip = ({
 
   return (
     <>
-      {!triggerElement && cloneElement(children, getReferenceProps({ ref, ...children.props }))}
+      {children && cloneElement(children, getReferenceProps({ ref, ...children.props }))}
       <FloatingPortal>
         <AnimatePresence>
           {!disabled && open && content != null && (
