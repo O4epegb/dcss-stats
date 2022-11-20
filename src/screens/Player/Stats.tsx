@@ -2,7 +2,7 @@ import { ReactNode, FC } from 'react';
 import { filter } from 'lodash-es';
 import { Game } from '@types';
 import { pluralize, date, formatDuration, roundAndFormat, formatNumber } from '@utils';
-import { HeadlessTooltip, Tooltip } from '@components/Tooltip';
+import { Tooltip } from '@components/Tooltip';
 import { GameItem } from '@components/GameItem';
 import { GameTooltip } from '@components/GameTooltip';
 import { usePlayerPageContext } from './context';
@@ -172,18 +172,9 @@ export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] })
 
 const StatsGameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
   return (
-    <HeadlessTooltip
-      interactive
-      maxWidth="none"
-      offset={[0, 0]}
-      render={(attrs) => (
-        <div className="max-w-[375px]" {...attrs}>
-          <GameItem shadow game={game} />
-        </div>
-      )}
-    >
+    <Tooltip interactive content={<GameItem shadow game={game} />}>
       <span>{children}</span>
-    </HeadlessTooltip>
+    </Tooltip>
   );
 };
 

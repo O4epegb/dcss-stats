@@ -2,8 +2,6 @@ import { useState } from 'react';
 import useSWRImmutable from 'swr/immutable';
 import { api } from '@api';
 import { Game } from '@types';
-import { canUseDOM } from '@constants';
-import { TippyProps } from '@tippyjs/react';
 import { Tooltip } from '@components/Tooltip';
 import { GameItem } from './GameItem';
 
@@ -12,7 +10,7 @@ export const GameTooltip = ({
   ...rest
 }: {
   player: string;
-  children: TippyProps['children'];
+  children: JSX.Element;
 } & (
   | {
       isWin: boolean;
@@ -33,7 +31,6 @@ export const GameTooltip = ({
     <Tooltip
       interactive
       delay={100}
-      appendTo={canUseDOM ? document.body : undefined}
       content={
         data ? (
           data.data.length > 0 ? (
@@ -47,7 +44,7 @@ export const GameTooltip = ({
           'Loading'
         )
       }
-      onTrigger={() => setIsActive(true)}
+      onOpenChange={() => setIsActive(true)}
     >
       {children}
     </Tooltip>

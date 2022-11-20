@@ -137,16 +137,16 @@ const getActual = (items: Array<Race | Class>, summaryItems: Record<string, Char
 
 export type Summary = ReturnType<typeof getSummary>;
 
-const storageKey = 'favorites';
-export const getFavorites = () => localStorage.getItem(storageKey) || '';
+const favoritesStorageKey = 'favorites';
+export const getFavorites = () => localStorage.getItem(favoritesStorageKey) || '';
 
 export const addToFavorite = (name: string) => {
-  localStorage.setItem(storageKey, `${getFavorites()},${name}`);
+  localStorage.setItem(favoritesStorageKey, `${getFavorites()},${name}`);
 };
 
 export const removeFromFavorite = (name: string) => {
   localStorage.setItem(
-    storageKey,
+    favoritesStorageKey,
     getFavorites()
       .split(',')
       .filter((x) => x && x !== name)

@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import { useMemo, useState, useEffect } from 'react';
 import { pluralize, formatNumber, trackEvent } from '@utils';
-import { canUseDOM } from '@constants';
 import { Logo } from '@components/Logo';
 import { WinrateStats } from '@components/WinrateStats';
 import { Tooltip } from '@components/Tooltip';
@@ -54,10 +53,7 @@ export const Player = () => {
         <div className="space-y-2">
           <section className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <h2 className="text-3xl font-bold">{player.name}</h2>
-            <Tooltip
-              hideOnClick={false}
-              content={isFavorite ? 'Remove from favorite' : 'Add to favorite'}
-            >
+            <Tooltip content={isFavorite ? 'Remove from favorite' : 'Add to favorite'}>
               <button
                 className={clsx(
                   'flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-100',
@@ -202,7 +198,6 @@ const Badge = ({
     <Tooltip
       interactive
       disabled={!leftToWinWith}
-      appendTo={canUseDOM ? document.body : 'parent'}
       content={
         <div className="space-y-2">
           <div>Need to win with:</div>

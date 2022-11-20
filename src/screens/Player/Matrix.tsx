@@ -20,7 +20,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);
   const [category, setCategory] = useState<keyof CharStat>('wins');
-  const tippyRef = useRef<HTMLElement | null>(null);
+  const [tooltipRef, setTooltipRef] = useState<HTMLElement | null>(null);
   const { stats, allActualRaces, allActualClasses, greatRaces, greatClasses } = summary;
 
   useEffect(() => {
@@ -57,9 +57,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
         ))}
       </div>
       <div className="relative overflow-x-auto xl:overflow-x-visible">
-        {(activeClass || activeRace) && (
+        {(activeClass || activeRace) && tooltipRef && (
           <Tooltip
-            reference={tippyRef.current}
+            restMs={0}
+            delay={0}
+            triggerElement={tooltipRef}
             content={
               <div className="space-y-2">
                 <div>
@@ -135,7 +137,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   onMouseEnter={(e) => {
                     setActive(['', klass.abbr]);
 
-                    tippyRef.current = e.currentTarget;
+                    setTooltipRef(e.currentTarget);
                   }}
                   onMouseLeave={() => setActive([])}
                 >
@@ -164,7 +166,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     onMouseEnter={(e) => {
                       setActive(['', klass.abbr]);
 
-                      tippyRef.current = e.currentTarget;
+                      setTooltipRef(e.currentTarget);
                     }}
                     onMouseLeave={() => setActive([])}
                   >
@@ -189,7 +191,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     onMouseEnter={(e) => {
                       setActive([race.abbr]);
 
-                      tippyRef.current = e.currentTarget;
+                      setTooltipRef(e.currentTarget);
                     }}
                     onMouseLeave={() => setActive([])}
                   >
@@ -206,7 +208,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     onMouseEnter={(e) => {
                       setActive([race.abbr]);
 
-                      tippyRef.current = e.currentTarget;
+                      setTooltipRef(e.currentTarget);
                     }}
                     onMouseLeave={() => setActive([])}
                   >
@@ -233,8 +235,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                           unavailableCombos[char] && 'text-gray-200',
                         )}
                         onMouseEnter={(e) => {
-                          tippyRef.current = e.currentTarget;
-
+                          setTooltipRef(e.currentTarget);
                           setActive([race.abbr, klass.abbr]);
                         }}
                         onMouseLeave={() => setActive([])}

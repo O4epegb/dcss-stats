@@ -264,11 +264,7 @@ const SuggestPage = (props: Props) => {
         </select>
       </div>
       <div className="m-auto flex w-full max-w-lg items-center justify-center gap-2">
-        <Tooltip
-          hideOnClick={false}
-          disabled={somethingSelected}
-          content="Select at least one option above"
-        >
+        <Tooltip disabled={somethingSelected} content="Select at least one option above">
           <button
             type="button"
             className={clsx(
