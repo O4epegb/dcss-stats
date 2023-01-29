@@ -308,28 +308,18 @@ const Table = ({
       title: 'Player',
       type: 'string',
       getter: (game: Game) => (
-        <>
-          {game.server && (
-            <a
-              className="absolute top-0 left-0 bottom-0 right-0"
-              href={getMorgueUrl(game.server.morgueUrl, game)}
-              target="_blank"
-              rel="noreferrer"
-            ></a>
-          )}
-          <Link key={game.name} prefetch={false} href={getPlayerPageHref(game.name)}>
-            <a
-              className="relative hover:underline"
-              onClick={(e) => {
-                if (!e.metaKey && !e.ctrlKey) {
-                  onLinkClick(game.name);
-                }
-              }}
-            >
-              {game.name}
-            </a>
-          </Link>
-        </>
+        <Link prefetch={false} href={getPlayerPageHref(game.name)}>
+          <a
+            className="relative hover:underline"
+            onClick={(e) => {
+              if (!e.metaKey && !e.ctrlKey) {
+                onLinkClick(game.name);
+              }
+            }}
+          >
+            {game.name}
+          </a>
+        </Link>
       ),
     },
     {
@@ -408,10 +398,33 @@ const Table = ({
                   className={clsx(
                     'whitespace-nowrap text-left tabular-nums md:overflow-visible',
                     highlight === title && 'text-amber-700',
-                    index !== 0 && index !== tableData.length && 'px-1',
+                    index === 0 && 'relative',
                   )}
                 >
-                  {getter(game)}
+                  {index === 0 ? (
+                    <>
+                      {game.server && (
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          className="absolute top-0 left-0 bottom-0 right-0"
+                          href={getMorgueUrl(game.server.morgueUrl, game)}
+                        />
+                      )}
+                      {getter(game)}
+                    </>
+                  ) : (
+                    game.server && (
+                      <a
+                        target="_blank"
+                        rel="noreferrer"
+                        className={clsx('block', index !== 0 && 'px-1')}
+                        href={getMorgueUrl(game.server.morgueUrl, game)}
+                      >
+                        {getter(game)}
+                      </a>
+                    )
+                  )}
                 </td>
               ))}
             </tr>
