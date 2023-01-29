@@ -35,16 +35,12 @@ const MainPage = (props: Props) => {
         <header className="flex w-full items-center justify-between">
           <Logo />
           <div className="flex gap-5">
-            <Link href="/suggest">
-              <a className="group">
-                <span className="text-xs group-hover:underline sm:text-base">Combos</span>
-              </a>
+            <Link className="group" href="/suggest">
+              <span className="text-xs group-hover:underline sm:text-base">Combos</span>
             </Link>
-            <Link href="/search">
-              <a className="group">
-                <span className="text-xs group-hover:underline sm:text-base">Search</span>{' '}
-                <span className="rounded bg-indigo-400 px-1 py-0.5 text-xs text-white">beta</span>
-              </a>
+            <Link className="group" href="/search">
+              <span className="text-xs group-hover:underline sm:text-base">Search</span>{' '}
+              <span className="rounded bg-indigo-400 px-1 py-0.5 text-xs text-white">beta</span>
             </Link>
           </div>
         </header>
@@ -70,8 +66,8 @@ const MainPage = (props: Props) => {
           </div>
 
           <div className="flex gap-4 md:justify-end">
-            <Link prefetch={false} href="/servers">
-              <a className="hover:underline">Tracked servers</a>
+            <Link className="hover:underline" prefetch={false} href="/servers">
+              Tracked servers
             </Link>
 
             <a
@@ -308,17 +304,17 @@ const Table = ({
       title: 'Player',
       type: 'string',
       getter: (game: Game) => (
-        <Link prefetch={false} href={getPlayerPageHref(game.name)}>
-          <a
-            className="relative hover:underline"
-            onClick={(e) => {
-              if (!e.metaKey && !e.ctrlKey) {
-                onLinkClick(game.name);
-              }
-            }}
-          >
-            {game.name}
-          </a>
+        <Link
+          prefetch={false}
+          href={getPlayerPageHref(game.name)}
+          className="relative hover:underline"
+          onClick={(e) => {
+            if (!e.metaKey && !e.ctrlKey) {
+              onLinkClick(game.name);
+            }
+          }}
+        >
+          {game.name}
         </Link>
       ),
     },
@@ -460,20 +456,21 @@ const List = ({
       <div>
         {placeholder}
         {items.map((item) => (
-          <Link key={item.name} prefetch={false} href={getPlayerPageHref(item.name)}>
-            <a
-              className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100"
-              onClick={(e) => {
-                if (!e.metaKey && !e.ctrlKey) {
-                  onLinkClick(item.name);
-                }
-              }}
-            >
-              <span className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
-                {item.name}
-              </span>
-              {item.count && <span className="tabular-nums">{item.count}</span>}
-            </a>
+          <Link
+            key={item.name}
+            prefetch={false}
+            href={getPlayerPageHref(item.name)}
+            className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100"
+            onClick={(e) => {
+              if (!e.metaKey && !e.ctrlKey) {
+                onLinkClick(item.name);
+              }
+            }}
+          >
+            <span className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
+              {item.name}
+            </span>
+            {item.count && <span className="tabular-nums">{item.count}</span>}
           </Link>
         ))}
       </div>
@@ -535,7 +532,6 @@ const Search = ({
       )}
 
       <input
-        autoFocus
         placeholder='Type player name, e.g. "MegaDestroyer3000"'
         className="block h-10 w-full rounded border border-gray-400 px-2"
         value={query}

@@ -37,8 +37,8 @@ export const GameItem = memo(
           <MorgueLink game={game} />
           {includePlayer && (
             <div>
-              <Link href={getPlayerPageHref(game.name)}>
-                <a className="font-medium">{game.name}</a>
+              <Link className="font-medium" href={getPlayerPageHref(game.name)}>
+                {game.name}
               </Link>
             </div>
           )}
