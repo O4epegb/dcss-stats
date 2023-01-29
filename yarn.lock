@@ -1264,10 +1264,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compute-scroll-into-view@npm:^1.0.17":
-  version: 1.0.17
-  resolution: "compute-scroll-into-view@npm:1.0.17"
-  checksum: b20c05a10c37813c5a6e4bf053c00f65c88d23afed7a6bd7a2a69e05e2ffc2df3483ecfe407d36bf16b8cec8be21ae1966c9c523093a03117e567156cd79a51e
+"compute-scroll-into-view@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "compute-scroll-into-view@npm:2.0.4"
+  checksum: f3d1db9276c16af42155b572750514939cd0ab0a0f46498906f6811c5b654c5ff2b3f9bfd65958e57439e000a5e1ae092eb96b9e153d194a73e52ffd2380550c
   languageName: node
   linkType: hard
 
@@ -1475,18 +1475,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"downshift@npm:^6.1.12":
-  version: 6.1.12
-  resolution: "downshift@npm:6.1.12"
+"downshift@npm:^7.2.0":
+  version: 7.2.0
+  resolution: "downshift@npm:7.2.0"
   dependencies:
     "@babel/runtime": ^7.14.8
-    compute-scroll-into-view: ^1.0.17
+    compute-scroll-into-view: ^2.0.4
     prop-types: ^15.7.2
     react-is: ^17.0.2
     tslib: ^2.3.0
   peerDependencies:
     react: ">=16.12.0"
-  checksum: c623dc436f332fefddc332b42ca4a267b3f5b47aaf1372a61212678d7ecbe22698fdb63f61373bcbd3773fa526eb4f210cf7f044cd5642b689dbd37ba27e9aaf
+  checksum: 2e7be5ba8f89a027aa9b442d3977b16b84462589aa1649031e3bc85455274193af8f691fbcc26b6db25d56be294f5db9f159fd46562f7595ac2ea7290171d465
   languageName: node
   linkType: hard
 
@@ -2083,21 +2083,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"framer-motion@npm:^7.10.3":
-  version: 7.10.3
-  resolution: "framer-motion@npm:7.10.3"
+"framer-motion@npm:^8.5.4":
+  version: 8.5.4
+  resolution: "framer-motion@npm:8.5.4"
   dependencies:
     "@emotion/is-prop-valid": ^0.8.2
     "@motionone/dom": ^10.15.3
     hey-listen: ^1.0.8
-    tslib: 2.4.0
+    tslib: ^2.4.0
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
   dependenciesMeta:
     "@emotion/is-prop-valid":
       optional: true
-  checksum: 20ce8459e7e3c631af5261215acd2217f57f15d64448e2bd64eecf74d3406552523082c182211af086e01b44daad7a0c216d5135a3f8ae56fb63e152e54233aa
+  checksum: 9852c448951986b2c2984bcf457b8a50ea10bb5d63c5ee58af7a60582dc04739873aa458a5e26e4ee4b582a01afd3ac2421241f1941a4bd5c97122960429299a
   languageName: node
   linkType: hard
 
@@ -4110,12 +4110,12 @@ __metadata:
     axios: ^0.27.2
     clsx: ^1.2.1
     dayjs: ^1.11.7
-    downshift: ^6.1.12
+    downshift: ^7.2.0
     eslint: ^8.33.0
     eslint-config-prettier: ^8.6.0
     eslint-plugin-import: ^2.27.5
     eslint-plugin-react: ^7.32.2
-    framer-motion: ^7.10.3
+    framer-motion: ^8.5.4
     husky: ^8.0.3
     lint-staged: ^13.1.0
     lodash-es: ^4.17.21
@@ -4721,17 +4721,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:2.4.0, tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "tslib@npm:2.4.0"
-  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
-  languageName: node
-  linkType: hard
-
 "tslib@npm:^1.8.1":
   version: 1.14.1
   resolution: "tslib@npm:1.14.1"
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
+  languageName: node
+  linkType: hard
+
+"tslib@npm:^2.0.0, tslib@npm:^2.1.0, tslib@npm:^2.3.0, tslib@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 8c4aa6a3c5a754bf76aefc38026134180c053b7bd2f81338cb5e5ebf96fefa0f417bff221592bf801077f5bf990562f6264fecbc42cd3309b33872cb6fc3b113
   languageName: node
   linkType: hard
 

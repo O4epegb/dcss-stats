@@ -514,21 +514,20 @@ const Search = ({
     router.push(getPlayerPageHref(slug));
   }, []);
 
-  const { isOpen, highlightedIndex, getComboboxProps, getInputProps, getMenuProps, getItemProps } =
-    useCombobox({
-      id: 'MainSearch',
-      items,
-      inputValue: query,
-      onSelectedItemChange: (e) => {
-        if (e.selectedItem) {
-          setQuery(e.selectedItem.name);
-          goToPlayerPage(e.selectedItem.name);
-        }
-      },
-    });
+  const { isOpen, highlightedIndex, getInputProps, getMenuProps, getItemProps } = useCombobox({
+    id: 'MainSearch',
+    items,
+    inputValue: query,
+    onSelectedItemChange: (e) => {
+      if (e.selectedItem) {
+        setQuery(e.selectedItem.name);
+        goToPlayerPage(e.selectedItem.name);
+      }
+    },
+  });
 
   return (
-    <div {...getComboboxProps({ className: 'relative' })}>
+    <div className="relative">
       {isNavigating && (
         <div className="absolute right-2 top-[50%] -translate-y-1/2">
           <Loader />
