@@ -2,10 +2,8 @@ import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
 import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import useIsomorphicLayoutEffect from 'react-use/lib/useIsomorphicLayoutEffect';
-import { mergeRefs } from 'react-merge-refs';
-import { ReactNode, useRef, useState, useMemo, cloneElement, FC } from 'react';
+import { ReactNode, useRef, useState, cloneElement, FC } from 'react';
 import { XOR } from '@types';
-import type { Props as useHoverProps } from '@floating-ui/react-dom-interactions/src/hooks/useHover';
 import {
   arrow,
   autoUpdate as autoUpdateUtility,
@@ -23,7 +21,9 @@ import {
   useHover,
   useInteractions,
   useRole,
-} from '@floating-ui/react-dom-interactions';
+  useMergeRefs,
+  UseHoverProps,
+} from '@floating-ui/react';
 
 export const HelpBubble: FC<{ content: ReactNode }> = ({ content }) => {
   return (
@@ -63,7 +63,7 @@ type Props = {
   zIndex?: number;
   className?: string;
   onOpenChange?(open: boolean): void;
-} & Pick<useHoverProps, 'delay' | 'restMs'> &
+} & Pick<UseHoverProps, 'delay' | 'restMs'> &
   XOR<
     {
       children: JSX.Element;
@@ -146,10 +146,7 @@ export const Tooltip = ({
     }
   }, [reference, triggerElement]);
 
-  const ref = useMemo(
-    () => (triggerElement ? reference : mergeRefs([reference, (children as any).ref])),
-    [triggerElement, reference, children],
-  );
+  const ref = useMergeRefs(triggerElement ? [reference] : [reference, (children as any).ref]);
 
   const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {};
 
