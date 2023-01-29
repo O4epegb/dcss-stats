@@ -300,7 +300,7 @@ const Table = ({
 }: {
   games: Game[];
   title: string;
-  highlight: typeof tableData[number]['title'];
+  highlight: (typeof tableData)[number]['title'];
   onLinkClick: (name: string) => void;
 }) => {
   const tableData = [
