@@ -39,8 +39,8 @@ export const Player = () => {
   } = summary;
 
   const isGreat = wonRaces.length === trunkRaces.length;
-  const isGreater = wonClasses.length === trunkClasses.length;
-  const isGreatest = isGreat && isGreater;
+  const isGrand = wonClasses.length === trunkClasses.length;
+  const isGreater = isGreat && isGrand;
   const isPolytheist = wonGods.length === gods.length;
   const isTiamat = tiamat.unwon.length === 0;
 
@@ -86,10 +86,20 @@ export const Player = () => {
               </button>
             </Tooltip>
             <div className="flex flex-wrap gap-2 text-sm">
-              {isGreatest ? (
-                <Tooltip content="Has won with all races and all classes">
+              {isGreater ? (
+                <Tooltip
+                  content={
+                    <div>
+                      Has won with all races and all classes
+                      <div className="pt-2 text-xs text-gray-300">
+                        Achievements were renamed to Great/Grand/Greater because of <br /> name
+                        clash with Discord command
+                      </div>
+                    </div>
+                  }
+                >
                   <div className="rounded bg-amber-300 py-0.5 px-1 ring-2 ring-inset ring-amber-600">
-                    Greatest Player
+                    Greater Player
                   </div>
                 </Tooltip>
               ) : (
@@ -99,9 +109,9 @@ export const Player = () => {
                       <div className="rounded bg-amber-300 py-0.5 px-1">Great Player</div>
                     </Tooltip>
                   )}
-                  {isGreater && (
+                  {isGrand && (
                     <Tooltip content="Has won with all classes">
-                      <div className="rounded bg-amber-300 py-0.5 px-1">Greater Player</div>
+                      <div className="rounded bg-amber-300 py-0.5 px-1">Grand Player</div>
                     </Tooltip>
                   )}
                 </>
@@ -145,9 +155,9 @@ export const Player = () => {
                 leftToWinWith={notWonRaces}
               />
             )}
-            {!isGreater && (
+            {!isGrand && (
               <Badge
-                title="Greater Player"
+                title="Grand Player"
                 total={trunkClasses.length}
                 completed={wonClasses.length}
                 leftToWinWith={notWonClasses}
