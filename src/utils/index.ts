@@ -65,6 +65,7 @@ declare global {
 }
 
 export const trackEvent = (type: string, data?: Record<string, string>) => {
+  // @vercel/analytics does not support it atm
   window.splitbee?.track(type, data);
 };
 
