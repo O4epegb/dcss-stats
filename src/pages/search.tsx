@@ -100,7 +100,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
       name: 'Skill',
       type: 'select',
       suboptions: skills.map((x) => x.name),
-      conditions: ['is'] as Condition[],
+      conditions,
       values: ['Level 15 or more', 'Level 27'].map((x) => ({ name: x })),
     },
   ] as const;
@@ -274,7 +274,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
                 }
               />
               <button
-                className="ml-auto -mr-1 rounded p-1 hover:bg-gray-100"
+                className="ml-auto -mr-2 rounded py-1 px-2 hover:bg-gray-100"
                 onClick={() => setFilters(getDefaultFilters())}
               >
                 Reset
@@ -647,7 +647,7 @@ const SortableItem: FC<{ id: string; className: string; children: ReactNode }> =
         {...listeners}
         className={clsx(
           isDragging ? 'cursor-grabbing' : 'cursor-grab',
-          'absolute right-full mr-2 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
+          'absolute right-full mr-1 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
         )}
       >
         <svg
