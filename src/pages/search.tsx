@@ -517,10 +517,10 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
                       onClick={() => {
                         setFilters((state) => {
                           const lastFilter = last(state);
-                          const operator = last(state)?.operator;
+                          const lastOperator = lastFilter?.operator;
                           const option =
-                            (operator === 'and' &&
-                              options.find((x) => !filters.find((f) => f.option === x.name))) ??
+                            (lastOperator === 'and' &&
+                              options.find((x) => !filters.find((f) => f.option === x.name))) ||
                             options.find((x) => x.name === lastFilter?.option);
 
                           if (!option) {
@@ -535,7 +535,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
                               suboption: option.suboptions[0],
                               condition: option.conditions[0],
                               value: '',
-                              operator: operator ?? operators[0],
+                              operator: lastOperator ?? operators[0],
                             },
                           ];
                         });

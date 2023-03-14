@@ -17,7 +17,7 @@ import {
 import { useRouter } from 'next/router';
 import { api } from '@api';
 import { formatNumber } from '@utils';
-import { Class, God, Race } from '@types';
+import { Class, God, Race, Skill } from '@types';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { GamesList } from '@components/GamesList';
@@ -502,6 +502,7 @@ type Response = {
   races: Race[];
   classes: Class[];
   gods: God[];
+  skills: Skill[];
   versions: string[];
 };
 
@@ -515,6 +516,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       classes: orderBy(data.classes, (x) => x.name),
       gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
       versions: data.versions,
+      skills: data.skills,
     },
   };
 };
