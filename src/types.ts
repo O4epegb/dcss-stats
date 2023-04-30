@@ -173,3 +173,11 @@ export type Logfile = {
   version: string;
   lastFetched?: string;
 };
+
+export type StaticData = {
+  races: Race[];
+  classes: Class[];
+  gods: God[];
+  skills: Skill[];
+  versions: string[];
+};
