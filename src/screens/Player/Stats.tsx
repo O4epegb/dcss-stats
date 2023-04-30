@@ -95,17 +95,12 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                 'Total time played',
 
                 <span key="">
-                  {stats.total.timePlayed ? formatTimePlayed(stats.total.timePlayed) : 'n/a'}
+                  {stats.total.timePlayed
+                    ? `${formatNumber(stats.total.timePlayed / 60 / 60, {
+                        maximumFractionDigits: 0,
+                      })} ${pluralize('hour', stats.total.timePlayed / 60 / 60)}`
+                    : 'n/a'}
                 </span>,
-                stats.total.timePlayed && (
-                  <span key="">
-                    {stats.total.timePlayed
-                      ? `${formatNumber(stats.total.timePlayed / 60 / 60, {
-                          maximumFractionDigits: 1,
-                        })} ${pluralize('hour', stats.total.timePlayed / 60 / 60)}`
-                      : ''}
-                  </span>
-                ),
               ],
               [
                 'First game',
@@ -176,19 +171,4 @@ const StatsGameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, child
       <span>{children}</span>
     </Tooltip>
   );
-};
-
-const formatTimePlayed = (seconds: number) => {
-  const hours = seconds / 60 / 60;
-  const days = Math.floor(hours / 24);
-  const hoursRemainder = Math.round(hours - days * 24);
-
-  return [
-    days && `${days} ${pluralize('day', days)}`,
-    `${roundAndFormat(hoursRemainder, {
-      maximumFractionDigits: 0,
-    })} ${pluralize('hour', hoursRemainder)}`,
-  ]
-    .filter(Boolean)
-    .join(' and ');
 };
