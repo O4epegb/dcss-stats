@@ -332,20 +332,18 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         </select>
       </div>
 
-      {showAdvancedFilters && (
-        <div className="space-y-4">
-          <hr />
-          <Filters
-            excludeFilters={['Class', 'Race', 'God', 'End', 'Player']}
-            skills={skills}
-            onInit={(filters) => {
-              setAdvancedFilter(filters);
-              setFilterForSearch((x) => ({ ...x, advanced: filters }));
-            }}
-            onFiltersChange={setAdvancedFilter}
-          />
-        </div>
-      )}
+      <div className={clsx('space-y-4', !showAdvancedFilters && 'hidden')}>
+        <hr />
+        <Filters
+          excludeFilters={['Class', 'Race', 'God', 'End', 'Player']}
+          skills={skills}
+          onInit={(filters) => {
+            setAdvancedFilter(filters);
+            setFilterForSearch((x) => ({ ...x, advanced: filters }));
+          }}
+          onFiltersChange={setAdvancedFilter}
+        />
+      </div>
 
       <div className="m-auto flex w-full max-w-lg items-center justify-center gap-2">
         <Tooltip disabled={buttonEnabled} content="Select at least one option from Race/Class/God">
