@@ -21,7 +21,6 @@ import {
   isError,
 } from 'lodash-es';
 import { useRouter } from 'next/router';
-import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import { api } from '@api';
 import { formatNumber, notEmpty } from '@utils';
 import { Class, Game, God, Race, StaticData } from '@types';
@@ -32,6 +31,7 @@ import { Loader } from '@components/Loader';
 import { Tooltip } from '@components/Tooltip';
 import { Filter, Filters, filtersToQuery } from '@components/Filters';
 import { GameItem } from '@components/GameItem';
+import { useLocalStorageValue } from '@react-hookz/web';
 
 enum FilterValue {
   Any = 'any',
@@ -54,18 +54,23 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
 
   const router = useRouter();
 
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-  const filtersLsKey = 'showAdvancedFilters';
+  const { value: showAdvancedFilters, set: setShowAdvancedFilters } = useLocalStorageValue(
+    'showAdvancedFilters',
+    {
+      defaultValue: false,
+      initializeWithValue: false,
+    },
+  );
+  const { value: showWins, set: setShowWins } = useLocalStorageValue('showWins', {
+    defaultValue: true,
+    initializeWithValue: false,
+  });
+  const { value: groupingKey, set: setGroupingKey } = useLocalStorageValue<
+    undefined | keyof Omit<typeof filter, 'version'>
+  >('groupingKey', {
+    defaultValue: undefined,
+  });
 
-  useUpdateEffect(() => {
-    if (showAdvancedFilters) {
-      localStorage.setItem(filtersLsKey, '1');
-    } else {
-      localStorage.removeItem(filtersLsKey);
-    }
-  }, [showAdvancedFilters]);
-
-  const [showWins, setShowWins] = useState(true);
   const [view, setView] = useState<'stats' | 'games'>('stats');
   const [sorting, setSorting] = useState<{ key: SortingKey; direction: 'desc' | 'asc' }>(() => ({
     key: 'total',
@@ -82,7 +87,6 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     ...filter,
     advanced: [] as Filter[],
   }));
-  const [groupingKey, setGroupingKey] = useState<keyof Omit<typeof filter, 'version'>>();
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
     setFilter((current) => ({ ...current, [key]: value }));
@@ -92,8 +96,6 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     if (!router.isReady) {
       return;
     }
-
-    setShowAdvancedFilters(Boolean(localStorage.getItem(filtersLsKey)));
 
     const [qRace, qClass, qGod, qVersion] = [
       router.query.race,

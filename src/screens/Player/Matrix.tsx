@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import { useEffect, useRef, Fragment, useState } from 'react';
-import useMedia from 'react-use/lib/useMedia';
 import { CharStat } from '@types';
 import { pluralize, formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
+import { useMediaQuery } from '@react-hookz/web';
 import { Summary, unavailableCombos } from './utils';
 
 const items = [
@@ -15,7 +15,7 @@ const items = [
 ] as const;
 
 export const Matrix = ({ summary }: { summary: Summary }) => {
-  const isWide = useMedia('(min-width: 1280px)', false);
+  const isWide = useMediaQuery('(min-width: 1280px)', { initializeWithValue: false });
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [[activeRace, activeClass], setActive] = useState<string[]>([]);

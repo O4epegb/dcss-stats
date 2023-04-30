@@ -7,7 +7,6 @@ import { GetStaticProps } from 'next';
 import { map, orderBy, startsWith } from 'lodash-es';
 import dayjs from 'dayjs';
 import useSWRImmutable from 'swr/immutable';
-import useDebounce from 'react-use/lib/useDebounce';
 import { api } from '@api';
 import { formatDuration, formatNumber, getPlayerPageHref } from '@utils';
 import { Class, Game, God, Player, Race } from '@types';
@@ -19,6 +18,7 @@ import { Loader } from '@components/Loader';
 import { HelpBubble } from '@components/Tooltip';
 import { getMorgueUrl } from '@components/GameItem';
 import { WinrateStats } from '@components/WinrateStats';
+import { useDebouncedEffect } from '@react-hookz/web';
 
 const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -494,7 +494,7 @@ const Search = ({
   const router = useRouter();
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
-  useDebounce(() => setDebouncedQuery(query), 400, [query]);
+  useDebouncedEffect(() => setDebouncedQuery(query), [query], 400);
 
   const { data, isValidating: isLoading } = useSWRImmutable(
     debouncedQuery ? ['/players', { query: debouncedQuery }] : null,

@@ -1,9 +1,9 @@
 import clsx from 'clsx';
 import { last, throttle } from 'lodash-es';
 import { useState, useEffect } from 'react';
-import { useFirstMountState } from 'react-use/lib/useFirstMountState';
 import { api } from '@api';
 import { Game } from '@types';
+import { useFirstMountState } from '@react-hookz/web';
 import { Loader } from './Loader';
 import { CompactGameItem, GameItem } from './GameItem';
 

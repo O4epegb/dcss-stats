@@ -1,7 +1,5 @@
 import clsx from 'clsx';
 import { AnimatePresence, motion } from 'framer-motion';
-import useUpdateEffect from 'react-use/lib/useUpdateEffect';
-import useIsomorphicLayoutEffect from 'react-use/lib/useIsomorphicLayoutEffect';
 import { ReactNode, useRef, useState, cloneElement, FC } from 'react';
 import { XOR } from '@types';
 import {
@@ -24,6 +22,7 @@ import {
   useMergeRefs,
   UseHoverProps,
 } from '@floating-ui/react';
+import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web';
 
 export const HelpBubble: FC<{ content: ReactNode }> = ({ content }) => {
   return (

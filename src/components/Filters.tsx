@@ -2,9 +2,9 @@ import { useState, useEffect, FC, ReactNode } from 'react';
 import clsx from 'clsx';
 import { castArray, last, first, omit } from 'lodash-es';
 import { useRouter } from 'next/router';
-import useUpdateEffect from 'react-use/lib/useUpdateEffect';
 import { StaticData } from '@types';
 import { notEmpty } from '@utils';
+import { useUpdateEffect } from '@react-hookz/web';
 import { HelpBubble, Tooltip } from '@components/Tooltip';
 import {
   DndContext,
