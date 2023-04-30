@@ -160,7 +160,7 @@ const TimeAndVersion = ({ compact, game }: { compact?: boolean; game: Game }) =>
 
   return (
     <>
-      <div title={`Start: ${start}\nEnd: ${end}`}>
+      <div suppressHydrationWarning title={`Start: ${start}\nEnd: ${end}`}>
         {!compact && <>{date(game.endAt).fromNow()}, </>} {end}
       </div>
       <div>v{game.version}</div>

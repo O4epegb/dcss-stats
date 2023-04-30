@@ -1,10 +1,11 @@
 import { ReactNode, FC } from 'react';
 import { filter } from 'lodash-es';
 import { Game } from '@types';
-import { pluralize, date, formatDuration, roundAndFormat, formatNumber } from '@utils';
+import { pluralize, formatDuration, roundAndFormat, formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
 import { GameItem } from '@components/GameItem';
 import { GameTooltip } from '@components/GameTooltip';
+import { Date } from '@components/Date';
 import { usePlayerPageContext } from './context';
 import { Summary } from './utils';
 
@@ -107,7 +108,7 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                 <StatsGameTooltip key="" game={firstGame}>
                   {firstGame.char}
                   {firstGame.god ? ` of ${firstGame.god}` : ''},{' '}
-                  {date(firstGame.endAt).format('DD MMM YYYY')}
+                  <Date value={firstGame.endAt} format="DD MMM YYYY" />
                 </StatsGameTooltip>,
               ],
               [
@@ -118,7 +119,7 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                       {firstWin.char}
                       {firstWin.god ? ` of ${firstWin.god}` : ''}, won after {gamesBeforeFirstWin}{' '}
                       {pluralize('game', gamesBeforeFirstWin)},{' '}
-                      {date(firstWin.endAt).format('DD MMM YYYY')}
+                      <Date value={firstWin.endAt} format="DD MMM YYYY" />
                     </span>
                   </GameTooltip>
                 ) : (
@@ -131,7 +132,8 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                   <StatsGameTooltip key="" game={lowestXlWin}>
                     {`${lowestXlWin.char}${lowestXlWin.god ? ` of ${lowestXlWin.god}` : ''}, XL:${
                       lowestXlWin.xl
-                    }, ${date(lowestXlWin.endAt).format('DD MMM YYYY')}`}
+                    },`}{' '}
+                    <Date value={lowestXlWin.endAt} format="DD MMM YYYY" />
                   </StatsGameTooltip>
                 ) : (
                   'n/a'
