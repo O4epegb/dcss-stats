@@ -40,7 +40,6 @@ const MainPage = (props: Props) => {
             </Link>
             <Link className="group" href="/search">
               <span className="text-xs group-hover:underline sm:text-base">Search</span>{' '}
-              <span className="rounded bg-indigo-400 px-1 py-0.5 text-xs text-white">beta</span>
             </Link>
           </div>
         </header>
