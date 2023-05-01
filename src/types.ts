@@ -181,3 +181,10 @@ export type StaticData = {
   skills: Skill[];
   versions: string[];
 };
+
+export type Stream = {
+  username: string;
+  login: string;
+  viewers: number;
+  thumbnail: string;
+};
