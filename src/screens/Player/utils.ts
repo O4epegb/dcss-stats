@@ -16,7 +16,7 @@ export const unavailableCombos = keyBy([
   'FeHu',
   'FeGl',
   'FeBr',
-  'FeAM',
+  'FeHs',
 ]);
 
 export const getSummary = (
