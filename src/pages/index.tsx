@@ -4,7 +4,7 @@ import { useState, useCallback, memo, useEffect, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { GetStaticProps } from 'next';
-import { map, orderBy, startsWith } from 'lodash-es';
+import { map, orderBy, sample, startsWith } from 'lodash-es';
 import dayjs from 'dayjs';
 import useSWRImmutable from 'swr/immutable';
 import { api } from '@api';
@@ -44,6 +44,7 @@ const MainPage = (props: Props) => {
           </div>
         </header>
         <Search
+          nickname={props.nickname}
           isNavigating={isNavigating}
           setIsNavigating={setIsNavigating}
           query={query}
@@ -528,11 +529,13 @@ const List = ({
 type SearchItem = Player;
 
 const Search = ({
+  nickname,
   isNavigating,
   setIsNavigating,
   query,
   setQuery,
 }: {
+  nickname: string;
   isNavigating: boolean;
   setIsNavigating: (state: boolean) => void;
   query: string;
@@ -579,7 +582,7 @@ const Search = ({
       )}
 
       <input
-        placeholder='Type player name, e.g. "MegaDestroyer3000"'
+        placeholder={`Type player name, e.g. "${nickname}"`}
         className="block h-10 w-full rounded border border-gray-400 px-2"
         value={query}
         {...getInputProps({
@@ -643,6 +646,22 @@ const Search = ({
   );
 };
 
+const nicknames = [
+  'MegaDestroyer3000',
+  'Stone Soup Sipper',
+  'Dungeon Dancer',
+  'Treasure Hunter Extraordinaire',
+  'Monster Muncher',
+  'Rune Runner',
+  'Perpetual Potion Popper',
+  'Scroll Scholar',
+  'Trap Tactician',
+  'Godly Gourmand',
+  'Zig-Zagger',
+  'Spider Slayer',
+  'Loot Looter',
+].map((n) => n.replaceAll(' ', ''));
+
 type Stats = { wins: number; total: number };
 type Combos = Record<string, Stats>;
 type CombosData = Stats & { combos: Combos };
@@ -664,14 +683,19 @@ type Response = {
   };
 };
 
-type Props = Response;
+type Props = Response & {
+  nickname: string;
+};
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
   const res = await createServerApi().api.get<{ data: Response }>('/stats');
 
   return {
     revalidate: 300,
-    props: res.data.data,
+    props: {
+      ...res.data.data,
+      nickname: sample(nicknames) ?? '',
+    },
   };
 };
 
