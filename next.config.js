@@ -1,8 +1,8 @@
-const withTM = require('next-transpile-modules')(['lodash-es']);
-
 const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL;
 
-module.exports = withTM({
+/** @type {import('next').NextConfig} */
+const config = {
+  transpilePackages: ['lodash-es'],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -14,4 +14,6 @@ module.exports = withTM({
       },
     ].filter(Boolean);
   },
-});
+};
+
+module.exports = config;

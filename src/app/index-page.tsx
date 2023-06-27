@@ -1,17 +1,17 @@
-import { useRouter } from 'next/router';
+'use client';
+
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useCallback, memo, useEffect, ReactNode } from 'react';
 import clsx from 'clsx';
 import { useCombobox } from 'downshift';
-import { GetStaticProps } from 'next';
-import { map, orderBy, sample, startsWith } from 'lodash-es';
+import { map, orderBy, startsWith } from 'lodash-es';
 import dayjs from 'dayjs';
 import useSWRImmutable from 'swr/immutable';
 import { api } from '@api';
-import { formatDuration, formatNumber, getPlayerPageHref, pluralize } from '@utils';
+import { formatDuration, formatNumber, pluralize } from '@utils';
 import { Class, Game, God, Player, Race, Stream } from '@types';
 import { Highlighted } from '@components/Highlighted';
-import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { getFavorites } from '@screens/Player/utils';
 import { Loader } from '@components/Loader';
@@ -20,7 +20,7 @@ import { getMorgueUrl } from '@components/GameItem';
 import { WinrateStats } from '@components/WinrateStats';
 import { useDebouncedEffect } from '@react-hookz/web';
 
-const MainPage = (props: Props) => {
+export const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [query, setQuery] = useState('');
 
@@ -90,7 +90,7 @@ const MainPage = (props: Props) => {
           </div>
 
           <div>
-            Made by <span className="font-light text-gray-500">totalnoob</span>, DM on{' '}
+            Made by <span className="font-semibold text-gray-500">totalnoob</span>, DM on{' '}
             <a
               href="https://discord.gg/pKCNTunFeW"
               target="_blank"
@@ -318,7 +318,7 @@ const Streams = () => {
                 height={360}
                 alt={`${stream.username} stream`}
                 src={stream.thumbnail.replace('{width}', '640').replace('{height}', '360')}
-                className="transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-[-4px_4px_#772ce8,-3px_3px_#772ce8,-2px_2px_#772ce8,-1px_1px_#772ce8]"
+                className="transition-all hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_#772ce8,-3px_3px_#772ce8,-2px_2px_#772ce8,-1px_1px_#772ce8]"
               />
               <div className="flex justify-between gap-2 whitespace-nowrap">
                 <span className="overflow-hidden text-ellipsis font-semibold">
@@ -354,7 +354,7 @@ const Table = ({
       getter: (game: Game) => (
         <Link
           prefetch={false}
-          href={getPlayerPageHref(game.name)}
+          href={`/players/${game.name}`}
           className="relative hover:underline"
           onClick={(e) => {
             if (!e.metaKey && !e.ctrlKey) {
@@ -451,7 +451,7 @@ const Table = ({
                         <a
                           target="_blank"
                           rel="noreferrer"
-                          className="absolute top-0 left-0 bottom-0 right-0"
+                          className="absolute bottom-0 left-0 right-0 top-0"
                           href={getMorgueUrl(game.server.morgueUrl, game)}
                         />
                       )}
@@ -507,7 +507,7 @@ const List = ({
           <Link
             key={item.name}
             prefetch={false}
-            href={getPlayerPageHref(item.name)}
+            href={`/players/${item.name}`}
             className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100"
             onClick={(e) => {
               if (!e.metaKey && !e.ctrlKey) {
@@ -558,7 +558,7 @@ const Search = ({
 
   const goToPlayerPage = useCallback((slug: string) => {
     setIsNavigating(true);
-    router.push(getPlayerPageHref(slug));
+    router.push(`/players/${slug}`);
   }, []);
 
   const { isOpen, highlightedIndex, getInputProps, getMenuProps, getItemProps } = useCombobox({
@@ -604,7 +604,7 @@ const Search = ({
 
       <div
         className={clsx(
-          'absolute top-full left-0 z-20 mt-2 w-full overflow-hidden rounded shadow',
+          'absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded shadow',
           isOpen ? 'block' : 'hidden',
         )}
       >
@@ -646,27 +646,11 @@ const Search = ({
   );
 };
 
-const nicknames = [
-  'MegaDestroyer3000',
-  'Stone Soup Sipper',
-  'Dungeon Dancer',
-  'Treasure Hunter Extraordinaire',
-  'Monster Muncher',
-  'Rune Runner',
-  'Perpetual Potion Popper',
-  'Scroll Scholar',
-  'Trap Tactician',
-  'Godly Gourmand',
-  'Zig-Zagger',
-  'Spider Slayer',
-  'Loot Looter',
-].map((n) => n.replaceAll(' ', ''));
-
 type Stats = { wins: number; total: number };
 type Combos = Record<string, Stats>;
 type CombosData = Stats & { combos: Combos };
 
-type Response = {
+export type Response = {
   games: number;
   wins: number;
   races: Race[];
@@ -683,20 +667,6 @@ type Response = {
   };
 };
 
-type Props = Response & {
+export type Props = Response & {
   nickname: string;
 };
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const res = await createServerApi().api.get<{ data: Response }>('/stats');
-
-  return {
-    revalidate: 300,
-    props: {
-      ...res.data.data,
-      nickname: sample(nicknames) ?? '',
-    },
-  };
-};
-
-export default MainPage;

@@ -11,3 +11,5 @@ export const createServerApi = (_ctx?: GetServerSidePropsContext) => {
     api,
   };
 };
+
+export const fetchApi: typeof fetch = (url, params) => fetch(`${rootUrl}/api${url}`, params);

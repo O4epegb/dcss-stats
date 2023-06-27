@@ -1,14 +1,14 @@
 import ErrorPage from 'next/error';
 import { Page } from '@types';
-import Bugsnag from '@bugsnag/js';
+import { notify } from '@utils/bugsnag';
 
-const Page500: Page<{ statusCode?: any }> = ({ statusCode }) => {
-  return <ErrorPage statusCode={statusCode || '¯\\_(ツ)_/¯'} />;
+const Page500: Page<{ statusCode?: number }> = ({ statusCode }) => {
+  return <ErrorPage statusCode={statusCode ?? 500} />;
 };
 
 Page500.getInitialProps = (ctx) => {
   if (ctx.err) {
-    Bugsnag.notify(ctx.err);
+    notify(ctx.err);
   }
 
   return ErrorPage.getInitialProps(ctx);

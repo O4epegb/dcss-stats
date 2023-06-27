@@ -2,9 +2,9 @@ import React, { ComponentType, ErrorInfo, ReactNode } from 'react';
 import Bugsnag from '@bugsnag/js';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
 
-const useBugsnag = process.env.NEXT_PUBLIC_APP_ENV === 'production';
+const isBugsnagEnabled = process.env.NEXT_PUBLIC_APP_ENV === 'production';
 
-if (useBugsnag) {
+if (isBugsnagEnabled) {
   Bugsnag.start({
     apiKey: '72e83e4300c7f6a86882f6958c961bb4',
     plugins: [new BugsnagPluginReact(React)],
@@ -33,11 +33,11 @@ class DevErrorBoundary extends React.Component<
   }
 }
 
-const BugsnagBoundary = useBugsnag && Bugsnag.getPlugin('react')?.createErrorBoundary();
+const BugsnagBoundary = isBugsnagEnabled && Bugsnag.getPlugin('react')?.createErrorBoundary();
 export const ErrorBoundary = BugsnagBoundary ? BugsnagBoundary : DevErrorBoundary;
 
 export const notify = (error: Error) => {
-  if (useBugsnag) {
+  if (isBugsnagEnabled) {
     Bugsnag.notify(error);
   }
 };
