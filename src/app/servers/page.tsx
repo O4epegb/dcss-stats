@@ -1,14 +1,19 @@
-import { GetStaticProps } from 'next';
 import { orderBy } from 'lodash-es';
 import { pluralize, date, formatNumber } from '@utils';
 import { Logfile, Server } from '@types';
-import { createServerApi } from '@api/server';
+import { fetchApi } from '@api/server';
 import { Logo } from '@components/Logo';
-import { Tooltip } from '@components/Tooltip';
 
-const ServersPage = (props: Props) => {
+const ServersPage = async () => {
+  const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(
+    '/servers',
+    {
+      next: { revalidate: 300 },
+    },
+  ).then((r) => r.json());
+
   return (
-    <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pt-4">
+    <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 py-4 pt-4">
       <header>
         <Logo />
       </header>
@@ -16,7 +21,7 @@ const ServersPage = (props: Props) => {
       <div className="w-full max-w-lg space-y-2">
         <h2 className="text-lg font-semibold">Tracking 12 {pluralize('server', 12)}:</h2>
 
-        {props.servers.map((server) => {
+        {servers.map((server) => {
           const total = server.logfile.reduce((acc, item) => acc + item.games, 0);
 
           return (
@@ -41,25 +46,24 @@ const ServersPage = (props: Props) => {
                 <ul className="text-sm">
                   {orderBy(server.logfile, (x) => Number(x.version)).map((file) => {
                     return (
-                      <Tooltip
+                      <li
                         key={file.path}
-                        content={
+                        className="flex justify-between px-1 hover:bg-gray-100"
+                        title={
                           file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
                         }
                       >
-                        <li className="flex justify-between px-1 hover:bg-gray-100">
-                          <a
-                            href={server.baseUrl + file.path}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {file.path}
-                          </a>
-                          <div className="whitespace-nowrap">
-                            {formatNumber(file.games)} {pluralize('game', file.games)}
-                          </div>
-                        </li>
-                      </Tooltip>
+                        <a
+                          href={server.baseUrl + file.path}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {file.path}
+                        </a>
+                        <div className="whitespace-nowrap">
+                          {formatNumber(file.games)} {pluralize('game', file.games)}
+                        </div>
+                      </li>
                     );
                   })}
                 </ul>
@@ -70,21 +74,6 @@ const ServersPage = (props: Props) => {
       </div>
     </div>
   );
-};
-
-type Props = Response;
-
-type Response = {
-  servers: Array<Server & { logfile: Array<Logfile> }>;
-};
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const res = await createServerApi().api.get<Response>('/servers');
-
-  return {
-    revalidate: 300,
-    props: res.data,
-  };
 };
 
 export default ServersPage;
