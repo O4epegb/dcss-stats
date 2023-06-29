@@ -6,7 +6,7 @@ import { cookieKeyCompactView, cookieKeyOpenFilters } from '@screens/Player/util
 import PlayerPage from '@screens/Player';
 
 async function getData(slug: string) {
-  const response = await fetchApi(`/players/${slug}`);
+  const response = await fetchApi(`/players/${slug}`, { cache: 'no-store' });
 
   if (response.ok) {
     const data: PlayerInfoResponse = await response.json();
