@@ -2,8 +2,11 @@ import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es';
 import { CharStat, Class, GamesToFirstWin, God, Matrix, Race } from '@types';
 import { notEmpty } from '@utils';
 
-export const cookieKeyCompactView = 'dcss-compact-view';
-export const cookieKeyOpenFilters = 'dcss-open-filters';
+export const cookiesStore = {
+  'dcss-compact-view': false,
+  'dcss-open-filters': false,
+  'dcss-show-trunk-data': false,
+} as const;
 
 export const unavailableCombos = keyBy([
   'GhTm',

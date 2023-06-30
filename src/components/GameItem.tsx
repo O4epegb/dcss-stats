@@ -1,8 +1,7 @@
 import clsx from 'clsx';
-import Link from 'next/link';
 import { first, without } from 'lodash-es';
 import { forwardRef, memo } from 'react';
-import { pluralize, date, formatNumber, getPlayerPageHref } from '@utils';
+import { pluralize, date, formatNumber } from '@utils';
 import { Game } from '@types';
 import externalLinkSvg from '@icons/external.svg';
 
@@ -28,7 +27,7 @@ export const GameItem = memo(
       <div
         ref={ref}
         className={clsx(
-          'flex-1 rounded border border-gray-200 bg-white py-1 px-2 text-sm text-black',
+          'flex-1 rounded border border-gray-200 bg-white px-2 py-1 text-sm text-black',
           game.isWin && 'border-l-2 border-l-emerald-500',
           shadow && 'shadow-md',
         )}
@@ -37,9 +36,9 @@ export const GameItem = memo(
           <MorgueLink game={game} />
           {includePlayer && (
             <div>
-              <Link className="font-medium" href={getPlayerPageHref(game.name)}>
+              <a className="font-medium" href={`/players/${game.name}`}>
                 {game.name}
-              </Link>
+              </a>
             </div>
           )}
           {game.race} {game.class} <span className="font-light">the {game.title}</span>

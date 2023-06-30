@@ -1,10 +1,11 @@
 import clsx from 'clsx';
-import { useEffect, useRef, Fragment, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CharStat } from '@types';
 import { pluralize, formatNumber } from '@utils';
 import { Tooltip } from '@components/Tooltip';
 import { useMediaQuery } from '@react-hookz/web';
 import { Summary, unavailableCombos } from './utils';
+import { usePlayerPageContext } from './context';
 
 const items = [
   ['wins', 'wins'],
@@ -15,6 +16,7 @@ const items = [
 ] as const;
 
 export const Matrix = ({ summary }: { summary: Summary }) => {
+  const { toggleOption, isOptionEnabled } = usePlayerPageContext();
   const isWide = useMediaQuery('(min-width: 1280px)', { initializeWithValue: false });
   const [isSticky, setIsSticky] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -23,10 +25,14 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
   const [tooltipRef, setTooltipRef] = useState<HTMLElement | null>(null);
   const { stats, allActualRaces, allActualClasses, greatRaces, greatClasses } = summary;
 
+  const showTrunkData = isOptionEnabled('dcss-show-trunk-data');
+  const racesToShow = showTrunkData ? allActualRaces.filter((x) => x.trunk) : allActualRaces;
+  const classesToShow = showTrunkData ? allActualClasses.filter((x) => x.trunk) : allActualClasses;
+
   useEffect(() => {
     const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
     setIsSticky(Boolean(shouldBeSticky));
-  }, [isWide, ref.current]);
+  }, [isWide, ref.current, showTrunkData]);
 
   const formatter = (value: number) =>
     category === 'winRate'
@@ -39,22 +45,52 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
 
   return (
     <div ref={ref} className={clsx('w-full', isSticky && 'sticky top-0')}>
-      <div className="py-6">
-        <span className="font-medium">Matrix</span> by
+      <div className="flex flex-wrap items-center justify-center gap-2 py-6">
+        <span className="font-medium">Matrix by</span>
         {items.map(([name, key]) => (
-          <Fragment key={key}>
-            {' '}
-            <button
-              className={clsx(
-                'rounded px-2 py-0.5 font-light',
-                category === key ? 'bg-amber-700 text-white' : 'bg-gray-100',
-              )}
-              onClick={() => setCategory(key)}
-            >
-              {name}
-            </button>
-          </Fragment>
+          <button
+            key={key}
+            className={clsx(
+              'rounded px-2 py-0.5 font-light',
+              category === key ? 'bg-amber-700 text-white' : 'bg-gray-100',
+            )}
+            onClick={() => setCategory(key)}
+          >
+            {name}
+          </button>
         ))}
+        <Tooltip
+          interactive
+          content={
+            <div className="flex flex-col gap-1">
+              Display settings
+              <hr />
+              <label className="inline-flex items-center gap-1">
+                <input
+                  checked={isOptionEnabled('dcss-show-trunk-data')}
+                  type="checkbox"
+                  onChange={() => toggleOption('dcss-show-trunk-data')}
+                />{' '}
+                Only show trunk data
+              </label>
+            </div>
+          }
+        >
+          <button className="ml-auto text-gray-400 transition hover:text-emerald-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </Tooltip>
       </div>
       <div className="relative overflow-x-auto xl:overflow-x-visible">
         {(activeClass || activeRace) && tooltipRef && (
@@ -67,11 +103,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                 <div>
                   <span className={clsx(greatRaces[activeRace] && 'text-amber-300')}>
                     {greatRaces[activeRace] && !activeClass && 'Great '}
-                    {allActualRaces.find((x) => x.abbr === activeRace)?.name}
+                    {racesToShow.find((x) => x.abbr === activeRace)?.name}
                   </span>{' '}
                   <span className={clsx(greatClasses[activeClass] && 'text-amber-300')}>
                     {greatClasses[activeClass] && !activeRace && 'Great '}
-                    {allActualClasses.find((x) => x.abbr === activeClass)?.name}
+                    {classesToShow.find((x) => x.abbr === activeClass)?.name}
                   </span>
                 </div>
                 {tooltipStats?.games > 0 ? (
@@ -123,7 +159,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             <tr>
               <th className="min-w-[24px]"></th>
               <th className="min-w-[24px]"></th>
-              {allActualClasses.map((klass) => (
+              {classesToShow.map((klass) => (
                 <th
                   key={klass.abbr}
                   className={clsx(
@@ -150,7 +186,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             <tr className="h-[24px]">
               <td></td>
               <td></td>
-              {allActualClasses.map((klass) => {
+              {classesToShow.map((klass) => {
                 const value = stats.classes[klass.abbr]?.[category];
 
                 return (
@@ -175,7 +211,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                 );
               })}
             </tr>
-            {allActualRaces.map((race) => {
+            {racesToShow.map((race) => {
               const value = stats.races[race.abbr]?.[category];
 
               return (
@@ -214,7 +250,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   >
                     {value ? formatter(value) : '-'}
                   </td>
-                  {allActualClasses.map((klass) => {
+                  {classesToShow.map((klass) => {
                     const char = race.abbr + klass.abbr;
                     const value = stats.combos[char]?.[category];
                     const content = value ? formatter(value) : null;

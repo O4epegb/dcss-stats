@@ -31,8 +31,7 @@ export const Games = ({
   allActualRaces: Race[];
   allActualClasses: Class[];
 }) => {
-  const { lastGames, stats, player, gods, isCompact, isFiltersOpen, toggleCompact, toggleFilters } =
-    usePlayerPageContext();
+  const { lastGames, stats, player, gods, toggleOption, isOptionEnabled } = usePlayerPageContext();
   const [data, setData] = useState(() => ({ games: lastGames, total: stats.total.games }));
   const [showSettings, setShowSettings] = useState(false);
   const sortedGods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), [gods]);
@@ -88,8 +87,12 @@ export const Games = ({
         <section className="py-2">
           <div className="rounded border p-2">
             <label className="inline-flex items-center gap-1">
-              <input checked={isCompact} type="checkbox" onChange={toggleCompact} /> Show compact
-              game list
+              <input
+                checked={isOptionEnabled('dcss-compact-view')}
+                type="checkbox"
+                onChange={() => toggleOption('dcss-compact-view')}
+              />{' '}
+              Show compact game list
             </label>
           </div>
         </section>
@@ -141,9 +144,9 @@ export const Games = ({
           <button
             className={clsx(
               'transition-colors hover:text-emerald-500',
-              isFiltersOpen ? 'text-emerald-600' : 'text-gray-400',
+              isOptionEnabled('dcss-open-filters') ? 'text-emerald-600' : 'text-gray-400',
             )}
-            onClick={toggleFilters}
+            onClick={() => toggleOption('dcss-open-filters')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -160,7 +163,7 @@ export const Games = ({
           </button>
         </Tooltip>
       </div>
-      {isFiltersOpen && (
+      {isOptionEnabled('dcss-open-filters') && (
         <div className="flex items-center gap-4 text-sm">
           <label>
             God:{' '}
@@ -195,7 +198,7 @@ export const Games = ({
         </div>
       )}
       <GamesList
-        isCompactView={isCompact}
+        isCompactView={isOptionEnabled('dcss-compact-view')}
         initialGames={lastGames}
         initialTotal={stats.total.games}
         playerName={player.name}

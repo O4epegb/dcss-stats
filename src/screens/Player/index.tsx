@@ -2,12 +2,14 @@
 
 import { PlayerInfoResponse } from '@types';
 import { Player } from '@screens/Player/main';
-import { PlayerPageContext, useContextState } from '@screens/Player/context';
+import { PlayerPageContext, useContextStateValue } from '@screens/Player/context';
 
-type Props = PlayerInfoResponse & { isCompact: boolean; isFiltersOpen: boolean };
+type Props = PlayerInfoResponse & {
+  cookiesStore: Record<string, boolean>;
+};
 
 export const PlayerPage = (props: Props) => {
-  const value = useContextState(props, props.isCompact, props.isFiltersOpen);
+  const value = useContextStateValue(props, props.cookiesStore);
 
   return (
     <PlayerPageContext.Provider value={value}>

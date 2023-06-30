@@ -49,13 +49,6 @@ export const roundAndFormat = (n: number | null, options?: Intl.NumberFormatOpti
   return n !== null ? formatNumber(n, options) : '0';
 };
 
-export const getPlayerPageHref = (slug: string) => ({
-  pathname: `/players/[slug]`,
-  query: {
-    slug,
-  },
-});
-
 declare global {
   interface Window {
     splitbee?: {

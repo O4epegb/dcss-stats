@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { PlayerInfoResponse } from '@types';
 import { fetchApi } from '@api/server';
-import { cookieKeyCompactView, cookieKeyOpenFilters } from '@screens/Player/utils';
+import { cookiesStore } from '@screens/Player/utils';
 import PlayerPage from '@screens/Player';
 
 async function getData(slug: string) {
@@ -12,19 +12,19 @@ async function getData(slug: string) {
     const data: PlayerInfoResponse = await response.json();
 
     if (data.player.name !== slug) {
-      return redirect(`/players/${data.player.name}`);
+      redirect(`/players/${data.player.name}`);
     }
-
-    cookies();
 
     return {
       ...data,
-      isCompact: cookies().has(cookieKeyCompactView),
-      isFiltersOpen: cookies().has(cookieKeyOpenFilters),
+      cookiesStore: Object.keys(cookiesStore).reduce(
+        (acc, key) => ({ ...acc, [key]: cookies().has(key) }),
+        {},
+      ),
     };
   } else {
     if (response.status === 404) {
-      return notFound();
+      notFound();
     } else {
       throw new Error(`Error: ${response.status}`);
     }

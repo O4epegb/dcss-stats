@@ -2,51 +2,40 @@ import { useState, useContext, createContext } from 'react';
 import { setCookie, destroyCookie } from 'nookies';
 import { PlayerInfoResponse } from '@types';
 import { trackEvent } from '@utils';
-import { cookieKeyCompactView, cookieKeyOpenFilters } from './utils';
+import { cookiesStore } from './utils';
 
-export const PlayerPageContext = createContext({} as ReturnType<typeof useContextState>);
+export const PlayerPageContext = createContext({} as ReturnType<typeof useContextStateValue>);
 
 export function usePlayerPageContext() {
   return useContext(PlayerPageContext);
 }
 
-export const useContextState = (
+export const useContextStateValue = (
   data: PlayerInfoResponse,
-  isCompactDefault: boolean,
-  isFiltersOpenDefault: boolean,
+  defaultCookiesStore: Record<string, boolean>,
 ) => {
-  const [isCompact, setIsCompact] = useState(isCompactDefault);
-  const [isFiltersOpen, setIsFiltersOpen] = useState(isFiltersOpenDefault);
+  const [cookieState, setCookieState] = useState(() => ({
+    ...cookiesStore,
+    ...defaultCookiesStore,
+  }));
 
   return {
     ...data,
-    isCompact,
-    isFiltersOpen,
-    toggleCompact() {
-      const newState = !isCompact;
-
-      trackEvent('settings', { isCompact: String(newState) });
-
-      if (newState) {
-        saveCookie(cookieKeyCompactView);
-      } else {
-        deleteCookie(cookieKeyCompactView);
-      }
-
-      setIsCompact(newState);
+    isOptionEnabled(key: keyof typeof cookiesStore) {
+      return cookieState[key];
     },
-    toggleFilters() {
-      const newState = !isFiltersOpen;
+    toggleOption(key: keyof typeof cookiesStore) {
+      const newState = !cookieState[key];
 
-      trackEvent('filters', { isOpen: String(newState) });
+      trackEvent('key', { state: String(newState) });
 
       if (newState) {
-        saveCookie(cookieKeyOpenFilters);
+        saveCookie(key);
       } else {
-        deleteCookie(cookieKeyOpenFilters);
+        deleteCookie(key);
       }
 
-      setIsFiltersOpen(newState);
+      setCookieState((state) => ({ ...state, [key]: newState }));
     },
   };
 };
