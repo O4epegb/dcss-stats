@@ -33,7 +33,6 @@ export const Games = ({
 }) => {
   const { lastGames, stats, player, gods, toggleOption, isOptionEnabled } = usePlayerPageContext();
   const [data, setData] = useState(() => ({ games: lastGames, total: stats.total.games }));
-  const [showSettings, setShowSettings] = useState(false);
   const sortedGods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), [gods]);
   const [filter, setFilter] = useState(() => ({
     isWin: Filter.All,
@@ -60,14 +59,24 @@ export const Games = ({
               : ` (${data.games.length}G/${data.games.filter((g) => g.isWin).length}W)`)}
           :
         </h2>
-        <Tooltip content="Game list settings">
-          <button
-            className={clsx(
-              'transition hover:text-emerald-500',
-              showSettings ? 'rotate-180 text-emerald-600' : 'text-gray-400',
-            )}
-            onClick={() => setShowSettings((x) => !x)}
-          >
+        <Tooltip
+          interactive
+          content={
+            <div className="flex flex-col gap-1">
+              Game list settings
+              <hr />
+              <label className="inline-flex items-center gap-1">
+                <input
+                  checked={isOptionEnabled('dcss-compact-view')}
+                  type="checkbox"
+                  onChange={() => toggleOption('dcss-compact-view')}
+                />
+                Show compact game list
+              </label>
+            </div>
+          }
+        >
+          <button className="text-gray-400 transition hover:text-emerald-500">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -83,20 +92,6 @@ export const Games = ({
           </button>
         </Tooltip>
       </header>
-      {showSettings && (
-        <section className="py-2">
-          <div className="rounded border p-2">
-            <label className="inline-flex items-center gap-1">
-              <input
-                checked={isOptionEnabled('dcss-compact-view')}
-                type="checkbox"
-                onChange={() => toggleOption('dcss-compact-view')}
-              />{' '}
-              Show compact game list
-            </label>
-          </div>
-        </section>
-      )}
       <div className="flex items-center justify-between text-sm">
         <label>
           Show:{' '}

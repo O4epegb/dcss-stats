@@ -63,7 +63,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
           interactive
           content={
             <div className="flex flex-col gap-1">
-              Display settings
+              Matrix display settings
               <hr />
               <label className="inline-flex items-center gap-1">
                 <input
@@ -71,7 +71,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                   type="checkbox"
                   onChange={() => toggleOption('dcss-show-trunk-data')}
                 />{' '}
-                Only show trunk data
+                Only show combos from trunk
               </label>
             </div>
           }
