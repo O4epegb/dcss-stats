@@ -101,7 +101,7 @@ export const Streaks = () => {
               <div
                 key={index}
                 className={clsx(
-                  'rounded border border-gray-200 bg-white py-1 px-2 text-sm text-black',
+                  'rounded border border-gray-200 bg-white px-2 py-1 text-sm text-black',
                   isActive && 'border-l-2 border-l-emerald-500',
                 )}
               >

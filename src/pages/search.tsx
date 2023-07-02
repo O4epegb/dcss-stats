@@ -48,7 +48,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
   const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10);
 
   return (
-    <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pt-4 pb-4">
+    <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pb-4 pt-4">
       <header className="flex items-center gap-2 divide-x">
         <Logo />
         <h2 className="pl-2 text-2xl">Search</h2>
@@ -104,7 +104,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
             )}
 
             {!isEmpty && !error && (
-              <div className="flex items-center justify-center pt-8 pb-4">
+              <div className="flex items-center justify-center pb-4 pt-8">
                 <button
                   className="flex items-center justify-center space-x-1"
                   disabled={isLoadingMore || isReachingEnd}
@@ -119,7 +119,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
             )}
 
             {isError(error) && (
-              <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
+              <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
                 <div>Error occured, try to reload the page</div>
                 {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
               </div>

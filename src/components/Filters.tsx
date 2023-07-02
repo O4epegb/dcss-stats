@@ -235,7 +235,7 @@ export const Filters = ({
           }
         />
         <button
-          className="ml-auto -mr-2 rounded py-1 px-2 hover:bg-gray-100"
+          className="-mr-2 ml-auto rounded px-2 py-1 hover:bg-gray-100"
           onClick={() => setFilters(getDefaultFilters())}
         >
           Reset
@@ -390,7 +390,7 @@ export const Filters = ({
                                 <input
                                   type="text"
                                   placeholder="Enter player name"
-                                  className="w-full rounded bg-gray-200 py-0.5 px-2"
+                                  className="w-full rounded bg-gray-200 px-2 py-0.5"
                                   value={filter.value}
                                   onChange={(e) => {
                                     setFilters((state) =>

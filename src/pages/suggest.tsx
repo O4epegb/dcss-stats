@@ -239,7 +239,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
   return (
     <div
       className={clsx(
-        'container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pt-8 pb-8',
+        'container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pb-8 pt-8',
         !race && !klass && !god && 'md:justify-center md:pt-0',
       )}
     >
@@ -311,7 +311,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
 
       <div className="m-auto flex w-full max-w-lg items-center gap-2">
         <button
-          className="-ml-2 flex items-center gap-1 rounded py-1 px-2 text-sm hover:bg-gray-100"
+          className="-ml-2 flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100"
           onClick={() => setShowAdvancedFilters((x) => !x)}
         >
           {showAdvancedFilters ? 'Hide' : 'Show'} advanced filters{' '}
@@ -637,7 +637,7 @@ const GameList = (props: { filter: null | Filter[] }) => {
       )}
 
       {!isEmpty && !error && (
-        <div className="flex items-center justify-center pt-8 pb-4">
+        <div className="flex items-center justify-center pb-4 pt-8">
           <button
             className="flex items-center justify-center space-x-1"
             disabled={isLoadingMore || isReachingEnd}
@@ -650,7 +650,7 @@ const GameList = (props: { filter: null | Filter[] }) => {
       )}
 
       {isError(error) && (
-        <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
+        <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
           <div>Error occured, try to reload the page</div>
           {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
         </div>
