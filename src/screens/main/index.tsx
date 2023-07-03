@@ -546,14 +546,19 @@ const Search = ({
 
   useDebouncedEffect(() => setDebouncedQuery(query), [query], 400);
 
-  const { data, isValidating: isLoading } = useSWRImmutable(
-    debouncedQuery ? ['/players', { query: debouncedQuery }] : null,
-    (url, params) =>
-      api.get<{ data: Array<SearchItem> }>(url, { params }).then((res) => {
-        const target = params.query.toLowerCase();
-        return orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc');
-      }),
+  const { data, isLoading } = useSWRImmutable(
+    ['/players', debouncedQuery],
+    ([url, query]) => {
+      return !query
+        ? []
+        : api.get<{ data: Array<SearchItem> }>(url, { params: { query } }).then((res) => {
+            const target = query.toLowerCase();
+            return orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc');
+          });
+    },
+    { keepPreviousData: true },
   );
+  const showLoader = !data && isLoading;
   const items = data ?? [];
 
   const goToPlayerPage = useCallback((slug: string) => {
@@ -611,13 +616,13 @@ const Search = ({
         <ul {...getMenuProps()} className="max-h-64 overflow-y-auto bg-white py-2">
           {isOpen && (
             <>
-              {isLoading ? (
+              {showLoader ? (
                 <li className="flex justify-center">Loading...</li>
               ) : (
                 <>
                   {items.length === 0 && (
                     <li className="flex justify-center">
-                      {query ? 'Nothing found' : 'Specify your request'}
+                      {debouncedQuery ? 'Nothing found' : 'Specify your request'}
                     </li>
                   )}
                   {items.map((item, index) => {
@@ -632,7 +637,7 @@ const Search = ({
                           index,
                         })}
                       >
-                        <Highlighted text={item.name} query={query} />
+                        <Highlighted text={item.name} query={debouncedQuery} />
                       </li>
                     );
                   })}

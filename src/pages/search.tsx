@@ -20,17 +20,19 @@ import { Filter, Filters } from '@components/Filters';
 const SearchPage = ({ races, classes, gods, skills }: Props) => {
   const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null);
 
-  const { data, error, size, setSize } = useSWRInfinite<{ data: Game[]; count: number }, unknown>(
-    (pageIndex, previousPageData) => {
+  const { data, error, size, setSize } = useSWRInfinite(
+    (pageIndex, previousPageData: { data: Game[]; count: number }) => {
       if (!filterForSearch || (previousPageData && previousPageData.data.length === 0)) {
         return null;
       }
 
       return ['/search', { filter: filterForSearch, after: last(previousPageData?.data)?.id }];
     },
-    (url, { filter, after }) =>
+    ([url, { filter, after }]) =>
       api
-        .get(url, { params: { filter: filter.map((x: Filter) => omit(x, 'id')), after } })
+        .get<{ data: Game[]; count: number }>(url, {
+          params: { filter: filter.map((x: Filter) => omit(x, 'id')), after },
+        })
         .then((res) => res.data),
     {
       revalidateIfStale: false,

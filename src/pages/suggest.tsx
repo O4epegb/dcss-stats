@@ -173,7 +173,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     ['Win rate', 'winrate', 'numeric'],
   ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>;
 
-  const { data, error, isValidating } = useSWRImmutable<SuggestResponse, unknown>(
+  const { data, error, isValidating } = useSWRImmutable(
     () => {
       const mainParams = pickBy(
         {
@@ -197,7 +197,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         },
       ];
     },
-    (url, params) => api.get(url, { params }).then((res) => res.data),
+    ([url, params]) => api.get<SuggestResponse>(url, { params }).then((res) => res.data),
   );
 
   const normalizeData = ({ combos, race, class: klass, god }: Data) => {
@@ -596,15 +596,18 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
 const GameList = (props: { filter: null | Filter[] }) => {
   const filter = props.filter?.map((item) => omit(item, 'id'));
 
-  const { data, error, size, setSize } = useSWRInfinite<{ data: Game[]; count: number }, unknown>(
-    (pageIndex, previousPageData) => {
+  const { data, error, size, setSize } = useSWRInfinite(
+    (pageIndex, previousPageData: { data: Game[]; count: number }) => {
       if (!filter || (previousPageData && previousPageData.data.length === 0)) {
         return null;
       }
 
       return ['/search', { filter, after: last(previousPageData?.data)?.id }];
     },
-    (url, { filter, after }) => api.get(url, { params: { filter, after } }).then((res) => res.data),
+    ([url, { filter, after }]) =>
+      api
+        .get<{ data: Game[]; count: number }>(url, { params: { filter, after } })
+        .then((res) => res.data),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,

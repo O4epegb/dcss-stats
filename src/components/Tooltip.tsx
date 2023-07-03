@@ -101,8 +101,7 @@ export const Tooltip = ({
   const {
     x,
     y,
-    reference,
-    floating,
+    refs,
     strategy,
     context,
     placement: finalPlacement,
@@ -141,11 +140,13 @@ export const Tooltip = ({
 
   useIsomorphicLayoutEffect(() => {
     if (triggerElement) {
-      reference(triggerElement);
+      refs.setReference(triggerElement);
     }
-  }, [reference, triggerElement]);
+  }, [refs, triggerElement]);
 
-  const ref = useMergeRefs(triggerElement ? [reference] : [reference, (children as any).ref]);
+  const ref = useMergeRefs(
+    triggerElement ? [refs.setReference] : [refs.setReference, (children as any).ref],
+  );
 
   const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {};
 
@@ -161,7 +162,7 @@ export const Tooltip = ({
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
               {...getFloatingProps({
-                ref: floating,
+                ref: refs.setFloating,
                 className: clsx(
                   !unstyled &&
                     'max-w-[calc(100vw-8px)] text-white rounded bg-slate-800 px-2 py-1.5 text-sm',

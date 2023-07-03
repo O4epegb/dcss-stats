@@ -22,9 +22,8 @@ export const GameTooltip = ({
     }
 )) => {
   const [isActive, setIsActive] = useState(false);
-  const { data, error } = useSWRImmutable<{ data: Game[]; count: number }>(
-    isActive ? ['/games', rest] : null,
-    (url, params) => api.get(url, { params }).then((res) => res.data),
+  const { data, error } = useSWRImmutable(isActive ? ['/games', rest] : null, ([url, params]) =>
+    api.get<{ data: Game[]; count: number }>(url, { params }).then((res) => res.data),
   );
 
   return (
