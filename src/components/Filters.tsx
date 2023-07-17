@@ -23,6 +23,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { Select } from './Select';
 
 type Condition = 'is' | 'is not';
 
@@ -228,14 +229,15 @@ export const Filters = ({
         <HelpBubble
           content={
             <>
-              Filters are grouped by <code className="rounded bg-slate-600 px-1">OR</code> operator
+              Filters are grouped by{' '}
+              <code className="rounded bg-slate-600 px-1 dark:bg-slate-300">OR</code> operator
               <br />
               Groups are color coded for convenience
             </>
           }
         />
         <button
-          className="-mr-2 ml-auto rounded px-2 py-1 hover:bg-gray-100"
+          className="-mr-2 ml-auto rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-800"
           onClick={() => setFilters(getDefaultFilters())}
         >
           Reset
@@ -270,7 +272,11 @@ export const Filters = ({
                   const firstItemIndex = filters.findIndex((x) => x === firstItem);
                   const isSingleFilter = filters.length === 1;
 
-                  const groupColors = ['bg-amber-50', 'bg-teal-50', 'bg-purple-50'];
+                  const groupColors = [
+                    'bg-amber-50 dark:bg-amber-700',
+                    'bg-teal-50 dark:bg-teal-700',
+                    'bg-purple-50 dark:bg-purple-700',
+                  ];
 
                   const color =
                     !isSingleFilter && firstItem && firstItem.operator === 'or'
@@ -294,8 +300,7 @@ export const Filters = ({
                             id={filter.id}
                             className="flex items-center gap-2"
                           >
-                            <select
-                              className="rounded bg-gray-200 py-1 pl-1"
+                            <Select
                               value={filter.option}
                               onChange={(e) => {
                                 setFilters((state) =>
@@ -318,11 +323,10 @@ export const Filters = ({
                                   {name}
                                 </option>
                               ))}
-                            </select>
+                            </Select>
 
                             {option.suboptions.length > 0 && (
-                              <select
-                                className="rounded bg-gray-200 py-1 pl-1"
+                              <Select
                                 value={filter.suboption}
                                 onChange={(e) => {
                                   setFilters((state) =>
@@ -339,11 +343,10 @@ export const Filters = ({
                                     {name}
                                   </option>
                                 ))}
-                              </select>
+                              </Select>
                             )}
 
-                            <select
-                              className="rounded bg-gray-200 py-1 pl-1"
+                            <Select
                               value={filter.condition}
                               onChange={(e) => {
                                 setFilters((state) =>
@@ -360,11 +363,11 @@ export const Filters = ({
                                   {item}
                                 </option>
                               ))}
-                            </select>
+                            </Select>
 
                             {option.type === 'select' && (
-                              <select
-                                className="min-w-0 flex-1 rounded bg-gray-200 py-1 pl-1"
+                              <Select
+                                className="min-w-0 flex-1"
                                 value={filter.value}
                                 disabled={!filter.condition}
                                 onChange={(e) => {
@@ -383,14 +386,14 @@ export const Filters = ({
                                     {name}
                                   </option>
                                 ))}
-                              </select>
+                              </Select>
                             )}
                             {option.type === 'text' && (
                               <div className="flex-1">
                                 <input
                                   type="text"
                                   placeholder="Enter player name"
-                                  className="w-full rounded bg-gray-200 px-2 py-0.5"
+                                  className="w-full rounded bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
                                   value={filter.value}
                                   onChange={(e) => {
                                     setFilters((state) =>
@@ -405,9 +408,9 @@ export const Filters = ({
                               </div>
                             )}
 
-                            <select
+                            <Select
                               className={clsx(
-                                'rounded bg-gray-200 py-1 pl-1 transition-all',
+                                'transition-all',
                                 !isDragging && !isSingleFilter && 'translate-y-5',
                                 !isDragging && operatorDisabled && 'opacity-0',
                               )}
@@ -433,7 +436,7 @@ export const Filters = ({
                                   {item}
                                 </option>
                               ))}
-                            </select>
+                            </Select>
 
                             <Tooltip content="Remove filter">
                               <button
@@ -471,7 +474,7 @@ export const Filters = ({
           <Tooltip content="Maximum 10 filters at this moment" disabled={filters.length < 10}>
             <div>
               <button
-                className="rounded border px-4 py-2 transition-colors hover:bg-gray-100"
+                className="rounded border px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
                 disabled={filters.length >= 10}
                 onClick={() => {
                   setFilters((state) => {

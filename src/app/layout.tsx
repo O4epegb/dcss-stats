@@ -1,12 +1,13 @@
 import '@styles/globals.css';
 import { Analytics } from '@vercel/analytics/react';
+import { Providers } from './providers';
 
 const title = 'DCSS Stats';
 const description = 'Player and game statistics for Dungeon Crawl Stone Soup Online';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -25,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta property="og:image:height" content="256" />
       </head>
       <body>
-        {children}
+        <Providers>{children}</Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

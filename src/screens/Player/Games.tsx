@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { range, orderBy, some } from 'lodash-es';
 import { Class, Race } from '@types';
 import { Tooltip } from '@components/Tooltip';
+import { Select } from '@components/Select';
 import { GamesList } from '../../components/GamesList';
 import { usePlayerPageContext } from './context';
 
@@ -95,45 +96,33 @@ export const Games = ({
       <div className="flex items-center justify-between text-sm">
         <label>
           Show:{' '}
-          <select
-            className="rounded bg-gray-100 p-1"
-            value={filter.isWin}
-            onChange={(e) => changeFilter('isWin', e.target.value)}
-          >
+          <Select value={filter.isWin} onChange={(e) => changeFilter('isWin', e.target.value)}>
             <option value={Filter.All}>all games</option>
             <option value={Filter.Wins}>wins only</option>
             <option value={Filter.Loses}>loses only</option>
-          </select>
+          </Select>
         </label>
         <label>
           Race:{' '}
-          <select
-            className="rounded bg-gray-100 p-1"
-            value={filter.race}
-            onChange={(e) => changeFilter('race', e.target.value)}
-          >
+          <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>
             <option value={Filter.All}>any</option>
             {allActualRaces.map(({ abbr }) => (
               <option key={abbr} value={abbr}>
                 {abbr}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <label>
           Class:{' '}
-          <select
-            className="rounded bg-gray-100 p-1"
-            value={filter.class}
-            onChange={(e) => changeFilter('class', e.target.value)}
-          >
+          <Select value={filter.class} onChange={(e) => changeFilter('class', e.target.value)}>
             <option value={Filter.All}>any</option>
             {allActualClasses.map(({ abbr }) => (
               <option key={abbr} value={abbr}>
                 {abbr}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
         <Tooltip content="Show more filters">
           <button
@@ -162,33 +151,25 @@ export const Games = ({
         <div className="flex items-center gap-4 text-sm">
           <label>
             God:{' '}
-            <select
-              className="rounded bg-gray-100 p-1"
-              value={filter.god}
-              onChange={(e) => changeFilter('god', e.target.value)}
-            >
+            <Select value={filter.god} onChange={(e) => changeFilter('god', e.target.value)}>
               <option value={Filter.All}>any</option>
               {sortedGods.map(({ name }) => (
                 <option key={name} value={name}>
                   {name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
           <label>
             Runes:{' '}
-            <select
-              className="rounded bg-gray-100 p-1"
-              value={filter.runes}
-              onChange={(e) => changeFilter('runes', e.target.value)}
-            >
+            <Select value={filter.runes} onChange={(e) => changeFilter('runes', e.target.value)}>
               <option value={Filter.All}>any</option>
               {runeOptions.map(({ name }) => (
                 <option key={name} value={name}>
                   {name}
                 </option>
               ))}
-            </select>
+            </Select>
           </label>
         </div>
       )}

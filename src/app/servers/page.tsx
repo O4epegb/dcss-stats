@@ -48,7 +48,7 @@ const ServersPage = async () => {
                     return (
                       <li
                         key={file.path}
-                        className="flex justify-between px-1 hover:bg-gray-100"
+                        className="flex justify-between px-1 hover:bg-gray-100 dark:hover:bg-zinc-700"
                         title={
                           file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
                         }

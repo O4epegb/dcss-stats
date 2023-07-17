@@ -57,8 +57,8 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
       </header>
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
-          <div className="w-full rounded bg-blue-100 px-2 py-1 text-sm">
-            This page in under development, with bugs and suggestions DM @totalnoob on{' '}
+          <div className="w-full rounded bg-blue-100 px-2 py-1 text-sm text-black">
+            This page is under development, with bugs and suggestions DM @totalnoob on{' '}
             <a
               href="https://discord.gg/pKCNTunFeW"
               target="_blank"

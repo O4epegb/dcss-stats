@@ -19,6 +19,7 @@ import { HelpBubble } from '@components/Tooltip';
 import { getMorgueUrl } from '@components/GameItem';
 import { WinrateStats } from '@components/WinrateStats';
 import { useDebouncedEffect } from '@react-hookz/web';
+import { ThemeSelector } from './ThemeSelector';
 
 export const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
@@ -35,6 +36,7 @@ export const MainPage = (props: Props) => {
         <header className="flex w-full items-center justify-between">
           <Logo />
           <div className="flex gap-5">
+            <ThemeSelector />
             <Link className="group" href="/suggest">
               <span className="text-xs group-hover:underline sm:text-base">Combos</span>
             </Link>
@@ -435,13 +437,16 @@ const Table = ({
         </thead>
         <tbody>
           {games.map((game) => (
-            <tr key={game.id} className="relative odd:bg-gray-50 hover:bg-amber-100">
+            <tr
+              key={game.id}
+              className="relative odd:bg-gray-50 hover:bg-amber-100 dark:odd:bg-zinc-800 dark:hover:bg-zinc-700"
+            >
               {tableData.map(({ title, getter }, index) => (
                 <td
                   key={title}
                   className={clsx(
                     'whitespace-nowrap text-left tabular-nums md:overflow-visible',
-                    highlight === title && 'text-amber-700',
+                    highlight === title && 'text-amber-700 dark:text-amber-600',
                     index === 0 && 'relative',
                   )}
                 >
@@ -508,7 +513,7 @@ const List = ({
             key={item.name}
             prefetch={false}
             href={`/players/${item.name}`}
-            className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100"
+            className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100 dark:hover:bg-zinc-700"
             onClick={(e) => {
               if (!e.metaKey && !e.ctrlKey) {
                 onLinkClick(item.name);
@@ -613,7 +618,7 @@ const Search = ({
           isOpen ? 'block' : 'hidden',
         )}
       >
-        <ul {...getMenuProps()} className="max-h-64 overflow-y-auto bg-white py-2">
+        <ul {...getMenuProps()} className="max-h-64 overflow-y-auto bg-white py-2 dark:bg-zinc-800">
           {isOpen && (
             <>
               {showLoader ? (
@@ -631,7 +636,7 @@ const Search = ({
                     return (
                       <li
                         key={index}
-                        className={clsx('px-2', active && 'bg-gray-100')}
+                        className={clsx('px-2', active && 'bg-gray-100 dark:bg-zinc-700')}
                         {...getItemProps({
                           item,
                           index,

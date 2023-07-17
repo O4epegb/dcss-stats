@@ -13,7 +13,7 @@ export const PlayerPage = (props: Props) => {
 
   return (
     <PlayerPageContext.Provider value={value}>
-      <Player />;
+      <Player />
     </PlayerPageContext.Provider>
   );
 };

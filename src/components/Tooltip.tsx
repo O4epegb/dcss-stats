@@ -165,7 +165,7 @@ export const Tooltip = ({
                 ref: refs.setFloating,
                 className: clsx(
                   !unstyled &&
-                    'max-w-[calc(100vw-8px)] text-white rounded bg-slate-800 px-2 py-1.5 text-sm',
+                    'max-w-[calc(100vw-8px)] text-white rounded bg-slate-800 px-2 py-1.5 text-sm dark:bg-zinc-100 dark:text-black',
                   className,
                 ),
                 style: {
@@ -180,7 +180,7 @@ export const Tooltip = ({
               {!unstyled && (
                 <div
                   ref={arrowRef}
-                  className="pointer-events-none absolute h-2 w-2 rotate-45 bg-slate-800"
+                  className="pointer-events-none absolute h-2 w-2 rotate-45 bg-slate-800 dark:bg-zinc-100"
                   style={{
                     left: arrowX != null ? `${arrowX}px` : '',
                     top: arrowY != null ? `${arrowY}px` : '',

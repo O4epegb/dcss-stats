@@ -32,6 +32,7 @@ import { Tooltip } from '@components/Tooltip';
 import { Filter, Filters, filtersToQuery } from '@components/Filters';
 import { GameItem } from '@components/GameItem';
 import { useLocalStorageValue } from '@react-hookz/web';
+import { Select } from '@components/Select';
 
 enum FilterValue {
   Any = 'any',
@@ -246,13 +247,13 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
       <header>
         <Logo />
       </header>
-      <div className="m-auto w-full max-w-md rounded bg-blue-100 px-2 py-1 text-sm">
+      <div className="m-auto w-full max-w-md rounded bg-blue-100 px-2 py-1 text-sm text-black">
         <span className="font-semibold">TL;DR:</span> pick race, class, or god that you want to play
         (or any combination of them). Hit the button to see win rate of your combo, as well as games
         of other players.
         <br />
         <br />
-        This tool in under development, with bugs and suggestions DM @totalnoob on{' '}
+        This tool is under development, with bugs and suggestions DM @totalnoob on{' '}
         <a
           href="https://discord.gg/pKCNTunFeW"
           target="_blank"
@@ -264,11 +265,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
       </div>
       <div className="flex w-full flex-wrap gap-2 md:justify-center">
         I want to play
-        <select
-          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
-          value={filter.race}
-          onChange={(e) => changeFilter('race', e.target.value)}
-        >
+        <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>
           <option value={FilterValue.Any}>any race</option>
           {races
             .filter((x) => x.trunk)
@@ -277,12 +274,8 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                 {name}
               </option>
             ))}
-        </select>
-        <select
-          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
-          value={filter.class}
-          onChange={(e) => changeFilter('class', e.target.value)}
-        >
+        </Select>
+        <Select value={filter.class} onChange={(e) => changeFilter('class', e.target.value)}>
           <option value={FilterValue.Any}>some class</option>
           {classes
             .filter((x) => x.trunk)
@@ -291,13 +284,9 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                 {name}
               </option>
             ))}
-        </select>
+        </Select>
         and
-        <select
-          className="rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
-          value={filter.god}
-          onChange={(e) => changeFilter('god', e.target.value)}
-        >
+        <Select value={filter.god} onChange={(e) => changeFilter('god', e.target.value)}>
           <option value={FilterValue.Any}>whatever god</option>
           {gods
             .filter((x) => x.trunk)
@@ -306,12 +295,12 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                 {name}
               </option>
             ))}
-        </select>
+        </Select>
       </div>
 
       <div className="m-auto flex w-full max-w-lg items-center gap-2">
         <button
-          className="-ml-2 flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100"
+          className="-ml-2 flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-zinc-700"
           onClick={() => setShowAdvancedFilters((x) => !x)}
         >
           {showAdvancedFilters ? 'Hide' : 'Show'} advanced filters{' '}
@@ -321,8 +310,8 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
             </div>
           )}
         </button>
-        <select
-          className="ml-auto rounded bg-gray-100 p-1 transition-colors hover:bg-gray-200"
+        <Select
+          className="ml-auto"
           value={filter.version}
           onChange={(e) => changeFilter('version', e.target.value)}
         >
@@ -331,7 +320,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
               v{version}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className={clsx('space-y-4', !showAdvancedFilters && 'hidden')}>
@@ -443,7 +432,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                   />
                   Show only games with wins
                 </label>
-                <div className="group flex rounded-lg bg-gray-100 p-0.5 transition-colors hover:bg-gray-200">
+                <div className="group flex rounded-lg bg-gray-100 p-0.5 transition-colors hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600">
                   {(['stats', 'games'] as const).map((item) => (
                     <button
                       key={item}
@@ -453,14 +442,15 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                       <span
                         className={clsx(
                           'rounded-md p-1.5 text-sm font-medium lg:pl-2.5 lg:pr-2.5',
-                          view === item && 'bg-white shadow-sm ring-1 ring-black ring-opacity-5',
+                          view === item &&
+                            'bg-white shadow-sm ring-1 ring-black ring-opacity-5 dark:bg-zinc-500',
                         )}
                       >
                         <span
                           className={clsx(
                             view === item
-                              ? 'text-gray-900'
-                              : 'text-gray-600 group-hover:text-gray-900',
+                              ? 'text-gray-900 dark:text-white'
+                              : 'text-gray-600 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white',
                           )}
                         >
                           {capitalize(item)}
@@ -540,7 +530,10 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                         (x) =>
                           x.map((item, index) => {
                             return (
-                              <tr key={index} className="hover:bg-amber-100">
+                              <tr
+                                key={index}
+                                className="hover:bg-amber-100 dark:hover:bg-amber-700"
+                              >
                                 {columns[0][3] && <td>{item.race?.name}</td>}
                                 {columns[1][3] && <td>{item.class?.name}</td>}
                                 {columns[2][3] && (

@@ -98,7 +98,7 @@ export const Player = () => {
                     </div>
                   }
                 >
-                  <div className="rounded bg-amber-300 px-1 py-0.5 ring-2 ring-inset ring-amber-600">
+                  <div className="rounded bg-amber-300 px-1 py-0.5 text-black ring-2 ring-inset ring-amber-600">
                     Greater Player
                   </div>
                 </Tooltip>
@@ -106,24 +106,28 @@ export const Player = () => {
                 <>
                   {isGreat && (
                     <Tooltip content="Has won with all races">
-                      <div className="rounded bg-amber-300 px-1 py-0.5">Great Player</div>
+                      <div className="rounded bg-amber-300 px-1 py-0.5 text-black">
+                        Great Player
+                      </div>
                     </Tooltip>
                   )}
                   {isGrand && (
                     <Tooltip content="Has won with all classes">
-                      <div className="rounded bg-amber-300 px-1 py-0.5">Grand Player</div>
+                      <div className="rounded bg-amber-300 px-1 py-0.5 text-black">
+                        Grand Player
+                      </div>
                     </Tooltip>
                   )}
                 </>
               )}
               {isPolytheist && (
                 <Tooltip content="Has won with all gods">
-                  <div className="rounded bg-sky-300 px-1 py-0.5">Polytheist</div>
+                  <div className="rounded bg-sky-300 px-1 py-0.5 text-black">Polytheist</div>
                 </Tooltip>
               )}
               {isTiamat && (
                 <Tooltip content="Has won with every Draconian color">
-                  <div className="rounded bg-purple-300 px-1 py-0.5">Tiamat</div>
+                  <div className="rounded bg-purple-300 px-1 py-0.5 text-black">Tiamat</div>
                 </Tooltip>
               )}
             </div>
@@ -221,9 +225,9 @@ const Badge = ({
         </div>
       }
     >
-      <div className="relative overflow-hidden rounded bg-gray-100 px-1 py-0.5">
+      <div className="relative overflow-hidden rounded bg-gray-100 px-1 py-0.5 dark:bg-zinc-700">
         <div
-          className="absolute bottom-0 left-0 top-0 bg-gray-200"
+          className="absolute bottom-0 left-0 top-0 bg-gray-200 dark:bg-zinc-600"
           style={{
             width: `${(completed / total) * 100}%`,
           }}

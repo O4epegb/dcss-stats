@@ -52,7 +52,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             key={key}
             className={clsx(
               'rounded px-2 py-0.5 font-light',
-              category === key ? 'bg-amber-700 text-white' : 'bg-gray-100',
+              category === key ? 'bg-amber-700 text-white' : 'bg-gray-100 dark:bg-zinc-700',
             )}
             onClick={() => setCategory(key)}
           >
@@ -101,11 +101,17 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
             content={
               <div className="space-y-2">
                 <div>
-                  <span className={clsx(greatRaces[activeRace] && 'text-amber-300')}>
+                  <span
+                    className={clsx(greatRaces[activeRace] && 'text-amber-300 dark:text-amber-700')}
+                  >
                     {greatRaces[activeRace] && !activeClass && 'Great '}
                     {racesToShow.find((x) => x.abbr === activeRace)?.name}
                   </span>{' '}
-                  <span className={clsx(greatClasses[activeClass] && 'text-amber-300')}>
+                  <span
+                    className={clsx(
+                      greatClasses[activeClass] && 'text-amber-300 dark:text-amber-700',
+                    )}
+                  >
                     {greatClasses[activeClass] && !activeRace && 'Great '}
                     {classesToShow.find((x) => x.abbr === activeClass)?.name}
                   </span>
@@ -166,8 +172,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     'min-w-[24px] whitespace-nowrap',
 
                     greatClasses[klass.abbr]
-                      ? 'bg-amber-200'
-                      : activeClass === klass.abbr && 'bg-amber-100',
+                      ? 'bg-amber-200 dark:bg-amber-700'
+                      : activeClass === klass.abbr && 'bg-amber-100 dark:bg-zinc-800',
                     !klass.trunk && 'text-gray-400',
                   )}
                   onMouseEnter={(e) => {
@@ -195,9 +201,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     className={clsx(
                       category === 'gamesToFirstWin' &&
                         stats.classes[klass.abbr]?.gamesToFirstWin === 1
-                        ? 'bg-amber-200'
-                        : activeClass === klass.abbr && 'bg-amber-100',
-                      stats.classes[klass.abbr]?.wins > 0 && 'text-amber-600',
+                        ? 'bg-amber-200 dark:bg-amber-900'
+                        : activeClass === klass.abbr && 'bg-amber-100 dark:bg-zinc-800',
+                      stats.classes[klass.abbr]?.wins > 0
+                        ? 'text-amber-600 dark:text-amber-500'
+                        : 'dark:text-gray-200',
                     )}
                     onMouseEnter={(e) => {
                       setActive(['', klass.abbr]);
@@ -220,8 +228,8 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     className={clsx(
                       'text-left font-bold',
                       greatRaces[race.abbr]
-                        ? 'bg-amber-200'
-                        : activeRace === race.abbr && 'bg-amber-100',
+                        ? 'bg-amber-200 dark:bg-amber-700'
+                        : activeRace === race.abbr && 'bg-amber-100 dark:bg-zinc-800',
                       !race.trunk && 'text-gray-400',
                     )}
                     onMouseEnter={(e) => {
@@ -237,9 +245,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     className={clsx(
                       category === 'gamesToFirstWin' &&
                         stats.races[race.abbr]?.gamesToFirstWin === 1
-                        ? 'bg-amber-200'
-                        : activeRace === race.abbr && 'bg-amber-100',
-                      stats.races[race.abbr]?.wins > 0 && 'text-amber-600',
+                        ? 'bg-amber-200 dark:bg-amber-900'
+                        : activeRace === race.abbr && 'bg-amber-100 dark:bg-zinc-800',
+                      stats.races[race.abbr]?.wins > 0
+                        ? 'text-amber-600 dark:text-amber-500'
+                        : 'dark:text-gray-200',
                     )}
                     onMouseEnter={(e) => {
                       setActive([race.abbr]);
@@ -259,16 +269,19 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                       <td
                         key={char}
                         className={clsx(
-                          'border',
+                          'border dark:border-gray-600',
                           category === 'gamesToFirstWin' &&
                             stats.combos[char]?.gamesToFirstWin === 1
-                            ? 'bg-amber-200'
+                            ? 'bg-amber-200 dark:bg-amber-900'
                             : activeClass === klass.abbr || activeRace === race.abbr
-                            ? 'bg-amber-100'
-                            : unavailableCombos[char] && 'bg-gray-50',
-                          stats.combos[char]?.wins > 0 && 'text-amber-600',
+                            ? 'bg-amber-100 dark:bg-zinc-800'
+                            : unavailableCombos[char] && 'bg-gray-50 dark:bg-zinc-900',
                           content && content?.length > 2 && 'text-xs 2xl:text-sm',
-                          unavailableCombos[char] && 'text-gray-200',
+                          stats.combos[char]?.wins > 0
+                            ? 'text-amber-600 dark:text-amber-500'
+                            : unavailableCombos[char]
+                            ? 'text-gray-200 dark:text-gray-600'
+                            : 'dark:text-gray-200',
                         )}
                         onMouseEnter={(e) => {
                           setTooltipRef(e.currentTarget);
