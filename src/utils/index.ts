@@ -49,17 +49,9 @@ export const roundAndFormat = (n: number | null, options?: Intl.NumberFormatOpti
   return n !== null ? formatNumber(n, options) : '0';
 };
 
-declare global {
-  interface Window {
-    splitbee?: {
-      track: typeof trackEvent;
-    };
-  }
-}
-
-export const trackEvent = (type: string, data?: Record<string, string>) => {
-  // @vercel/analytics does not support it atm
-  window.splitbee?.track(type, data);
+export const trackEvent = (_type: string, _data?: Record<string, string>) => {
+  // Pro plan only => https://vercel.com/docs/concepts/analytics/custom-events
+  // window.splitbee?.track(type, data);
 };
 
 export function notEmpty<T>(value: T | null | undefined): value is T {
