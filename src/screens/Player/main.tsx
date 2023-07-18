@@ -4,6 +4,7 @@ import { pluralize, formatNumber, trackEvent } from '@utils';
 import { Logo } from '@components/Logo';
 import { WinrateStats } from '@components/WinrateStats';
 import { Tooltip } from '@components/Tooltip';
+import { ThemeSelector } from '@components/ThemeSelector';
 import { Matrix } from './Matrix';
 import { Games } from './Games';
 import { Stats } from './Stats';
@@ -47,8 +48,9 @@ export const Player = () => {
   return (
     <div className="container mx-auto grid gap-4 px-4 xl:grid-cols-3">
       <div className="min-w-0">
-        <header className="pb-2 pt-4">
+        <header className="flex items-center justify-between pb-2 pr-4 pt-4">
           <Logo />
+          <ThemeSelector />
         </header>
         <div className="space-y-2">
           <section className="flex flex-wrap items-center gap-x-2 gap-y-1">
@@ -56,7 +58,7 @@ export const Player = () => {
             <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
               <button
                 className={clsx(
-                  'flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-100',
+                  'flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700',
                   isFavorite ? 'text-amber-400' : 'text-gray-300',
                 )}
                 onClick={() => {

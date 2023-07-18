@@ -19,7 +19,7 @@ import { HelpBubble } from '@components/Tooltip';
 import { getMorgueUrl } from '@components/GameItem';
 import { WinrateStats } from '@components/WinrateStats';
 import { useDebouncedEffect } from '@react-hookz/web';
-import { ThemeSelector } from './ThemeSelector';
+import { ThemeSelector } from '@components/ThemeSelector';
 
 export const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false);
