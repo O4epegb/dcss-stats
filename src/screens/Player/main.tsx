@@ -93,7 +93,7 @@ export const Player = () => {
                   content={
                     <div>
                       Has won with all races and all classes
-                      <div className="pt-2 text-xs text-gray-300">
+                      <div className="pt-2 text-xs text-gray-300 dark:text-gray-700">
                         Achievements were renamed to Great/Grand/Greater because of <br /> name
                         clash with Discord command
                       </div>

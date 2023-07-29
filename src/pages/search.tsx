@@ -10,6 +10,7 @@ import { Logo } from '@components/Logo';
 import { Loader } from '@components/Loader';
 import { GameItem } from '@components/GameItem';
 import { Filter, Filters } from '@components/Filters';
+import { HelpBubble } from '@components/Tooltip';
 
 // Order by
 // Hotkey for submit
@@ -89,7 +90,10 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
         </div>
 
         <div className="flex min-h-0 flex-col">
-          <div className="text-xl">Total: {formatNumber(first(data)?.count ?? 0)}</div>
+          <div className="flex items-center gap-1">
+            <div className="text-xl">Total: {formatNumber(first(data)?.count ?? 0)}</div>
+            <HelpBubble content="Approximate number, may differ from the main page" />
+          </div>
           <div className="flex-1 py-2 pr-2 sm:overflow-y-auto">
             {isEmpty ? (
               <div className="flex items-center justify-center py-16">Nothing found ¯\_(ツ)_/¯</div>
