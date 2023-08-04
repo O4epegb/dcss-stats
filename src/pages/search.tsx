@@ -127,7 +127,9 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
             {isError(error) && (
               <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
                 <div>Error occured, try to reload the page</div>
-                {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
+                {error.message && (
+                  <code className="bg-gray-100 p-2 dark:bg-zinc-700">{error.message}</code>
+                )}
               </div>
             )}
           </div>

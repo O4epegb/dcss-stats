@@ -25,8 +25,6 @@ import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { Select } from './Select';
 
-type Condition = 'is' | 'is not';
-
 export type Filter = {
   id: string;
   option: string;
@@ -37,7 +35,7 @@ export type Filter = {
 };
 
 const operators = ['and', 'or'] as [string, string];
-const conditions: Condition[] = ['is', 'is not'];
+const conditions = ['is', 'is not'];
 
 type FilterName = ReturnType<typeof getOptionsList>[number]['name'];
 
@@ -85,6 +83,7 @@ const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Da
       type: 'text',
       suboptions: [],
       conditions,
+      placeholder: 'Enter player name',
     },
     {
       name: 'Skill',
@@ -92,6 +91,13 @@ const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Da
       suboptions: skills.map((x) => x.name),
       conditions,
       values: ['Level 15 or more', 'Level 27'].map((x) => ({ name: x })),
+    },
+    {
+      name: 'Stat',
+      type: 'text',
+      suboptions: ['Str', 'Int', 'Dex', 'Ac', 'Ev', 'Sh'],
+      conditions: ['>', '<', '=', '>=', '<='] as string[],
+      placeholder: 'Enter value',
     },
   ] as const;
 };
@@ -145,7 +151,7 @@ export const Filters = ({
         const parts = item.split('_');
         let [option, condition, value, operator, suboption] = parts;
 
-        if (parts[0] === 'Skill') {
+        if (['Skill', 'Stat'].includes(parts[0])) {
           [option, suboption, condition, value, operator] = parts;
         }
 
@@ -154,7 +160,7 @@ export const Filters = ({
         const isValid =
           optionItem &&
           (optionItem.type !== 'select' || optionItem.values.find((x) => x.name === value)) &&
-          optionItem.conditions.includes(condition as Condition) &&
+          optionItem.conditions.includes(condition) &&
           (!operator || operators.includes(operator)) &&
           (!suboption || optionItem.suboptions.some((x) => x === suboption));
 
@@ -392,7 +398,7 @@ export const Filters = ({
                               <div className="flex-1">
                                 <input
                                   type="text"
-                                  placeholder="Enter player name"
+                                  placeholder={option.placeholder}
                                   className="w-full rounded bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
                                   value={filter.value}
                                   onChange={(e) => {
