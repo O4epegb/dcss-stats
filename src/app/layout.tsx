@@ -24,6 +24,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta property="og:image" content="/logo-256.png" />
         <meta property="og:image:width" content="256" />
         <meta property="og:image:height" content="256" />
+        <script
+          async
+          src="https://analytics.umami.is/script.js"
+          data-website-id="ddb2a2da-618f-4c49-b230-c7b9b66ccd7c"
+        />
       </head>
       <body>
         <Providers>{children}</Providers>
