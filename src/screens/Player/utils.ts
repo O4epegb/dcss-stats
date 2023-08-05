@@ -11,6 +11,8 @@ export const cookiesStore = {
 export const unavailableCombos = keyBy([
   'GhTm',
   'MuTm',
+  'GhSh',
+  'MuSh',
   'DgMo',
   'DgCK',
   'DgCA',
