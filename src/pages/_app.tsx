@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import Script from 'next/script';
 import { ErrorBoundary } from '@utils/bugsnag';
 import { Analytics } from '@vercel/analytics/react';
 import { Providers } from '@app/providers';
@@ -15,6 +16,12 @@ const CustomApp = ({ Component, pageProps }: AppProps): JSX.Element => {
     <ErrorBoundary FallbackComponent={Page500 as any}>
       <Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            src="https://analytics.umami.is/script.js"
+            data-website-id="ddb2a2da-618f-4c49-b230-c7b9b66ccd7c"
+          />
+        )}
         <Head>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <meta name="format-detection" content="telephone=no" />
