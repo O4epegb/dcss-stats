@@ -1,6 +1,6 @@
 import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es'
-import { CharStat, Class, GamesToFirstWin, God, Matrix, Race } from '@types'
-import { notEmpty } from '@utils'
+import { CharStat, Class, GamesToFirstWin, God, Matrix, Race } from '~types'
+import { notEmpty } from '~utils'
 
 export const cookiesStore = {
   'dcss-compact-view': false,

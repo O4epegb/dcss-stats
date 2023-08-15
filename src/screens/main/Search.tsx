@@ -4,10 +4,10 @@ import clsx from 'clsx'
 import { useCombobox } from 'downshift'
 import { escapeRegExp, orderBy, startsWith } from 'lodash-es'
 import useSWRImmutable from 'swr/immutable'
-import { api } from '@api'
-import { Player } from '@types'
-import { Loader } from '@components/ui/Loader'
 import { useDebouncedEffect } from '@react-hookz/web'
+import { api } from '~api'
+import { Player } from '~types'
+import { Loader } from '~components/ui/Loader'
 
 type SearchItem = Player
 

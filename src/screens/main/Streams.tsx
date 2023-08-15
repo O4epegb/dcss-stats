@@ -1,7 +1,7 @@
 import useSWRImmutable from 'swr/immutable'
-import { api } from '@api'
-import { pluralize } from '@utils'
-import { Stream } from '@types'
+import { api } from '~api'
+import { pluralize } from '~utils'
+import { Stream } from '~types'
 
 export const Streams = () => {
   const { data: streams } = useSWRImmutable('/streams', (url) =>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { GetServerSidePropsContext } from 'next'
-import { rootUrl } from '@constants'
+import { rootUrl } from '~constants'
 
 export const createServerApi = (_ctx?: GetServerSidePropsContext) => {
   const api = axios.create({

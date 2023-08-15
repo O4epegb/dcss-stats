@@ -29,12 +29,12 @@
             "group": "object"
           },
           {
-            "pattern": "@**",
+            "pattern": "~**",
             "group": "parent",
             "position": "before"
           },
           {
-            "pattern": "@**/**",
+            "pattern": "~**/**",
             "group": "parent",
             "position": "before"
           }

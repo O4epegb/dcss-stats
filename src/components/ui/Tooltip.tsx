@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ReactNode, useRef, useState, cloneElement, FC } from 'react'
-import { XOR } from '@types'
 import {
   arrow,
   autoUpdate as autoUpdateUtility,
@@ -23,6 +22,7 @@ import {
   UseHoverProps,
 } from '@floating-ui/react'
 import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web'
+import { XOR } from '~types'
 
 export const HelpBubble: FC<{ content: ReactNode }> = ({ content }) => {
   return (

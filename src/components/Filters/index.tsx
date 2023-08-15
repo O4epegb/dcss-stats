@@ -2,10 +2,7 @@ import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { castArray, last, first, omit } from 'lodash-es'
 import { useRouter } from 'next/router'
-import { StaticData } from '@types'
-import { notEmpty } from '@utils'
 import { useUpdateEffect } from '@react-hookz/web'
-import { HelpBubble, Tooltip } from '@components/ui/Tooltip'
 import {
   DndContext,
   closestCenter,
@@ -21,6 +18,9 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { notEmpty } from '~utils'
+import { StaticData } from '~types'
+import { HelpBubble, Tooltip } from '~components/ui/Tooltip'
 import { Select } from '../ui/Select'
 import { SortableItem } from './SortableItem'
 

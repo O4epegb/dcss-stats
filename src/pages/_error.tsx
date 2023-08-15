@@ -1,6 +1,6 @@
 import ErrorPage from 'next/error'
-import { Page } from '@types'
-import { notify } from '@utils/bugsnag'
+import { Page } from '~types'
+import { notify } from '~utils/bugsnag'
 
 const Page500: Page<{ statusCode?: number }> = ({ statusCode }) => {
   return <ErrorPage statusCode={statusCode ?? 500} />

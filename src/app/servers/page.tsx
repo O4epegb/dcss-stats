@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash-es'
-import { pluralize, date, formatNumber } from '@utils'
-import { Logfile, Server } from '@types'
-import { fetchApi } from '@api/server'
-import { Logo } from '@components/Logo'
+import { pluralize, date, formatNumber } from '~utils'
+import { Logfile, Server } from '~types'
+import { fetchApi } from '~api/server'
+import { Logo } from '~components/Logo'
 
 const ServersPage = async () => {
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(

@@ -1,8 +1,8 @@
 'use client'
 
-import { PlayerInfoResponse } from '@types'
-import { Player } from '@screens/Player/main'
-import { PlayerPageContext, useContextStateValue } from '@screens/Player/context'
+import { PlayerInfoResponse } from '~types'
+import { Player } from '~screens/Player/main'
+import { PlayerPageContext, useContextStateValue } from '~screens/Player/context'
 
 type Props = PlayerInfoResponse & {
   cookiesStore: Record<string, boolean>

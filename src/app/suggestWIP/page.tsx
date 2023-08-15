@@ -1,6 +1,6 @@
 import { orderBy } from 'lodash-es'
-import { StaticData } from '@types'
-import { fetchApi } from '@api/server'
+import { StaticData } from '~types'
+import { fetchApi } from '~api/server'
 
 // Quite hard to implement with App Router because shallow routing does not work
 

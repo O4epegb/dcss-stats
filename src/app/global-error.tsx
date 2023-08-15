@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { notify } from '@utils/bugsnag'
+import { notify } from '~utils/bugsnag'
 
 export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {

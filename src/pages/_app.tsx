@@ -1,12 +1,12 @@
 import { AppProps } from 'next/app'
 import Head from 'next/head'
 import Script from 'next/script'
-import { ErrorBoundary } from '@utils/bugsnag'
 import { Analytics } from '@vercel/analytics/react'
-import { Providers } from '@app/providers'
+import { ErrorBoundary } from '~utils/bugsnag'
+import { Providers } from '~app/providers'
 import Page500 from './_error'
 
-import '@styles/globals.css'
+import '~styles/globals.css'
 
 const title = 'DCSS Stats'
 const description = 'Player and game statistics for Dungeon Crawl Stone Soup Online'

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import { HelpBubble } from '@components/ui/Tooltip'
+import { HelpBubble } from '~components/ui/Tooltip'
 
 export const List = ({
   title,

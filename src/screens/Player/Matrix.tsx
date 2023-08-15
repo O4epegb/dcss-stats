@@ -1,9 +1,9 @@
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
-import { CharStat } from '@types'
-import { pluralize, formatNumber } from '@utils'
-import { Tooltip } from '@components/ui/Tooltip'
 import { useMediaQuery } from '@react-hookz/web'
+import { CharStat } from '~types'
+import { pluralize, formatNumber } from '~utils'
+import { Tooltip } from '~components/ui/Tooltip'
 import { Summary, unavailableCombos } from './utils'
 import { usePlayerPageContext } from './context'
 

@@ -1,9 +1,9 @@
 import { notFound, redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { PlayerInfoResponse } from '@types'
-import { fetchApi } from '@api/server'
-import { cookiesStore } from '@screens/Player/utils'
-import PlayerPage from '@screens/Player'
+import { PlayerInfoResponse } from '~types'
+import { fetchApi } from '~api/server'
+import { cookiesStore } from '~screens/Player/utils'
+import PlayerPage from '~screens/Player'
 
 async function getData(slug: string) {
   const response = await fetchApi(`/players/${slug}`, { cache: 'no-store' })
