@@ -1,22 +1,22 @@
-import { Fragment, useState } from 'react';
-import { last, first, orderBy } from 'lodash-es';
-import clsx from 'clsx';
-import { Game } from '@types';
-import { api } from '@api';
-import { pluralize, date, formatNumber } from '@utils';
-import { Loader } from '@components/ui/Loader';
-import { GameTooltip } from '@components/GameTooltip';
-import { List } from './Stats';
-import { usePlayerPageContext } from './context';
+import { Fragment, useState } from 'react'
+import { last, first, orderBy } from 'lodash-es'
+import clsx from 'clsx'
+import { Game } from '@types'
+import { api } from '@api'
+import { pluralize, date, formatNumber } from '@utils'
+import { Loader } from '@components/ui/Loader'
+import { GameTooltip } from '@components/GameTooltip'
+import { List } from './Stats'
+import { usePlayerPageContext } from './context'
 
-type StreakGame = Pick<Game, 'id' | 'isWin' | 'endAt' | 'char'>;
-type StreakGroups = Array<StreakGame[]>;
+type StreakGame = Pick<Game, 'id' | 'isWin' | 'endAt' | 'char'>
+type StreakGroups = Array<StreakGame[]>
 
 export const Streaks = () => {
-  const { streaks, player } = usePlayerPageContext();
-  const [streakGroups, setStreakGroups] = useState<StreakGroups>([]);
-  const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { streaks, player } = usePlayerPageContext()
+  const [streakGroups, setStreakGroups] = useState<StreakGroups>([])
+  const [isVisible, setIsVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   return (
     <section className="space-y-1">
@@ -57,27 +57,27 @@ export const Streaks = () => {
             className="ml-auto py-0.5 text-sm text-blue-400 hover:underline"
             onClick={() => {
               if (streakGroups.length > 0) {
-                setIsVisible((state) => !state);
+                setIsVisible((state) => !state)
 
-                return;
+                return
               }
 
-              setIsLoading(true);
+              setIsLoading(true)
 
               api
                 .get<{ streaks: { streaks: StreakGroups } }>(`/players/${player.id}/streaks`)
                 .then((res) => {
-                  setStreakGroups(res.data.streaks.streaks);
-                  setIsVisible(true);
+                  setStreakGroups(res.data.streaks.streaks)
+                  setIsVisible(true)
                 })
                 .catch((e) => {
-                  alert('Error while loading streaks');
+                  alert('Error while loading streaks')
 
-                  throw e;
+                  throw e
                 })
                 .finally(() => {
-                  setIsLoading(false);
-                });
+                  setIsLoading(false)
+                })
             }}
           >
             {isVisible ? 'Hide' : 'Show'} streaks
@@ -92,10 +92,10 @@ export const Streaks = () => {
             [(streak) => last(streak)?.isWin, (streak) => streak.filter((x) => x.isWin).length],
             ['desc', 'desc'],
           ).map((streak, index) => {
-            const isActive = streak.every((x) => x.isWin);
-            const firstGame = first(streak);
-            const lastGame = last(streak);
-            const streakLength = isActive ? streak.length : streak.length - 1;
+            const isActive = streak.every((x) => x.isWin)
+            const firstGame = first(streak)
+            const lastGame = last(streak)
+            const streakLength = isActive ? streak.length : streak.length - 1
 
             return (
               <div
@@ -140,10 +140,10 @@ export const Streaks = () => {
                   </div>
                 )}
               </div>
-            );
+            )
           })}
         </div>
       )}
     </section>
-  );
-};
+  )
+}

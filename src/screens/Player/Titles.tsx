@@ -1,16 +1,16 @@
-import { map } from 'lodash-es';
-import { pluralize, trackEvent } from '@utils';
-import { useSlicedList } from '@hooks/useSlicedList';
-import { GameTooltip } from '@components/GameTooltip';
-import { usePlayerPageContext } from './context';
+import { map } from 'lodash-es'
+import { pluralize, trackEvent } from '@utils'
+import { useSlicedList } from '@hooks/useSlicedList'
+import { GameTooltip } from '@components/GameTooltip'
+import { usePlayerPageContext } from './context'
 
 export const Titles = () => {
-  const { titlesCount, player } = usePlayerPageContext();
-  const titles = map(titlesCount, (count, name) => ({ name, count }));
-  const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10);
+  const { titlesCount, player } = usePlayerPageContext()
+  const titles = map(titlesCount, (count, name) => ({ name, count }))
+  const { items, showAll, hasMore, extraItemsCount, toggleShowAll } = useSlicedList(titles, 10)
 
   if (items.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -35,8 +35,8 @@ export const Titles = () => {
             <button
               className="px-1 py-0.5 text-sm text-blue-400 hover:underline"
               onClick={() => {
-                toggleShowAll();
-                trackEvent('show titles');
+                toggleShowAll()
+                trackEvent('show titles')
               }}
             >
               {showAll ? 'Show fewer' : `Show ${extraItemsCount} more`}
@@ -45,5 +45,5 @@ export const Titles = () => {
         )}
       </ul>
     </section>
-  );
-};
+  )
+}

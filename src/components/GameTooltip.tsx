@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import useSWRImmutable from 'swr/immutable';
-import { api } from '@api';
-import { Game } from '@types';
-import { Tooltip } from '@components/ui/Tooltip';
-import { GameItem } from './GameItem';
+import { useState } from 'react'
+import useSWRImmutable from 'swr/immutable'
+import { api } from '@api'
+import { Game } from '@types'
+import { Tooltip } from '@components/ui/Tooltip'
+import { GameItem } from './GameItem'
 
 export const GameTooltip = ({
   children,
   ...rest
 }: {
-  player: string;
-  children: JSX.Element;
+  player: string
+  children: JSX.Element
 } & (
   | {
-      isWin: boolean;
-      title: string;
-      player: string;
+      isWin: boolean
+      title: string
+      player: string
     }
   | {
-      id: string;
+      id: string
     }
 )) => {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(false)
   const { data, error } = useSWRImmutable(isActive ? ['/games', rest] : null, ([url, params]) =>
     api.get<{ data: Game[]; count: number }>(url, { params }).then((res) => res.data),
-  );
+  )
 
   return (
     <Tooltip
@@ -47,5 +47,5 @@ export const GameTooltip = ({
     >
       {children}
     </Tooltip>
-  );
-};
+  )
+}

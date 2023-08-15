@@ -1,6 +1,6 @@
-import { sample } from 'lodash-es';
-import { fetchApi } from '@api/server';
-import { MainPage, Response } from '@screens/main';
+import { sample } from 'lodash-es'
+import { fetchApi } from '@api/server'
+import { MainPage, Response } from '@screens/main'
 
 const nicknames = [
   'MegaDestroyer3000',
@@ -16,20 +16,20 @@ const nicknames = [
   'Zig Zagger',
   'Spider Slayer',
   'Loot Looter',
-].map((n) => n.replaceAll(' ', ''));
+].map((n) => n.replaceAll(' ', ''))
 
 async function getData() {
-  const res = await fetchApi('/stats', { next: { revalidate: 300 } });
-  const response: { data: Response } = await res.json();
+  const res = await fetchApi('/stats', { next: { revalidate: 300 } })
+  const response: { data: Response } = await res.json()
 
   return {
     ...response.data,
     nickname: sample(nicknames) ?? '',
-  };
+  }
 }
 
 export default async function Page() {
-  const data = await getData();
+  const data = await getData()
 
-  return <MainPage {...data} />;
+  return <MainPage {...data} />
 }

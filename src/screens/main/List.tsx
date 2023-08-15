@@ -1,6 +1,6 @@
-import Link from 'next/link';
-import { ReactNode } from 'react';
-import { HelpBubble } from '@components/ui/Tooltip';
+import Link from 'next/link'
+import { ReactNode } from 'react'
+import { HelpBubble } from '@components/ui/Tooltip'
 
 export const List = ({
   title,
@@ -9,14 +9,14 @@ export const List = ({
   placeholder,
   onLinkClick,
 }: {
-  title: string;
+  title: string
   items: Array<{
-    name: string;
-    count?: string;
-  }>;
-  onLinkClick: (name: string) => void;
-  placeholder?: ReactNode;
-  tooltip?: string;
+    name: string
+    count?: string
+  }>
+  onLinkClick: (name: string) => void
+  placeholder?: ReactNode
+  tooltip?: string
 }) => {
   return (
     <div className="space-y-1">
@@ -34,7 +34,7 @@ export const List = ({
             className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100 dark:hover:bg-zinc-700"
             onClick={(e) => {
               if (!e.metaKey && !e.ctrlKey) {
-                onLinkClick(item.name);
+                onLinkClick(item.name)
               }
             }}
           >
@@ -46,5 +46,5 @@ export const List = ({
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

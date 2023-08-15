@@ -1,7 +1,7 @@
-import clsx from 'clsx';
-import { AnimatePresence, motion } from 'framer-motion';
-import { ReactNode, useRef, useState, cloneElement, FC } from 'react';
-import { XOR } from '@types';
+import clsx from 'clsx'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ReactNode, useRef, useState, cloneElement, FC } from 'react'
+import { XOR } from '@types'
 import {
   arrow,
   autoUpdate as autoUpdateUtility,
@@ -21,8 +21,8 @@ import {
   useRole,
   useMergeRefs,
   UseHoverProps,
-} from '@floating-ui/react';
-import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web';
+} from '@floating-ui/react'
+import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web'
 
 export const HelpBubble: FC<{ content: ReactNode }> = ({ content }) => {
   return (
@@ -40,37 +40,37 @@ export const HelpBubble: FC<{ content: ReactNode }> = ({ content }) => {
         />
       </svg>
     </Tooltip>
-  );
-};
+  )
+}
 
 const sides: Record<string, string> = {
   top: 'bottom',
   right: 'left',
   bottom: 'top',
   left: 'right',
-};
+}
 
 type Props = {
-  content: ReactNode;
-  placement?: Placement;
-  trigger?: 'hover' | 'click';
-  interactive?: boolean;
-  disabled?: boolean;
-  open?: boolean;
-  unstyled?: true;
-  autoUpdate?: boolean;
-  zIndex?: number;
-  className?: string;
-  onOpenChange?(open: boolean): void;
+  content: ReactNode
+  placement?: Placement
+  trigger?: 'hover' | 'click'
+  interactive?: boolean
+  disabled?: boolean
+  open?: boolean
+  unstyled?: true
+  autoUpdate?: boolean
+  zIndex?: number
+  className?: string
+  onOpenChange?(open: boolean): void
 } & Pick<UseHoverProps, 'delay' | 'restMs'> &
   XOR<
     {
-      children: JSX.Element;
+      children: JSX.Element
     },
     {
-      triggerElement: ReferenceType;
+      triggerElement: ReferenceType
     }
-  >;
+  >
 
 export const Tooltip = ({
   children,
@@ -89,14 +89,14 @@ export const Tooltip = ({
   delay = 150,
   onOpenChange,
 }: Props) => {
-  const arrowRef = useRef<HTMLDivElement>(null);
-  const [open, setOpen] = useState(propsOpen ?? false);
+  const arrowRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(propsOpen ?? false)
 
   useUpdateEffect(() => {
     if (propsOpen !== undefined) {
-      setOpen(propsOpen);
+      setOpen(propsOpen)
     }
-  }, [propsOpen]);
+  }, [propsOpen])
 
   const {
     x,
@@ -112,10 +112,10 @@ export const Tooltip = ({
     middleware: [offset(6), flip(), shift({ padding: 16 }), arrow({ element: arrowRef })],
     whileElementsMounted: autoUpdate ? autoUpdateUtility : undefined,
     onOpenChange: (newOpen) => {
-      setOpen(newOpen);
-      onOpenChange?.(newOpen);
+      setOpen(newOpen)
+      onOpenChange?.(newOpen)
     },
-  });
+  })
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useFocus(context),
@@ -136,19 +136,19 @@ export const Tooltip = ({
           : delay,
       handleClose: interactive ? safePolygon({ blockPointerEvents: false }) : undefined,
     }),
-  ]);
+  ])
 
   useIsomorphicLayoutEffect(() => {
     if (triggerElement) {
-      refs.setReference(triggerElement);
+      refs.setReference(triggerElement)
     }
-  }, [refs, triggerElement]);
+  }, [refs, triggerElement])
 
   const ref = useMergeRefs(
     triggerElement ? [refs.setReference] : [refs.setReference, (children as any).ref],
-  );
+  )
 
-  const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {};
+  const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {}
 
   return (
     <>
@@ -195,5 +195,5 @@ export const Tooltip = ({
         </AnimatePresence>
       </FloatingPortal>
     </>
-  );
-};
+  )
+}

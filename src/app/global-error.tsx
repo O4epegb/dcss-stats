@@ -1,12 +1,12 @@
-'use client';
+'use client'
 
-import { useEffect } from 'react';
-import { notify } from '@utils/bugsnag';
+import { useEffect } from 'react'
+import { notify } from '@utils/bugsnag'
 
 export default function GlobalError({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
-    notify(error);
-  }, []);
+    notify(error)
+  }, [])
 
   return (
     <html>
@@ -15,5 +15,5 @@ export default function GlobalError({ error, reset }: { error: Error; reset: () 
         <button onClick={() => reset()}>Try again</button>
       </body>
     </html>
-  );
+  )
 }

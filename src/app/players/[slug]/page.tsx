@@ -1,18 +1,18 @@
-import { notFound, redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
-import { PlayerInfoResponse } from '@types';
-import { fetchApi } from '@api/server';
-import { cookiesStore } from '@screens/Player/utils';
-import PlayerPage from '@screens/Player';
+import { notFound, redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { PlayerInfoResponse } from '@types'
+import { fetchApi } from '@api/server'
+import { cookiesStore } from '@screens/Player/utils'
+import PlayerPage from '@screens/Player'
 
 async function getData(slug: string) {
-  const response = await fetchApi(`/players/${slug}`, { cache: 'no-store' });
+  const response = await fetchApi(`/players/${slug}`, { cache: 'no-store' })
 
   if (response.ok) {
-    const data: PlayerInfoResponse = await response.json();
+    const data: PlayerInfoResponse = await response.json()
 
     if (data.player.name !== slug) {
-      redirect(`/players/${data.player.name}`);
+      redirect(`/players/${data.player.name}`)
     }
 
     return {
@@ -21,18 +21,18 @@ async function getData(slug: string) {
         (acc, key) => ({ ...acc, [key]: cookies().has(key) }),
         {},
       ),
-    };
+    }
   } else {
     if (response.status === 404) {
-      notFound();
+      notFound()
     } else {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(`Error: ${response.status}`)
     }
   }
 }
 
 export default async function Page({ params }: { params: { slug: string } }) {
-  const data = await getData(params.slug);
+  const data = await getData(params.slug)
 
-  return <PlayerPage {...data} />;
+  return <PlayerPage {...data} />
 }

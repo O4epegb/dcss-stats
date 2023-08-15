@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { GetStaticProps } from 'next';
-import useSWRImmutable from 'swr/immutable';
-import useSWRInfinite from 'swr/infinite';
+import { useState, useEffect } from 'react'
+import clsx from 'clsx'
+import { GetStaticProps } from 'next'
+import useSWRImmutable from 'swr/immutable'
+import useSWRInfinite from 'swr/infinite'
 import {
   capitalize,
   flow,
@@ -19,41 +19,41 @@ import {
   flatten,
   last,
   isError,
-} from 'lodash-es';
-import { useRouter } from 'next/router';
-import { api } from '@api';
-import { formatNumber, notEmpty } from '@utils';
-import { Class, Game, God, Race, StaticData } from '@types';
-import { createServerApi } from '@api/server';
-import { Logo } from '@components/Logo';
-import { WinrateStats } from '@components/WinrateStats';
-import { Loader } from '@components/ui/Loader';
-import { Tooltip } from '@components/ui/Tooltip';
-import { Filter, Filters, filtersToQuery } from '@components/Filters';
-import { GameItem } from '@components/GameItem';
-import { useLocalStorageValue } from '@react-hookz/web';
-import { Select } from '@components/ui/Select';
+} from 'lodash-es'
+import { useRouter } from 'next/router'
+import { api } from '@api'
+import { formatNumber, notEmpty } from '@utils'
+import { Class, Game, God, Race, StaticData } from '@types'
+import { createServerApi } from '@api/server'
+import { Logo } from '@components/Logo'
+import { WinrateStats } from '@components/WinrateStats'
+import { Loader } from '@components/ui/Loader'
+import { Tooltip } from '@components/ui/Tooltip'
+import { Filter, Filters, filtersToQuery } from '@components/Filters'
+import { GameItem } from '@components/GameItem'
+import { useLocalStorageValue } from '@react-hookz/web'
+import { Select } from '@components/ui/Select'
 
 enum FilterValue {
   Any = 'any',
 }
 
-type Stats = { wins: number; total: number };
-type Combos = Record<string, Stats>;
-type SuggestResponse = Stats & { combos: Combos };
-type Data = SuggestResponse & { race?: Race; class?: Class; god?: God; version?: string };
+type Stats = { wins: number; total: number }
+type Combos = Record<string, Stats>
+type SuggestResponse = Stats & { combos: Combos }
+type Data = SuggestResponse & { race?: Race; class?: Class; god?: God; version?: string }
 
 type MainFilter = {
-  race: string;
-  class: string;
-  god: string;
-  version: string;
-};
+  race: string
+  class: string
+  god: string
+  version: string
+}
 
 const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
-  type SortingKey = keyof ReturnType<typeof normalizeData>[number];
+  type SortingKey = keyof ReturnType<typeof normalizeData>[number]
 
-  const router = useRouter();
+  const router = useRouter()
 
   const { value: showAdvancedFilters, set: setShowAdvancedFilters } = useLocalStorageValue(
     'showAdvancedFilters',
@@ -61,41 +61,41 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
       defaultValue: false,
       initializeWithValue: false,
     },
-  );
+  )
   const { value: showWins, set: setShowWins } = useLocalStorageValue('showWins', {
     defaultValue: true,
     initializeWithValue: false,
-  });
+  })
   const { value: groupingKey, set: setGroupingKey } = useLocalStorageValue<
     undefined | keyof Omit<typeof filter, 'version'>
   >('groupingKey', {
     defaultValue: undefined,
-  });
+  })
 
-  const [view, setView] = useState<'stats' | 'games'>('stats');
+  const [view, setView] = useState<'stats' | 'games'>('stats')
   const [sorting, setSorting] = useState<{ key: SortingKey; direction: 'desc' | 'asc' }>(() => ({
     key: 'total',
     direction: 'desc',
-  }));
-  const [advancedFilter, setAdvancedFilter] = useState<Filter[] | null>(() => null);
+  }))
+  const [advancedFilter, setAdvancedFilter] = useState<Filter[] | null>(() => null)
   const [filter, setFilter] = useState<MainFilter>(() => ({
     race: FilterValue.Any,
     class: FilterValue.Any,
     god: FilterValue.Any,
     version: versions[0],
-  }));
+  }))
   const [filterForSearch, setFilterForSearch] = useState(() => ({
     ...filter,
     advanced: [] as Filter[],
-  }));
+  }))
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
-    setFilter((current) => ({ ...current, [key]: value }));
-  };
+    setFilter((current) => ({ ...current, [key]: value }))
+  }
 
   useEffect(() => {
     if (!router.isReady) {
-      return;
+      return
     }
 
     const [qRace, qClass, qGod, qVersion] = [
@@ -103,26 +103,26 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
       router.query.class,
       router.query.god,
       router.query.version,
-    ].map((x) => castArray(x)[0]);
+    ].map((x) => castArray(x)[0])
 
-    const race = races.find((x) => x.name === qRace);
-    const klass = classes.find((x) => x.name === qClass);
-    const god = gods.find((x) => x.name === qGod);
-    const version = versions.find((x) => x === qVersion);
+    const race = races.find((x) => x.name === qRace)
+    const klass = classes.find((x) => x.name === qClass)
+    const god = gods.find((x) => x.name === qGod)
+    const version = versions.find((x) => x === qVersion)
 
     const somethingIsInvalid = [
       [qRace, race],
       [qClass, klass],
       [qGod, god],
       [qVersion, version],
-    ].some(([qItem, item]) => qItem && !item);
+    ].some(([qItem, item]) => qItem && !item)
 
     if (somethingIsInvalid) {
       router.replace({
         query: {},
-      });
+      })
 
-      return;
+      return
     }
 
     const newFilter = {
@@ -130,25 +130,25 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
       class: klass?.name || FilterValue.Any,
       god: god?.name || FilterValue.Any,
       version: version || versions[0],
-    } as const;
+    } as const
 
-    setFilter(newFilter);
+    setFilter(newFilter)
 
     if (!every(omit(newFilter, 'version'), (value) => value === FilterValue.Any)) {
-      setFilterForSearch((x) => ({ ...x, ...newFilter }));
+      setFilterForSearch((x) => ({ ...x, ...newFilter }))
     }
-  }, [router.isReady]);
+  }, [router.isReady])
 
-  const buttonEnabled = _filter(filter, (value) => value !== FilterValue.Any).length > 1;
+  const buttonEnabled = _filter(filter, (value) => value !== FilterValue.Any).length > 1
 
   const filterData = {
     race: races.find((x) => x.name === filterForSearch.race),
     class: classes.find((x) => x.name === filterForSearch.class),
     god: gods.find((x) => x.name === filterForSearch.god),
-  } as const;
-  const { race, class: klass, god } = filterData;
+  } as const
+  const { race, class: klass, god } = filterData
 
-  const onlyOneFilterWasSelected = [race, klass, god].filter(notEmpty).length === 1;
+  const onlyOneFilterWasSelected = [race, klass, god].filter(notEmpty).length === 1
 
   const columns = [
     [
@@ -172,7 +172,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     ['Games', 'total', 'numeric'],
     ['Wins', 'wins', 'numeric'],
     ['Win rate', 'winrate', 'numeric'],
-  ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>;
+  ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>
 
   const { data, error, isValidating } = useSWRImmutable(
     () => {
@@ -183,10 +183,10 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
           god: god?.name,
         },
         (value) => value,
-      );
+      )
 
       if (isEmpty(mainParams) || !advancedFilter) {
-        return null;
+        return null
       }
 
       return [
@@ -196,14 +196,14 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
           version: filterForSearch.version,
           filter: filterForSearch.advanced.map((x) => omit(x, 'id')),
         },
-      ];
+      ]
     },
     ([url, params]) => api.get<SuggestResponse>(url, { params }).then((res) => res.data),
-  );
+  )
 
   const normalizeData = ({ combos, race, class: klass, god }: Data) => {
     let data = map(combos, (value, key) => {
-      const [raceAbbr, classAbbr, godName] = key.split(',');
+      const [raceAbbr, classAbbr, godName] = key.split(',')
 
       return {
         ...value,
@@ -211,31 +211,31 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         class: klass || classes.find((x) => x.abbr === classAbbr),
         god: god || gods.find((x) => x.name === godName),
         winrate: (value.wins / value.total) * 100,
-      };
-    });
+      }
+    })
 
     if (groupingKey && !filterData[groupingKey]) {
-      const grouped = groupBy(data, (x) => x[groupingKey]?.name);
+      const grouped = groupBy(data, (x) => x[groupingKey]?.name)
       data = map(grouped, (items) => {
         return items.reduce((acc, item) => {
-          const wins = acc.wins + item.wins;
-          const total = acc.total + item.total;
-          const winrate = (wins / total || 0) * 100;
+          const wins = acc.wins + item.wins
+          const total = acc.total + item.total
+          const winrate = (wins / total || 0) * 100
 
           return {
             ...acc,
             wins,
             total,
             winrate,
-          };
-        });
-      });
+          }
+        })
+      })
     }
 
-    return data;
-  };
+    return data
+  }
 
-  const isLoading = !data && !error && isValidating;
+  const isLoading = !data && !error && isValidating
 
   return (
     <div
@@ -329,8 +329,8 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
           excludeFilters={['Class', 'Race', 'God', 'End', 'Player']}
           skills={skills}
           onInit={(filters) => {
-            setAdvancedFilter(filters);
-            setFilterForSearch((x) => ({ ...x, advanced: filters }));
+            setAdvancedFilter(filters)
+            setFilterForSearch((x) => ({ ...x, advanced: filters }))
           }}
           onFiltersChange={setAdvancedFilter}
         />
@@ -346,10 +346,10 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
             )}
             onClick={() => {
               if (!buttonEnabled) {
-                return;
+                return
               }
 
-              setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] });
+              setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
 
               router.replace(
                 {
@@ -366,7 +366,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                 },
                 undefined,
                 { shallow: true },
-              );
+              )
             }}
           >
             Time to have some fun!
@@ -520,9 +520,9 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                           orderBy(
                             x,
                             (x) => {
-                              const data = x[sorting.key];
+                              const data = x[sorting.key]
 
-                              return typeof data === 'number' ? data : data?.name.toLowerCase();
+                              return typeof data === 'number' ? data : data?.name.toLowerCase()
                             },
                             sorting.direction,
                           ),
@@ -549,7 +549,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                                   %
                                 </td>
                               </tr>
-                            );
+                            )
                           }),
                       )()}
                     </tbody>
@@ -583,19 +583,19 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         </>
       )}
     </div>
-  );
-};
+  )
+}
 
 const GameList = (props: { filter: null | Filter[] }) => {
-  const filter = props.filter?.map((item) => omit(item, 'id'));
+  const filter = props.filter?.map((item) => omit(item, 'id'))
 
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex, previousPageData: { data: Game[]; count: number }) => {
       if (!filter || (previousPageData && previousPageData.data.length === 0)) {
-        return null;
+        return null
       }
 
-      return ['/search', { filter, after: last(previousPageData?.data)?.id }];
+      return ['/search', { filter, after: last(previousPageData?.data)?.id }]
     },
     ([url, { filter, after }]) =>
       api
@@ -607,14 +607,14 @@ const GameList = (props: { filter: null | Filter[] }) => {
       revalidateOnReconnect: false,
       revalidateFirstPage: false,
     },
-  );
+  )
 
-  const games = data ? flatten(data.map((x) => x.data)) : [];
-  const isLoadingInitialData = !data && !error;
+  const games = data ? flatten(data.map((x) => x.data)) : []
+  const isLoadingInitialData = !data && !error
   const isLoadingMore =
-    isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
-  const isEmpty = data?.[0].data?.length === 0;
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10);
+    isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined')
+  const isEmpty = data?.[0].data?.length === 0
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10)
 
   return (
     <div className="flex-1 py-2 pr-2">
@@ -627,7 +627,7 @@ const GameList = (props: { filter: null | Filter[] }) => {
               <li key={game.id}>
                 <GameItem showSkills includePlayer game={game} />
               </li>
-            );
+            )
           })}
         </ul>
       )}
@@ -652,15 +652,15 @@ const GameList = (props: { filter: null | Filter[] }) => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-type Props = Response;
+type Props = Response
 
-type Response = StaticData;
+type Response = StaticData
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const { data } = await createServerApi().api.get<Response>('/combos');
+  const { data } = await createServerApi().api.get<Response>('/combos')
 
   return {
     revalidate: 300,
@@ -671,7 +671,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       versions: data.versions,
       skills: data.skills,
     },
-  };
-};
+  }
+}
 
-export default SuggestPage;
+export default SuggestPage

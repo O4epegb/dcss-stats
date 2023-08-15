@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 export const Logo = () => {
   return (
@@ -6,5 +6,5 @@ export const Logo = () => {
       <img width="128" height="128" src="/logo.png" className="h-8 w-8" />
       <h1 className="whitespace-nowrap text-center text-2xl sm:text-4xl">DCSS Stats</h1>
     </Link>
-  );
-};
+  )
+}

@@ -1,8 +1,8 @@
-import { orderBy } from 'lodash-es';
-import { pluralize, date, formatNumber } from '@utils';
-import { Logfile, Server } from '@types';
-import { fetchApi } from '@api/server';
-import { Logo } from '@components/Logo';
+import { orderBy } from 'lodash-es'
+import { pluralize, date, formatNumber } from '@utils'
+import { Logfile, Server } from '@types'
+import { fetchApi } from '@api/server'
+import { Logo } from '@components/Logo'
 
 const ServersPage = async () => {
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(
@@ -10,7 +10,7 @@ const ServersPage = async () => {
     {
       next: { revalidate: 300 },
     },
-  ).then((r) => r.json());
+  ).then((r) => r.json())
 
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 py-4 pt-4">
@@ -22,7 +22,7 @@ const ServersPage = async () => {
         <h2 className="text-lg font-semibold">Tracking 12 {pluralize('server', 12)}:</h2>
 
         {servers.map((server) => {
-          const total = server.logfile.reduce((acc, item) => acc + item.games, 0);
+          const total = server.logfile.reduce((acc, item) => acc + item.games, 0)
 
           return (
             <div key={server.id} className="rounded border px-2 py-1">
@@ -64,16 +64,16 @@ const ServersPage = async () => {
                           {formatNumber(file.games)} {pluralize('game', file.games)}
                         </div>
                       </li>
-                    );
+                    )
                   })}
                 </ul>
               </details>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ServersPage;
+export default ServersPage

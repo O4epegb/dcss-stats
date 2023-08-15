@@ -1,11 +1,11 @@
-import clsx from 'clsx';
-import { useEffect, useRef, useState } from 'react';
-import { CharStat } from '@types';
-import { pluralize, formatNumber } from '@utils';
-import { Tooltip } from '@components/ui/Tooltip';
-import { useMediaQuery } from '@react-hookz/web';
-import { Summary, unavailableCombos } from './utils';
-import { usePlayerPageContext } from './context';
+import clsx from 'clsx'
+import { useEffect, useRef, useState } from 'react'
+import { CharStat } from '@types'
+import { pluralize, formatNumber } from '@utils'
+import { Tooltip } from '@components/ui/Tooltip'
+import { useMediaQuery } from '@react-hookz/web'
+import { Summary, unavailableCombos } from './utils'
+import { usePlayerPageContext } from './context'
 
 const items = [
   ['wins', 'wins'],
@@ -13,35 +13,33 @@ const items = [
   ['win rate %', 'winRate'],
   ['best XL', 'maxXl'],
   ['first win', 'gamesToFirstWin'],
-] as const;
+] as const
 
 export const Matrix = ({ summary }: { summary: Summary }) => {
-  const { toggleOption, isOptionEnabled } = usePlayerPageContext();
-  const isWide = useMediaQuery('(min-width: 1280px)', { initializeWithValue: false });
-  const [isSticky, setIsSticky] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-  const [[activeRace, activeClass], setActive] = useState<string[]>([]);
-  const [category, setCategory] = useState<keyof CharStat>('wins');
-  const [tooltipRef, setTooltipRef] = useState<HTMLElement | null>(null);
-  const { stats, allActualRaces, allActualClasses, greatRaces, greatClasses } = summary;
+  const { toggleOption, isOptionEnabled } = usePlayerPageContext()
+  const isWide = useMediaQuery('(min-width: 1280px)', { initializeWithValue: false })
+  const [isSticky, setIsSticky] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const [[activeRace, activeClass], setActive] = useState<string[]>([])
+  const [category, setCategory] = useState<keyof CharStat>('wins')
+  const [tooltipRef, setTooltipRef] = useState<HTMLElement | null>(null)
+  const { stats, allActualRaces, allActualClasses, greatRaces, greatClasses } = summary
 
-  const showTrunkData = isOptionEnabled('dcss-show-trunk-data');
-  const racesToShow = showTrunkData ? allActualRaces.filter((x) => x.trunk) : allActualRaces;
-  const classesToShow = showTrunkData ? allActualClasses.filter((x) => x.trunk) : allActualClasses;
+  const showTrunkData = isOptionEnabled('dcss-show-trunk-data')
+  const racesToShow = showTrunkData ? allActualRaces.filter((x) => x.trunk) : allActualRaces
+  const classesToShow = showTrunkData ? allActualClasses.filter((x) => x.trunk) : allActualClasses
 
   useEffect(() => {
-    const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight;
-    setIsSticky(Boolean(shouldBeSticky));
-  }, [isWide, ref.current, showTrunkData]);
+    const shouldBeSticky = isWide && ref.current && window.innerHeight > ref.current?.offsetHeight
+    setIsSticky(Boolean(shouldBeSticky))
+  }, [isWide, ref.current, showTrunkData])
 
   const formatter = (value: number) =>
-    category === 'winRate'
-      ? formatNumber(value * 100, { maximumFractionDigits: 0 })
-      : String(value);
+    category === 'winRate' ? formatNumber(value * 100, { maximumFractionDigits: 0 }) : String(value)
 
-  const activeCombo = (activeRace || '') + (activeClass || '');
+  const activeCombo = (activeRace || '') + (activeClass || '')
   const tooltipStats =
-    stats[!activeRace ? 'classes' : !activeClass ? 'races' : 'combos'][activeCombo];
+    stats[!activeRace ? 'classes' : !activeClass ? 'races' : 'combos'][activeCombo]
 
   return (
     <div ref={ref} className={clsx('w-full', isSticky && 'sticky top-0')}>
@@ -177,9 +175,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     !klass.trunk && 'text-gray-400',
                   )}
                   onMouseEnter={(e) => {
-                    setActive(['', klass.abbr]);
+                    setActive(['', klass.abbr])
 
-                    setTooltipRef(e.currentTarget);
+                    setTooltipRef(e.currentTarget)
                   }}
                   onMouseLeave={() => setActive([])}
                 >
@@ -193,7 +191,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
               <td></td>
               <td></td>
               {classesToShow.map((klass) => {
-                const value = stats.classes[klass.abbr]?.[category];
+                const value = stats.classes[klass.abbr]?.[category]
 
                 return (
                   <td
@@ -208,19 +206,19 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         : 'dark:text-gray-200',
                     )}
                     onMouseEnter={(e) => {
-                      setActive(['', klass.abbr]);
+                      setActive(['', klass.abbr])
 
-                      setTooltipRef(e.currentTarget);
+                      setTooltipRef(e.currentTarget)
                     }}
                     onMouseLeave={() => setActive([])}
                   >
                     {value ? formatter(value) : '-'}
                   </td>
-                );
+                )
               })}
             </tr>
             {racesToShow.map((race) => {
-              const value = stats.races[race.abbr]?.[category];
+              const value = stats.races[race.abbr]?.[category]
 
               return (
                 <tr key={race.abbr} className="h-[24px]">
@@ -233,9 +231,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                       !race.trunk && 'text-gray-400',
                     )}
                     onMouseEnter={(e) => {
-                      setActive([race.abbr]);
+                      setActive([race.abbr])
 
-                      setTooltipRef(e.currentTarget);
+                      setTooltipRef(e.currentTarget)
                     }}
                     onMouseLeave={() => setActive([])}
                   >
@@ -252,18 +250,18 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         : 'dark:text-gray-200',
                     )}
                     onMouseEnter={(e) => {
-                      setActive([race.abbr]);
+                      setActive([race.abbr])
 
-                      setTooltipRef(e.currentTarget);
+                      setTooltipRef(e.currentTarget)
                     }}
                     onMouseLeave={() => setActive([])}
                   >
                     {value ? formatter(value) : '-'}
                   </td>
                   {classesToShow.map((klass) => {
-                    const char = race.abbr + klass.abbr;
-                    const value = stats.combos[char]?.[category];
-                    const content = value ? formatter(value) : null;
+                    const char = race.abbr + klass.abbr
+                    const value = stats.combos[char]?.[category]
+                    const content = value ? formatter(value) : null
 
                     return (
                       <td
@@ -284,21 +282,21 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                             : 'dark:text-gray-200',
                         )}
                         onMouseEnter={(e) => {
-                          setTooltipRef(e.currentTarget);
-                          setActive([race.abbr, klass.abbr]);
+                          setTooltipRef(e.currentTarget)
+                          setActive([race.abbr, klass.abbr])
                         }}
                         onMouseLeave={() => setActive([])}
                       >
                         {content || (unavailableCombos[char] && 'x')}
                       </td>
-                    );
+                    )
                   })}
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
     </div>
-  );
-};
+  )
+}

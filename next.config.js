@@ -1,4 +1,4 @@
-const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL;
+const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -12,8 +12,8 @@ const config = {
         source: '/api/:slug*',
         destination: `${rootUrl}/api/:slug*`,
       },
-    ].filter(Boolean);
+    ].filter(Boolean)
   },
-};
+}
 
-module.exports = config;
+module.exports = config

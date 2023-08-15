@@ -1,15 +1,15 @@
-import useSWRImmutable from 'swr/immutable';
-import { api } from '@api';
-import { pluralize } from '@utils';
-import { Stream } from '@types';
+import useSWRImmutable from 'swr/immutable'
+import { api } from '@api'
+import { pluralize } from '@utils'
+import { Stream } from '@types'
 
 export const Streams = () => {
   const { data: streams } = useSWRImmutable('/streams', (url) =>
     api.get<{ data: { streams: Array<Stream> } }>(url).then((res) => res.data.data.streams),
-  );
+  )
 
   if (!streams || streams.length === 0) {
-    return null;
+    return null
   }
 
   return (
@@ -46,5 +46,5 @@ export const Streams = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}

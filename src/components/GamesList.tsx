@@ -1,27 +1,27 @@
-import clsx from 'clsx';
-import { last, throttle } from 'lodash-es';
-import { useState, useEffect } from 'react';
-import { api } from '@api';
-import { Game } from '@types';
-import { useFirstMountState } from '@react-hookz/web';
-import { Loader } from './ui/Loader';
-import { CompactGameItem, GameItem } from './GameItem';
+import clsx from 'clsx'
+import { last, throttle } from 'lodash-es'
+import { useState, useEffect } from 'react'
+import { api } from '@api'
+import { Game } from '@types'
+import { useFirstMountState } from '@react-hookz/web'
+import { Loader } from './ui/Loader'
+import { CompactGameItem, GameItem } from './GameItem'
 
 export const GamesList = (props: {
-  initialTotal: number;
-  initialGames?: Game[];
-  playerName?: string;
-  isWin?: boolean;
-  race?: string;
-  class?: string;
-  god?: string;
-  version?: string[];
-  runes?: number[];
-  includePlayer?: boolean;
-  isCompactView?: boolean;
-  showSkills?: boolean;
-  orderBy?: keyof Pick<Game, 'startAt' | 'endAt'>;
-  onChange?: (games: Game[], count: number) => void;
+  initialTotal: number
+  initialGames?: Game[]
+  playerName?: string
+  isWin?: boolean
+  race?: string
+  class?: string
+  god?: string
+  version?: string[]
+  runes?: number[]
+  includePlayer?: boolean
+  isCompactView?: boolean
+  showSkills?: boolean
+  orderBy?: keyof Pick<Game, 'startAt' | 'endAt'>
+  onChange?: (games: Game[], count: number) => void
 }) => {
   const {
     initialTotal,
@@ -37,19 +37,19 @@ export const GamesList = (props: {
     showSkills,
     orderBy,
     onChange,
-  } = props;
+  } = props
 
-  const isFirstMount = useFirstMountState();
-  const [games, setGames] = useState<Game[]>(props.initialGames || []);
-  const [isLoading, setIsLoading] = useState(() => !props.initialGames);
-  const [showUp, setShowUp] = useState(false);
-  const [count, setCount] = useState(initialTotal);
+  const isFirstMount = useFirstMountState()
+  const [games, setGames] = useState<Game[]>(props.initialGames || [])
+  const [isLoading, setIsLoading] = useState(() => !props.initialGames)
+  const [showUp, setShowUp] = useState(false)
+  const [count, setCount] = useState(initialTotal)
 
-  const hasMore = count > games.length;
-  const GameComponent = isCompactView ? CompactGameItem : GameItem;
+  const hasMore = count > games.length
+  const GameComponent = isCompactView ? CompactGameItem : GameItem
 
   const loadData = (after?: string) => {
-    setIsLoading(true);
+    setIsLoading(true)
 
     api
       .get<{ data: Game[]; count: number }>('/games', {
@@ -66,42 +66,42 @@ export const GamesList = (props: {
         },
       })
       .then((res) => {
-        const newGames = after ? [...games, ...res.data.data] : res.data.data;
-        setGames(newGames);
-        setCount(res.data.count);
-        onChange?.(newGames, res.data.count);
+        const newGames = after ? [...games, ...res.data.data] : res.data.data
+        setGames(newGames)
+        setCount(res.data.count)
+        onChange?.(newGames, res.data.count)
       })
       .catch((e) => {
-        alert('Error while loading games');
+        alert('Error while loading games')
 
-        throw e;
+        throw e
       })
       .finally(() => {
-        setIsLoading(false);
-      });
-  };
+        setIsLoading(false)
+      })
+  }
 
   const loadMore = () => {
-    loadData(last(games)?.id);
-  };
+    loadData(last(games)?.id)
+  }
 
   useEffect(() => {
     const listener = throttle(() => {
-      setShowUp(window.scrollY > window.innerHeight * 2);
-    }, 100);
+      setShowUp(window.scrollY > window.innerHeight * 2)
+    }, 100)
 
-    document.addEventListener('scroll', listener);
+    document.addEventListener('scroll', listener)
 
-    return () => document.removeEventListener('scroll', listener);
-  }, []);
+    return () => document.removeEventListener('scroll', listener)
+  }, [])
 
   useEffect(() => {
     if (isFirstMount && props.initialGames) {
-      return;
+      return
     }
 
-    loadData();
-  }, [race, klass, god, isWin, String(version), runes]);
+    loadData()
+  }, [race, klass, god, isWin, String(version), runes])
 
   return (
     <div className="relative">
@@ -122,7 +122,7 @@ export const GamesList = (props: {
             <li key={game.id}>
               <GameComponent game={game} includePlayer={includePlayer} showSkills={showSkills} />
             </li>
-          );
+          )
         })}
       </ul>
       {(hasMore || isLoading) && (
@@ -138,5 +138,5 @@ export const GamesList = (props: {
         </div>
       )}
     </div>
-  );
-};
+  )
+}

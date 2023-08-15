@@ -1,13 +1,13 @@
-import { useState, useContext, createContext } from 'react';
-import { setCookie, destroyCookie } from 'nookies';
-import { PlayerInfoResponse } from '@types';
-import { trackEvent } from '@utils';
-import { cookiesStore } from './utils';
+import { useState, useContext, createContext } from 'react'
+import { setCookie, destroyCookie } from 'nookies'
+import { PlayerInfoResponse } from '@types'
+import { trackEvent } from '@utils'
+import { cookiesStore } from './utils'
 
-export const PlayerPageContext = createContext({} as ReturnType<typeof useContextStateValue>);
+export const PlayerPageContext = createContext({} as ReturnType<typeof useContextStateValue>)
 
 export function usePlayerPageContext() {
-  return useContext(PlayerPageContext);
+  return useContext(PlayerPageContext)
 }
 
 export const useContextStateValue = (
@@ -17,33 +17,33 @@ export const useContextStateValue = (
   const [cookieState, setCookieState] = useState(() => ({
     ...cookiesStore,
     ...defaultCookiesStore,
-  }));
+  }))
 
   return {
     ...data,
     isOptionEnabled(key: keyof typeof cookiesStore) {
-      return cookieState[key];
+      return cookieState[key]
     },
     toggleOption(key: keyof typeof cookiesStore) {
-      const newState = !cookieState[key];
+      const newState = !cookieState[key]
 
-      trackEvent('key', { state: String(newState) });
+      trackEvent('key', { state: String(newState) })
 
       if (newState) {
-        saveCookie(key);
+        saveCookie(key)
       } else {
-        deleteCookie(key);
+        deleteCookie(key)
       }
 
-      setCookieState((state) => ({ ...state, [key]: newState }));
+      setCookieState((state) => ({ ...state, [key]: newState }))
     },
-  };
-};
+  }
+}
 
 const saveCookie = (key: string) => {
-  setCookie(null, key, '1', { path: '/', maxAge: 31536000 });
-};
+  setCookie(null, key, '1', { path: '/', maxAge: 31536000 })
+}
 
 const deleteCookie = (key: string) => {
-  destroyCookie(null, key, { path: '/' });
-};
+  destroyCookie(null, key, { path: '/' })
+}

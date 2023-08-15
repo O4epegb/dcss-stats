@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import { GetStaticProps } from 'next';
-import { orderBy, last, flatten, first, omit, isError } from 'lodash-es';
-import useSWRInfinite from 'swr/infinite';
-import { api } from '@api';
-import { Game, StaticData } from '@types';
-import { formatNumber } from '@utils';
-import { createServerApi } from '@api/server';
-import { Logo } from '@components/Logo';
-import { Loader } from '@components/ui/Loader';
-import { GameItem } from '@components/GameItem';
-import { Filter, Filters } from '@components/Filters';
-import { HelpBubble } from '@components/ui/Tooltip';
+import { useState } from 'react'
+import { GetStaticProps } from 'next'
+import { orderBy, last, flatten, first, omit, isError } from 'lodash-es'
+import useSWRInfinite from 'swr/infinite'
+import { api } from '@api'
+import { Game, StaticData } from '@types'
+import { formatNumber } from '@utils'
+import { createServerApi } from '@api/server'
+import { Logo } from '@components/Logo'
+import { Loader } from '@components/ui/Loader'
+import { GameItem } from '@components/GameItem'
+import { Filter, Filters } from '@components/Filters'
+import { HelpBubble } from '@components/ui/Tooltip'
 
 // Order by
 // Hotkey for submit
@@ -22,15 +22,15 @@ import { HelpBubble } from '@components/ui/Tooltip';
 // send maximum filters from the backend
 
 const SearchPage = ({ races, classes, gods, skills }: Props) => {
-  const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null);
+  const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null)
 
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex, previousPageData: { data: Game[]; count: number }) => {
       if (!filterForSearch || (previousPageData && previousPageData.data.length === 0)) {
-        return null;
+        return null
       }
 
-      return ['/search', { filter: filterForSearch, after: last(previousPageData?.data)?.id }];
+      return ['/search', { filter: filterForSearch, after: last(previousPageData?.data)?.id }]
     },
     ([url, { filter, after }]) =>
       api
@@ -44,14 +44,14 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
       revalidateOnReconnect: false,
       revalidateFirstPage: false,
     },
-  );
+  )
 
-  const games = data ? flatten(data.map((x) => x.data)) : [];
-  const isLoadingInitialData = !data && !error;
+  const games = data ? flatten(data.map((x) => x.data)) : []
+  const isLoadingInitialData = !data && !error
   const isLoadingMore =
-    isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined');
-  const isEmpty = data?.[0].data?.length === 0;
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10);
+    isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined')
+  const isEmpty = data?.[0].data?.length === 0
+  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10)
 
   return (
     <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pb-4 pt-4">
@@ -86,7 +86,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
                     <li key={game.id}>
                       <GameItem showSkills includePlayer game={game} />
                     </li>
-                  );
+                  )
                 })}
               </ul>
             )}
@@ -118,15 +118,15 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-type Props = Response;
+type Props = Response
 
-type Response = StaticData;
+type Response = StaticData
 
 export const getStaticProps: GetStaticProps<Props> = async () => {
-  const { data } = await createServerApi().api.get<Response>('/combos');
+  const { data } = await createServerApi().api.get<Response>('/combos')
 
   return {
     revalidate: 300,
@@ -137,7 +137,7 @@ export const getStaticProps: GetStaticProps<Props> = async () => {
       skills: data.skills,
       versions: data.versions,
     },
-  };
-};
+  }
+}
 
-export default SearchPage;
+export default SearchPage

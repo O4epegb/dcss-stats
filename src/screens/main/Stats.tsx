@@ -1,23 +1,23 @@
-import { useState, memo, useEffect } from 'react';
-import { map, orderBy } from 'lodash-es';
-import { formatNumber } from '@utils';
-import { Class, God, Race } from '@types';
-import { getFavorites } from '@screens/Player/utils';
-import { HelpBubble } from '@components/ui/Tooltip';
-import { WinrateStats } from '@components/WinrateStats';
-import { Table } from './Table';
-import { List } from './List';
-import { Streams } from './Streams';
-import type { Props } from '.';
+import { useState, memo, useEffect } from 'react'
+import { map, orderBy } from 'lodash-es'
+import { formatNumber } from '@utils'
+import { Class, God, Race } from '@types'
+import { getFavorites } from '@screens/Player/utils'
+import { HelpBubble } from '@components/ui/Tooltip'
+import { WinrateStats } from '@components/WinrateStats'
+import { Table } from './Table'
+import { List } from './List'
+import { Streams } from './Streams'
+import type { Props } from '.'
 
 type NormalizedData = {
-  race: Race | undefined;
-  class: Class | undefined;
-  god: God | undefined;
-  winrate: number;
-  wins: number;
-  total: number;
-}[];
+  race: Race | undefined
+  class: Class | undefined
+  god: God | undefined
+  winrate: number
+  wins: number
+  total: number
+}[]
 
 export const Stats = memo(
   ({
@@ -30,14 +30,14 @@ export const Stats = memo(
     combosData,
     onLinkClick,
   }: Props & { onLinkClick: (name: string) => void }) => {
-    const [favorites, setFavorites] = useState<null | string[]>(null);
+    const [favorites, setFavorites] = useState<null | string[]>(null)
 
     useEffect(() => {
-      setFavorites(getFavorites().split(',').filter(Boolean));
-    }, []);
+      setFavorites(getFavorites().split(',').filter(Boolean))
+    }, [])
 
     const data: NormalizedData = map(combosData.combos, (value, key) => {
-      const [raceAbbr, classAbbr, godName] = key.split(',');
+      const [raceAbbr, classAbbr, godName] = key.split(',')
 
       return {
         ...value,
@@ -45,8 +45,8 @@ export const Stats = memo(
         class: classes.find((x) => x.abbr === classAbbr),
         god: gods.find((x) => x.name === godName),
         winrate: (value.wins / value.total) * 100,
-      };
-    });
+      }
+    })
 
     return (
       <div className="flex flex-col gap-x-10 gap-y-4">
@@ -159,18 +159,18 @@ export const Stats = memo(
           onLinkClick={onLinkClick}
         />
       </div>
-    );
+    )
   },
-);
+)
 
 const PopularList = ({
   title,
   data,
   tooltip,
 }: {
-  title: string;
-  data: NormalizedData;
-  tooltip?: string;
+  title: string
+  data: NormalizedData
+  tooltip?: string
 }) => {
   return (
     <div>
@@ -190,5 +190,5 @@ const PopularList = ({
         ))}
       </div>
     </div>
-  );
-};
+  )
+}

@@ -1,26 +1,26 @@
-import { ReactNode, FC } from 'react';
-import { filter } from 'lodash-es';
-import { Game } from '@types';
-import { pluralize, formatDuration, roundAndFormat, formatNumber } from '@utils';
-import { Tooltip } from '@components/ui/Tooltip';
-import { GameItem } from '@components/GameItem';
-import { GameTooltip } from '@components/GameTooltip';
-import { Date } from '@components/ui/Date';
-import { usePlayerPageContext } from './context';
-import { Summary } from './utils';
+import { ReactNode, FC } from 'react'
+import { filter } from 'lodash-es'
+import { Game } from '@types'
+import { pluralize, formatDuration, roundAndFormat, formatNumber } from '@utils'
+import { Tooltip } from '@components/ui/Tooltip'
+import { GameItem } from '@components/GameItem'
+import { GameTooltip } from '@components/GameTooltip'
+import { Date } from '@components/ui/Date'
+import { usePlayerPageContext } from './context'
+import { Summary } from './utils'
 
 export const Stats = ({ summary }: { summary: Summary }) => {
   const { firstGame, firstWin, gamesBeforeFirstWin, lowestXlWin, stats, player } =
-    usePlayerPageContext();
+    usePlayerPageContext()
   const {
     combosCompleted,
     totalCombos,
     stats: { combos, races, classes },
-  } = summary;
+  } = summary
 
-  const oneAndWons = filter(combos, (value) => value.gamesToFirstWin === 1).length;
-  const oneAndWonsRace = filter(races, (value) => value.gamesToFirstWin === 1).length;
-  const oneAndWonsClass = filter(classes, (value) => value.gamesToFirstWin === 1).length;
+  const oneAndWons = filter(combos, (value) => value.gamesToFirstWin === 1).length
+  const oneAndWonsRace = filter(races, (value) => value.gamesToFirstWin === 1).length
+  const oneAndWonsClass = filter(classes, (value) => value.gamesToFirstWin === 1).length
 
   return (
     <section className="space-y-2 text-xs">
@@ -144,8 +144,8 @@ export const Stats = ({ summary }: { summary: Summary }) => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
 export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] }) => (
   <ul className="flex flex-col items-start">
@@ -154,7 +154,7 @@ export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] })
         <li key={index}>
           <span className="font-semibold">{title}:</span> {text}
         </li>
-      );
+      )
 
       return tooltip ? (
         <Tooltip key={index} content={tooltip}>
@@ -162,15 +162,15 @@ export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] })
         </Tooltip>
       ) : (
         content
-      );
+      )
     })}
   </ul>
-);
+)
 
 const StatsGameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
   return (
     <Tooltip interactive content={<GameItem shadow game={game} />}>
       <span>{children}</span>
     </Tooltip>
-  );
-};
+  )
+}

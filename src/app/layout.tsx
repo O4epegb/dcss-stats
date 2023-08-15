@@ -1,10 +1,10 @@
-import '@styles/globals.css';
-import Script from 'next/script';
-import { Analytics } from '@vercel/analytics/react';
-import { Providers } from './providers';
+import '@styles/globals.css'
+import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/react'
+import { Providers } from './providers'
 
-const title = 'DCSS Stats';
-const description = 'Player and game statistics for Dungeon Crawl Stone Soup Online';
+const title = 'DCSS Stats'
+const description = 'Player and game statistics for Dungeon Crawl Stone Soup Online'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -37,5 +37,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
       </body>
     </html>
-  );
+  )
 }

@@ -1,15 +1,15 @@
-import { useRouter } from 'next/navigation';
-import { useState, useCallback } from 'react';
-import clsx from 'clsx';
-import { useCombobox } from 'downshift';
-import { escapeRegExp, orderBy, startsWith } from 'lodash-es';
-import useSWRImmutable from 'swr/immutable';
-import { api } from '@api';
-import { Player } from '@types';
-import { Loader } from '@components/ui/Loader';
-import { useDebouncedEffect } from '@react-hookz/web';
+import { useRouter } from 'next/navigation'
+import { useState, useCallback } from 'react'
+import clsx from 'clsx'
+import { useCombobox } from 'downshift'
+import { escapeRegExp, orderBy, startsWith } from 'lodash-es'
+import useSWRImmutable from 'swr/immutable'
+import { api } from '@api'
+import { Player } from '@types'
+import { Loader } from '@components/ui/Loader'
+import { useDebouncedEffect } from '@react-hookz/web'
 
-type SearchItem = Player;
+type SearchItem = Player
 
 export const Search = ({
   nickname,
@@ -18,16 +18,16 @@ export const Search = ({
   query,
   setQuery,
 }: {
-  nickname: string;
-  isNavigating: boolean;
-  setIsNavigating: (state: boolean) => void;
-  query: string;
-  setQuery: (state: string) => void;
+  nickname: string
+  isNavigating: boolean
+  setIsNavigating: (state: boolean) => void
+  query: string
+  setQuery: (state: string) => void
 }) => {
-  const router = useRouter();
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const router = useRouter()
+  const [debouncedQuery, setDebouncedQuery] = useState('')
 
-  useDebouncedEffect(() => setDebouncedQuery(query), [query], 400);
+  useDebouncedEffect(() => setDebouncedQuery(query), [query], 400)
 
   const { data, isLoading } = useSWRImmutable(
     ['/players', debouncedQuery],
@@ -35,19 +35,19 @@ export const Search = ({
       return !query
         ? []
         : api.get<{ data: Array<SearchItem> }>(url, { params: { query } }).then((res) => {
-            const target = query.toLowerCase();
-            return orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc');
-          });
+            const target = query.toLowerCase()
+            return orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc')
+          })
     },
     { keepPreviousData: true },
-  );
-  const showLoader = !data && isLoading;
-  const items = data ?? [];
+  )
+  const showLoader = !data && isLoading
+  const items = data ?? []
 
   const goToPlayerPage = useCallback((slug: string) => {
-    setIsNavigating(true);
-    router.push(`/players/${slug}`);
-  }, []);
+    setIsNavigating(true)
+    router.push(`/players/${slug}`)
+  }, [])
 
   const { isOpen, highlightedIndex, getInputProps, getMenuProps, getItemProps } = useCombobox({
     id: 'MainSearch',
@@ -55,11 +55,11 @@ export const Search = ({
     inputValue: query,
     onSelectedItemChange: (e) => {
       if (e.selectedItem) {
-        setQuery(e.selectedItem.name);
-        goToPlayerPage(e.selectedItem.name);
+        setQuery(e.selectedItem.name)
+        goToPlayerPage(e.selectedItem.name)
       }
     },
-  });
+  })
 
   return (
     <div className="relative">
@@ -76,16 +76,16 @@ export const Search = ({
         {...getInputProps({
           disabled: isNavigating,
           onFocus(e) {
-            e.target.select();
+            e.target.select()
           },
           onKeyDown: (e) => {
             if (e.key === 'Enter' && highlightedIndex === -1 && query) {
-              (e.nativeEvent as any).preventDownshiftDefault = true;
-              goToPlayerPage(query);
+              ;(e.nativeEvent as any).preventDownshiftDefault = true
+              goToPlayerPage(query)
             }
           },
           onChange: (e) => {
-            setQuery(e.currentTarget.value.trim());
+            setQuery(e.currentTarget.value.trim())
           },
         })}
       />
@@ -109,7 +109,7 @@ export const Search = ({
                     </li>
                   )}
                   {items.map((item, index) => {
-                    const active = items[highlightedIndex] === item;
+                    const active = items[highlightedIndex] === item
 
                     return (
                       <li
@@ -122,7 +122,7 @@ export const Search = ({
                       >
                         <Highlighted text={item.name} query={debouncedQuery} />
                       </li>
-                    );
+                    )
                   })}
                 </>
               )}
@@ -131,18 +131,18 @@ export const Search = ({
         </ul>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export const Highlighted = ({ text, query }: { text: string; query: string }) => {
-  const trimmedQuery = query.trim();
+  const trimmedQuery = query.trim()
 
   if (!trimmedQuery) {
-    return <span>{text}</span>;
+    return <span>{text}</span>
   }
 
-  const regex = new RegExp(`(${escapeRegExp(trimmedQuery)})`, 'gi');
-  const parts = text.split(regex);
+  const regex = new RegExp(`(${escapeRegExp(trimmedQuery)})`, 'gi')
+  const parts = text.split(regex)
 
   return (
     <span>
@@ -150,5 +150,5 @@ export const Highlighted = ({ text, query }: { text: string; query: string }) =>
         .filter(Boolean)
         .map((part, i) => (regex.test(part) ? <b key={i}>{part}</b> : <span key={i}>{part}</span>))}
     </span>
-  );
-};
+  )
+}

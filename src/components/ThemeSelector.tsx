@@ -1,19 +1,19 @@
-'use client';
+'use client'
 
-import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
-import { Tooltip } from '@components/ui/Tooltip';
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { Tooltip } from '@components/ui/Tooltip'
 
 export const ThemeSelector = () => {
-  const [mounted, setMounted] = useState(false);
-  const { theme, resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false)
+  const { theme, resolvedTheme, setTheme } = useTheme()
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    setMounted(true)
+  }, [])
 
   if (!mounted) {
-    return null;
+    return null
   }
 
   return (
@@ -47,5 +47,5 @@ export const ThemeSelector = () => {
         </svg>
       </button>
     </Tooltip>
-  );
-};
+  )
+}

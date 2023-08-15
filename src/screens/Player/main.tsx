@@ -1,31 +1,28 @@
-import clsx from 'clsx';
-import { useMemo, useState, useEffect } from 'react';
-import { pluralize, formatNumber, trackEvent } from '@utils';
-import { Logo } from '@components/Logo';
-import { WinrateStats } from '@components/WinrateStats';
-import { Tooltip } from '@components/ui/Tooltip';
-import { ThemeSelector } from '@components/ThemeSelector';
-import { Matrix } from './Matrix';
-import { Games } from './Games';
-import { Stats } from './Stats';
-import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils';
-import { Streaks } from './Streaks';
-import { usePlayerPageContext } from './context';
-import { Titles } from './Titles';
+import clsx from 'clsx'
+import { useMemo, useState, useEffect } from 'react'
+import { pluralize, formatNumber, trackEvent } from '@utils'
+import { Logo } from '@components/Logo'
+import { WinrateStats } from '@components/WinrateStats'
+import { Tooltip } from '@components/ui/Tooltip'
+import { ThemeSelector } from '@components/ThemeSelector'
+import { Matrix } from './Matrix'
+import { Games } from './Games'
+import { Stats } from './Stats'
+import { addToFavorite, getFavorites, getSummary, removeFromFavorite } from './utils'
+import { Streaks } from './Streaks'
+import { usePlayerPageContext } from './context'
+import { Titles } from './Titles'
 
 export const Player = () => {
   const { player, races, classes, matrix, gods, stats, gamesToFirstWin, tiamat } =
-    usePlayerPageContext();
-  const [isFavorite, setIsFavorite] = useState(false);
+    usePlayerPageContext()
+  const [isFavorite, setIsFavorite] = useState(false)
 
   useEffect(() => {
-    setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1);
-  }, []);
+    setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1)
+  }, [])
 
-  const summary = useMemo(
-    () => getSummary(matrix, races, classes, gods, gamesToFirstWin),
-    [matrix],
-  );
+  const summary = useMemo(() => getSummary(matrix, races, classes, gods, gamesToFirstWin), [matrix])
   const {
     trunkClasses,
     trunkRaces,
@@ -37,13 +34,13 @@ export const Player = () => {
     notWonRaces,
     allActualClasses,
     allActualRaces,
-  } = summary;
+  } = summary
 
-  const isGreat = wonRaces.length === trunkRaces.length;
-  const isGrand = wonClasses.length === trunkClasses.length;
-  const isGreater = isGreat && isGrand;
-  const isPolytheist = wonGods.length === gods.length;
-  const isTiamat = tiamat.unwon.length === 0;
+  const isGreat = wonRaces.length === trunkRaces.length
+  const isGrand = wonClasses.length === trunkClasses.length
+  const isGreater = isGreat && isGrand
+  const isPolytheist = wonGods.length === gods.length
+  const isTiamat = tiamat.unwon.length === 0
 
   return (
     <div className="container mx-auto grid gap-4 px-4 xl:grid-cols-3">
@@ -62,19 +59,19 @@ export const Player = () => {
                   isFavorite ? 'text-amber-400' : 'text-gray-300',
                 )}
                 onClick={() => {
-                  const newIsFavorite = !isFavorite;
+                  const newIsFavorite = !isFavorite
 
                   if (newIsFavorite) {
-                    addToFavorite(player.name);
+                    addToFavorite(player.name)
                   } else {
-                    removeFromFavorite(player.name);
+                    removeFromFavorite(player.name)
                   }
 
                   trackEvent(newIsFavorite ? 'Add favorite' : 'Remove favorite', {
                     name: player.name,
-                  });
+                  })
 
-                  setIsFavorite(newIsFavorite);
+                  setIsFavorite(newIsFavorite)
                 }}
               >
                 <svg
@@ -196,8 +193,8 @@ export const Player = () => {
         <Matrix summary={summary} />
       </div>
     </div>
-  );
-};
+  )
+}
 
 const Badge = ({
   completed,
@@ -205,10 +202,10 @@ const Badge = ({
   leftToWinWith,
   title,
 }: {
-  completed: number;
-  total: number;
-  leftToWinWith?: Array<{ name: string }>;
-  title: string;
+  completed: number
+  total: number
+  leftToWinWith?: Array<{ name: string }>
+  title: string
 }) => {
   return (
     <Tooltip
@@ -239,5 +236,5 @@ const Badge = ({
         </span>
       </div>
     </Tooltip>
-  );
-};
+  )
+}

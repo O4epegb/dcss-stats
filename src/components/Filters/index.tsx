@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import clsx from 'clsx';
-import { castArray, last, first, omit } from 'lodash-es';
-import { useRouter } from 'next/router';
-import { StaticData } from '@types';
-import { notEmpty } from '@utils';
-import { useUpdateEffect } from '@react-hookz/web';
-import { HelpBubble, Tooltip } from '@components/ui/Tooltip';
+import { useState, useEffect } from 'react'
+import clsx from 'clsx'
+import { castArray, last, first, omit } from 'lodash-es'
+import { useRouter } from 'next/router'
+import { StaticData } from '@types'
+import { notEmpty } from '@utils'
+import { useUpdateEffect } from '@react-hookz/web'
+import { HelpBubble, Tooltip } from '@components/ui/Tooltip'
 import {
   DndContext,
   closestCenter,
@@ -13,47 +13,47 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from '@dnd-kit/core'
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
   sortableKeyboardCoordinates,
-} from '@dnd-kit/sortable';
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { Select } from '../ui/Select';
-import { SortableItem } from './SortableItem';
+} from '@dnd-kit/sortable'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { Select } from '../ui/Select'
+import { SortableItem } from './SortableItem'
 
 export type Filter = {
-  id: string;
-  option: string;
-  suboption: string | undefined;
-  condition: string;
-  value: string | undefined;
-  operator: string;
-};
+  id: string
+  option: string
+  suboption: string | undefined
+  condition: string
+  value: string | undefined
+  operator: string
+}
 
-const operators = ['and', 'or'] as [string, string];
-const conditions = ['is', 'is not'];
+const operators = ['and', 'or'] as [string, string]
+const conditions = ['is', 'is not']
 
-type FilterName = ReturnType<typeof getOptionsList>[number]['name'];
+type FilterName = ReturnType<typeof getOptionsList>[number]['name']
 
-type Data = Partial<Pick<StaticData, 'classes' | 'gods' | 'races' | 'skills'>>;
+type Data = Partial<Pick<StaticData, 'classes' | 'gods' | 'races' | 'skills'>>
 
 export const filtersToQuery = (filters: Filter[]) => {
   return filters.map(({ option, suboption, condition, value, operator }, index) => {
     return [option, suboption, condition, value, index === filters.length - 1 ? null : operator]
       .filter(notEmpty)
-      .join('_');
-  });
-};
+      .join('_')
+  })
+}
 
 type Props = {
-  excludeFilters?: FilterName[];
-  onInit: (filters: Filter[]) => void;
-  onFiltersChange?: (filters: Filter[]) => void;
-  onSubmit?: (filters: Filter[]) => void;
-} & Data;
+  excludeFilters?: FilterName[]
+  onInit: (filters: Filter[]) => void
+  onFiltersChange?: (filters: Filter[]) => void
+  onSubmit?: (filters: Filter[]) => void
+} & Data
 
 const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Data) => {
   return [
@@ -106,8 +106,8 @@ const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Da
       conditions: ['>', '<', '=', '>=', '<='] as string[],
       placeholder: 'Enter value',
     },
-  ] as const;
-};
+  ] as const
+}
 
 export const Filters = ({
   races = [],
@@ -119,20 +119,20 @@ export const Filters = ({
   onSubmit,
   onFiltersChange,
 }: Props) => {
-  const router = useRouter();
+  const router = useRouter()
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
-  );
-  const [isDragging, setIsDragging] = useState(false);
+  )
+  const [isDragging, setIsDragging] = useState(false)
 
   const options = getOptionsList({ races, classes, gods, skills }).filter(
     (x) => !excludeFilters.includes(x.name) && (x.type !== 'select' || x.values.length > 0),
-  );
+  )
 
-  const [filters, setFilters] = useState<Filter[]>(() => []);
+  const [filters, setFilters] = useState<Filter[]>(() => [])
 
   const getDefaultFilters = () =>
     options.map(({ name, conditions, suboptions }) => {
@@ -143,36 +143,36 @@ export const Filters = ({
         condition: conditions[0],
         operator: operators[0],
         value: '',
-      };
-    });
+      }
+    })
 
   useEffect(() => {
     if (!router.isReady) {
-      return;
+      return
     }
 
-    const queryFilters = castArray(router.query.filter).filter(notEmpty);
+    const queryFilters = castArray(router.query.filter).filter(notEmpty)
 
     let potentialFilters: Filter[] = queryFilters
       .map((item) => {
-        const parts = item.split('_');
-        let [option, condition, value, operator, suboption] = parts;
+        const parts = item.split('_')
+        let [option, condition, value, operator, suboption] = parts
 
         if (['Skill', 'Stat'].includes(parts[0])) {
-          [option, suboption, condition, value, operator] = parts;
+          ;[option, suboption, condition, value, operator] = parts
         }
 
-        const optionItem = options.find((x) => x.name === option);
+        const optionItem = options.find((x) => x.name === option)
 
         const isValid =
           optionItem &&
           (optionItem.type !== 'select' || optionItem.values.find((x) => x.name === value)) &&
           optionItem.conditions.includes(condition) &&
           (!operator || operators.includes(operator)) &&
-          (!suboption || optionItem.suboptions.some((x) => x === suboption));
+          (!suboption || optionItem.suboptions.some((x) => x === suboption))
 
         if (!isValid) {
-          return;
+          return
         }
 
         return {
@@ -182,13 +182,13 @@ export const Filters = ({
           condition,
           value,
           operator: operator ?? operators[0],
-        };
+        }
       })
-      .filter(notEmpty);
+      .filter(notEmpty)
 
     if (potentialFilters.length > 1) {
-      const lastOne = potentialFilters[potentialFilters.length - 1];
-      lastOne.operator = potentialFilters[potentialFilters.length - 2].operator;
+      const lastOne = potentialFilters[potentialFilters.length - 1]
+      lastOne.operator = potentialFilters[potentialFilters.length - 2].operator
     }
 
     if (potentialFilters.length !== queryFilters.length) {
@@ -198,42 +198,42 @@ export const Filters = ({
         },
         undefined,
         { shallow: true },
-      );
+      )
     } else if (queryFilters.length === 0) {
-      potentialFilters = getDefaultFilters();
+      potentialFilters = getDefaultFilters()
     }
 
-    const nonEmptyFilters = potentialFilters.filter((x) => x.value && x.condition);
+    const nonEmptyFilters = potentialFilters.filter((x) => x.value && x.condition)
 
-    onInit(nonEmptyFilters);
-    setFilters(potentialFilters);
-  }, [router.isReady]);
+    onInit(nonEmptyFilters)
+    setFilters(potentialFilters)
+  }, [router.isReady])
 
   useUpdateEffect(() => {
-    const nonEmptyFilters = filters.filter((x) => x.value && x.condition);
-    onFiltersChange?.(nonEmptyFilters);
-  }, [filters]);
+    const nonEmptyFilters = filters.filter((x) => x.value && x.condition)
+    onFiltersChange?.(nonEmptyFilters)
+  }, [filters])
 
   const filterGroups = filters
     .reduce(
       (acc, item, index) => {
-        const prev = filters[index - 1];
-        const next = filters[index + 1];
-        last(acc)?.push(item);
+        const prev = filters[index - 1]
+        const next = filters[index + 1]
+        last(acc)?.push(item)
 
         if (
           next &&
           item.operator === 'and' &&
           (prev?.operator === 'or' || next?.operator === 'or')
         ) {
-          acc.push([]);
+          acc.push([])
         }
 
-        return acc;
+        return acc
       },
       [[]] as Array<Filter[]>,
     )
-    .filter((x) => x.length > 0);
+    .filter((x) => x.length > 0)
 
   return (
     <div className="space-y-2">
@@ -263,17 +263,17 @@ export const Filters = ({
           collisionDetection={closestCenter}
           onDragStart={() => setIsDragging(true)}
           onDragEnd={(event) => {
-            const { active, over } = event;
+            const { active, over } = event
 
-            setIsDragging(false);
+            setIsDragging(false)
 
             if (over && active.id !== over.id) {
               setFilters((items) => {
-                const oldIndex = items.findIndex((x) => x.id === active.id);
-                const newIndex = items.findIndex((x) => x.id === over.id);
+                const oldIndex = items.findIndex((x) => x.id === active.id)
+                const newIndex = items.findIndex((x) => x.id === over.id)
 
-                return arrayMove(items, oldIndex, newIndex);
-              });
+                return arrayMove(items, oldIndex, newIndex)
+              })
             }
           }}
         >
@@ -281,31 +281,31 @@ export const Filters = ({
             {filterGroups.length > 0 && (
               <div className="-m-1.5">
                 {filterGroups.map((group, groupIndex) => {
-                  const firstItem = first(group);
-                  const firstItemIndex = filters.findIndex((x) => x === firstItem);
-                  const isSingleFilter = filters.length === 1;
+                  const firstItem = first(group)
+                  const firstItemIndex = filters.findIndex((x) => x === firstItem)
+                  const isSingleFilter = filters.length === 1
 
                   const groupColors = [
                     'bg-amber-50 dark:bg-amber-700',
                     'bg-teal-50 dark:bg-teal-700',
                     'bg-purple-50 dark:bg-purple-700',
-                  ];
+                  ]
 
                   const color =
                     !isSingleFilter && firstItem && firstItem.operator === 'or'
                       ? groupColors[firstItemIndex % groupColors.length]
-                      : null;
+                      : null
 
                   return (
                     <div key={groupIndex} className={clsx('space-y-3 p-1.5', color)}>
                       {group.map((filter) => {
-                        const option = options.find((x) => x.name === filter.option);
+                        const option = options.find((x) => x.name === filter.option)
 
                         if (!option) {
-                          return null;
+                          return null
                         }
 
-                        const operatorDisabled = filter === last(filters);
+                        const operatorDisabled = filter === last(filters)
 
                         return (
                           <SortableItem
@@ -326,9 +326,9 @@ export const Filters = ({
                                           suboption: options.find((x) => x.name === e.target.value)
                                             ?.suboptions[0],
                                           value: undefined,
-                                        };
+                                        }
                                   }),
-                                );
+                                )
                               }}
                             >
                               {options.map(({ name }) => (
@@ -346,9 +346,9 @@ export const Filters = ({
                                     state.map((x) => {
                                       return x !== filter
                                         ? x
-                                        : { ...filter, suboption: e.target.value };
+                                        : { ...filter, suboption: e.target.value }
                                     }),
-                                  );
+                                  )
                                 }}
                               >
                                 {option.suboptions.map((name) => (
@@ -366,9 +366,9 @@ export const Filters = ({
                                   state.map((x) => {
                                     return x !== filter
                                       ? x
-                                      : { ...filter, condition: e.target.value };
+                                      : { ...filter, condition: e.target.value }
                                   }),
-                                );
+                                )
                               }}
                             >
                               {option.conditions.map((item) => (
@@ -386,11 +386,9 @@ export const Filters = ({
                                 onChange={(e) => {
                                   setFilters((state) =>
                                     state.map((x) => {
-                                      return x !== filter
-                                        ? x
-                                        : { ...filter, value: e.target.value };
+                                      return x !== filter ? x : { ...filter, value: e.target.value }
                                     }),
-                                  );
+                                  )
                                 }}
                               >
                                 <option value="">any</option>
@@ -413,9 +411,9 @@ export const Filters = ({
                                       state.map((x) => {
                                         return x !== filter
                                           ? x
-                                          : { ...filter, value: e.target.value };
+                                          : { ...filter, value: e.target.value }
                                       }),
-                                    );
+                                    )
                                   }}
                                 />
                               </div>
@@ -431,17 +429,17 @@ export const Filters = ({
                               value={filter.operator}
                               onChange={(e) => {
                                 setFilters((state) => {
-                                  const filterIndex = state.findIndex((x) => x === filter);
-                                  const shouldUpdateLastFilter = filterIndex === state.length - 2;
-                                  const lastFilter = last(state);
+                                  const filterIndex = state.findIndex((x) => x === filter)
+                                  const shouldUpdateLastFilter = filterIndex === state.length - 2
+                                  const lastFilter = last(state)
 
                                   return state.map((x) => {
                                     return x === filter ||
                                       (shouldUpdateLastFilter && x === lastFilter)
                                       ? { ...x, operator: e.target.value }
-                                      : x;
-                                  });
-                                });
+                                      : x
+                                  })
+                                })
                               }}
                             >
                               {operators.map((item) => (
@@ -455,7 +453,7 @@ export const Filters = ({
                               <button
                                 className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded bg-gray-200 text-xs text-red-900"
                                 onClick={() => {
-                                  setFilters((state) => state.filter((x) => x !== filter));
+                                  setFilters((state) => state.filter((x) => x !== filter))
                                 }}
                               >
                                 <svg
@@ -473,10 +471,10 @@ export const Filters = ({
                               </button>
                             </Tooltip>
                           </SortableItem>
-                        );
+                        )
                       })}
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -491,16 +489,16 @@ export const Filters = ({
                 disabled={filters.length >= 10}
                 onClick={() => {
                   setFilters((state) => {
-                    const lastFilter = last(state);
-                    const lastOperator = lastFilter?.operator;
+                    const lastFilter = last(state)
+                    const lastOperator = lastFilter?.operator
                     const option =
                       (lastOperator === 'and' &&
                         options.find((x) => !filters.find((f) => f.option === x.name))) ||
                       options.find((x) => x.name === lastFilter?.option) ||
-                      first(options);
+                      first(options)
 
                     if (!option) {
-                      return state;
+                      return state
                     }
 
                     return [
@@ -513,8 +511,8 @@ export const Filters = ({
                         value: '',
                         operator: lastOperator ?? operators[0],
                       },
-                    ];
-                  });
+                    ]
+                  })
                 }}
               >
                 + Add filter
@@ -526,9 +524,9 @@ export const Filters = ({
             <button
               className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
               onClick={() => {
-                const nonEmptyFilters = filters.filter((x) => x.value);
+                const nonEmptyFilters = filters.filter((x) => x.value)
 
-                onSubmit(nonEmptyFilters);
+                onSubmit(nonEmptyFilters)
 
                 router.replace(
                   { query: { ...router.query, filter: filtersToQuery(nonEmptyFilters) } },
@@ -536,7 +534,7 @@ export const Filters = ({
                   {
                     shallow: true,
                   },
-                );
+                )
               }}
             >
               This is how I like it!
@@ -545,5 +543,5 @@ export const Filters = ({
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

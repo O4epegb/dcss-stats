@@ -1,26 +1,26 @@
-import clsx from 'clsx';
-import { first, without } from 'lodash-es';
-import { forwardRef, memo } from 'react';
-import { pluralize, date, formatNumber } from '@utils';
-import { Game } from '@types';
+import clsx from 'clsx'
+import { first, without } from 'lodash-es'
+import { forwardRef, memo } from 'react'
+import { pluralize, date, formatNumber } from '@utils'
+import { Game } from '@types'
 
 type Props = {
-  game: Game;
-  includePlayer?: boolean;
-  shadow?: boolean;
-  showSkills?: boolean;
-};
+  game: Game
+  includePlayer?: boolean
+  shadow?: boolean
+  showSkills?: boolean
+}
 
 export const GameItem = memo(
   forwardRef<HTMLDivElement, Props>(({ game, includePlayer, shadow, showSkills }, ref) => {
-    const duration = date.duration(game.duration, 'seconds');
+    const duration = date.duration(game.duration, 'seconds')
 
     const skills = showSkills
       ? without(game.fifteenskills, ...game.maxskills)
           .map((name) => ({ name, isMax: false }))
           .concat(game.maxskills.map((name) => ({ name, isMax: true })))
           .sort((a, b) => a.name.localeCompare(b.name))
-      : [];
+      : []
 
     return (
       <div
@@ -112,12 +112,12 @@ export const GameItem = memo(
           <TimeAndVersion game={game} />
         </div>
       </div>
-    );
+    )
   }),
-);
+)
 
 export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
-  const duration = date.duration(game.duration, 'seconds');
+  const duration = date.duration(game.duration, 'seconds')
 
   return (
     <div ref={ref} className="flex-1 py-0.5">
@@ -153,17 +153,17 @@ export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref)
         <TimeAndVersion compact game={game} />
       </div>
     </div>
-  );
-});
+  )
+})
 
-const format = 'DD MMM YYYY [at] HH:mm:ss';
+const format = 'DD MMM YYYY [at] HH:mm:ss'
 const TimeAndVersion = ({ compact, game }: { compact?: boolean; game: Game }) => {
   if (!game.server) {
-    return null;
+    return null
   }
 
-  const start = date(game.startAt).format(format);
-  const end = date(game.endAt).format(format);
+  const start = date(game.startAt).format(format)
+  const end = date(game.endAt).format(format)
 
   return (
     <>
@@ -172,12 +172,12 @@ const TimeAndVersion = ({ compact, game }: { compact?: boolean; game: Game }) =>
       </div>
       <div>v{game.version}</div>
     </>
-  );
-};
+  )
+}
 
 const ServerLink = ({ game }: { game: Game }) => {
   if (!game.server) {
-    return null;
+    return null
   }
 
   return (
@@ -190,12 +190,12 @@ const ServerLink = ({ game }: { game: Game }) => {
     >
       {game.server.abbreviation}
     </a>
-  );
-};
+  )
+}
 
 const MorgueLink = ({ game }: { game: Game }) => {
   if (!game.server) {
-    return null;
+    return null
   }
 
   return (
@@ -216,18 +216,18 @@ const MorgueLink = ({ game }: { game: Game }) => {
         <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
       </svg>
     </a>
-  );
-};
+  )
+}
 
 export const getMorgueUrl = (morgueUrl: string, game: Game) => {
   return `${morgueUrl}/${game.name}/morgue-${game.name}-${date(game.endAt)
     .utc()
-    .format('YYYYMMDD-HHmmss')}.txt`;
-};
+    .format('YYYYMMDD-HHmmss')}.txt`
+}
 
-const breakpoints = [30, 50, 75, 100, 120, 160];
-const ranks = ['an Initiate', 'a Follower', 'a Believer', 'a Priest', 'an Elder', 'a High Priest'];
-const xomBreakpoints = [20, 50, 80, 120, 150, 180];
+const breakpoints = [30, 50, 75, 100, 120, 160]
+const ranks = ['an Initiate', 'a Follower', 'a Believer', 'a Priest', 'an Elder', 'a High Priest']
+const xomBreakpoints = [20, 50, 80, 120, 150, 180]
 const xomRanks = [
   'a very special plaything',
   'a special plaything',
@@ -235,19 +235,19 @@ const xomRanks = [
   'a toy',
   'a favourite toy',
   'a beloved toy',
-];
+]
 
 const getPietyLevel = (piety: number | null, god?: string) => {
   if (god === 'Gozag') {
-    return 'a Client';
+    return 'a Client'
   }
 
   if (god === 'Xom') {
-    return getPietyLevelGeneric(piety, xomRanks, xomBreakpoints, 'a teddy bear');
+    return getPietyLevelGeneric(piety, xomRanks, xomBreakpoints, 'a teddy bear')
   }
 
-  return getPietyLevelGeneric(piety, ranks, breakpoints, 'the Champion');
-};
+  return getPietyLevelGeneric(piety, ranks, breakpoints, 'the Champion')
+}
 
 const getPietyLevelGeneric = (
   piety: number | null,
@@ -256,14 +256,14 @@ const getPietyLevelGeneric = (
   lastRank: string,
 ) => {
   if (!piety) {
-    return first(ranks);
+    return first(ranks)
   }
 
   for (let i = 0; i < breakpoints.length; i++) {
     if (piety < breakpoints[i]) {
-      return ranks[i];
+      return ranks[i]
     }
   }
 
-  return lastRank;
-};
+  return lastRank
+}

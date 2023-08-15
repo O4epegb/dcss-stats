@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import clsx from 'clsx';
-import dayjs from 'dayjs';
-import { formatDuration, formatNumber } from '@utils';
-import { Game } from '@types';
-import { getMorgueUrl } from '@components/GameItem';
+import Link from 'next/link'
+import clsx from 'clsx'
+import dayjs from 'dayjs'
+import { formatDuration, formatNumber } from '@utils'
+import { Game } from '@types'
+import { getMorgueUrl } from '@components/GameItem'
 
 export const Table = ({
   games,
@@ -11,10 +11,10 @@ export const Table = ({
   highlight,
   onLinkClick,
 }: {
-  games: Game[];
-  title: string;
-  highlight: (typeof tableData)[number]['title'];
-  onLinkClick: (name: string) => void;
+  games: Game[]
+  title: string
+  highlight: (typeof tableData)[number]['title']
+  onLinkClick: (name: string) => void
 }) => {
   const tableData = [
     {
@@ -27,7 +27,7 @@ export const Table = ({
           className="relative hover:underline"
           onClick={(e) => {
             if (!e.metaKey && !e.ctrlKey) {
-              onLinkClick(game.name);
+              onLinkClick(game.name)
             }
           }}
         >
@@ -80,7 +80,7 @@ export const Table = ({
       type: 'string',
       getter: (game: Game) => game.version,
     },
-  ] as const;
+  ] as const
 
   return (
     <div className="overflow-x-auto">
@@ -148,5 +148,5 @@ export const Table = ({
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}

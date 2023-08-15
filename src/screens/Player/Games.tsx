@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
-import clsx from 'clsx';
-import { range, orderBy, some } from 'lodash-es';
-import { Class, Race } from '@types';
-import { Tooltip } from '@components/ui/Tooltip';
-import { Select } from '@components/ui/Select';
-import { GamesList } from '../../components/GamesList';
-import { usePlayerPageContext } from './context';
+import { useMemo, useState } from 'react'
+import clsx from 'clsx'
+import { range, orderBy, some } from 'lodash-es'
+import { Class, Race } from '@types'
+import { Tooltip } from '@components/ui/Tooltip'
+import { Select } from '@components/ui/Select'
+import { GamesList } from '../../components/GamesList'
+import { usePlayerPageContext } from './context'
 
 enum Filter {
   All = 'all',
@@ -23,31 +23,31 @@ const runeOptions = [
     value: range(1, 15),
   },
   ...range(0, 15).map((value) => ({ value: [value], name: String(value) })),
-];
+]
 
 export const Games = ({
   allActualRaces,
   allActualClasses,
 }: {
-  allActualRaces: Race[];
-  allActualClasses: Class[];
+  allActualRaces: Race[]
+  allActualClasses: Class[]
 }) => {
-  const { lastGames, stats, player, gods, toggleOption, isOptionEnabled } = usePlayerPageContext();
-  const [data, setData] = useState(() => ({ games: lastGames, total: stats.total.games }));
-  const sortedGods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), [gods]);
+  const { lastGames, stats, player, gods, toggleOption, isOptionEnabled } = usePlayerPageContext()
+  const [data, setData] = useState(() => ({ games: lastGames, total: stats.total.games }))
+  const sortedGods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), [gods])
   const [filter, setFilter] = useState(() => ({
     isWin: Filter.All,
     race: Filter.All,
     class: Filter.All,
     god: Filter.All,
     runes: Filter.All,
-  }));
+  }))
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
-    setFilter((current) => ({ ...current, [key]: value }));
-  };
+    setFilter((current) => ({ ...current, [key]: value }))
+  }
 
-  const isDirty = some(filter, (value) => value !== Filter.All);
+  const isDirty = some(filter, (value) => value !== Filter.All)
 
   return (
     <section className="relative space-y-1 pb-8">
@@ -186,5 +186,5 @@ export const Games = ({
         onChange={(newGames, count) => setData({ games: newGames, total: count })}
       />
     </section>
-  );
-};
+  )
+}

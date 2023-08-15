@@ -1,21 +1,21 @@
-'use client';
+'use client'
 
-import Link from 'next/link';
-import { useState, useCallback } from 'react';
-import { Class, Game, God, Player, Race } from '@types';
-import { Logo } from '@components/Logo';
-import { ThemeSelector } from '@components/ThemeSelector';
-import { Search } from './Search';
-import { Stats } from './Stats';
+import Link from 'next/link'
+import { useState, useCallback } from 'react'
+import { Class, Game, God, Player, Race } from '@types'
+import { Logo } from '@components/Logo'
+import { ThemeSelector } from '@components/ThemeSelector'
+import { Search } from './Search'
+import { Stats } from './Stats'
 
 export const MainPage = (props: Props) => {
-  const [isNavigating, setIsNavigating] = useState(false);
-  const [query, setQuery] = useState('');
+  const [isNavigating, setIsNavigating] = useState(false)
+  const [query, setQuery] = useState('')
 
   const onLinkClick = useCallback((name: string) => {
-    setIsNavigating(true);
-    setQuery(name);
-  }, []);
+    setIsNavigating(true)
+    setQuery(name)
+  }, [])
 
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center px-4 pt-8 md:justify-center md:pt-0">
@@ -93,30 +93,30 @@ export const MainPage = (props: Props) => {
         </footer>
       </div>
     </div>
-  );
-};
+  )
+}
 
-type Stats = { wins: number; total: number };
-type Combos = Record<string, Stats>;
-type CombosData = Stats & { combos: Combos };
+type Stats = { wins: number; total: number }
+type Combos = Record<string, Stats>
+type CombosData = Stats & { combos: Combos }
 
 export type Response = {
-  games: number;
-  wins: number;
-  races: Race[];
-  classes: Class[];
-  gods: God[];
-  combosData: CombosData;
+  games: number
+  wins: number
+  races: Race[]
+  classes: Class[]
+  gods: God[]
+  combosData: CombosData
   top: {
-    byWins: Array<Pick<Player, 'name'> & { wins: number }>;
-    byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>;
-    byTitles: Array<Pick<Player, 'name'> & { titles: number }>;
-    gamesByTC: Array<Game>;
-    gamesByDuration: Array<Game>;
-    gamesByScore: Array<Game>;
-  };
-};
+    byWins: Array<Pick<Player, 'name'> & { wins: number }>
+    byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>
+    byTitles: Array<Pick<Player, 'name'> & { titles: number }>
+    gamesByTC: Array<Game>
+    gamesByDuration: Array<Game>
+    gamesByScore: Array<Game>
+  }
+}
 
 export type Props = Response & {
-  nickname: string;
-};
+  nickname: string
+}

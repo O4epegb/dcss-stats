@@ -1,7 +1,7 @@
-import { FC, ReactNode } from 'react';
-import clsx from 'clsx';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { FC, ReactNode } from 'react'
+import clsx from 'clsx'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 export const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
   id,
@@ -10,12 +10,12 @@ export const SortableItem: FC<{ id: string; className: string; children: ReactNo
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
-  });
+  })
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-  };
+  }
 
   return (
     <div
@@ -51,5 +51,5 @@ export const SortableItem: FC<{ id: string; className: string; children: ReactNo
       </button>
       {children}
     </div>
-  );
-};
+  )
+}
