@@ -27,12 +27,12 @@ import { Class, Game, God, Race, StaticData } from '@types';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
 import { WinrateStats } from '@components/WinrateStats';
-import { Loader } from '@components/Loader';
-import { Tooltip } from '@components/Tooltip';
+import { Loader } from '@components/ui/Loader';
+import { Tooltip } from '@components/ui/Tooltip';
 import { Filter, Filters, filtersToQuery } from '@components/Filters';
 import { GameItem } from '@components/GameItem';
 import { useLocalStorageValue } from '@react-hookz/web';
-import { Select } from '@components/Select';
+import { Select } from '@components/ui/Select';
 
 enum FilterValue {
   Any = 'any',

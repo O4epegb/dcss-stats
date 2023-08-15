@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { api } from '@api';
 import { Game } from '@types';
 import { useFirstMountState } from '@react-hookz/web';
-import { Loader } from './Loader';
+import { Loader } from './ui/Loader';
 import { CompactGameItem, GameItem } from './GameItem';
 
 export const GamesList = (props: {

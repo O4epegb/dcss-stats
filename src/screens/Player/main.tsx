@@ -3,7 +3,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { pluralize, formatNumber, trackEvent } from '@utils';
 import { Logo } from '@components/Logo';
 import { WinrateStats } from '@components/WinrateStats';
-import { Tooltip } from '@components/Tooltip';
+import { Tooltip } from '@components/ui/Tooltip';
 import { ThemeSelector } from '@components/ThemeSelector';
 import { Matrix } from './Matrix';
 import { Games } from './Games';

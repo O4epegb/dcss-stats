@@ -1,11 +1,11 @@
-import { useState, useEffect, FC, ReactNode } from 'react';
+import { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import { castArray, last, first, omit } from 'lodash-es';
 import { useRouter } from 'next/router';
 import { StaticData } from '@types';
 import { notEmpty } from '@utils';
 import { useUpdateEffect } from '@react-hookz/web';
-import { HelpBubble, Tooltip } from '@components/Tooltip';
+import { HelpBubble, Tooltip } from '@components/ui/Tooltip';
 import {
   DndContext,
   closestCenter,
@@ -15,15 +15,14 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import {
-  useSortable,
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
-import { Select } from './Select';
+import { Select } from '../ui/Select';
+import { SortableItem } from './SortableItem';
 
 export type Filter = {
   id: string;
@@ -40,6 +39,14 @@ const conditions = ['is', 'is not'];
 type FilterName = ReturnType<typeof getOptionsList>[number]['name'];
 
 type Data = Partial<Pick<StaticData, 'classes' | 'gods' | 'races' | 'skills'>>;
+
+export const filtersToQuery = (filters: Filter[]) => {
+  return filters.map(({ option, suboption, condition, value, operator }, index) => {
+    return [option, suboption, condition, value, index === filters.length - 1 ? null : operator]
+      .filter(notEmpty)
+      .join('_');
+  });
+};
 
 type Props = {
   excludeFilters?: FilterName[];
@@ -286,7 +293,7 @@ export const Filters = ({
 
                   const color =
                     !isSingleFilter && firstItem && firstItem.operator === 'or'
-                      ? groupColors[firstItemIndex % 3]
+                      ? groupColors[firstItemIndex % groupColors.length]
                       : null;
 
                   return (
@@ -537,65 +544,6 @@ export const Filters = ({
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-export const filtersToQuery = (filters: Filter[]) => {
-  return filters.map(({ option, suboption, condition, value, operator }, index) => {
-    return [option, suboption, condition, value, index === filters.length - 1 ? null : operator]
-      .filter(notEmpty)
-      .join('_');
-  });
-};
-
-const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
-  id,
-  className,
-  children,
-}) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={clsx(className, 'relative', isDragging && 'z-10')}
-    >
-      <button
-        {...attributes}
-        {...listeners}
-        className={clsx(
-          isDragging ? 'cursor-grabbing' : 'cursor-grab',
-          'absolute right-full mr-1 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
-        )}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-4 w-4"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="9" cy="12" r="1"></circle>
-          <circle cx="9" cy="5" r="1"></circle>
-          <circle cx="9" cy="19" r="1"></circle>
-          <circle cx="15" cy="12" r="1"></circle>
-          <circle cx="15" cy="5" r="1"></circle>
-          <circle cx="15" cy="19" r="1"></circle>
-        </svg>
-      </button>
-      {children}
     </div>
   );
 };

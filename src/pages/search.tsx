@@ -7,14 +7,17 @@ import { Game, StaticData } from '@types';
 import { formatNumber } from '@utils';
 import { createServerApi } from '@api/server';
 import { Logo } from '@components/Logo';
-import { Loader } from '@components/Loader';
+import { Loader } from '@components/ui/Loader';
 import { GameItem } from '@components/GameItem';
 import { Filter, Filters } from '@components/Filters';
-import { HelpBubble } from '@components/Tooltip';
+import { HelpBubble } from '@components/ui/Tooltip';
 
 // Order by
 // Hotkey for submit
-// Add version filter?
+// Add version filter
+// Add runes filter
+// Add killer filter
+// gold, potions, scrolls filter?
 // send options from BE
 // send maximum filters from the backend
 
@@ -58,27 +61,6 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
       </header>
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
-          <div className="w-full rounded bg-blue-100 px-2 py-1 text-sm text-black">
-            This page is under development, with bugs and suggestions DM @totalnoob on{' '}
-            <a
-              href="https://discord.gg/pKCNTunFeW"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              RL Discord
-            </a>{' '}
-            or create an issue on{' '}
-            <a
-              href="https://github.com/O4epegb/dcss-stats"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              Github
-            </a>
-          </div>
-
           <Filters
             races={races}
             classes={classes}

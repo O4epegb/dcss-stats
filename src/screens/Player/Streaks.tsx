@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { Game } from '@types';
 import { api } from '@api';
 import { pluralize, date, formatNumber } from '@utils';
-import { Loader } from '@components/Loader';
+import { Loader } from '@components/ui/Loader';
 import { GameTooltip } from '@components/GameTooltip';
 import { List } from './Stats';
 import { usePlayerPageContext } from './context';

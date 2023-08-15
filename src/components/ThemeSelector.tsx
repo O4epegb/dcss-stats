@@ -2,7 +2,7 @@
 
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
-import { Tooltip } from '@components/Tooltip';
+import { Tooltip } from '@components/ui/Tooltip';
 
 export const ThemeSelector = () => {
   const [mounted, setMounted] = useState(false);

@@ -8,7 +8,7 @@
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
     "lint": "eslint . --ext ts,tsx,js",
-    "test-all": "yarn lint && yarn type-check"
+    "test": "yarn lint && yarn type-check"
   },
   "dependencies": {
     "@bugsnag/js": "^7.20.2",
