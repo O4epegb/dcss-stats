@@ -38,7 +38,7 @@ const conditions = ['is', 'is not']
 
 type FilterName = ReturnType<typeof getOptionsList>[number]['name']
 
-type Data = Partial<Pick<StaticData, 'classes' | 'gods' | 'races' | 'skills'>>
+type Data = Partial<StaticData>
 
 export const filtersToQuery = (filters: Filter[]) => {
   return filters.map(({ option, suboption, condition, value, operator }, index) => {
@@ -55,35 +55,41 @@ type Props = {
   onSubmit?: (filters: Filter[]) => void
 } & Data
 
-const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Data) => {
+const getOptionsList = ({
+  races = [],
+  classes = [],
+  gods = [],
+  skills = [],
+  versions = [],
+}: Data) => {
   return [
     {
       name: 'Race',
       type: 'select',
       suboptions: [],
       conditions,
-      values: races.map((x) => ({ name: x.name })),
+      values: races.map((x) => x.name),
     },
     {
       name: 'Class',
       type: 'select',
       suboptions: [],
       conditions,
-      values: classes.map((x) => ({ name: x.name })),
+      values: classes.map((x) => x.name),
     },
     {
       name: 'God',
       type: 'select',
       suboptions: [],
       conditions,
-      values: gods.map((x) => ({ name: x.name })),
+      values: gods.map((x) => x.name),
     },
     {
       name: 'End',
       type: 'select',
       suboptions: [],
       conditions,
-      values: ['Escaped', 'Defeated'].map((x) => ({ name: x })),
+      values: ['Escaped', 'Defeated'].map((x) => x),
     },
     {
       name: 'Player',
@@ -97,7 +103,7 @@ const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Da
       type: 'select',
       suboptions: skills.map((x) => x.name),
       conditions,
-      values: ['Level 15 or more', 'Level 27'].map((x) => ({ name: x })),
+      values: ['Level 15 or more', 'Level 27'].map((x) => x),
     },
     {
       name: 'Stat',
@@ -105,6 +111,13 @@ const getOptionsList = ({ races = [], classes = [], gods = [], skills = [] }: Da
       suboptions: ['Str', 'Int', 'Dex', 'Ac', 'Ev', 'Sh'],
       conditions: ['>', '<', '=', '>=', '<='] as string[],
       placeholder: 'Enter value',
+    },
+    {
+      name: 'Version',
+      type: 'select',
+      suboptions: [],
+      conditions,
+      values: versions,
     },
   ] as const
 }
@@ -114,6 +127,7 @@ export const Filters = ({
   classes = [],
   gods = [],
   skills = [],
+  versions = [],
   excludeFilters = [],
   onInit,
   onSubmit,
@@ -128,7 +142,7 @@ export const Filters = ({
   )
   const [isDragging, setIsDragging] = useState(false)
 
-  const options = getOptionsList({ races, classes, gods, skills }).filter(
+  const options = getOptionsList({ races, classes, gods, skills, versions }).filter(
     (x) => !excludeFilters.includes(x.name) && (x.type !== 'select' || x.values.length > 0),
   )
 
@@ -166,7 +180,7 @@ export const Filters = ({
 
         const isValid =
           optionItem &&
-          (optionItem.type !== 'select' || optionItem.values.find((x) => x.name === value)) &&
+          (optionItem.type !== 'select' || optionItem.values.find((x) => x === value)) &&
           optionItem.conditions.includes(condition) &&
           (!operator || operators.includes(operator)) &&
           (!suboption || optionItem.suboptions.some((x) => x === suboption))
@@ -320,13 +334,9 @@ export const Filters = ({
                                   state.map((x) => {
                                     return x !== filter
                                       ? x
-                                      : {
-                                          ...filter,
-                                          option: e.target.value,
-                                          suboption: options.find((x) => x.name === e.target.value)
-                                            ?.suboptions[0],
-                                          value: undefined,
-                                        }
+                                      : getDefaultFilters().find(
+                                          (x) => x.option === e.target.value,
+                                        ) ?? x
                                   }),
                                 )
                               }}
@@ -392,7 +402,7 @@ export const Filters = ({
                                 }}
                               >
                                 <option value="">any</option>
-                                {option.values.map(({ name }) => (
+                                {option.values.map((name) => (
                                   <option key={name} value={name}>
                                     {name}
                                   </option>

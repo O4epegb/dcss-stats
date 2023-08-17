@@ -326,7 +326,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
       <div className={clsx('space-y-4', !showAdvancedFilters && 'hidden')}>
         <hr />
         <Filters
-          excludeFilters={['Class', 'Race', 'God', 'End', 'Player']}
+          excludeFilters={['Class', 'Race', 'God', 'End', 'Player', 'Version']}
           skills={skills}
           onInit={(filters) => {
             setAdvancedFilter(filters)

@@ -14,14 +14,13 @@ import { HelpBubble } from '~components/ui/Tooltip'
 
 // Order by
 // Hotkey for submit
-// Add version filter
 // Add runes filter
 // Add killer filter
 // gold, potions, scrolls filter?
 // send options from BE
 // send maximum filters from the backend
 
-const SearchPage = ({ races, classes, gods, skills }: Props) => {
+const SearchPage = ({ races, classes, gods, skills, versions }: Props) => {
   const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null)
 
   const { data, error, size, setSize } = useSWRInfinite(
@@ -55,9 +54,9 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
 
   return (
     <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pb-4 pt-4">
-      <header className="flex items-center gap-2 divide-x">
+      <header className="flex items-center gap-4 divide-x">
         <Logo />
-        <h2 className="pl-2 text-2xl">Search</h2>
+        <h2 className="pl-4 text-2xl">Search</h2>
       </header>
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
@@ -66,6 +65,7 @@ const SearchPage = ({ races, classes, gods, skills }: Props) => {
             classes={classes}
             gods={gods}
             skills={skills}
+            versions={versions}
             onInit={(filters) => setFilterForSearch(filters)}
             onSubmit={(filters) => setFilterForSearch(filters)}
           />
