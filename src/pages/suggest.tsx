@@ -248,12 +248,12 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         <Logo />
       </header>
       <div className="m-auto w-full max-w-md rounded bg-blue-100 px-2 py-1 text-sm text-black">
-        <span className="font-semibold">TL;DR:</span> pick race, class, or god that you want to play
-        (or any combination of them). Hit the button to see win rate of your combo, as well as games
-        of other players.
+        <span className="font-semibold">TL;DR:</span> Choose the race, class or god you want to play
+        (or any combination of these). Press the button to see the win rate of your combination, as
+        well as other people&apos;s games.
         <br />
         <br />
-        This tool is under development, with bugs and suggestions DM @totalnoob on{' '}
+        This tool is under development, for bugs and suggestions DM @totalnoob on{' '}
         <a
           href="https://discord.gg/pKCNTunFeW"
           target="_blank"

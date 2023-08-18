@@ -35,6 +35,7 @@ export type Filter = {
 
 const operators = ['and', 'or'] as [string, string]
 const conditions = ['is', 'is not']
+const numberConditions = ['>=', '<=', '>', '<', '=']
 
 type FilterName = ReturnType<typeof getOptionsList>[number]['name']
 
@@ -107,9 +108,16 @@ const getOptionsList = ({
     },
     {
       name: 'Stat',
-      type: 'text',
+      type: 'number',
       suboptions: ['Str', 'Int', 'Dex', 'Ac', 'Ev', 'Sh'],
-      conditions: ['>', '<', '=', '>=', '<='] as string[],
+      conditions: numberConditions,
+      placeholder: 'Enter value',
+    },
+    {
+      name: 'Runes',
+      type: 'number',
+      suboptions: [],
+      conditions: numberConditions,
       placeholder: 'Enter value',
     },
     {
@@ -409,13 +417,14 @@ export const Filters = ({
                                 ))}
                               </Select>
                             )}
-                            {option.type === 'text' && (
+                            {(option.type === 'text' || option.type === 'number') && (
                               <div className="flex-1">
                                 <input
-                                  type="text"
+                                  type={option.type}
                                   placeholder={option.placeholder}
                                   className="w-full rounded bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
                                   value={filter.value}
+                                  onFocus={(e) => e.target.select()}
                                   onChange={(e) => {
                                     setFilters((state) =>
                                       state.map((x) => {
