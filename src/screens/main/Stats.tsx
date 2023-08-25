@@ -1,5 +1,6 @@
 import { useState, memo, useEffect } from 'react'
-import { map, orderBy } from 'lodash-es'
+import { map, orderBy, pickBy } from 'lodash-es'
+import Link from 'next/link'
 import { formatNumber } from '~utils'
 import { Class, God, Race } from '~types'
 import { getFavorites } from '~screens/Player/utils'
@@ -180,13 +181,27 @@ const PopularList = ({
       </div>
       <div>
         {data.slice(0, 7).map((x, index) => (
-          <div key={index} className="flex justify-between">
+          <Link
+            key={index}
+            href={{
+              pathname: '/suggest',
+              query: pickBy(
+                {
+                  race: x.race?.name,
+                  class: x.class?.name,
+                  god: x.god?.name,
+                },
+                (value) => Boolean(value),
+              ),
+            }}
+            className="-mx-1 flex justify-between px-1 hover:bg-amber-100 dark:hover:bg-zinc-700 rounded"
+          >
             <div>
               {x.race?.abbr}
               {x.class?.abbr} {x.god?.name && `of ${x.god?.name}`}
             </div>
             <WinrateStats small games={x.total} wins={x.wins} />
-          </div>
+          </Link>
         ))}
       </div>
     </div>

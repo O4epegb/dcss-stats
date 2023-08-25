@@ -67,9 +67,9 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     initializeWithValue: false,
   })
   const { value: groupingKey, set: setGroupingKey } = useLocalStorageValue<
-    undefined | keyof Omit<typeof filter, 'version'>
+    undefined | null | keyof Omit<typeof filter, 'version'>
   >('groupingKey', {
-    defaultValue: undefined,
+    defaultValue: null,
   })
 
   const [view, setView] = useState<'stats' | 'games'>('stats')

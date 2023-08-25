@@ -36,6 +36,7 @@ export type Filter = {
 const operators = ['and', 'or'] as [string, string]
 const conditions = ['is', 'is not']
 const numberConditions = ['>=', '<=', '>', '<', '=']
+const maxFilters = 15
 
 type FilterName = ReturnType<typeof getOptionsList>[number]['name']
 
@@ -501,11 +502,14 @@ export const Filters = ({
         </DndContext>
 
         <div className="flex items-center justify-between">
-          <Tooltip content="Maximum 10 filters at this moment" disabled={filters.length < 10}>
+          <Tooltip
+            content={`Maximum ${maxFilters} filters at this moment`}
+            disabled={filters.length < maxFilters}
+          >
             <div>
               <button
                 className="rounded border px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
-                disabled={filters.length >= 10}
+                disabled={filters.length >= maxFilters}
                 onClick={() => {
                   setFilters((state) => {
                     const lastFilter = last(state)
