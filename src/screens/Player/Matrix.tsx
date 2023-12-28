@@ -278,7 +278,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                           stats.combos[char]?.wins > 0
                             ? 'text-amber-600 dark:text-amber-500'
                             : unavailableCombos[char]
-                            ? 'text-gray-200 dark:text-gray-600'
+                            ? 'text-gray-200 dark:text-gray-600 select-none'
                             : 'dark:text-gray-200',
                         )}
                         onMouseEnter={(e) => {
