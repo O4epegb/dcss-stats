@@ -57,7 +57,7 @@ export const Games = ({
           {data.games.length > 0 &&
             (isDirty
               ? ` (${data.total} total)`
-              : ` (${data.games.length}G/${data.games.filter((g) => g.isWin).length}W)`)}
+              : ` (${data.games.filter((g) => g.isWin).length}W/${data.games.length}G)`)}
           :
         </h2>
         <Tooltip

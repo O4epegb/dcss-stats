@@ -1,5 +1,5 @@
 import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es'
-import { CharStat, Class, GamesToFirstWin, God, Matrix, Race } from '~types'
+import { CharStat, Class, PlayerInfoResponse, Race } from '~types'
 import { notEmpty } from '~utils'
 
 export const cookiesStore = {
@@ -25,11 +25,11 @@ export const unavailableCombos = keyBy([
 ])
 
 export const getSummary = (
-  matrix: Matrix,
-  races: Race[],
-  classes: Class[],
-  gods: God[],
-  gamesToFirstWin: GamesToFirstWin,
+  matrix: PlayerInfoResponse['matrix'],
+  races: PlayerInfoResponse['races'],
+  classes: PlayerInfoResponse['classes'],
+  gods: PlayerInfoResponse['gods'],
+  gamesToFirstWin: PlayerInfoResponse['gamesToFirstWin'],
 ) => {
   const trunkRaces = orderBy(
     races.filter((x) => x.trunk),

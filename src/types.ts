@@ -28,7 +28,13 @@ export interface PlayerInfoResponse {
   lowestXlWin: Game | null
   matrix: Matrix
   gamesToFirstWin: GamesToFirstWin
-  gods: God[]
+  gods: Array<
+    God & {
+      win: boolean
+      wins: number
+      games: number
+    }
+  >
   streaks: StreaksInfo
   tiamat: {
     total: number
@@ -159,7 +165,6 @@ export type Server = {
 export type God = {
   name: string
   trunk: boolean
-  win: boolean
 }
 
 export type Skill = {

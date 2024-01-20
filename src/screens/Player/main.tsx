@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, ReactNode } from 'react'
 import { pluralize, formatNumber, trackEvent } from '~utils'
 import { Logo } from '~components/Logo'
 import { WinrateStats } from '~components/WinrateStats'
@@ -41,6 +41,22 @@ export const Player = () => {
   const isGreater = isGreat && isGrand
   const isPolytheist = wonGods.length === gods.length
   const isTiamat = tiamat.unwon.length === 0
+
+  const wonGodsStats = (
+    <ul>
+      {gods
+        .filter((god) => god.wins > 0)
+        .map((god) => (
+          <li key={god.name}>
+            {god.name}: {god.wins}W {god.games}G (
+            {formatNumber((god.wins / god.games || 0) * 100, {
+              maximumFractionDigits: 2,
+            })}
+            %)
+          </li>
+        ))}
+    </ul>
+  )
 
   return (
     <div className="container mx-auto grid gap-4 px-4 xl:grid-cols-3">
@@ -120,7 +136,15 @@ export const Player = () => {
                 </>
               )}
               {isPolytheist && (
-                <Tooltip content="Has won with all gods">
+                <Tooltip
+                  interactive
+                  content={
+                    <div className="space-y-2">
+                      <div>Has won with all gods:</div>
+                      {wonGodsStats}
+                    </div>
+                  }
+                >
                   <div className="rounded bg-sky-300 px-1 py-0.5 text-black">Polytheist</div>
                 </Tooltip>
               )}
@@ -172,6 +196,12 @@ export const Player = () => {
                 total={gods.length}
                 completed={wonGods.length}
                 leftToWinWith={notWonGods}
+                additionalContent={
+                  <>
+                    <div>Already won:</div>
+                    {wonGodsStats}
+                  </>
+                }
               />
             )}
             {!isTiamat && (
@@ -201,11 +231,13 @@ const Badge = ({
   total,
   leftToWinWith,
   title,
+  additionalContent,
 }: {
   completed: number
   total: number
   leftToWinWith?: Array<{ name: string }>
   title: string
+  additionalContent?: ReactNode
 }) => {
   return (
     <Tooltip
@@ -221,6 +253,7 @@ const Badge = ({
               ))}
             </ul>
           )}
+          {additionalContent}
         </div>
       }
     >
