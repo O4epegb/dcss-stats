@@ -40,12 +40,12 @@ export const MainPage = (props: Props) => {
           setQuery={setQuery}
         />
         <a
-          href="https://crawl.develz.org/tournament/0.31/"
+          href="https://crawl.develz.org/wordpress/0-31-tournament-results"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 bg-[#282020] p-2 rounded text-white text-center text-lg border-violet-400 border-4"
         >
-          The v0.31 Tournament will last until 08:00PM Sunday 04 February UTC
+          🏆🏆🏆 DCSS 0.31 Tournament Results
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
