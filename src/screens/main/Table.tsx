@@ -73,7 +73,9 @@ export const Table = ({
     {
       title: 'Date',
       type: 'string',
-      getter: (game: Game) => dayjs(game.endAt).format('DD MMM YYYY'),
+      getter: (game: Game) => (
+        <span suppressHydrationWarning>{dayjs(game.endAt).format('DD MMM YYYY')}</span>
+      ),
     },
     {
       title: 'Version',
