@@ -7,7 +7,7 @@ class CustomDocument extends Document {
         <Head>
           <link rel="icon" href="/favicon.ico" sizes="any" />
         </Head>
-        <body>
+        <body className="antialiased">
           <Main />
           <NextScript />
         </body>
