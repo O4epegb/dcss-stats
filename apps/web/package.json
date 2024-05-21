@@ -2,9 +2,8 @@
   "name": "@dcss-stats/web",
   "private": true,
   "scripts": {
-    "prepare": "husky install",
     "dev": "next dev -p 7331",
-    "build": "NODE_OPTIONS=\"--max-old-space-size=8192\" next build",
+    "build": "next build",
     "start": "next start -p 7331",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
@@ -46,21 +45,10 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-react": "^7.33.2",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.2",
     "postcss": "^8.4.38",
     "prettier": "^3.0.1",
     "prettier-plugin-tailwindcss": "^0.5.3",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.3.3"
-  },
-  "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --max-warnings 0"
-    ],
-    "*": [
-      "prettier --write --ignore-unknown"
-    ]
-  },
-  "packageManager": "yarn@4.2.2"
+  }
 }
