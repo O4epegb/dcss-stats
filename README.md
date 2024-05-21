@@ -1,8 +1,8 @@
 <p align="center">
-  <img width="128" height="128" src="./public/logo-256.png">
+  <img width="128" height="128" src="./apps/web/public/logo-256.png">
 </p>
 
-# DCSS Stats
+# [DCSS Stats](https://dcss-stats.vercel.app/)
 
 <a href="https://www.buymeacoffee.com/totalnoob" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
