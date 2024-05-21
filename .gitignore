@@ -10,15 +10,12 @@
 !.yarn/sdks
 !.yarn/versions
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
+.turbo
+.next/
+out/
+dist/
 /build
+/coverage
 
 # misc
 .vscode
@@ -40,10 +37,8 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
-# vercel
 .vercel
 
-# storybook
 /storybook-static
 
 /forever-ignore
