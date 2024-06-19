@@ -1,9 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": ["NODE_ENV"]
     },
     "deploy": {
       "dependsOn": ["build", "test", "lint"]
