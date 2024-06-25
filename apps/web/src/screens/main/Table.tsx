@@ -13,7 +13,7 @@ export const Table = ({
 }: {
   games: Game[]
   title: string
-  highlight: (typeof tableData)[number]['title']
+  highlight: string
   onLinkClick: (name: string) => void
 }) => {
   const tableData = [

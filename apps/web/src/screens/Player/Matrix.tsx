@@ -272,14 +272,14 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                             stats.combos[char]?.gamesToFirstWin === 1
                             ? 'bg-amber-200 dark:bg-amber-900'
                             : activeClass === klass.abbr || activeRace === race.abbr
-                            ? 'bg-amber-100 dark:bg-zinc-800'
-                            : allUnavailableCombos[char] && 'bg-gray-50 dark:bg-zinc-900',
+                              ? 'bg-amber-100 dark:bg-zinc-800'
+                              : allUnavailableCombos[char] && 'bg-gray-50 dark:bg-zinc-900',
                           content && content?.length > 2 && 'text-xs 2xl:text-sm',
                           stats.combos[char]?.wins > 0
                             ? 'text-amber-600 dark:text-amber-500'
                             : allUnavailableCombos[char]
-                            ? 'text-gray-200 dark:text-gray-600 select-none'
-                            : 'dark:text-gray-200',
+                              ? 'text-gray-200 dark:text-gray-600 select-none'
+                              : 'dark:text-gray-200',
                         )}
                         onMouseEnter={(e) => {
                           setTooltipRef(e.currentTarget)
