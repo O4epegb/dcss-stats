@@ -14,7 +14,6 @@ import { HelpBubble } from '~components/ui/Tooltip'
 
 // Order by
 // Hotkey for submit
-// Add runes filter
 // Add killer filter
 // gold, potions, scrolls filter?
 // send options from BE

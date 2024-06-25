@@ -8,7 +8,7 @@ export const cookiesStore = {
   'dcss-show-trunk-data': false,
 } as const
 
-export const unavailableCombos = keyBy([
+export const allUnavailableCombos = keyBy([
   'GhTm',
   'MuTm',
   'GhSh',
@@ -84,24 +84,26 @@ export const getSummary = (
     return trunkClasses.every((klass) => {
       const combo = race.abbr + klass.abbr
 
-      return unavailableCombos[combo] || matrix[combo]?.wins > 0
+      return allUnavailableCombos[combo] || matrix[combo]?.wins > 0
     })
   })
   const greatClasses = wonClasses.filter((klass) => {
     return trunkRaces.every((race) => {
       const combo = race.abbr + klass.abbr
 
-      return unavailableCombos[combo] || matrix[combo]?.wins > 0
+      return allUnavailableCombos[combo] || matrix[combo]?.wins > 0
     })
   })
 
-  const combosCompleted = trunkRaces
-    .map((race) => {
-      return trunkClasses.map((klass) => {
-        const combo = race.abbr + klass.abbr
-
-        return matrix[combo]?.wins > 0 ? combo : null
-      })
+  const allTrunkCombos = new Set(
+    trunkClasses.flatMap((klass) => trunkRaces.map((race) => race.abbr + klass.abbr)),
+  )
+  const trunkUnavailableCombos = Object.keys(allUnavailableCombos).filter((combo) =>
+    allTrunkCombos.has(combo),
+  )
+  const combosCompleted = [...allTrunkCombos]
+    .map((combo) => {
+      return matrix[combo]?.wins > 0 ? combo : null
     })
     .flat()
     .filter(notEmpty).length
@@ -109,7 +111,7 @@ export const getSummary = (
   return {
     stats,
     combosCompleted,
-    totalCombos: trunkRaces.length * trunkClasses.length - Object.keys(unavailableCombos).length,
+    totalCombos: trunkRaces.length * trunkClasses.length - trunkUnavailableCombos.length,
     trunkRaces,
     trunkClasses,
     allActualRaces,

@@ -4,7 +4,7 @@ import { useMediaQuery } from '@react-hookz/web'
 import { CharStat } from '~types'
 import { pluralize, formatNumber } from '~utils'
 import { Tooltip } from '~components/ui/Tooltip'
-import { Summary, unavailableCombos } from './utils'
+import { Summary, allUnavailableCombos } from './utils'
 import { usePlayerPageContext } from './context'
 
 const items = [
@@ -144,9 +144,9 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                     )}
                   </div>
                 ) : (
-                  !unavailableCombos[activeCombo] && <div>No data yet</div>
+                  !allUnavailableCombos[activeCombo] && <div>No data yet</div>
                 )}
-                {unavailableCombos[activeCombo] && <div>Combo is not playable</div>}
+                {allUnavailableCombos[activeCombo] && <div>Combo is not playable</div>}
                 {!(activeRace && activeClass) &&
                   (greatClasses[activeClass] || greatRaces[activeRace]) && (
                     <div className="text-xs">
@@ -273,11 +273,11 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                             ? 'bg-amber-200 dark:bg-amber-900'
                             : activeClass === klass.abbr || activeRace === race.abbr
                             ? 'bg-amber-100 dark:bg-zinc-800'
-                            : unavailableCombos[char] && 'bg-gray-50 dark:bg-zinc-900',
+                            : allUnavailableCombos[char] && 'bg-gray-50 dark:bg-zinc-900',
                           content && content?.length > 2 && 'text-xs 2xl:text-sm',
                           stats.combos[char]?.wins > 0
                             ? 'text-amber-600 dark:text-amber-500'
-                            : unavailableCombos[char]
+                            : allUnavailableCombos[char]
                             ? 'text-gray-200 dark:text-gray-600 select-none'
                             : 'dark:text-gray-200',
                         )}
@@ -287,7 +287,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                         }}
                         onMouseLeave={() => setActive([])}
                       >
-                        {content || (unavailableCombos[char] && 'x')}
+                        {content || (allUnavailableCombos[char] && 'x')}
                       </td>
                     )
                   })}
