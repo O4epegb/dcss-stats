@@ -2,7 +2,7 @@ import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es'
 import { CharStat, Class, PlayerInfoResponse, Race } from '~types'
 import { notEmpty } from '~utils'
 
-export const cookiesStore = {
+export const cookiesStoreDefault = {
   'dcss-compact-view': false,
   'dcss-open-filters': false,
   'dcss-show-trunk-data': false,

@@ -2,7 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { PlayerInfoResponse } from '~types'
 import { fetchApi } from '~api/server'
-import { cookiesStore } from '~screens/Player/utils'
+import { cookiesStoreDefault } from '~screens/Player/utils'
 import PlayerPage from '~screens/Player'
 
 async function getData(slug: string) {
@@ -17,7 +17,7 @@ async function getData(slug: string) {
 
     return {
       ...data,
-      cookiesStore: Object.keys(cookiesStore).reduce(
+      cookiesStore: Object.keys(cookiesStoreDefault).reduce(
         (acc, key) => ({ ...acc, [key]: cookies().has(key) }),
         {},
       ),

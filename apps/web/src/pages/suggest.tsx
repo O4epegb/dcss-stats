@@ -66,9 +66,11 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     defaultValue: true,
     initializeWithValue: false,
   })
-  const { value: groupingKey, set: setGroupingKey } = useLocalStorageValue<
-    undefined | null | keyof Omit<typeof filter, 'version'>
-  >('groupingKey', {
+  const {
+    value: groupingKey,
+    set: setGroupingKey,
+    remove: removeGroupingKey,
+  } = useLocalStorageValue<undefined | null | keyof Omit<typeof filter, 'version'>>('groupingKey', {
     defaultValue: null,
   })
 
@@ -415,7 +417,13 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                               className="cursor-pointer"
                               checked={groupingKey === key}
                               onChange={noop}
-                              onClick={() => setGroupingKey((x) => (x === key ? undefined : key))}
+                              onClick={() => {
+                                if (groupingKey === key) {
+                                  removeGroupingKey()
+                                } else {
+                                  setGroupingKey(key)
+                                }
+                              }}
                             />
                             Group by {key}
                           </label>

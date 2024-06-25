@@ -72,8 +72,8 @@ export const Search = ({
       <input
         placeholder={`Type player name, e.g. "${nickname}"`}
         className="block h-10 w-full rounded border border-gray-400 px-2"
-        value={query}
         {...getInputProps({
+          value: query,
           disabled: isNavigating,
           onFocus(e) {
             e.target.select()

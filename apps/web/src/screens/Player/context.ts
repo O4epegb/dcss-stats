@@ -2,7 +2,7 @@ import { useState, useContext, createContext } from 'react'
 import { setCookie, destroyCookie } from 'nookies'
 import { PlayerInfoResponse } from '~types'
 import { trackEvent } from '~utils'
-import { cookiesStore } from './utils'
+import { cookiesStoreDefault } from './utils'
 
 export const PlayerPageContext = createContext({} as ReturnType<typeof useContextStateValue>)
 
@@ -15,16 +15,16 @@ export const useContextStateValue = (
   defaultCookiesStore: Record<string, boolean>,
 ) => {
   const [cookieState, setCookieState] = useState(() => ({
-    ...cookiesStore,
+    ...cookiesStoreDefault,
     ...defaultCookiesStore,
   }))
 
   return {
     ...data,
-    isOptionEnabled(key: keyof typeof cookiesStore) {
+    isOptionEnabled(key: keyof typeof cookiesStoreDefault) {
       return cookieState[key]
     },
-    toggleOption(key: keyof typeof cookiesStore) {
+    toggleOption(key: keyof typeof cookiesStoreDefault) {
       const newState = !cookieState[key]
 
       trackEvent('key', { state: String(newState) })
