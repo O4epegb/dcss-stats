@@ -1,4 +1,5 @@
 import { orderBy } from 'lodash-es'
+import { Suspense } from 'react'
 import { StaticData } from '~types'
 import { fetchApi } from '~api/server'
 import { SearchScreen } from '~screens/Search'
@@ -16,5 +17,9 @@ export default async function SearchPage() {
     versions: data.versions,
   }
 
-  return <SearchScreen {...props} />
+  return (
+    <Suspense fallback={null}>
+      <SearchScreen {...props} />
+    </Suspense>
+  )
 }
