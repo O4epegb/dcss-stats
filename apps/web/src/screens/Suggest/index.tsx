@@ -1,38 +1,35 @@
-import { useState, useEffect } from 'react'
+'use client'
+
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useLocalStorageValue } from '@react-hookz/web'
 import clsx from 'clsx'
-import { GetStaticProps } from 'next'
-import useSWRImmutable from 'swr/immutable'
-import useSWRInfinite from 'swr/infinite'
 import {
-  capitalize,
-  flow,
-  map,
-  orderBy,
   every,
-  castArray,
-  pickBy,
   groupBy,
-  noop,
+  map,
   omit,
+  pickBy,
   filter as _filter,
   isEmpty,
-  flatten,
-  last,
-  isError,
+  noop,
+  capitalize,
+  flow,
+  orderBy,
 } from 'lodash-es'
-import { useRouter } from 'next/router'
-import { useLocalStorageValue } from '@react-hookz/web'
+import useSWRImmutable from 'swr/immutable'
+import { Class, God, Race, StaticData } from '~types'
+import { formatNumber, notEmpty, stringifyQuery } from '~utils'
 import { api } from '~api'
-import { formatNumber, notEmpty } from '~utils'
-import { Class, Game, God, Race, StaticData } from '~types'
-import { createServerApi } from '~api/server'
-import { Logo } from '~components/Logo'
-import { WinrateStats } from '~components/WinrateStats'
-import { Loader } from '~components/ui/Loader'
 import { Tooltip } from '~components/ui/Tooltip'
 import { Filter, Filters, filtersToQuery } from '~components/Filters'
-import { GameItem } from '~components/GameItem'
 import { Select } from '~components/ui/Select'
+import { WinrateStats } from '~components/WinrateStats'
+import { Loader } from '~components/ui/Loader'
+import { Layout } from './Layout'
+import { GameList } from './GameList'
+
+export const revalidate = 300
 
 enum FilterValue {
   Any = 'any',
@@ -50,10 +47,12 @@ type MainFilter = {
   version: string
 }
 
-const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
+export function SuggestScreen({ classes, gods, races, skills, versions }: StaticData) {
   type SortingKey = keyof ReturnType<typeof normalizeData>[number]
 
   const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
 
   const { value: showAdvancedFilters, set: setShowAdvancedFilters } = useLocalStorageValue(
     'showAdvancedFilters',
@@ -96,16 +95,12 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
   }
 
   useEffect(() => {
-    if (!router.isReady) {
-      return
-    }
-
     const [qRace, qClass, qGod, qVersion] = [
-      router.query.race,
-      router.query.class,
-      router.query.god,
-      router.query.version,
-    ].map((x) => castArray(x)[0])
+      searchParams.get('race'),
+      searchParams.get('class'),
+      searchParams.get('god'),
+      searchParams.get('version'),
+    ]
 
     const race = races.find((x) => x.name === qRace)
     const klass = classes.find((x) => x.name === qClass)
@@ -120,9 +115,9 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     ].some(([qItem, item]) => qItem && !item)
 
     if (somethingIsInvalid) {
-      router.replace({
-        query: {},
-      })
+      if (pathname) {
+        router.replace(pathname)
+      }
 
       return
     }
@@ -139,7 +134,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
     if (!every(omit(newFilter, 'version'), (value) => value === FilterValue.Any)) {
       setFilterForSearch((x) => ({ ...x, ...newFilter }))
     }
-  }, [router.isReady])
+  }, [])
 
   const buttonEnabled = _filter(filter, (value) => value !== FilterValue.Any).length > 1
 
@@ -240,31 +235,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
   const isLoading = !data && !error && isValidating
 
   return (
-    <div
-      className={clsx(
-        'container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pb-8 pt-8',
-        !race && !klass && !god && 'md:justify-center md:pt-0',
-      )}
-    >
-      <header>
-        <Logo />
-      </header>
-      <div className="m-auto w-full max-w-md rounded bg-blue-100 px-2 py-1 text-sm text-black">
-        <span className="font-semibold">TL;DR:</span> Choose the race, class or god you want to play
-        (or any combination of these). Press the button to see the win rate of your combination, as
-        well as other people&apos;s games.
-        <br />
-        <br />
-        This tool is under development, for bugs and suggestions DM @totalnoob on{' '}
-        <a
-          href="https://discord.gg/pKCNTunFeW"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline"
-        >
-          RL Discord
-        </a>
-      </div>
+    <Layout centered={!race && !klass && !god}>
       <div className="flex w-full flex-wrap gap-2 md:justify-center">
         I want to play
         <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>
@@ -325,7 +296,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         </Select>
       </div>
 
-      <div className={clsx('space-y-4', !showAdvancedFilters && 'hidden')}>
+      <div className={clsx('space-y-4 max-w-lg w-full', !showAdvancedFilters && 'hidden')}>
         <hr />
         <Filters
           excludeFilters={['Class', 'Race', 'God', 'End', 'Player', 'Version']}
@@ -353,22 +324,18 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
 
               setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
 
-              router.replace(
+              const query = pickBy(
                 {
-                  query: pickBy(
-                    {
-                      race: filter.race,
-                      class: filter.class,
-                      god: filter.god,
-                      version: filter.version,
-                      filter: advancedFilter ? filtersToQuery(advancedFilter) : FilterValue.Any,
-                    },
-                    (value) => value !== FilterValue.Any,
-                  ),
+                  race: filter.race,
+                  class: filter.class,
+                  god: filter.god,
+                  version: filter.version,
+                  filter: advancedFilter ? filtersToQuery(advancedFilter) : FilterValue.Any,
                 },
-                undefined,
-                { shallow: true },
+                (value) => value !== FilterValue.Any,
               )
+
+              window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
             }}
           >
             Time to have some fun!
@@ -381,9 +348,13 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
         <>
           <div className="m-auto w-full max-w-lg space-y-2">
             <hr />
-            <h2 className="text-center text-xl">
-              {race?.name || 'Something'} {klass?.name || 'Something'}{' '}
-              <span className="font-light">of</span> {god?.name || 'Something'}
+            <h2 className="text-center text-2xl pt-2">
+              {race?.name} {klass?.name}{' '}
+              {god && (
+                <>
+                  <span className="font-light">of</span> {god.name}
+                </>
+              )}
             </h2>
             <section className="flex justify-center">
               <WinrateStats games={data.total} wins={data.wins} />
@@ -410,7 +381,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                         !isHidden && (
                           <label
                             key={key}
-                            className={clsx('flex cursor-pointer items-center gap-1')}
+                            className={clsx('flex cursor-pointer items-center gap-1 select-none')}
                           >
                             <input
                               type="radio"
@@ -431,7 +402,7 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                     )}
                   </div>
                 )}
-                <label className="flex cursor-pointer items-center gap-1">
+                <label className="flex cursor-pointer items-center gap-1 select-none">
                   <input
                     checked={showWins}
                     className="cursor-pointer"
@@ -473,8 +444,32 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                   <table className="w-full table-auto">
                     <thead>
                       <tr>
-                        {columns.map(
-                          ([title, sortingKey, type, isVisible = true]) =>
+                        {columns.map(([title, sortingKey, type, isVisible = true]) => {
+                          if (!isVisible) {
+                            return null
+                          }
+
+                          const sortingButton = sorting.key === sortingKey && (
+                            <button>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className={clsx(
+                                  'h-5 w-5 transition-transform',
+                                  sorting.direction === 'asc' ? 'rotate-180' : '',
+                                )}
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </button>
+                          )
+
+                          return (
                             isVisible && (
                               <th
                                 key={title}
@@ -495,30 +490,12 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
                                   }
                                 >
                                   {title}
-
-                                  {sorting.key === sortingKey && (
-                                    <button>
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className={clsx(
-                                          'h-5 w-5 transition-transform',
-                                          sorting.direction === 'asc' ? 'rotate-180' : '',
-                                        )}
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                          clipRule="evenodd"
-                                        />
-                                      </svg>
-                                    </button>
-                                  )}
+                                  {sortingButton}
                                 </div>
                               </th>
-                            ),
-                        )}
+                            )
+                          )
+                        })}
                       </tr>
                     </thead>
                     <tbody>
@@ -590,96 +567,6 @@ const SuggestPage = ({ versions, races, classes, gods, skills }: Props) => {
           )}
         </>
       )}
-    </div>
+    </Layout>
   )
 }
-
-const GameList = (props: { filter: null | Filter[] }) => {
-  const filter = props.filter?.map((item) => omit(item, 'id'))
-
-  const { data, error, size, setSize } = useSWRInfinite(
-    (pageIndex, previousPageData: { data: Game[]; count: number }) => {
-      if (!filter || (previousPageData && previousPageData.data.length === 0)) {
-        return null
-      }
-
-      return ['/search', { filter, after: last(previousPageData?.data)?.id }]
-    },
-    ([url, { filter, after }]) =>
-      api
-        .get<{ data: Game[]; count: number }>(url, { params: { filter, after } })
-        .then((res) => res.data),
-    {
-      revalidateIfStale: false,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateFirstPage: false,
-    },
-  )
-
-  const games = data ? flatten(data.map((x) => x.data)) : []
-  const isLoadingInitialData = !data && !error
-  const isLoadingMore =
-    isLoadingInitialData || (size > 0 && data && typeof data[size - 1] === 'undefined')
-  const isEmpty = data?.[0].data?.length === 0
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10)
-
-  return (
-    <div className="flex-1 py-2 pr-2">
-      {isEmpty ? (
-        <div className="flex items-center justify-center py-16">Nothing found ¯\_(ツ)_/¯</div>
-      ) : (
-        <ul className="space-y-2">
-          {games.map((game) => {
-            return (
-              <li key={game.id}>
-                <GameItem showSkills includePlayer game={game} />
-              </li>
-            )
-          })}
-        </ul>
-      )}
-
-      {!isEmpty && !error && (
-        <div className="flex items-center justify-center pb-4 pt-8">
-          <button
-            className="flex items-center justify-center space-x-1"
-            disabled={isLoadingMore || isReachingEnd}
-            onClick={() => setSize(size + 1)}
-          >
-            <span>{isLoadingMore ? 'Loading' : isReachingEnd ? 'No more games' : 'Load more'}</span>
-            {isLoadingMore && <Loader />}
-          </button>
-        </div>
-      )}
-
-      {isError(error) && (
-        <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
-          <div>Error occured, try to reload the page</div>
-          {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
-        </div>
-      )}
-    </div>
-  )
-}
-
-type Props = Response
-
-type Response = StaticData
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const { data } = await createServerApi().api.get<Response>('/combos')
-
-  return {
-    revalidate: 300,
-    props: {
-      races: orderBy(data.races, (x) => x.name),
-      classes: orderBy(data.classes, (x) => x.name),
-      gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
-      versions: data.versions,
-      skills: data.skills,
-    },
-  }
-}
-
-export default SuggestPage

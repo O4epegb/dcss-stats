@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 import durationPlugin from 'dayjs/plugin/duration'
+import qs from 'qs'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTimePlugin)
@@ -56,4 +57,13 @@ export const trackEvent = (_type: string, _data?: Record<string, string>) => {
 
 export function notEmpty<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined
+}
+
+export const stringifyQuery: typeof qs.stringify = (query, options) => {
+  return qs.stringify(query, {
+    skipNulls: true,
+    arrayFormat: 'repeat',
+    format: 'RFC1738',
+    ...options,
+  })
 }

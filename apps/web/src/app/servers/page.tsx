@@ -4,12 +4,11 @@ import { Logfile, Server } from '~types'
 import { fetchApi } from '~api/server'
 import { Logo } from '~components/Logo'
 
+export const revalidate = 300
+
 const ServersPage = async () => {
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(
     '/servers',
-    {
-      next: { revalidate: 300 },
-    },
   ).then((r) => r.json())
 
   return (
@@ -19,11 +18,22 @@ const ServersPage = async () => {
       </header>
 
       <div className="w-full max-w-lg space-y-2">
-        <h2 className="text-lg font-semibold">Tracking 12 {pluralize('server', 12)}:</h2>
+        <h2 className="text-lg font-semibold">
+          Tracking {servers.length} {pluralize('server', servers.length)}:
+        </h2>
 
-        {servers.map((server) => {
-          const total = server.logfile.reduce((acc, item) => acc + item.games, 0)
+        {orderBy(
+          servers.map((server) => {
+            const totalGames = server.logfile.reduce((acc, item) => acc + item.games, 0)
 
+            return {
+              ...server,
+              totalGames,
+            }
+          }),
+          (server) => server.totalGames,
+          'desc',
+        ).map((server) => {
           return (
             <div key={server.id} className="rounded border px-2 py-1">
               <div className="flex justify-between">
@@ -36,7 +46,7 @@ const ServersPage = async () => {
                   <span className="font-medium">{server.abbreviation}</span> - {server.url}
                 </a>
                 <div className="whitespace-nowrap">
-                  {formatNumber(total)} {pluralize('game', total)}
+                  {formatNumber(server.totalGames)} {pluralize('game', server.totalGames)}
                 </div>
               </div>
               <details>

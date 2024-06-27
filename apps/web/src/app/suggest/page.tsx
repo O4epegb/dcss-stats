@@ -1,13 +1,13 @@
 import { orderBy } from 'lodash-es'
+import { Suspense } from 'react'
 import { StaticData } from '~types'
 import { fetchApi } from '~api/server'
+import { SuggestScreen } from '../../screens/Suggest'
 
-// Quite hard to implement with App Router because shallow routing does not work
+export const revalidate = 300
 
-export default async function Page() {
-  const data: StaticData = await fetchApi('/combos', { next: { revalidate: 300 } }).then((r) =>
-    r.json(),
-  )
+export default async function SuggestPage() {
+  const data: StaticData = await fetchApi('/combos').then((r) => r.json())
 
   const props = {
     races: orderBy(data.races, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
@@ -17,8 +17,11 @@ export default async function Page() {
     versions: data.versions,
   }
 
-  // eslint-disable-next-line no-console
-  console.log(props)
-
-  return <div>search</div>
+  return (
+    <div>
+      <Suspense fallback={null}>
+        <SuggestScreen {...props} />
+      </Suspense>
+    </div>
+  )
 }

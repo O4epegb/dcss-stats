@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import clsx from 'clsx'
-import { castArray, last, first, omit } from 'lodash-es'
-import { useRouter } from 'next/router'
+import { last, first } from 'lodash-es'
+import { useSearchParams } from 'next/navigation'
 import { useUpdateEffect } from '@react-hookz/web'
 import {
   DndContext,
@@ -18,7 +18,8 @@ import {
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable'
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
-import { notEmpty } from '~utils'
+import qs from 'qs'
+import { notEmpty, stringifyQuery } from '~utils'
 import { StaticData } from '~types'
 import { HelpBubble, Tooltip } from '~components/ui/Tooltip'
 import { Select } from '../ui/Select'
@@ -142,7 +143,7 @@ export const Filters = ({
   onSubmit,
   onFiltersChange,
 }: Props) => {
-  const router = useRouter()
+  const searchParams = useSearchParams()
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
@@ -170,11 +171,7 @@ export const Filters = ({
     })
 
   useEffect(() => {
-    if (!router.isReady) {
-      return
-    }
-
-    const queryFilters = castArray(router.query.filter).filter(notEmpty)
+    const queryFilters = searchParams.getAll('filter').filter(notEmpty)
 
     let potentialFilters: Filter[] = queryFilters
       .map((item) => {
@@ -215,13 +212,13 @@ export const Filters = ({
     }
 
     if (potentialFilters.length !== queryFilters.length) {
-      router.replace(
-        {
-          query: omit(router.query, 'filter'),
-        },
-        undefined,
-        { shallow: true },
-      )
+      potentialFilters = getDefaultFilters()
+
+      const params = new URLSearchParams(searchParams.toString())
+
+      params.delete('filter')
+
+      window.history.replaceState(null, '', `?${params.toString()}`)
     } else if (queryFilters.length === 0) {
       potentialFilters = getDefaultFilters()
     }
@@ -230,7 +227,7 @@ export const Filters = ({
 
     onInit(nonEmptyFilters)
     setFilters(potentialFilters)
-  }, [router.isReady])
+  }, [])
 
   useUpdateEffect(() => {
     const nonEmptyFilters = filters.filter((x) => x.value && x.condition)
@@ -548,16 +545,11 @@ export const Filters = ({
               className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
               onClick={() => {
                 const nonEmptyFilters = filters.filter((x) => x.value)
+                const currentQuery = qs.parse(searchParams?.toString() ?? '')
+                const query = { ...currentQuery, filter: filtersToQuery(nonEmptyFilters) }
 
                 onSubmit(nonEmptyFilters)
-
-                router.replace(
-                  { query: { ...router.query, filter: filtersToQuery(nonEmptyFilters) } },
-                  undefined,
-                  {
-                    shallow: true,
-                  },
-                )
+                window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
               }}
             >
               This is how I like it!

@@ -1,11 +1,12 @@
+'use client'
+
 import { useState } from 'react'
-import { GetStaticProps } from 'next'
-import { orderBy, last, flatten, first, omit, isError } from 'lodash-es'
+import { last, flatten, first, omit, isError } from 'lodash-es'
 import useSWRInfinite from 'swr/infinite'
+import Link from 'next/link'
 import { api } from '~api'
 import { Game, StaticData } from '~types'
 import { formatNumber } from '~utils'
-import { createServerApi } from '~api/server'
 import { Logo } from '~components/Logo'
 import { Loader } from '~components/ui/Loader'
 import { GameItem } from '~components/GameItem'
@@ -19,7 +20,7 @@ import { HelpBubble } from '~components/ui/Tooltip'
 // send options from BE
 // send maximum filters from the backend
 
-const SearchPage = ({ races, classes, gods, skills, versions }: Props) => {
+export const SearchScreen = ({ classes, gods, races, skills, versions }: StaticData) => {
   const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null)
 
   const { data, error, size, setSize } = useSWRInfinite(
@@ -55,7 +56,9 @@ const SearchPage = ({ races, classes, gods, skills, versions }: Props) => {
     <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pb-4 pt-4">
       <header className="flex items-center gap-4 divide-x">
         <Logo />
-        <h2 className="pl-4 text-2xl">Search</h2>
+        <h2 className="pl-4 text-2xl">
+          <Link href="/search">Search</Link>
+        </h2>
       </header>
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
@@ -119,24 +122,3 @@ const SearchPage = ({ races, classes, gods, skills, versions }: Props) => {
     </div>
   )
 }
-
-type Props = Response
-
-type Response = StaticData
-
-export const getStaticProps: GetStaticProps<Props> = async () => {
-  const { data } = await createServerApi().api.get<Response>('/combos')
-
-  return {
-    revalidate: 300,
-    props: {
-      races: orderBy(data.races, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
-      classes: orderBy(data.classes, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
-      gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
-      skills: data.skills,
-      versions: data.versions,
-    },
-  }
-}
-
-export default SearchPage
