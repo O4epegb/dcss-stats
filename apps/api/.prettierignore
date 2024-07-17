@@ -1,0 +1,9 @@
+node_modules
+.next
+out
+yarn.lock
+package-lock.json
+public
+.stylelint
+.yarn
+/logfiles

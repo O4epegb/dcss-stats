@@ -1,0 +1,9 @@
+.git
+.vscode
+node_modules
+**/node_modules
+
+build
+npm-debug
+apps/api/logfiles
+apps/web

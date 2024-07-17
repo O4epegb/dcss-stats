@@ -10,17 +10,21 @@
     "build": "turbo build",
     "format": "turbo format",
     "lint": "turbo lint",
-    "test": "turbo test"
+    "test": "turbo test",
+    "start:api": "yarn workspace @dcss-stats/api start"
   },
   "devDependencies": {
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
-    "turbo": "^2.0.6"
+    "turbo": "^2.0.7"
   },
   "lint-staged": {
     "*": [
       "prettier --write --ignore-unknown"
     ]
   },
-  "packageManager": "yarn@4.2.2"
+  "packageManager": "yarn@4.3.1",
+  "engines": {
+    "node": ">=18"
+  }
 }

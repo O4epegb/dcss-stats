@@ -1,0 +1,135 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+model Server {
+  id           String    @id @default(cuid())
+  name         String    @unique
+  abbreviation String    @unique
+  url          String    @unique
+  baseUrl      String
+  morgueUrl    String?
+  logfile      Logfile[]
+}
+
+model Logfile {
+  id              String   @id @default(cuid())
+  path            String
+  version         String
+  serverId        String
+  server          Server   @relation(fields: [serverId], references: [id])
+  game            Game[]
+  lastFetched     DateTime @default(now())
+  bytesRead       Int      @default(0)
+  morgueUrlPrefix String?
+
+  DuplicateGame DuplicateGame[]
+  InvalidGame   InvalidGame[]
+
+  @@unique([serverId, path])
+}
+
+model Player {
+  id    String  @id
+  name  String  @unique
+  game  Game[]
+  isBot Boolean @default(false)
+}
+
+model Game {
+  id              String   @id
+  isWin           Boolean
+  startAt         DateTime
+  endAt           DateTime
+  version         String
+  versionShort    String
+  score           Int
+  xl              Int
+  race            String
+  class           String
+  normalizedRace  String
+  normalizedClass String?
+  raceAbbr        String
+  classAbbr       String
+  char            String
+  title           String
+  endMessage      String
+  turns           Int
+  duration        Int
+  uniqueRunes     Int
+  runes           Int
+  branch          String
+  lvl             Int
+  fifteenskills   String[]
+  maxskills       String[]
+  name            String
+  str             Int
+  int             Int
+  dex             Int
+  ac              Int?
+  ev              Int?
+  sh              Int?
+  god             String?
+  piety           Int?
+  killer          String?
+  scrollsused     Int?
+  potionsused     Int?
+  gold            Int?
+  goldfound       Int?
+  goldspent       Int?
+  playerId        String
+  player          Player   @relation(fields: [playerId], references: [id])
+  logfileId       String
+  logfile         Logfile  @relation(fields: [logfileId], references: [id])
+
+  @@index([playerId])
+  @@index([playerId, startAt])
+  @@index([playerId, endAt])
+  @@index([startAt])
+  @@index([endAt])
+  @@index([versionShort])
+  @@index([normalizedClass])
+  @@index([normalizedRace])
+  @@index([god])
+}
+
+model DuplicateGame {
+  id        String   @id @default(cuid())
+  gameId    String
+  logfileId String
+  logfile   Logfile  @relation(fields: [logfileId], references: [id])
+  logLine   String
+  createdAt DateTime @default(now())
+}
+
+model InvalidGame {
+  id        String   @id @default(cuid())
+  logfileId String
+  logfile   Logfile  @relation(fields: [logfileId], references: [id])
+  logLine   String
+  missing   String   @default("")
+  createdAt DateTime @default(now())
+}
+
+model Race {
+  name  String  @unique
+  abbr  String  @unique @db.Char(2)
+  trunk Boolean @default(true)
+}
+
+model Class {
+  name  String  @unique
+  abbr  String  @unique @db.Char(2)
+  trunk Boolean @default(true)
+}
+
+model God {
+  name  String  @unique
+  trunk Boolean @default(true)
+}

@@ -1,0 +1,15 @@
+stages:
+  - deploy
+
+variables:
+  IMAGE_TAG: dcss-db
+
+compose:
+  stage: deploy
+  when: manual
+  # Makes other non manual tasks wait for this task to complete
+  allow_failure: false
+  only:
+    - master
+  script:
+    - docker compose -f ./apps/api/docker-compose.yml up --build --remove-orphans -d

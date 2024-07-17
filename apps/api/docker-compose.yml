@@ -1,0 +1,54 @@
+name: 'dcss-api'
+
+services:
+  app:
+    restart: always
+    environment:
+      - TWITCH_SECRET
+    build:
+      context: ../../
+      dockerfile: ./apps/api/Dockerfile
+    ports:
+      - '1444:1444'
+      - '5555:5555'
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - /app-volume:/usr/src/app/apps/api/logfiles
+
+  postgres:
+    container_name: postgres16
+    restart: always
+    image: postgres:16
+    volumes:
+      - postgres16-volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    command:
+      - 'postgres'
+      - '-c'
+      - 'random_page_cost=1.1'
+      - '-c'
+      - 'max_wal_size=8GB'
+      - '-c'
+      - 'min_wal_size=2GB'
+      - '-c'
+      - 'temp_file_limit=20GB'
+      - '-c'
+      - 'wal_buffers=16MB'
+      - '-c'
+      - 'effective_io_concurrency=200'
+      - '-c'
+      - 'bgwriter_delay=50ms'
+      - '-c'
+      - 'bgwriter_lru_maxpages=200'
+
+volumes:
+  app-volume:
+  postgres16-volume:

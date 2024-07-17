@@ -1,0 +1,55 @@
+import { orderBy } from 'lodash-es'
+
+export const LIMIT = 10
+
+export const draconians = [
+  'Yellow Draconian',
+  'Grey Draconian',
+  'White Draconian',
+  'Green Draconian',
+  'Purple Draconian',
+  'Black Draconian',
+  'Red Draconian',
+  'Pale Draconian',
+]
+
+export const skills = orderBy(
+  [
+    { name: 'Fighting', trunk: true },
+    { name: 'Short Blades', trunk: true },
+    { name: 'Long Blades', trunk: true },
+    { name: 'Axes', trunk: true },
+    { name: 'Maces & Flails', trunk: true },
+    { name: 'Polearms', trunk: true },
+    { name: 'Staves', trunk: true },
+    { name: 'Slings', trunk: false },
+    { name: 'Ranged Weapons', trunk: true },
+    { name: 'Crossbows', trunk: false },
+    { name: 'Throwing', trunk: true },
+    { name: 'Armour', trunk: true },
+    { name: 'Dodging', trunk: true },
+    { name: 'Stealth', trunk: true },
+    { name: 'Stabbing', trunk: false },
+    { name: 'Shields', trunk: true },
+    { name: 'Traps', trunk: false },
+    { name: 'Unarmed Combat', trunk: true },
+    { name: 'Spellcasting', trunk: true },
+    { name: 'Shapeshifting', trunk: true },
+    { name: 'Conjurations', trunk: true },
+    { name: 'Hexes', trunk: true },
+    { name: 'Charms', trunk: false },
+    { name: 'Summonings', trunk: true },
+    { name: 'Necromancy', trunk: true },
+    { name: 'Translocations', trunk: true },
+    { name: 'Transmutations', trunk: true },
+    { name: 'Fire Magic', trunk: true },
+    { name: 'Ice Magic', trunk: true },
+    { name: 'Air Magic', trunk: true },
+    { name: 'Earth Magic', trunk: true },
+    { name: 'Poison Magic', trunk: true },
+    { name: 'Invocations', trunk: true },
+    { name: 'Evocations', trunk: true },
+  ],
+  [(x) => x.trunk, (x) => x.name],
+  ['desc', 'asc'],
+)
