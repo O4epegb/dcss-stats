@@ -168,6 +168,25 @@ export const data = {
   ],
   servers: [
     {
+      name: 'Nemelex',
+      abbreviation: 'CNC',
+      url: 'https://crawl.nemelex.cards',
+      baseUrl: 'https://archive.nemelex.cards',
+      morgueUrl: 'https://archive.nemelex.cards/morgue',
+      logfiles: [
+        ...range(11, 32).map((version) => ({
+          path: `/meta/crawl-0.${version}/logfile`,
+          version: `0.${version}`,
+          morgueUrlPrefix: undefined,
+        })),
+        {
+          path: `/crawl/meta/crawl-git/logfile`,
+          version: 'git',
+          morgueUrlPrefix: undefined,
+        },
+      ],
+    },
+    {
       name: 'crawl.dcss.io',
       abbreviation: 'CDI',
       url: 'https://crawl.dcss.io',
