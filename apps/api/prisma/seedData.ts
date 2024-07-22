@@ -180,7 +180,7 @@ export const data = {
           morgueUrlPrefix: undefined,
         })),
         {
-          path: `/crawl/meta/crawl-git/logfile`,
+          path: `/meta/crawl-git/logfile`,
           version: 'git',
           morgueUrlPrefix: undefined,
         },
