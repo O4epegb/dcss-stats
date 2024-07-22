@@ -340,9 +340,9 @@ export const Filters = ({
                                   state.map((x) => {
                                     return x !== filter
                                       ? x
-                                      : getDefaultFilters().find(
+                                      : (getDefaultFilters().find(
                                           (x) => x.option === e.target.value,
-                                        ) ?? x
+                                        ) ?? x)
                                   }),
                                 )
                               }}

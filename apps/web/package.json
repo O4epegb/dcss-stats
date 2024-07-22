@@ -11,11 +11,11 @@
     "test": "yarn lint && yarn type-check"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
-      "eslint --max-warnings 0"
-    ],
     "*": [
       "prettier --write --ignore-unknown"
+    ],
+    "*.{ts,tsx}": [
+      "eslint --max-warnings 0"
     ]
   },
   "dependencies": {
