@@ -4,28 +4,70 @@
 
 # [DCSS Stats](https://dcss-stats.vercel.app/)
 
+[Dungeon Crawl Stone Soup](https://crawl.develz.org/) statistics app.
+
 <a href="https://www.buymeacoffee.com/totalnoob" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee" style="height: 60px !important;width: 217px !important;" ></a>
 
-### Install required packages
+### Prerequisites
 
-This is a monorepo, so you need to install packages in the root folder with `yarn`:
+- [Node.js](https://nodejs.org/)
+- [Yarn](https://yarnpkg.com/)
+- (for the BE) [Docker Compose](https://docs.docker.com/compose/) or local Postgres database
 
-`yarn install`
+### Bootstrap local development
 
-Use `yarn` to install, other package managers will probably not work.
+```sh
+yarn bootstrap
+```
 
-If you want to update packages use `yarn upgrade-interactive`
+It will install all npm dependencies, run Postgres with Docker Compose and create seeded database.
 
 ### Run development mode
 
-`yarn dev`
+```sh
+yarn dev
+```
 
-Frontend server runs on `7331` port by default, you can change it with `-p` flag:
+It will start both frontend and backend in development mode.
 
-`yarn dev -- -p 8888`
+### Install packages (if not using `yarn bootstrap`)
 
-Note that `--` is used to pass arguments (because of https://turbo.build/)
+This is a `yarn` monorepo, so you need to install packages in the root folder with:
+
+`yarn install`
+
+Use `yarn` to install, other package managers are not recommended.
+
+If you want to update package versions use `yarn upgrade-interactive`
+
+### Frontend
+
+If you only want to run frontend, point `NEXT_PUBLIC_ROOT_URL` env variable to the production backend at `https://dcss-stats.vercel.app`:
+
+```yml
+NEXT_PUBLIC_ROOT_URL="https://dcss-stats.vercel.app"
+```
+
+Then run frontend with:
+
+```sh
+yarn dev --filter=@dcss-stats/web
+```
+
+### Backend
+
+Start Postgres with Docker Compose:
+
+```sh
+yarn workspace @dcss-stats/api compose
+```
+
+Run backend with:
+
+```sh
+yarn dev --filter=@dcss-stats/api
+```
 
 ### Environment variables
 
-If you want to change some environment variables only for your local development then you need to make `.env.local` file. Check other `.env*` files or just search for `NEXT_PUBLIC_` to see what variables are being used.
+If you want to change some environment variables only for your local development then you need to make `.env.local` file. Check other `.env*` files or search for `NEXT_PUBLIC_` to see what variables are being used.

@@ -6,6 +6,7 @@
   ],
   "scripts": {
     "prepare": "husky",
+    "bootstrap": "yarn install && turbo bootstrap",
     "dev": "turbo dev",
     "build": "turbo build",
     "format": "turbo format",
