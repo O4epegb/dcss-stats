@@ -34,7 +34,9 @@ It will start both frontend and backend in development mode.
 
 This is a `yarn` monorepo, so you need to install packages in the root folder with:
 
-`yarn install`
+```sh
+yarn install
+```
 
 Use `yarn` to install, other package managers are not recommended.
 
