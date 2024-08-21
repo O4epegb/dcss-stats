@@ -97,6 +97,7 @@ model Game {
   @@index([normalizedClass])
   @@index([normalizedRace])
   @@index([god])
+  @@index([isWin])
 }
 
 model DuplicateGame {
