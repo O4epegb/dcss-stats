@@ -30,7 +30,7 @@
     "@bugsnag/js": "^7.25.0",
     "@fastify/cors": "^8.5.0",
     "@fastify/type-provider-typebox": "^3.6.0",
-    "@prisma/client": "^5.17.0",
+    "@prisma/client": "^5.18.0",
     "@sinclair/typebox": "^0.29.6",
     "axios": "^1.7.2",
     "dayjs": "^1.11.11",
@@ -41,7 +41,7 @@
     "node-object-hash": "^3.0.0",
     "p-queue": "^7.4.1",
     "pretty-bytes": "^6.1.1",
-    "prisma": "^5.17.0",
+    "prisma": "^5.18.0",
     "qs": "^6.12.3",
     "semver": "^7.6.3",
     "tsx": "^4.16.2"
