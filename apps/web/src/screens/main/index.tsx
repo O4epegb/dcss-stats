@@ -8,6 +8,7 @@ import { ThemeSelector } from '~components/ThemeSelector'
 import { Search } from './Search'
 import { Stats } from './Stats'
 import { Footer } from './Footer'
+import { TournamentBanner } from './TournamentBanner'
 
 export const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false)
@@ -40,6 +41,9 @@ export const MainPage = (props: Props) => {
           query={query}
           setQuery={setQuery}
         />
+
+        <TournamentBanner />
+
         <Stats {...props} onLinkClick={onLinkClick} />
 
         <Footer />

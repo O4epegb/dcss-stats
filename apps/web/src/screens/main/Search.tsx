@@ -70,7 +70,7 @@ export const Search = ({
       )}
 
       <input
-        placeholder={`Type player name, e.g. "${nickname}"`}
+        placeholder={`Search player by nickname, e.g. "${nickname}"`}
         className="block h-10 w-full rounded border border-gray-400 px-2"
         {...getInputProps({
           value: query,
