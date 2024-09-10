@@ -33,7 +33,7 @@ export const Search = ({
     ['/players', debouncedQuery],
     ([url, query]) => {
       return !query
-        ? []
+        ? undefined
         : api.get<{ data: Array<SearchItem> }>(url, { params: { query } }).then((res) => {
             const target = query.toLowerCase()
             return orderBy(res.data.data, (x) => startsWith(x.name.toLowerCase(), target), 'desc')

@@ -185,7 +185,7 @@ __metadata:
     axios: "npm:^1.7.2"
     clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.11"
-    downshift: "npm:^9.0.6"
+    downshift: "npm:^9.0.8"
     eslint: "npm:^9.7.0"
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-import: "npm:^2.29.1"
@@ -2455,9 +2455,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"downshift@npm:^9.0.6":
-  version: 9.0.6
-  resolution: "downshift@npm:9.0.6"
+"downshift@npm:^9.0.8":
+  version: 9.0.8
+  resolution: "downshift@npm:9.0.8"
   dependencies:
     "@babel/runtime": "npm:^7.24.5"
     compute-scroll-into-view: "npm:^3.1.0"
@@ -2466,7 +2466,7 @@ __metadata:
     tslib: "npm:^2.6.2"
   peerDependencies:
     react: ">=16.12.0"
-  checksum: 10/e84ceba61429694395e6c2ab7213e76d6807a87ceb52b0db08642120ac6d6affc74426772431df29741d571743143316a11e6a815280bed4bbc1113cd83849b1
+  checksum: 10/9dc4577e780c54742ba4dde11f481f0d839f001b309200fbe4db112385b227ccd9cd2ef97d9e995379fa70249f0664a562240e415b9966f18c8a5cb7ce435f2c
   languageName: node
   linkType: hard
 
