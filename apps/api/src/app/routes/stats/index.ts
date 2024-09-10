@@ -2,7 +2,9 @@ import dayjs from 'dayjs'
 import { prisma } from '~/prisma'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
-import { getStaticData, getTopStats, getCombosData } from '../../getters'
+import { getTopStats } from '~/app/getters/getTopStats'
+import { getCombosData } from '~/app/getters/getCombosData'
+import { getStaticData } from '../../getters/getStaticData'
 
 export const statsRoute = (app: AppType) => {
   app.get<{
@@ -14,7 +16,7 @@ export const statsRoute = (app: AppType) => {
     const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
 
     const getData = async () => {
-      const [races, classes, gods, versions] = await getStaticData()
+      const { races, classes, gods, versions } = await getStaticData()
 
       const [games, wins, combosData] = await Promise.all([
         prisma.game.count(),

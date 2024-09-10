@@ -1,9 +1,13 @@
 import { first, groupBy, omit, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { draconians, LIMIT } from '~/app/constants'
-import { findGames, getMatrix, getStaticData, getStats, getStreaks } from '~/app/getters'
 import { prisma } from '~/prisma'
 import { cache, ttl } from '~/app/cache'
+import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
+import { getMatrix } from '~/app/getters/getMatrix'
+import { getStreaks } from '~/app/getters/getStreaks'
+import { getAggregatedPlayerStats } from '~/app/getters/getAggregatedPlayerStats'
+import { getStaticData } from '~/app/getters/getStaticData'
 
 export const playersRoute = (app: AppType) => {
   app.get<{
@@ -75,38 +79,31 @@ export const playersRoute = (app: AppType) => {
         return null
       }
 
-      const [
-        [races, classes, allGods],
-        games,
-        firstGames,
-        lastGames,
-        stats,
-        lowestXlWins,
-        streaks,
-      ] = await Promise.all([
-        getStaticData(),
-        prisma.game.findMany({
-          where: { playerId: player.id },
-          orderBy: { startAt: 'asc' },
-        }),
-        findGames({
-          where: { playerId: player.id },
-          take: 1,
-          orderBy: { startAt: 'asc' },
-        }),
-        findGames({
-          where: { playerId: player.id },
-          take: LIMIT,
-          orderBy: { startAt: 'desc' },
-        }),
-        getStats(player),
-        findGames({
-          where: { playerId: player.id, isWin: true },
-          take: 1,
-          orderBy: [{ xl: 'asc' }, { endAt: 'asc' }],
-        }),
-        getStreaks(player),
-      ])
+      const [{ races, classes, gods }, games, firstGames, lastGames, stats, lowestXlWins, streaks] =
+        await Promise.all([
+          getStaticData(),
+          prisma.game.findMany({
+            where: { playerId: player.id },
+            orderBy: { startAt: 'asc' },
+          }),
+          findGamesIncludeServer({
+            where: { playerId: player.id },
+            take: 1,
+            orderBy: { startAt: 'asc' },
+          }),
+          findGamesIncludeServer({
+            where: { playerId: player.id },
+            take: LIMIT,
+            orderBy: { startAt: 'desc' },
+          }),
+          getAggregatedPlayerStats(player),
+          findGamesIncludeServer({
+            where: { playerId: player.id, isWin: true },
+            take: 1,
+            orderBy: [{ xl: 'asc' }, { endAt: 'asc' }],
+          }),
+          getStreaks(player),
+        ])
 
       const wins = games.filter((x) => x.isWin)
       const firstWin = wins[0]
@@ -148,7 +145,7 @@ export const playersRoute = (app: AppType) => {
         lowestXlWin: lowestXlWins[0] || null,
         diedWithRunes: games.filter((game) => !game.isWin && game.runes > 0).length,
         ...getMatrix(games),
-        gods: allGods.map((god) => ({
+        gods: gods.map((god) => ({
           ...god,
           win: Boolean(winsByGodName[god.name]),
           wins: winsByGodName[god.name]?.length ?? 0,

@@ -1,8 +1,9 @@
 import { Static, Type } from '@sinclair/typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
-import { getStaticData, getCombosData } from '~/app/getters'
 import { prisma } from '~/prisma'
+import { getStaticData } from '~/app/getters/getStaticData'
+import { getCombosData } from '~/app/getters/getCombosData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '../search'
 
 export const suggestRoute = (app: AppType) => {
@@ -22,7 +23,7 @@ export const suggestRoute = (app: AppType) => {
     async (request, reply) => {
       const { race: raceAbbr, class: classAbbr, god: godName, version, filter = [] } = request.query
 
-      const [races, classes, gods, versions] = await getStaticData()
+      const { races, classes, gods, versions } = await getStaticData()
 
       const race = races.find((r) => r.abbr === raceAbbr)
       const cls = classes.find((c) => c.abbr === classAbbr)

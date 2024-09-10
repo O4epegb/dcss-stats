@@ -3,10 +3,10 @@ import { Prisma } from '@prisma/client'
 import { Static, Type } from '@sinclair/typebox'
 import { AppType } from '~/app/app'
 import { LIMIT } from '~/app/constants'
-import { findGames } from '~/app/getters'
 import { isDefined } from '~/utils'
 import { UnpackedArray } from '~/types'
 import { prisma } from '~/prisma'
+import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 
 export const filterQuerystringPart = Type.Optional(
   Type.Array(
@@ -57,7 +57,7 @@ export const searchRoute = (app: AppType) => {
                 { estimate: number }[]
               >`SELECT reltuples AS estimate FROM pg_class WHERE relname = 'Game';`
             : prisma.game.count({ where }),
-        findGames({
+        findGamesIncludeServer({
           where,
           take: LIMIT,
           skip: after ? 1 : undefined,

@@ -12,12 +12,15 @@
     "format": "turbo format",
     "lint": "turbo lint",
     "test": "turbo test",
-    "start:api": "yarn workspace @dcss-stats/api start"
+    "type-check": "turbo type-check",
+    "start:api": "yarn workspace @dcss-stats/api start",
+    "dev:web": "turbo dev --filter=@dcss-stats/web",
+    "dev:api": "turbo dev --filter=@dcss-stats/api"
   },
   "devDependencies": {
     "husky": "^9.0.11",
     "lint-staged": "^15.2.7",
-    "turbo": "^2.0.14"
+    "turbo": "^2.1.1"
   },
   "lint-staged": {
     "*": [

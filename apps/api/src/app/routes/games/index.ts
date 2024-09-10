@@ -3,8 +3,8 @@ import { Prisma } from '@prisma/client'
 import { Static, Type } from '@sinclair/typebox'
 import { AppType } from '~/app/app'
 import { LIMIT } from '~/app/constants'
-import { findGames } from '~/app/getters'
 import { prisma } from '~/prisma'
+import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 
 export const gamesRoute = (app: AppType) => {
   const GamesQuerystring = Type.Object({
@@ -67,7 +67,7 @@ export const gamesRoute = (app: AppType) => {
         prisma.game.count({
           where,
         }),
-        findGames(
+        findGamesIncludeServer(
           {
             where,
             take: LIMIT,
@@ -91,7 +91,7 @@ export const gamesRoute = (app: AppType) => {
       id: string
     }
   }>('/api/games/:id', async (request, reply) => {
-    const [game] = await findGames({
+    const [game] = await findGamesIncludeServer({
       where: { id: request.params.id },
     })
 

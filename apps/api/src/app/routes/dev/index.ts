@@ -1,6 +1,7 @@
 import { uniq, groupBy, filter, orderBy } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { getStaticData, getMatrix } from '~/app/getters'
+import { getMatrix } from '~/app/getters/getMatrix'
+import { getStaticData } from '~/app/getters/getStaticData'
 import { prisma } from '~/prisma'
 
 export const devRoute = (app: AppType) => {
@@ -46,7 +47,7 @@ export const devRoute = (app: AppType) => {
 
   app.get('/api/dev/info', async () => {
     getStaticData.cache.clear?.()
-    const [races, classes] = await getStaticData()
+    const { races, classes } = await getStaticData()
 
     const [nonNormalizedRaces, nonNormalizedRaceAbbrs] = await Promise.all([
       prisma.game.findMany({
