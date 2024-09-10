@@ -1,5 +1,5 @@
-import { FC } from 'react'
 import clsx from 'clsx'
+import { FC } from 'react'
 
 export const Select: FC<React.SelectHTMLAttributes<HTMLSelectElement>> = ({
   className,

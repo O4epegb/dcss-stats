@@ -1,5 +1,5 @@
-import { keys, pickBy, without } from 'lodash-es'
 import fse from 'fs-extra'
+import { keys, pickBy, without } from 'lodash-es'
 
 const splitRegExp = /(?:[^:]|::)+/g
 const keyValueRegExp = /(?:[^=])+/g

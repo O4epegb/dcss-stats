@@ -1,10 +1,10 @@
 import { Static, Type } from '@sinclair/typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
-import { prisma } from '~/prisma'
-import { getStaticData } from '~/app/getters/getStaticData'
 import { getCombosData } from '~/app/getters/getCombosData'
-import { filterQuerystringPart, getWhereQueryFromFilter } from '../search'
+import { getStaticData } from '~/app/getters/getStaticData'
+import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
+import { prisma } from '~/prisma'
 
 export const suggestRoute = (app: AppType) => {
   const SuggestQuery = Type.Object({

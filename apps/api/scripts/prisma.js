@@ -1,7 +1,7 @@
-import { config } from 'dotenv-flow'
+import { spawn } from 'child_process'
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import { spawn } from 'child_process'
+import { config } from 'dotenv-flow'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 

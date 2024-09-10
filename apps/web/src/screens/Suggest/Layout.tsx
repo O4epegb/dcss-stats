@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { PropsWithChildren } from 'react'
-import { Logo } from '~components/Logo'
+import { Logo } from '~/components/Logo'
 
 export const Layout = ({ centered, children }: PropsWithChildren<{ centered: boolean }>) => {
   return (

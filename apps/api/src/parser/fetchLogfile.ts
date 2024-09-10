@@ -1,8 +1,8 @@
-import prettyBytes from 'pretty-bytes'
-import fse from 'fs-extra'
-import dayjs from 'dayjs'
-import util from 'util'
 import { exec } from 'child_process'
+import util from 'util'
+import dayjs from 'dayjs'
+import fse from 'fs-extra'
+import prettyBytes from 'pretty-bytes'
 
 const pExec = util.promisify(exec)
 

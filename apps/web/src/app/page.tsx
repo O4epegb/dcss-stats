@@ -1,6 +1,6 @@
 import { sample } from 'lodash-es'
-import { fetchApi } from '~api/server'
-import { MainPage, Response } from '~screens/main'
+import { fetchApi } from '~/api/server'
+import { MainPage, Response } from '~/screens/main'
 
 const nicknames = [
   'MegaDestroyer3000',

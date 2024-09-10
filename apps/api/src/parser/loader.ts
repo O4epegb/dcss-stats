@@ -1,10 +1,10 @@
-import PQueue from 'p-queue'
 import dayjs from 'dayjs'
 import { last, shuffle } from 'lodash-es'
+import PQueue from 'p-queue'
 import semver from 'semver'
-import { LogfileWithServer } from '../types'
-import { getLocalLogPath, getRemoteLogPath, isDefined } from '../utils'
-import { prisma } from '../prisma'
+import { prisma } from '~/prisma'
+import { LogfileWithServer } from '~/types'
+import { getLocalLogPath, getRemoteLogPath, isDefined } from '~/utils'
 import { fetchLogfile } from './fetchLogfile'
 
 const oneMinuteInMs = 60 * 1000

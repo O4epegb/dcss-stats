@@ -1,7 +1,5 @@
 'use client'
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import { useLocalStorageValue } from '@react-hookz/web'
 import clsx from 'clsx'
 import {
@@ -17,17 +15,19 @@ import {
   flow,
   orderBy,
 } from 'lodash-es'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
-import { Class, God, Race, StaticData } from '~types'
-import { formatNumber, notEmpty, stringifyQuery } from '~utils'
-import { api } from '~api'
-import { Tooltip } from '~components/ui/Tooltip'
-import { Filter, Filters, filtersToQuery } from '~components/Filters'
-import { Select } from '~components/ui/Select'
-import { WinrateStats } from '~components/WinrateStats'
-import { Loader } from '~components/ui/Loader'
-import { Layout } from './Layout'
+import { api } from '~/api'
+import { Filter, Filters, filtersToQuery } from '~/components/Filters'
+import { WinrateStats } from '~/components/WinrateStats'
+import { Loader } from '~/components/ui/Loader'
+import { Select } from '~/components/ui/Select'
+import { Tooltip } from '~/components/ui/Tooltip'
+import { Class, God, Race, StaticData } from '~/types'
+import { formatNumber, notEmpty, stringifyQuery } from '~/utils'
 import { GameList } from './GameList'
+import { Layout } from './Layout'
 
 export const revalidate = 300
 

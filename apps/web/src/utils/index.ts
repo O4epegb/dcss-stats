@@ -1,7 +1,7 @@
 import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 import durationPlugin from 'dayjs/plugin/duration'
+import relativeTimePlugin from 'dayjs/plugin/relativeTime'
+import utc from 'dayjs/plugin/utc'
 import qs from 'qs'
 
 dayjs.extend(utc)

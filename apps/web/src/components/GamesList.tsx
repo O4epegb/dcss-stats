@@ -1,11 +1,11 @@
+import { useFirstMountState } from '@react-hookz/web'
 import clsx from 'clsx'
 import { last, throttle } from 'lodash-es'
 import { useState, useEffect } from 'react'
-import { useFirstMountState } from '@react-hookz/web'
-import { api } from '~api'
-import { Game } from '~types'
-import { Loader } from './ui/Loader'
+import { api } from '~/api'
+import { Game } from '~/types'
 import { CompactGameItem, GameItem } from './GameItem'
+import { Loader } from './ui/Loader'
 
 export const GamesList = (props: {
   initialTotal: number

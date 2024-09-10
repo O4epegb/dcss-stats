@@ -1,5 +1,5 @@
-import { expect, test, describe } from 'vitest'
 import semver from 'semver'
+import { expect, test, describe } from 'vitest'
 import { getFetchTimeout } from './loader'
 
 const shortTimeout = 300000

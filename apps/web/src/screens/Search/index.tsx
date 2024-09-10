@@ -1,17 +1,17 @@
 'use client'
 
-import { useState } from 'react'
 import { last, flatten, first, omit, isError } from 'lodash-es'
-import useSWRInfinite from 'swr/infinite'
 import Link from 'next/link'
-import { api } from '~api'
-import { Game, StaticData } from '~types'
-import { formatNumber } from '~utils'
-import { Logo } from '~components/Logo'
-import { Loader } from '~components/ui/Loader'
-import { GameItem } from '~components/GameItem'
-import { Filter, Filters } from '~components/Filters'
-import { HelpBubble } from '~components/ui/Tooltip'
+import { useState } from 'react'
+import useSWRInfinite from 'swr/infinite'
+import { api } from '~/api'
+import { Filter, Filters } from '~/components/Filters'
+import { GameItem } from '~/components/GameItem'
+import { Logo } from '~/components/Logo'
+import { Loader } from '~/components/ui/Loader'
+import { HelpBubble } from '~/components/ui/Tooltip'
+import { Game, StaticData } from '~/types'
+import { formatNumber } from '~/utils'
 
 // Order by
 // Hotkey for submit

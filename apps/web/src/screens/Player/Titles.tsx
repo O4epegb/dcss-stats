@@ -1,7 +1,7 @@
 import { map } from 'lodash-es'
-import { pluralize, trackEvent } from '~utils'
-import { useSlicedList } from '~hooks/useSlicedList'
-import { GameTooltip } from '~components/GameTooltip'
+import { GameTooltip } from '~/components/GameTooltip'
+import { useSlicedList } from '~/hooks/useSlicedList'
+import { pluralize, trackEvent } from '~/utils'
 import { usePlayerPageContext } from './context'
 
 export const Titles = () => {

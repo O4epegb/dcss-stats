@@ -1,6 +1,6 @@
-import React, { ComponentType, ErrorInfo, ReactNode } from 'react'
 import Bugsnag from '@bugsnag/js'
 import BugsnagPluginReact from '@bugsnag/plugin-react'
+import React, { ComponentType, ErrorInfo, ReactNode } from 'react'
 
 const isBugsnagEnabled = process.env.NEXT_PUBLIC_APP_ENV === 'production'
 

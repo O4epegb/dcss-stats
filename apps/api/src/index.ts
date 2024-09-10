@@ -1,8 +1,8 @@
 import './env'
 import Bugsnag from '@bugsnag/js'
 import { app } from './app'
-import { prisma } from './prisma'
 import { startParsing } from './parser'
+import { prisma } from './prisma'
 
 if (process.env.NODE_ENV === 'production') {
   Bugsnag.start({ apiKey: 'c271cd93546079ad2c31ab64c35733a7' })

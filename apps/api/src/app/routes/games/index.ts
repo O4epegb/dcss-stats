@@ -1,10 +1,10 @@
-import { castArray } from 'lodash-es'
 import { Prisma } from '@prisma/client'
 import { Static, Type } from '@sinclair/typebox'
+import { castArray } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { LIMIT } from '~/app/constants'
-import { prisma } from '~/prisma'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
+import { prisma } from '~/prisma'
 
 export const gamesRoute = (app: AppType) => {
   const GamesQuerystring = Type.Object({

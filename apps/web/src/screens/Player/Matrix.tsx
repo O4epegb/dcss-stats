@@ -1,11 +1,11 @@
+import { useMediaQuery } from '@react-hookz/web'
 import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
-import { useMediaQuery } from '@react-hookz/web'
-import { CharStat } from '~types'
-import { pluralize, formatNumber } from '~utils'
-import { Tooltip } from '~components/ui/Tooltip'
-import { Summary, allUnavailableCombos } from './utils'
+import { Tooltip } from '~/components/ui/Tooltip'
+import { CharStat } from '~/types'
+import { pluralize, formatNumber } from '~/utils'
 import { usePlayerPageContext } from './context'
+import { Summary, allUnavailableCombos } from './utils'
 
 const items = [
   ['wins', 'wins'],

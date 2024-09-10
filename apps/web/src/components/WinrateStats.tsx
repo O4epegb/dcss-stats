@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { formatNumber } from '~utils'
+import { formatNumber } from '~/utils'
 
 export const WinrateStats = ({
   games,

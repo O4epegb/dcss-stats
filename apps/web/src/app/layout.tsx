@@ -1,6 +1,6 @@
-import '~styles/globals.css'
-import Script from 'next/script'
+import '~/styles/globals.css'
 import { Analytics } from '@vercel/analytics/react'
+import Script from 'next/script'
 import { Providers } from './providers'
 
 const title = 'DCSS Stats'

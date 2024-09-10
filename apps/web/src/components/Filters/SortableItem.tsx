@@ -1,7 +1,7 @@
-import { FC, ReactNode } from 'react'
-import clsx from 'clsx'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import clsx from 'clsx'
+import { FC, ReactNode } from 'react'
 
 export const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
   id,

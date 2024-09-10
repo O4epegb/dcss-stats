@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash-es'
-import { pluralize, date, formatNumber } from '~utils'
-import { Logfile, Server } from '~types'
-import { fetchApi } from '~api/server'
-import { Logo } from '~components/Logo'
+import { fetchApi } from '~/api/server'
+import { Logo } from '~/components/Logo'
+import { Logfile, Server } from '~/types'
+import { pluralize, date, formatNumber } from '~/utils'
 
 export const revalidate = 300
 

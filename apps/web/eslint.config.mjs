@@ -1,13 +1,14 @@
-import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import _import from 'eslint-plugin-import'
-import globals from 'globals'
-import tsParser from '@typescript-eslint/parser'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
-import tsEslint from 'typescript-eslint'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
+import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
+import tsParser from '@typescript-eslint/parser'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import _import from 'eslint-plugin-import'
+import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
+import globals from 'globals'
+import tsEslint from 'typescript-eslint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -27,6 +28,7 @@ export default [
   {
     plugins: {
       import: fixupPluginRules(_import),
+      'no-relative-import-paths': eslintPluginImportsPaths,
     },
 
     languageOptions: {
@@ -55,26 +57,17 @@ export default [
       'import/order': [
         'warn',
         {
-          groups: ['external', 'builtin', 'parent', 'sibling', 'internal', 'index', 'object'],
+          alphabetize: { order: 'asc' },
+          pathGroups: [{ pattern: '~**/**', group: 'parent', position: 'before' }],
+        },
+      ],
 
-          pathGroups: [
-            {
-              pattern: './*.module.css',
-              group: 'object',
-            },
-            {
-              pattern: '~**',
-              group: 'parent',
-              position: 'before',
-            },
-            {
-              pattern: '~**/**',
-              group: 'parent',
-              position: 'before',
-            },
-          ],
-
-          pathGroupsExcludedImportTypes: [],
+      'no-relative-import-paths/no-relative-import-paths': [
+        'warn',
+        {
+          allowSameFolder: true,
+          rootDir: 'src',
+          prefix: '~',
         },
       ],
 

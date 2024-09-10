@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react'
 import clsx from 'clsx'
 import { range, orderBy, some } from 'lodash-es'
-import { Class, Race } from '~types'
-import { Tooltip } from '~components/ui/Tooltip'
-import { Select } from '~components/ui/Select'
-import { GamesList } from '../../components/GamesList'
+import { useMemo, useState } from 'react'
+import { GamesList } from '~/components/GamesList'
+import { Select } from '~/components/ui/Select'
+import { Tooltip } from '~/components/ui/Tooltip'
+import { Class, Race } from '~/types'
 import { usePlayerPageContext } from './context'
 
 enum Filter {

@@ -1,5 +1,5 @@
-import { prisma } from '~/prisma'
 import { AppType } from '~/app/app'
+import { prisma } from '~/prisma'
 
 export const serversRoute = (app: AppType) => {
   app.get('/api/servers', async () => {

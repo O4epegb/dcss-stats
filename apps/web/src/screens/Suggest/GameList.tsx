@@ -1,10 +1,10 @@
-import useSWRInfinite from 'swr/infinite'
 import { omit, flatten, last, isError } from 'lodash-es'
-import { api } from '~api'
-import { Game } from '~types'
-import { Loader } from '~components/ui/Loader'
-import { Filter } from '~components/Filters'
-import { GameItem } from '~components/GameItem'
+import useSWRInfinite from 'swr/infinite'
+import { api } from '~/api'
+import { Filter } from '~/components/Filters'
+import { GameItem } from '~/components/GameItem'
+import { Loader } from '~/components/ui/Loader'
+import { Game } from '~/types'
 
 export const GameList = (props: { filter: null | Filter[] }) => {
   const filter = props.filter?.map((item) => omit(item, 'id'))

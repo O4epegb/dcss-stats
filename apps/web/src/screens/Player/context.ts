@@ -1,7 +1,7 @@
-import { useState, useContext, createContext } from 'react'
 import { setCookie, destroyCookie } from 'nookies'
-import { PlayerInfoResponse } from '~types'
-import { trackEvent } from '~utils'
+import { useState, useContext, createContext } from 'react'
+import { PlayerInfoResponse } from '~/types'
+import { trackEvent } from '~/utils'
 import { cookiesStoreDefault } from './utils'
 
 export const PlayerPageContext = createContext({} as ReturnType<typeof useContextStateValue>)

@@ -1,9 +1,10 @@
-import _import from 'eslint-plugin-import'
-import globals from 'globals'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import tsEslint from 'typescript-eslint'
 import { fixupPluginRules } from '@eslint/compat'
 import jsEslint from '@eslint/js'
+import eslintConfigPrettier from 'eslint-config-prettier'
+import _import from 'eslint-plugin-import'
+import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
+import globals from 'globals'
+import tsEslint from 'typescript-eslint'
 
 export default [
   {
@@ -15,6 +16,7 @@ export default [
   {
     plugins: {
       import: fixupPluginRules(_import),
+      'no-relative-import-paths': eslintPluginImportsPaths,
     },
 
     languageOptions: {
@@ -34,31 +36,17 @@ export default [
       'import/order': [
         'warn',
         {
-          groups: ['external', 'builtin', 'parent', 'sibling', 'internal', 'index', 'object'],
+          alphabetize: { order: 'asc' },
+          pathGroups: [{ pattern: '~**/**', group: 'parent', position: 'before' }],
+        },
+      ],
 
-          pathGroups: [
-            {
-              pattern: './*.module.css',
-              group: 'object',
-            },
-            {
-              pattern: '@**',
-              group: 'parent',
-              position: 'before',
-            },
-            {
-              pattern: '@**/**',
-              group: 'parent',
-              position: 'before',
-            },
-            {
-              pattern: '~**/**',
-              group: 'parent',
-              position: 'before',
-            },
-          ],
-
-          pathGroupsExcludedImportTypes: [],
+      'no-relative-import-paths/no-relative-import-paths': [
+        'warn',
+        {
+          allowSameFolder: true,
+          rootDir: 'src',
+          prefix: '~',
         },
       ],
 

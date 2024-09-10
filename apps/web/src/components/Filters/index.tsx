@@ -1,8 +1,3 @@
-import { useState, useEffect } from 'react'
-import clsx from 'clsx'
-import { last, first } from 'lodash-es'
-import { useSearchParams } from 'next/navigation'
-import { useUpdateEffect } from '@react-hookz/web'
 import {
   DndContext,
   closestCenter,
@@ -11,18 +6,23 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import {
   arrayMove,
   SortableContext,
   verticalListSortingStrategy,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable'
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+import { useUpdateEffect } from '@react-hookz/web'
+import clsx from 'clsx'
+import { last, first } from 'lodash-es'
+import { useSearchParams } from 'next/navigation'
 import qs from 'qs'
-import { notEmpty, stringifyQuery } from '~utils'
-import { StaticData } from '~types'
-import { HelpBubble, Tooltip } from '~components/ui/Tooltip'
-import { Select } from '../ui/Select'
+import { useState, useEffect } from 'react'
+import { Select } from '~/components/ui/Select'
+import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
+import { StaticData } from '~/types'
+import { notEmpty, stringifyQuery } from '~/utils'
 import { SortableItem } from './SortableItem'
 
 export type Filter = {

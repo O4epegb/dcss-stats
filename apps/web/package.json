@@ -53,6 +53,7 @@
     "eslint": "^9.7.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-no-relative-import-paths": "^1.5.5",
     "eslint-plugin-react": "^7.34.4",
     "globals": "^15.8.0",
     "postcss": "^8.4.39",

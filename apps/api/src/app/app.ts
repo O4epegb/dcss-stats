@@ -1,6 +1,6 @@
+import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import fastify from 'fastify'
 import qs from 'qs'
-import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 
 export const app = fastify({
   logger: true,

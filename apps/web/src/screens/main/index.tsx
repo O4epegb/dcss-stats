@@ -2,12 +2,12 @@
 
 import Link from 'next/link'
 import { useState, useCallback } from 'react'
-import { Class, Game, God, Player, Race } from '~types'
-import { Logo } from '~components/Logo'
-import { ThemeSelector } from '~components/ThemeSelector'
+import { Logo } from '~/components/Logo'
+import { ThemeSelector } from '~/components/ThemeSelector'
+import { Class, Game, God, Player, Race } from '~/types'
+import { Footer } from './Footer'
 import { Search } from './Search'
 import { Stats } from './Stats'
-import { Footer } from './Footer'
 import { TournamentBanner } from './TournamentBanner'
 
 export const MainPage = (props: Props) => {

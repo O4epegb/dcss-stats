@@ -1,5 +1,5 @@
-import type { GetServerSideProps, NextPage } from 'next'
 import { ParsedUrlQuery } from 'querystring'
+import type { GetServerSideProps, NextPage } from 'next'
 
 export type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 

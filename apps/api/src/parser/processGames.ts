@@ -1,10 +1,10 @@
-import { hasher as createHasher } from 'node-object-hash'
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import utcPlugin from 'dayjs/plugin/utc'
 import { chunk, uniq } from 'lodash-es'
-import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { LogfileWithServer } from '../types'
-import { prisma } from '../prisma'
+import { hasher as createHasher } from 'node-object-hash'
+import { prisma } from '~/prisma'
+import { LogfileWithServer } from '~/types'
 import { ParsedGame, parseRawGameFromLine, getGameFromCandidate } from './utils'
 
 const hasher = createHasher()

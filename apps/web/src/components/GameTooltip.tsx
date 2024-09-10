@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
-import { api } from '~api'
-import { Game } from '~types'
-import { Tooltip } from '~components/ui/Tooltip'
+import { api } from '~/api'
+import { Tooltip } from '~/components/ui/Tooltip'
+import { Game } from '~/types'
 import { GameItem } from './GameItem'
 
 export const GameTooltip = ({

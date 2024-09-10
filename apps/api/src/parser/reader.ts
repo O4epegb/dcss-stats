@@ -1,9 +1,9 @@
 import fse from 'fs-extra'
 import PQueue from 'p-queue'
 import prettyBytes from 'pretty-bytes'
-import { delay, getLocalLogPath } from '../utils'
-import { LogfileWithServer } from '../types'
-import { prisma } from '../prisma'
+import { prisma } from '~/prisma'
+import { LogfileWithServer } from '~/types'
+import { delay, getLocalLogPath } from '~/utils'
 import { processGames } from './processGames'
 import { readLines } from './utils'
 

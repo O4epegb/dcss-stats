@@ -1,13 +1,13 @@
 import { first, groupBy, omit, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { draconians, LIMIT } from '~/app/constants'
-import { prisma } from '~/prisma'
 import { cache, ttl } from '~/app/cache'
+import { draconians, LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
-import { getMatrix } from '~/app/getters/getMatrix'
-import { getStreaks } from '~/app/getters/getStreaks'
 import { getAggregatedPlayerStats } from '~/app/getters/getAggregatedPlayerStats'
+import { getMatrix } from '~/app/getters/getMatrix'
 import { getStaticData } from '~/app/getters/getStaticData'
+import { getStreaks } from '~/app/getters/getStreaks'
+import { prisma } from '~/prisma'
 
 export const playersRoute = (app: AppType) => {
   app.get<{

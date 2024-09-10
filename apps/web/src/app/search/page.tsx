@@ -1,8 +1,8 @@
 import { orderBy } from 'lodash-es'
 import { Suspense } from 'react'
-import { StaticData } from '~types'
-import { fetchApi } from '~api/server'
-import { SearchScreen } from '~screens/Search'
+import { fetchApi } from '~/api/server'
+import { SearchScreen } from '~/screens/Search'
+import { StaticData } from '~/types'
 
 export const revalidate = 300
 

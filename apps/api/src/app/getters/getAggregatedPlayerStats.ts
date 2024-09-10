@@ -1,6 +1,6 @@
-import dayjs from 'dayjs'
 import { Player } from '@prisma/client'
-import { prisma } from '../../prisma'
+import dayjs from 'dayjs'
+import { prisma } from '~/prisma'
 
 export const getAggregatedPlayerStats = async (player: Player) => {
   const [won, lost, all, last30Days] = await Promise.all([

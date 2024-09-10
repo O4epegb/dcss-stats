@@ -1,6 +1,6 @@
 import { memoize, uniq } from 'lodash-es'
 import semver from 'semver'
-import { prisma } from '../../prisma'
+import { prisma } from '~/prisma'
 
 export const getStaticData = memoize(async () => {
   const [races, classes, gods, versions] = await Promise.all([

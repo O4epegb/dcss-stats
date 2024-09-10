@@ -1,10 +1,10 @@
 import dayjs from 'dayjs'
-import { prisma } from '~/prisma'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
-import { getTopStats } from '~/app/getters/getTopStats'
 import { getCombosData } from '~/app/getters/getCombosData'
-import { getStaticData } from '../../getters/getStaticData'
+import { getStaticData } from '~/app/getters/getStaticData'
+import { getTopStats } from '~/app/getters/getTopStats'
+import { prisma } from '~/prisma'
 
 export const statsRoute = (app: AppType) => {
   app.get<{
