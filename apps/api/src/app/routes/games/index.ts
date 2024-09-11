@@ -24,15 +24,11 @@ export const gamesRoute = (app: AppType) => {
 
   app.get<{
     Querystring: Static<typeof GamesQuerystring>
-    // Reply: SomeResponseType
   }>(
     '/api/games',
     {
       schema: {
         querystring: GamesQuerystring,
-        // response: {
-        //   200: SomeResponseType,
-        // },
       },
     },
     async (request) => {

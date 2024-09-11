@@ -15,6 +15,8 @@ async function main() {
       host: '0.0.0.0',
     })
 
+    app.swagger()
+
     startParsing()
   } catch (err) {
     app.log.error(err)

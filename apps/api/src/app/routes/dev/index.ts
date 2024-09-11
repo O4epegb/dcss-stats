@@ -5,46 +5,6 @@ import { getStaticData } from '~/app/getters/getStaticData'
 import { prisma } from '~/prisma'
 
 export const devRoute = (app: AppType) => {
-  app.get('/api/dev/migrateData', async (request, reply) => {
-    getStaticData.cache.clear?.()
-    // const [races] = await getStaticData();
-
-    const games = await prisma.game.findMany({
-      where: { normalizedClass: 'Arcane Marksman' },
-    })
-
-    for (const game of games) {
-      await prisma.game.update({
-        where: {
-          id: game.id,
-        },
-        data: {
-          normalizedClass: 'Hexslinger',
-          classAbbr: 'Hs',
-          char: game.raceAbbr + 'Hs',
-        },
-      })
-    }
-
-    // for (const race of races) {
-    //   await prisma.game.updateMany({
-    //     where: {
-    //       raceAbbr: race.abbr,
-    //       classAbbr: {
-    //         in: ['AM', 'Am'],
-    //       },
-    //     },
-    //     data: {
-    //       char: race.abbr + 'Hs',
-    //       classAbbr: 'Hs',
-    //       normalizedClass: 'Hexslinger',
-    //     },
-    //   });
-    // }
-
-    return reply.send('Done')
-  })
-
   app.get('/api/dev/info', async () => {
     getStaticData.cache.clear?.()
     const { races, classes } = await getStaticData()

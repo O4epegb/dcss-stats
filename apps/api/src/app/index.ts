@@ -10,6 +10,7 @@ import { serversRoute } from './routes/servers'
 import { statsRoute } from './routes/stats'
 import { streamsRoute } from './routes/streams'
 import { suggestRoute } from './routes/suggest'
+import { initSwagger } from './swagger'
 
 export * from './app'
 
@@ -19,13 +20,18 @@ app.register(cors, {
   methods: ['GET'],
 })
 
-statsRoute(app)
-logfilesRoute(app)
-serversRoute(app)
-combosRoute(app)
-suggestRoute(app)
-searchRoute(app)
-gamesRoute(app)
-playersRoute(app)
-streamsRoute(app)
-devRoute(app)
+for (const route of [
+  initSwagger,
+  statsRoute,
+  logfilesRoute,
+  serversRoute,
+  combosRoute,
+  suggestRoute,
+  searchRoute,
+  gamesRoute,
+  playersRoute,
+  streamsRoute,
+  devRoute,
+] as const) {
+  await route(app)
+}
