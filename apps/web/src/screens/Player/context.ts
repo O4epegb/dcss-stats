@@ -2,7 +2,7 @@ import { setCookie, destroyCookie } from 'nookies'
 import { useState, useContext, createContext } from 'react'
 import { PlayerInfoResponse } from '~/types'
 import { trackEvent } from '~/utils'
-import { cookiesStoreDefault } from './utils'
+import { cookiesStoreDefault, getSummary } from './utils'
 
 export const PlayerPageContext = createContext({} as ReturnType<typeof useContextStateValue>)
 
@@ -21,6 +21,7 @@ export const useContextStateValue = (
 
   return {
     ...data,
+    summary: getSummary(data),
     isOptionEnabled(key: keyof typeof cookiesStoreDefault) {
       return cookieState[key]
     },

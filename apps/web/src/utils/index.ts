@@ -1,14 +1,20 @@
+import { type ClassValue, clsx } from 'clsx'
 import dayjs from 'dayjs'
 import durationPlugin from 'dayjs/plugin/duration'
 import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 import utc from 'dayjs/plugin/utc'
 import qs from 'qs'
+import { twMerge } from 'tailwind-merge'
 
 dayjs.extend(utc)
 dayjs.extend(relativeTimePlugin)
 dayjs.extend(durationPlugin)
 
 export const date = dayjs
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
 
 export class RaceConditionGuard {
   private lastPromise: PromiseLike<unknown> | null = null

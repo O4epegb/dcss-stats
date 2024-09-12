@@ -201,12 +201,13 @@ __metadata:
     nookies: "npm:^2.5.2"
     postcss: "npm:^8.4.39"
     prettier: "npm:^3.3.3"
-    prettier-plugin-tailwindcss: "npm:^0.6.5"
+    prettier-plugin-tailwindcss: "npm:^0.6.6"
     qs: "npm:^6.12.3"
     react: "npm:^18.3.1"
     react-dom: "npm:^18.3.1"
     swr: "npm:^2.2.5"
-    tailwindcss: "npm:^3.4.6"
+    tailwind-merge: "npm:^2.5.2"
+    tailwindcss: "npm:^3.4.11"
     typescript: "npm:^5.6.2"
     typescript-eslint: "npm:^7.16.1"
   languageName: unknown
@@ -5747,9 +5748,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier-plugin-tailwindcss@npm:^0.6.5":
-  version: 0.6.5
-  resolution: "prettier-plugin-tailwindcss@npm:0.6.5"
+"prettier-plugin-tailwindcss@npm:^0.6.6":
+  version: 0.6.6
+  resolution: "prettier-plugin-tailwindcss@npm:0.6.6"
   peerDependencies:
     "@ianvs/prettier-plugin-sort-imports": "*"
     "@prettier/plugin-pug": "*"
@@ -5762,6 +5763,7 @@ __metadata:
     prettier-plugin-import-sort: "*"
     prettier-plugin-jsdoc: "*"
     prettier-plugin-marko: "*"
+    prettier-plugin-multiline-arrays: "*"
     prettier-plugin-organize-attributes: "*"
     prettier-plugin-organize-imports: "*"
     prettier-plugin-sort-imports: "*"
@@ -5788,6 +5790,8 @@ __metadata:
       optional: true
     prettier-plugin-marko:
       optional: true
+    prettier-plugin-multiline-arrays:
+      optional: true
     prettier-plugin-organize-attributes:
       optional: true
     prettier-plugin-organize-imports:
@@ -5798,7 +5802,7 @@ __metadata:
       optional: true
     prettier-plugin-svelte:
       optional: true
-  checksum: 10/49b5a12f8bd74a6558b28c7d7f6f323c1a1fc523701f6768552bac9c18e92a213d375ad0a00ce71c943c80571b40d10c2b6c6299c08d581d4637165aee9dda24
+  checksum: 10/7e536ed7fc60fa0cd5ea515f16cc638f1ed242c9a72a58fda7b795c1f905623a12debe8cff312f15b06cd66a398e7b4f4b07dd549cead5df6e26064fde3c61c7
   languageName: node
   linkType: hard
 
@@ -6977,9 +6981,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tailwindcss@npm:^3.4.6":
-  version: 3.4.6
-  resolution: "tailwindcss@npm:3.4.6"
+"tailwind-merge@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "tailwind-merge@npm:2.5.2"
+  checksum: 10/9f51ae7277a0ba51d9bec774bc9013c1b8736129b52d97886098689ea51bc7a894f6c7e857217019d92925c935ca18a53f24b4b416be4be363ef16cfb2ce480d
+  languageName: node
+  linkType: hard
+
+"tailwindcss@npm:^3.4.11":
+  version: 3.4.11
+  resolution: "tailwindcss@npm:3.4.11"
   dependencies:
     "@alloc/quick-lru": "npm:^5.2.0"
     arg: "npm:^5.0.2"
@@ -7006,7 +7017,7 @@ __metadata:
   bin:
     tailwind: lib/cli.js
     tailwindcss: lib/cli.js
-  checksum: 10/bd550628cc2a5e80b0543738320ff1e3377e1eb8b4ea6aa3774d479b4e88926eb18828416570859dbe38b12af0e4ea2f97deda5a6449d1f0985936046fcc7a47
+  checksum: 10/94da4265d8815eb5e365465534e3400049ca4e80ecf70d820ecd6fd6a29b664e0d173077b30a82fd4282653cafdbf370bd4a28aeaa15ff4be52095e6a51a5289
   languageName: node
   linkType: hard
 

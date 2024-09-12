@@ -24,13 +24,9 @@ export const allUnavailableCombos = keyBy([
   'FeHs',
 ])
 
-export const getSummary = (
-  matrix: PlayerInfoResponse['matrix'],
-  races: PlayerInfoResponse['races'],
-  classes: PlayerInfoResponse['classes'],
-  gods: PlayerInfoResponse['gods'],
-  gamesToFirstWin: PlayerInfoResponse['gamesToFirstWin'],
-) => {
+export const getSummary = (data: PlayerInfoResponse) => {
+  const { matrix, races, classes, gods, gamesToFirstWin, tiamat } = data
+
   const trunkRaces = orderBy(
     races.filter((x) => x.trunk),
     (x) => x.abbr,
@@ -108,6 +104,10 @@ export const getSummary = (
     .flat()
     .filter(notEmpty).length
 
+  const wonGods = gods.filter((g) => g.win)
+  const isGreat = wonRaces.length === trunkRaces.length
+  const isGrand = wonClasses.length === trunkClasses.length
+
   return {
     stats,
     combosCompleted,
@@ -120,13 +120,18 @@ export const getSummary = (
     wonClasses,
     greatRaces: keyBy(greatRaces, (x) => x.abbr),
     greatClasses: keyBy(greatClasses, (x) => x.abbr),
-    wonGods: gods.filter((g) => g.win),
+    wonGods,
     notWonRaces: trunkRaces.filter((x) => !(stats.races[x.abbr]?.wins > 0)),
     notWonClasses: trunkClasses.filter((x) => !(stats.classes[x.abbr]?.wins > 0)),
     notWonGods: orderBy(
       gods.filter((g) => !g.win),
       (x) => x.name.toLowerCase(),
     ),
+    isGreat,
+    isGrand,
+    isGreater: isGreat && isGrand,
+    isPolytheist: wonGods.length === gods.length,
+    isTiamat: tiamat.unwon.length === 0,
   }
 }
 
