@@ -207,4 +207,54 @@ export const playersRoute = (app: AppType) => {
       return data || reply.status(404).send('Not found')
     })
   })
+
+  app.get<{
+    Params: {
+      slug: string
+    }
+    Querystring: {
+      from?: string
+      noCache?: string
+    }
+  }>('/api/players/:slug/calendar', async (request, reply) => {
+    const { slug } = request.params
+    const cacheKey = request.url.toLowerCase()
+    const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
+
+    const getData = async () => {
+      const player = await prisma.player.findUnique({
+        where: { id: slug.toLowerCase() },
+      })
+
+      if (!player) {
+        return null
+      }
+
+      const [games] = await Promise.all([
+        prisma.game.findMany({
+          where: {
+            playerId: player.id,
+            endAt: { gte: request.query.from },
+          },
+          orderBy: { startAt: 'asc' },
+          select: {
+            isWin: true,
+            endAt: true,
+          },
+        }),
+      ])
+
+      return {
+        games,
+      }
+    }
+
+    if (!cached || Date.now() - cached.ttl > ttl) {
+      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+    }
+
+    return cache.get(cacheKey)?.promise.then((data: unknown) => {
+      return data || reply.status(404).send('Not found')
+    })
+  })
 }
