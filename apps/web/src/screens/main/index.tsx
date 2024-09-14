@@ -28,7 +28,7 @@ export const MainPage = (props: Props) => {
             href="https://www.reddit.com/r/dcss/comments/1ffz4gh"
             rel="noopener noreferrer"
             target="_blank"
-            className="dark:text-amber-400 hidden sm:block text-emerald-700 underline"
+            className="hidden text-emerald-700 underline dark:text-amber-400 sm:block"
           >
             Help us pick a new domain
           </a>

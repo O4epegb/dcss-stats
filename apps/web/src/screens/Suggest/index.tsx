@@ -296,7 +296,7 @@ export function SuggestScreen({ classes, gods, races, skills, versions }: Static
         </Select>
       </div>
 
-      <div className={clsx('space-y-4 max-w-lg w-full', !showAdvancedFilters && 'hidden')}>
+      <div className={clsx('w-full max-w-lg space-y-4', !showAdvancedFilters && 'hidden')}>
         <hr />
         <Filters
           excludeFilters={['Class', 'Race', 'God', 'End', 'Player', 'Version']}
@@ -348,7 +348,7 @@ export function SuggestScreen({ classes, gods, races, skills, versions }: Static
         <>
           <div className="m-auto w-full max-w-lg space-y-2">
             <hr />
-            <h2 className="text-center text-2xl pt-2">
+            <h2 className="pt-2 text-center text-2xl">
               {race?.name} {klass?.name}{' '}
               {god && (
                 <>
@@ -381,7 +381,7 @@ export function SuggestScreen({ classes, gods, races, skills, versions }: Static
                         !isHidden && (
                           <label
                             key={key}
-                            className={clsx('flex cursor-pointer items-center gap-1 select-none')}
+                            className={clsx('flex cursor-pointer select-none items-center gap-1')}
                           >
                             <input
                               type="radio"
@@ -402,7 +402,7 @@ export function SuggestScreen({ classes, gods, races, skills, versions }: Static
                     )}
                   </div>
                 )}
-                <label className="flex cursor-pointer items-center gap-1 select-none">
+                <label className="flex cursor-pointer select-none items-center gap-1">
                   <input
                     checked={showWins}
                     className="cursor-pointer"

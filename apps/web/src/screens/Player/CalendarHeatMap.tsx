@@ -123,7 +123,7 @@ export const CalendarHeatMap = () => {
 
   return (
     <section ref={ref} className="space-y-1">
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <Tooltip
           content={
             <>
@@ -184,7 +184,7 @@ export const CalendarHeatMap = () => {
                     <Fragment key={dayIndex}>
                       {daysToPad > 0 &&
                         range(daysToPad).map((i) => (
-                          <div key={i} className="text-center day text-transparent" />
+                          <div key={i} className="day text-center text-transparent" />
                         ))}
 
                       <Tooltip
@@ -207,17 +207,17 @@ export const CalendarHeatMap = () => {
                         }
                       >
                         <div
-                          className={cn('day flex items-center justify-center rounded  w-5 h-5', {
+                          className={cn('day flex h-5 w-5 items-center justify-center rounded', {
                             'border border-zinc-300 dark:border-zinc-400':
                               day.games < maxGames * 0.9,
                           })}
                         >
                           <div
                             className={cn('rounded', {
-                              'w-1 h-1': day.games > 0,
-                              'w-2 h-2': day.games >= maxGames * 0.2,
-                              'w-3 h-3': day.games >= maxGames * 0.55,
-                              'w-full h-full': day.games >= maxGames * 0.9,
+                              'h-1 w-1': day.games > 0,
+                              'h-2 w-2': day.games >= maxGames * 0.2,
+                              'h-3 w-3': day.games >= maxGames * 0.55,
+                              'h-full w-full': day.games >= maxGames * 0.9,
                               'bg-amber-300': day.winrate === 0,
                               'bg-emerald-300': day.winrate > 0,
                               'bg-emerald-400': day.winrate >= 0.1,

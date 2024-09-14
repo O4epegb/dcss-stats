@@ -28,7 +28,7 @@ export const SortableItem: FC<{ id: string; className: string; children: ReactNo
         {...listeners}
         className={clsx(
           isDragging ? 'cursor-grabbing' : 'cursor-grab',
-          'absolute right-full mr-1 flex h-6 w-6  items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
+          'absolute right-full mr-1 flex h-6 w-6 items-center justify-center rounded text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
         )}
       >
         <svg

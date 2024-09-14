@@ -19,7 +19,7 @@ export const TournamentBanner = () => {
       href={`https://crawl.develz.org/tournament/${version}/`}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 bg-[#282020] p-2 rounded text-white text-center text-lg border-violet-400 border-4"
+      className="flex items-center justify-center gap-2 rounded border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
     >
       {now.isBefore(start) && (
         <span suppressHydrationWarning>
@@ -38,7 +38,7 @@ export const TournamentBanner = () => {
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-6 h-6 shrink-0"
+        className="h-6 w-6 shrink-0"
       >
         <path
           strokeLinecap="round"

@@ -38,9 +38,7 @@ export const List = ({
               }
             }}
           >
-            <span className="overflow-hidden overflow-ellipsis whitespace-nowrap ">
-              {item.name}
-            </span>
+            <span className="overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</span>
             {item.count && <span className="tabular-nums">{item.count}</span>}
           </Link>
         ))}
