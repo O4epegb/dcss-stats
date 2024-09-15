@@ -1,14 +1,11 @@
-import dayjs from 'dayjs'
-import LocalizedFormat from 'dayjs/plugin/localizedFormat'
-
-dayjs.extend(LocalizedFormat)
+import { date } from '~/utils'
 
 const version = '0.32'
 const start = '2024-08-30T20:00:00.000Z'
 const end = '2024-09-15T20:00:00.000Z'
 
 export const TournamentBanner = () => {
-  const now = dayjs()
+  const now = date()
 
   if (now.diff(end, 'week') > 3) {
     return null
@@ -23,12 +20,12 @@ export const TournamentBanner = () => {
     >
       {now.isBefore(start) && (
         <span suppressHydrationWarning>
-          The v{version} tournament starts at {dayjs(start).format('LLLL')}
+          The v{version} tournament starts at {date(start).format('LLLL')}
         </span>
       )}
       {now.isAfter(start) && now.isBefore(end) && (
         <span suppressHydrationWarning>
-          The v{version} tournament will last until {dayjs(end).format('LLLL')}
+          The v{version} tournament will last until {date(end).format('LLLL')}
         </span>
       )}
       {now.isAfter(end) && <>🏆🏆🏆 DCSS {version} Tournament Results</>}

@@ -1,7 +1,7 @@
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
 import { Badges } from './Badges'
-import { CalendarHeatMap } from './CalendarHeatMap'
+import { Calendar } from './Calendar'
 import { FavoriteButton } from './FavoriteButton'
 import { Games } from './Games'
 import { Matrix } from './Matrix'
@@ -33,7 +33,7 @@ export const Player = () => {
           <Winrates />
           <ProgressBadges />
           <Stats summary={summary} />
-          <CalendarHeatMap />
+          <Calendar />
           <Titles />
           <Streaks />
           <Games allActualRaces={allActualRaces} allActualClasses={allActualClasses} />

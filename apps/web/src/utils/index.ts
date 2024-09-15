@@ -1,14 +1,24 @@
 import { type ClassValue, clsx } from 'clsx'
 import dayjs from 'dayjs'
 import durationPlugin from 'dayjs/plugin/duration'
+import localizedFormat from 'dayjs/plugin/localizedFormat'
 import relativeTimePlugin from 'dayjs/plugin/relativeTime'
+import updateLocale from 'dayjs/plugin/updateLocale'
 import utc from 'dayjs/plugin/utc'
+import weekOfYear from 'dayjs/plugin/weekOfYear'
 import qs from 'qs'
 import { twMerge } from 'tailwind-merge'
 
+dayjs.extend(updateLocale)
+dayjs.extend(localizedFormat)
+dayjs.extend(weekOfYear)
 dayjs.extend(utc)
 dayjs.extend(relativeTimePlugin)
 dayjs.extend(durationPlugin)
+
+dayjs.updateLocale('en', {
+  weekStart: 1,
+})
 
 export const date = dayjs
 
