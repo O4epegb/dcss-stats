@@ -81,7 +81,7 @@ export const HeatMap = ({
                           <br />
                           {day.games} {pluralize('game', day.games)}
                           <br />
-                          {day.wins} wins
+                          {day.wins} {pluralize('win', day.wins)}
                           <br />
                           {formatNumber((day.wins / (day.games || 1)) * 100, {
                             maximumFractionDigits: 2,
