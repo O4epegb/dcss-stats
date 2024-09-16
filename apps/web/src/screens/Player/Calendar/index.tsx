@@ -117,6 +117,13 @@ export const Calendar = () => {
                 maximumFractionDigits: 2,
               })}
               %) during shown period
+              <div className="pt-2 text-xs text-gray-300 dark:text-gray-700">
+                Calendar shows completion based on{' '}
+                <code className="rounded bg-slate-600 px-1 dark:bg-slate-300">endAt</code> field,
+                <br /> so it may differ from the game list, which uses{' '}
+                <code className="rounded bg-slate-600 px-1 dark:bg-slate-300">startAt</code> as the
+                ordering field.
+              </div>
             </>
           }
         >

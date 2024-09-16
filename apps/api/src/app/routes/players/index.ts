@@ -236,7 +236,7 @@ export const playersRoute = (app: AppType) => {
             playerId: player.id,
             endAt: { gte: request.query.from },
           },
-          orderBy: { startAt: 'asc' },
+          orderBy: { endAt: 'asc' },
           select: {
             isWin: true,
             endAt: true,
