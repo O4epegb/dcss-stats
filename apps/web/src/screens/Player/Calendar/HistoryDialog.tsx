@@ -5,7 +5,7 @@ import { api } from '~/api'
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/Dialog'
 import { Loader } from '~/components/ui/Loader'
 import { usePlayerPageContext } from '~/screens/Player/context'
-import { date } from '~/utils'
+import { date, formatNumber } from '~/utils'
 import { DayData, HeatMapFlat } from './HeatMap'
 
 export const HistoryDialog = () => {
@@ -88,6 +88,11 @@ const Content = () => {
       .reverse()
   }, [calendarData])
 
+  const maxGamesPerDay =
+    Math.max(
+      ...yearlyData.flatMap((yearData) => yearData.monthesWithDays.flat().map((day) => day.games)),
+    ) || 1
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -95,12 +100,31 @@ const Content = () => {
         {error && <div className="text-sm text-red-600">Error fetching data</div>}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {yearlyData.map((yearData, yearIndex) => {
+          const games = yearData.monthesWithDays.flat().reduce((acc, day) => acc + day.games, 0)
+          const wins = yearData.monthesWithDays.flat().reduce((acc, day) => acc + day.wins, 0)
+
           return (
-            <div key={yearIndex}>
-              <h3 className="text-sm font-bold">{yearData.year}</h3>
-              <HeatMapFlat maxGames={50} monthesWithDays={yearData.monthesWithDays} />
+            <div key={yearIndex} className="space-y-0.5">
+              <div className="flex gap-2">
+                <h3 className="text-sm font-bold">{yearData.year}</h3>
+                <span className="inline-flex items-center gap-1">
+                  <span className="text-xs">Games: {games}</span>
+                  <span className="text-xs">Wins: {wins}</span>
+                  <span className="text-xs">
+                    Winrate:{' '}
+                    {formatNumber((wins / (games || 1)) * 100, {
+                      maximumFractionDigits: 2,
+                    })}
+                    %
+                  </span>
+                </span>
+              </div>
+              <HeatMapFlat
+                maxGamesPerDay={maxGamesPerDay}
+                monthesWithDays={yearData.monthesWithDays}
+              />
             </div>
           )
         })}

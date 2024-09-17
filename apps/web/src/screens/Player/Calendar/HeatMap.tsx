@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 import { range } from 'lodash-es'
-import { Fragment } from 'react'
+import { Fragment, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
 import { cn, pluralize, formatNumber } from '~/utils'
 
@@ -41,14 +41,7 @@ export const HeatMap = ({
                   <>
                     <span className="font-medium">{firstDay.date.format('MMMM YYYY')}</span>
                     <br />
-                    {games} {pluralize('game', games)}
-                    <br />
-                    {wins} {pluralize('win', wins)}
-                    <br />
-                    {formatNumber((wins / (games || 1)) * 100, {
-                      maximumFractionDigits: 2,
-                    })}
-                    % WR
+                    <StatsTooltipBlock games={games} wins={wins} />
                   </>
                 }
               >
@@ -79,14 +72,7 @@ export const HeatMap = ({
                             {day.date.format('LL')}, {day.date.format('dddd')}
                           </span>
                           <br />
-                          {day.games} {pluralize('game', day.games)}
-                          <br />
-                          {day.wins} {pluralize('win', day.wins)}
-                          <br />
-                          {formatNumber((day.wins / (day.games || 1)) * 100, {
-                            maximumFractionDigits: 2,
-                          })}
-                          % WR
+                          <StatsTooltipBlock games={day.games} wins={day.wins} />
                         </>
                       }
                     >
@@ -123,13 +109,18 @@ export const HeatMap = ({
 
 export const HeatMapFlat = ({
   monthesWithDays,
-  maxGames,
+  maxGamesPerDay,
   invisible,
 }: {
   monthesWithDays: DayData[][]
-  maxGames: number
+  maxGamesPerDay: number
   invisible?: boolean
 }) => {
+  const [tooltipData, setTooltipData] = useState<{
+    ref: HTMLElement
+    day: DayData
+  } | null>(null)
+
   return (
     <div
       className={cn(
@@ -137,6 +128,23 @@ export const HeatMapFlat = ({
         invisible && 'opacity-0',
       )}
     >
+      {tooltipData && (
+        <Tooltip
+          restMs={0}
+          delay={0}
+          triggerElement={tooltipData.ref}
+          content={
+            <>
+              <span className="font-medium">
+                {tooltipData.day.date.format('LL')}, {tooltipData.day.date.format('dddd')}
+              </span>
+              <br />
+              <StatsTooltipBlock games={tooltipData.day.games} wins={tooltipData.day.wins} />
+            </>
+          }
+        />
+      )}
+
       {monthesWithDays.flatMap((month, monthIndex) => {
         const firstDay = month[0]
         const games = month.reduce((acc, day) => acc + day.games, 0)
@@ -157,25 +165,14 @@ export const HeatMapFlat = ({
                   <div key={i} className="text-center text-transparent" />
                 ))}
 
-              <div
-                className={cn('flex size-full items-center justify-center rounded', {
-                  'border border-zinc-300 dark:border-zinc-400': day.games < maxGames * 0.75,
-                })}
-              >
+              <div className="size-full">
                 {dayIndex === 0 && (
                   <Tooltip
                     content={
                       <>
                         <span className="font-medium">{firstDay.date.format('MMMM YYYY')}</span>
                         <br />
-                        {games} {pluralize('game', games)}
-                        <br />
-                        {wins} {pluralize('win', wins)}
-                        <br />
-                        {formatNumber((wins / (games || 1)) * 100, {
-                          maximumFractionDigits: 2,
-                        })}
-                        % WR
+                        <StatsTooltipBlock games={games} wins={wins} />
                       </>
                     }
                   >
@@ -185,23 +182,55 @@ export const HeatMapFlat = ({
                   </Tooltip>
                 )}
                 <div
-                  className={cn('rounded', {
-                    'size-[30%]': day.games > 0,
-                    'size-[50%]': day.games >= maxGames * 0.25,
-                    'size-[75%]': day.games >= maxGames * 0.5,
-                    'size-full': day.games >= maxGames * 0.75,
-                    'bg-amber-300': day.winrate === 0,
-                    'bg-emerald-300': day.winrate > 0,
-                    'bg-emerald-400': day.winrate >= 0.1,
-                    'bg-emerald-500': day.winrate >= 0.25,
-                    'bg-emerald-600': day.winrate >= 0.5,
+                  className={cn('flex size-full items-center justify-center rounded', {
+                    'border border-zinc-300 dark:border-zinc-400':
+                      day.games < maxGamesPerDay * 0.75,
                   })}
-                />
+                  onMouseEnter={(e) => {
+                    setTooltipData({
+                      ref: e.currentTarget,
+                      day,
+                    })
+                  }}
+                  onMouseLeave={() => setTooltipData(null)}
+                >
+                  <div
+                    className={cn('rounded', {
+                      'size-[30%]': day.games > 0,
+                      'size-[50%]': day.games >= maxGamesPerDay * 0.25,
+                      'size-[75%]': day.games >= maxGamesPerDay * 0.5,
+                      'size-full': day.games >= maxGamesPerDay * 0.75,
+                      'bg-amber-300': day.winrate === 0,
+                      'bg-emerald-300': day.winrate > 0,
+                      'bg-emerald-400': day.winrate >= 0.1,
+                      'bg-emerald-500': day.winrate >= 0.25,
+                      'bg-emerald-600': day.winrate >= 0.5,
+                    })}
+                  />
+                </div>
               </div>
             </Fragment>
           )
         })
       })}
     </div>
+  )
+}
+
+const StatsTooltipBlock = ({ games, wins }: { games: number; wins: number }) => {
+  return (
+    <>
+      <span className="font-medium">{formatNumber(games)}</span> {pluralize('game', games)}
+      <br />
+      <span className="font-medium">{wins}</span> {pluralize('win', wins)}
+      <br />
+      <span className="font-medium">
+        {formatNumber((wins / (games || 1)) * 100, {
+          maximumFractionDigits: 2,
+        })}
+        %
+      </span>{' '}
+      WR
+    </>
   )
 }
