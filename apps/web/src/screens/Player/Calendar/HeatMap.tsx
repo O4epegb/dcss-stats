@@ -92,19 +92,21 @@ export const HeatMap = ({
                           'border border-zinc-300 dark:border-zinc-400': day.games < maxGames * 0.9,
                         })}
                       >
-                        <div
-                          className={cn('rounded', {
-                            'size-1': day.games > 0,
-                            'size-2': day.games >= maxGames * 0.2,
-                            'size-3': day.games >= maxGames * 0.55,
-                            'size-full': day.games >= maxGames * 0.9,
-                            'bg-amber-300': day.winrate === 0,
-                            'bg-emerald-300': day.winrate > 0,
-                            'bg-emerald-400': day.winrate >= 0.1,
-                            'bg-emerald-500': day.winrate >= 0.25,
-                            'bg-emerald-600': day.winrate >= 0.5,
-                          })}
-                        />
+                        {day.games > 0 && (
+                          <div
+                            className={cn('rounded', {
+                              'size-[30%]': day.games > 0,
+                              'size-[50%]': day.games >= maxGames * 0.2,
+                              'size-[70%]': day.games >= maxGames * 0.55,
+                              'size-full': day.games >= maxGames * 0.9,
+                              'bg-amber-300': day.winrate === 0,
+                              'bg-emerald-300': day.winrate > 0,
+                              'bg-emerald-400': day.winrate >= 0.1,
+                              'bg-emerald-500': day.winrate >= 0.25,
+                              'bg-emerald-600': day.winrate >= 0.5,
+                            })}
+                          />
+                        )}
                       </div>
                     </Tooltip>
                   </Fragment>
@@ -205,19 +207,21 @@ export const HeatMapFlat = ({
                   }}
                   onMouseLeave={() => setTooltipData(null)}
                 >
-                  <div
-                    className={cn('rounded', {
-                      'size-[30%]': day.games > 0,
-                      'size-[50%]': day.games >= maxGamesPerDay * 0.25,
-                      'size-[75%]': day.games >= maxGamesPerDay * 0.5,
-                      'size-full': day.games >= maxGamesPerDay * 0.75,
-                      'bg-amber-300': day.winrate === 0,
-                      'bg-emerald-300': day.winrate > 0,
-                      'bg-emerald-400': day.winrate >= 0.1,
-                      'bg-emerald-500': day.winrate >= 0.25,
-                      'bg-emerald-600': day.winrate >= 0.5,
-                    })}
-                  />
+                  {day.games > 0 && (
+                    <div
+                      className={cn('rounded', {
+                        'size-[30%]': day.games > 0,
+                        'size-[50%]': day.games >= maxGamesPerDay * 0.25,
+                        'size-[75%]': day.games >= maxGamesPerDay * 0.5,
+                        'size-full': day.games >= maxGamesPerDay * 0.75,
+                        'bg-amber-300': day.winrate === 0,
+                        'bg-emerald-300': day.winrate > 0,
+                        'bg-emerald-400': day.winrate >= 0.1,
+                        'bg-emerald-500': day.winrate >= 0.25,
+                        'bg-emerald-600': day.winrate >= 0.5,
+                      })}
+                    />
+                  )}
                 </div>
               </div>
             </Fragment>
