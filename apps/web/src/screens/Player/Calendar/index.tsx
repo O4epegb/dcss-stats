@@ -8,7 +8,7 @@ import { Tooltip } from '~/components/ui/Tooltip'
 import { useElementWidth } from '~/hooks/useElementWidth'
 import { usePlayerPageContext } from '~/screens/Player/context'
 import { date, formatNumber, pluralize } from '~/utils'
-import { cellPlusGap, DayData, HeatMap, monthGap } from './HeatMap'
+import { cellAndGap, DayData, HeatMap, monthGap } from './HeatMap'
 import { HistoryDialog } from './HistoryDialog'
 
 export const Calendar = () => {
@@ -16,7 +16,7 @@ export const Calendar = () => {
   const [ref, wrapperWidth] = useElementWidth<HTMLDivElement>()
 
   const days = useMemo(() => {
-    let widthLeft = wrapperWidth - cellPlusGap
+    let widthLeft = wrapperWidth - cellAndGap
     const result: dayjs.Dayjs[] = []
 
     let current = date().startOf('day')
@@ -27,9 +27,9 @@ export const Calendar = () => {
       const next = current.subtract(1, 'day')
 
       if (next.month() !== current.month()) {
-        widthLeft -= cellPlusGap + monthGap
+        widthLeft -= cellAndGap + monthGap
       } else if (next.week() !== current.week()) {
-        widthLeft -= cellPlusGap
+        widthLeft -= cellAndGap
       }
 
       current = next

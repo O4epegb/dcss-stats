@@ -11,10 +11,11 @@ export type DayData = {
   winrate: number
 }
 
-export const cellSize = 20
-export const cellGap = 2
+const cellSize = 20
+const cellSizeCss = 'size-[20px]'
+const cellGap = 2
 export const monthGap = 8
-export const cellPlusGap = cellSize + cellGap
+export const cellAndGap = cellSize + cellGap
 
 export const HeatMap = ({
   monthesWithDays,
@@ -26,7 +27,12 @@ export const HeatMap = ({
   invisible?: boolean
 }) => {
   return (
-    <div className={cn('flex gap-2', invisible && 'opacity-0')}>
+    <div
+      style={{
+        gap: `${monthGap}px`,
+      }}
+      className={cn('flex', invisible && 'opacity-0')}
+    >
       {monthesWithDays.map((month, monthIndex) => {
         const firstDay = month[0]
 
@@ -48,7 +54,12 @@ export const HeatMap = ({
                 <span className="text-xs font-semibold">{firstDay.date.format('MMM')}</span>
               </Tooltip>
             </div>
-            <div className="grid grid-flow-col grid-rows-7 gap-0.5">
+            <div
+              style={{
+                gap: `${cellGap}px`,
+              }}
+              className="grid grid-flow-col grid-rows-7"
+            >
               {month.map((day, dayIndex) => {
                 let daysToPad = 0
 
@@ -77,7 +88,7 @@ export const HeatMap = ({
                       }
                     >
                       <div
-                        className={cn('flex h-5 w-5 items-center justify-center rounded', {
+                        className={cn('flex items-center justify-center rounded', cellSizeCss, {
                           'border border-zinc-300 dark:border-zinc-400': day.games < maxGames * 0.9,
                         })}
                       >
