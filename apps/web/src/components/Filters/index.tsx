@@ -113,14 +113,21 @@ const getOptionsList = ({
       type: 'number',
       suboptions: ['Str', 'Int', 'Dex', 'Ac', 'Ev', 'Sh'],
       conditions: numberConditions,
-      placeholder: 'Enter value',
+      placeholder: 'Enter number',
     },
     {
       name: 'Runes',
       type: 'number',
       suboptions: [],
       conditions: numberConditions,
-      placeholder: 'Enter value',
+      placeholder: 'Enter number',
+    },
+    {
+      name: 'Turns',
+      type: 'number',
+      suboptions: [],
+      conditions: numberConditions,
+      placeholder: 'Enter number',
     },
     {
       name: 'Version',

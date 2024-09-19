@@ -198,6 +198,12 @@ const options = [
     },
   },
   {
+    field: 'turns',
+    queryName: 'Turns',
+    conditions: numberConditions,
+    transformValue: (value: string) => Number(value),
+  },
+  {
     field: 'uniqueRunes',
     queryName: 'Runes',
     conditions: numberConditions,
