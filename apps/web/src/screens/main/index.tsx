@@ -24,14 +24,6 @@ export const MainPage = (props: Props) => {
       <div className="w-full max-w-5xl space-y-4 py-4">
         <header className="flex w-full items-center justify-between">
           <Logo />
-          <a
-            href="https://www.reddit.com/r/dcss/comments/1ffz4gh"
-            rel="noopener noreferrer"
-            target="_blank"
-            className="hidden text-emerald-700 underline dark:text-amber-400 sm:block"
-          >
-            Help us pick a new domain
-          </a>
           <div className="flex gap-5">
             <ThemeSelector />
             <Link className="group" href="/suggest">
