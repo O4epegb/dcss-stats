@@ -1,12 +1,12 @@
 import cors from '@fastify/cors'
 import { app } from './app'
-import { combosRoute } from './routes/combos'
 import { devRoute } from './routes/dev'
 import { gamesRoute } from './routes/games'
 import { logfilesRoute } from './routes/logfiles'
 import { playersRoute } from './routes/players'
 import { searchRoute } from './routes/search'
 import { serversRoute } from './routes/servers'
+import { staticDataRoute } from './routes/static-data'
 import { statsRoute } from './routes/stats'
 import { streamsRoute } from './routes/streams'
 import { suggestRoute } from './routes/suggest'
@@ -25,7 +25,7 @@ for (const route of [
   statsRoute,
   logfilesRoute,
   serversRoute,
-  combosRoute,
+  staticDataRoute,
   suggestRoute,
   searchRoute,
   gamesRoute,

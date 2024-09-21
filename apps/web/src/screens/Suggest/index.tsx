@@ -16,7 +16,7 @@ import {
   orderBy,
 } from 'lodash-es'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Filter, Filters, filtersToQuery } from '~/components/Filters'
@@ -47,7 +47,7 @@ type MainFilter = {
   version: string
 }
 
-export function SuggestScreen({ classes, gods, races, skills, versions }: StaticData) {
+export function SuggestScreen({ classes, gods, races, filterOptions, versions }: StaticData) {
   type SortingKey = keyof ReturnType<typeof normalizeData>[number]
 
   const router = useRouter()
@@ -234,40 +234,35 @@ export function SuggestScreen({ classes, gods, races, skills, versions }: Static
 
   const isLoading = !data && !error && isValidating
 
+  const renderOptionList = (options: Array<{ name: string; trunk: boolean }>) => {
+    return options.map(({ name, trunk }, index, array) => {
+      const prev = array[index - 1]
+
+      return (
+        <Fragment key={name}>
+          {prev && prev.trunk && !trunk && <hr />}
+          <option value={name}>{name}</option>
+        </Fragment>
+      )
+    })
+  }
+
   return (
     <Layout centered={!race && !klass && !god}>
       <div className="flex w-full flex-wrap gap-2 md:justify-center">
         I want to play
         <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>
           <option value={FilterValue.Any}>any race</option>
-          {races
-            .filter((x) => x.trunk)
-            .map(({ name }) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
+          {renderOptionList(races)}
         </Select>
         <Select value={filter.class} onChange={(e) => changeFilter('class', e.target.value)}>
           <option value={FilterValue.Any}>some class</option>
-          {classes
-            .filter((x) => x.trunk)
-            .map(({ name }) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
+          {renderOptionList(classes)}
         </Select>
         and
         <Select value={filter.god} onChange={(e) => changeFilter('god', e.target.value)}>
           <option value={FilterValue.Any}>whatever god</option>
-          {gods
-            .filter((x) => x.trunk)
-            .map(({ name }) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
+          {renderOptionList(gods)}
         </Select>
       </div>
 
@@ -299,8 +294,8 @@ export function SuggestScreen({ classes, gods, races, skills, versions }: Static
       <div className={clsx('w-full max-w-lg space-y-4', !showAdvancedFilters && 'hidden')}>
         <hr />
         <Filters
+          filterOptions={filterOptions}
           excludeFilters={['Class', 'Race', 'God', 'End', 'Player', 'Version']}
-          skills={skills}
           onInit={(filters) => {
             setAdvancedFilter(filters)
             setFilterForSearch((x) => ({ ...x, advanced: filters }))

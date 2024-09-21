@@ -25,6 +25,11 @@ import { StaticData } from '~/types'
 import { notEmpty, stringifyQuery } from '~/utils'
 import { SortableItem } from './SortableItem'
 
+// Order by selector
+// Hotkey for submit
+// killer, gold, potions, scrolls, server, duration, date period filter?
+// send maximum filters from the backend
+
 export type Filter = {
   id: string
   option: string
@@ -35,13 +40,9 @@ export type Filter = {
 }
 
 const operators = ['and', 'or'] as [string, string]
-const conditions = ['is', 'is not']
-const numberConditions = ['>=', '<=', '>', '<', '=']
 const maxFilters = 15
 
-type FilterName = ReturnType<typeof getOptionsList>[number]['name']
-
-type Data = Partial<StaticData>
+type Data = Pick<StaticData, 'filterOptions'>
 
 export const filtersToQuery = (filters: Filter[]) => {
   return filters.map(({ option, suboption, condition, value, operator }, index) => {
@@ -52,99 +53,14 @@ export const filtersToQuery = (filters: Filter[]) => {
 }
 
 type Props = {
-  excludeFilters?: FilterName[]
+  excludeFilters?: string[]
   onInit: (filters: Filter[]) => void
   onFiltersChange?: (filters: Filter[]) => void
   onSubmit?: (filters: Filter[]) => void
 } & Data
 
-const getOptionsList = ({
-  races = [],
-  classes = [],
-  gods = [],
-  skills = [],
-  versions = [],
-}: Data) => {
-  return [
-    {
-      name: 'Race',
-      type: 'select',
-      suboptions: [],
-      conditions,
-      values: races.map((x) => x.name),
-    },
-    {
-      name: 'Class',
-      type: 'select',
-      suboptions: [],
-      conditions,
-      values: classes.map((x) => x.name),
-    },
-    {
-      name: 'God',
-      type: 'select',
-      suboptions: [],
-      conditions,
-      values: gods.map((x) => x.name),
-    },
-    {
-      name: 'End',
-      type: 'select',
-      suboptions: [],
-      conditions,
-      values: ['Escaped', 'Defeated'].map((x) => x),
-    },
-    {
-      name: 'Player',
-      type: 'text',
-      suboptions: [],
-      conditions,
-      placeholder: 'Enter player name',
-    },
-    {
-      name: 'Skill',
-      type: 'select',
-      suboptions: skills.map((x) => x.name),
-      conditions,
-      values: ['Level 15 or more', 'Level 27'].map((x) => x),
-    },
-    {
-      name: 'Stat',
-      type: 'number',
-      suboptions: ['Str', 'Int', 'Dex', 'Ac', 'Ev', 'Sh'],
-      conditions: numberConditions,
-      placeholder: 'Enter number',
-    },
-    {
-      name: 'Runes',
-      type: 'number',
-      suboptions: [],
-      conditions: numberConditions,
-      placeholder: 'Enter number',
-    },
-    {
-      name: 'Turns',
-      type: 'number',
-      suboptions: [],
-      conditions: numberConditions,
-      placeholder: 'Enter number',
-    },
-    {
-      name: 'Version',
-      type: 'select',
-      suboptions: [],
-      conditions,
-      values: versions,
-    },
-  ] as const
-}
-
 export const Filters = ({
-  races = [],
-  classes = [],
-  gods = [],
-  skills = [],
-  versions = [],
+  filterOptions,
   excludeFilters = [],
   onInit,
   onSubmit,
@@ -159,7 +75,7 @@ export const Filters = ({
   )
   const [isDragging, setIsDragging] = useState(false)
 
-  const options = getOptionsList({ races, classes, gods, skills, versions }).filter(
+  const options = filterOptions.filter(
     (x) => !excludeFilters.includes(x.name) && (x.type !== 'select' || x.values.length > 0),
   )
 

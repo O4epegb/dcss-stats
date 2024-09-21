@@ -1,12 +1,16 @@
-import { memoize, uniq } from 'lodash-es'
+import { memoize, orderBy, uniq } from 'lodash-es'
 import semver from 'semver'
 import { prisma } from '~/prisma'
 
 export const getStaticData = memoize(async () => {
   const [races, classes, gods, versions] = await Promise.all([
-    prisma.race.findMany(),
-    prisma.class.findMany(),
-    prisma.god.findMany(),
+    prisma.race.findMany({
+      orderBy: [{ trunk: 'desc' }, { name: 'asc' }],
+    }),
+    prisma.class.findMany({
+      orderBy: [{ trunk: 'desc' }, { name: 'asc' }],
+    }),
+    prisma.god.findMany().then((gods) => orderBy(gods, (god) => god.name.toLowerCase())),
     prisma.logfile.findMany().then((logfiles) => {
       const versions = logfiles
         .map((logfile) => logfile.version)

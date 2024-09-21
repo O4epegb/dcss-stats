@@ -38,7 +38,7 @@ export const suggestRoute = (app: AppType) => {
       const cached = request.query.noCache ? false : cache.get(cacheKey)
 
       const getData = async () => {
-        const where = getWhereQueryFromFilter(filter)
+        const where = await getWhereQueryFromFilter(filter)
         const [gamesByChar, winsByChar, combosData] = await Promise.all([
           prisma.game.groupBy({
             by: ['char'],

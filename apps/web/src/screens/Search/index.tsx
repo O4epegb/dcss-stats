@@ -13,14 +13,7 @@ import { HelpBubble } from '~/components/ui/Tooltip'
 import { Game, StaticData } from '~/types'
 import { formatNumber } from '~/utils'
 
-// Order by
-// Hotkey for submit
-// Add killer filter
-// gold, potions, scrolls filter?
-// send options from BE
-// send maximum filters from the backend
-
-export const SearchScreen = ({ classes, gods, races, skills, versions }: StaticData) => {
+export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'>) => {
   const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null)
 
   const { data, error, size, setSize } = useSWRInfinite(
@@ -63,11 +56,7 @@ export const SearchScreen = ({ classes, gods, races, skills, versions }: StaticD
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
           <Filters
-            races={races}
-            classes={classes}
-            gods={gods}
-            skills={skills}
-            versions={versions}
+            filterOptions={filterOptions}
             onInit={(filters) => setFilterForSearch(filters)}
             onSubmit={(filters) => setFilterForSearch(filters)}
           />

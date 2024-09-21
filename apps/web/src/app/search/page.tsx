@@ -1,4 +1,3 @@
-import { orderBy } from 'lodash-es'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { SearchScreen } from '~/screens/Search'
@@ -7,19 +6,16 @@ import { StaticData } from '~/types'
 export const revalidate = 300
 
 export default async function SearchPage() {
-  const data: StaticData = await fetchApi('/combos').then((r) => r.json())
+  const res = await fetchApi('/static-data')
+  const data: StaticData = await res.json()
 
-  const props = {
-    races: orderBy(data.races, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
-    classes: orderBy(data.classes, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
-    gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
-    skills: data.skills,
-    versions: data.versions,
+  if (!res.ok) {
+    throw res
   }
 
   return (
     <Suspense fallback={null}>
-      <SearchScreen {...props} />
+      <SearchScreen filterOptions={data.filterOptions} />
     </Suspense>
   )
 }

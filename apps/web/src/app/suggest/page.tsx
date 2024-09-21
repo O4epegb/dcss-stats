@@ -1,4 +1,3 @@
-import { orderBy } from 'lodash-es'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { SuggestScreen } from '~/screens/Suggest'
@@ -7,20 +6,17 @@ import { StaticData } from '~/types'
 export const revalidate = 300
 
 export default async function SuggestPage() {
-  const data: StaticData = await fetchApi('/combos').then((r) => r.json())
+  const res = await fetchApi('/static-data')
+  const data: StaticData = await res.json()
 
-  const props = {
-    races: orderBy(data.races, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
-    classes: orderBy(data.classes, [(x) => x.trunk, (x) => x.name], ['desc', 'asc']),
-    gods: orderBy(data.gods, (x) => x.name.toLowerCase()),
-    skills: data.skills,
-    versions: data.versions,
+  if (!res.ok) {
+    throw res
   }
 
   return (
     <div>
       <Suspense fallback={null}>
-        <SuggestScreen {...props} />
+        <SuggestScreen {...data} />
       </Suspense>
     </div>
   )

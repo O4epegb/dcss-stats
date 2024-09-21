@@ -1,19 +1,6 @@
-import { ParsedUrlQuery } from 'querystring'
-import type { GetServerSideProps, NextPage } from 'next'
-
 export type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 
 export type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U
-
-export type AppData = any
-
-export type Page<P = any> = NextPage<P> & {
-  getLayout?: (page: JSX.Element) => JSX.Element
-}
-export type getSSProps<
-  P extends { [key: string]: any } = { [key: string]: any },
-  Q extends ParsedUrlQuery = ParsedUrlQuery,
-> = GetServerSideProps<P & AppData, Q>
 
 export interface PlayerInfoResponse {
   player: Player
@@ -185,6 +172,14 @@ export type StaticData = {
   gods: God[]
   skills: Skill[]
   versions: string[]
+  filterOptions: {
+    name: string
+    type: string
+    suboptions: string[]
+    conditions: string[]
+    placeholder: string
+    values: string[]
+  }[]
 }
 
 export type Stream = {
