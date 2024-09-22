@@ -1,3 +1,4 @@
+import { Footer } from '~/components/Footer'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
 import { Badges } from './Badges'
@@ -42,6 +43,7 @@ export const Player = () => {
       <div className="min-w-0 xl:col-span-2">
         <Matrix summary={summary} />
       </div>
+      <Footer className="col-span-full mt-0 border-t border-zinc-700 pb-4 pt-4" />
     </div>
   )
 }

@@ -1,8 +1,10 @@
-'use client'
 import Link from 'next/link'
+import { cn } from '~/utils'
 
-export const Footer = () => (
-  <footer className="grid justify-between gap-1 text-xs text-gray-400 md:grid-cols-2">
+export const Footer = ({ className }: { className?: string }) => (
+  <footer
+    className={cn('grid justify-between gap-1 text-xs text-gray-400 md:grid-cols-2', className)}
+  >
     <div>
       Player and game statistics for{' '}
       <a

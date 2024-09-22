@@ -50,7 +50,7 @@ export const Games = ({
   const isDirty = some(filter, (value) => value !== Filter.All)
 
   return (
-    <section className="relative space-y-1 pb-8">
+    <section className="relative space-y-1">
       <header className="flex items-center justify-between">
         <h2 className="font-bold">
           {isDirty ? 'Filtered games' : 'Recent games'}
