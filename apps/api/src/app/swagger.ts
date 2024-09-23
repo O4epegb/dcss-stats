@@ -8,7 +8,7 @@ export const initSwagger = async (app: AppType) => {
       openapi: '3.0.0',
       info: {
         title: 'DCSS Stats Swagger API',
-        description: 'Scalar Swagger UI for https://dcss-stats.vercel.app/',
+        description: 'Scalar Swagger UI for https://dcss-stats.com/',
         version: 'WIP',
       },
     },

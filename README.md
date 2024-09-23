@@ -2,7 +2,7 @@
   <img width="128" height="128" src="./apps/web/public/logo-256.png">
 </p>
 
-# [DCSS Stats](https://dcss-stats.vercel.app/)
+# [DCSS Stats](https://dcss-stats.com/)
 
 [Dungeon Crawl Stone Soup](https://crawl.develz.org/) statistics app.
 
@@ -44,10 +44,10 @@ If you want to update package versions use `yarn upgrade-interactive`
 
 ### Frontend
 
-If you only want to run frontend, point `NEXT_PUBLIC_ROOT_URL` env variable to the production backend at `https://dcss-stats.vercel.app`:
+If you only want to run frontend, point `NEXT_PUBLIC_ROOT_URL` env variable to the production backend at `https://dcss-stats.com`:
 
 ```yml
-NEXT_PUBLIC_ROOT_URL="https://dcss-stats.vercel.app"
+NEXT_PUBLIC_ROOT_URL="https://dcss-stats.com"
 ```
 
 Then run frontend with:
