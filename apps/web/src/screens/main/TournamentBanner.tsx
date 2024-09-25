@@ -11,24 +11,32 @@ export const TournamentBanner = () => {
     return null
   }
 
+  const isUpcoming = now.isBefore(start)
+  const isOngoing = now.isAfter(start) && now.isBefore(end)
+  const isEnded = now.isAfter(end)
+
   return (
     <a
-      href={`https://crawl.develz.org/tournament/${version}/`}
+      href={
+        isEnded
+          ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
+          : `https://crawl.develz.org/tournament/${version}/`
+      }
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center justify-center gap-2 rounded border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
     >
-      {now.isBefore(start) && (
+      {isUpcoming && (
         <span suppressHydrationWarning>
           The v{version} tournament starts at {date(start).format('LLLL')}
         </span>
       )}
-      {now.isAfter(start) && now.isBefore(end) && (
+      {isOngoing && (
         <span suppressHydrationWarning>
           The v{version} tournament will last until {date(end).format('LLLL')}
         </span>
       )}
-      {now.isAfter(end) && <>🏆🏆🏆 DCSS {version} Tournament Results</>}
+      {isEnded && <>🏆🏆🏆 DCSS {version} Tournament Results</>}
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
