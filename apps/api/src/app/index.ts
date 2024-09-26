@@ -10,6 +10,7 @@ import { staticDataRoute } from './routes/static-data'
 import { statsRoute } from './routes/stats'
 import { streamsRoute } from './routes/streams'
 import { suggestRoute } from './routes/suggest'
+import { supportersRoute } from './routes/supporters'
 import { initSwagger } from './swagger'
 
 export * from './app'
@@ -31,6 +32,7 @@ for (const route of [
   gamesRoute,
   playersRoute,
   streamsRoute,
+  supportersRoute,
   devRoute,
 ] as const) {
   await route(app)

@@ -13,7 +13,7 @@ export const ThemeSelector = () => {
   }, [])
 
   if (!mounted) {
-    return null
+    return <div className="h-6 w-6" />
   }
 
   return (

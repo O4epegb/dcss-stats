@@ -188,3 +188,8 @@ export type Stream = {
   viewers: number
   thumbnail: string
 }
+
+export type SupportersCurrentResponse = {
+  total: number
+  goal: number
+}

@@ -37,7 +37,7 @@ export const Footer = ({ className }: { className?: string }) => (
         rel="noopener noreferrer"
         className="hover:underline"
       >
-        Donate to support this site
+        Donate to support this app
       </a>
     </div>
 
