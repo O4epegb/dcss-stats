@@ -5,6 +5,7 @@ services:
     restart: always
     environment:
       - TWITCH_SECRET
+      - BUYMEACOFFEE_TOKEN
     build:
       context: ../../
       dockerfile: ./apps/api/Dockerfile
