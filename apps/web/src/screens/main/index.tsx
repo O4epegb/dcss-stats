@@ -51,7 +51,7 @@ export const MainPage = (props: Props) => {
                 </svg>
               </span>
               {data && (
-                <span className="absolute top-full ml-1 text-nowrap text-xs text-gray-400">
+                <span className="absolute top-full text-nowrap text-xs text-gray-400">
                   {data.total >= data.goal ? (
                     <>Goal: done! (${data.total})</>
                   ) : (
