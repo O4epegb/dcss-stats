@@ -1,9 +1,14 @@
 import { ReactNode } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { formatNumber } from '~/utils'
 import { usePlayerPageContext } from './context'
 
-export const ProgressBadges = () => {
+export const ProgressBadges = ({
+  wonGodsStats,
+  tiamatStats,
+}: {
+  wonGodsStats: JSX.Element
+  tiamatStats: JSX.Element
+}) => {
   const { gods, tiamat, summary } = usePlayerPageContext()
 
   const {
@@ -20,22 +25,6 @@ export const ProgressBadges = () => {
     isPolytheist,
     isTiamat,
   } = summary
-
-  const wonGodsStats = (
-    <ul>
-      {gods
-        .filter((god) => god.wins > 0)
-        .map((god) => (
-          <li key={god.name}>
-            {god.name}: {god.wins}W {god.games}G (
-            {formatNumber((god.wins / god.games || 0) * 100, {
-              maximumFractionDigits: 2,
-            })}
-            %)
-          </li>
-        ))}
-    </ul>
-  )
 
   return (
     <section className="flex flex-row flex-wrap items-start gap-2 text-xs empty:hidden">
@@ -57,6 +46,7 @@ export const ProgressBadges = () => {
       )}
       {!isPolytheist && (
         <Badge
+          open
           title="Polytheist"
           total={gods.length}
           completed={wonGods.length}
@@ -74,7 +64,13 @@ export const ProgressBadges = () => {
           title="Tiamat"
           total={tiamat.total}
           completed={tiamat.total - tiamat.unwon.length}
-          leftToWinWith={tiamat.unwon.map((name) => ({ name }))}
+          leftToWinWith={tiamat.detailed.filter((drac) => drac.wins === 0)}
+          additionalContent={
+            <>
+              <div>Already won:</div>
+              {tiamatStats}
+            </>
+          }
         />
       )}
     </section>
@@ -82,21 +78,24 @@ export const ProgressBadges = () => {
 }
 
 const Badge = ({
+  open,
   completed,
   total,
   leftToWinWith,
   title,
   additionalContent,
 }: {
+  open?: boolean
   completed: number
   total: number
-  leftToWinWith?: Array<{ name: string }>
+  leftToWinWith?: Array<{ name: string; games?: number }>
   title: string
   additionalContent?: ReactNode
 }) => {
   return (
     <Tooltip
       interactive
+      open={open}
       disabled={!leftToWinWith}
       content={
         <div className="space-y-2">
@@ -104,7 +103,10 @@ const Badge = ({
           {leftToWinWith && (
             <ul>
               {leftToWinWith.map((item) => (
-                <li key={item.name}>{item.name}</li>
+                <li key={item.name}>
+                  {item.name}
+                  {item.games !== undefined && <span>: {item.games}G</span>}
+                </li>
               ))}
             </ul>
           )}

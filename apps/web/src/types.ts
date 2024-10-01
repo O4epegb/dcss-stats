@@ -20,12 +20,19 @@ export interface PlayerInfoResponse {
       win: boolean
       wins: number
       games: number
+      gamesToFirstWin: number
     }
   >
   streaks: StreaksInfo
   tiamat: {
     total: number
     unwon: string[]
+    detailed: Array<{
+      name: string
+      games: number
+      wins: number
+      gamesToFirstWin: number
+    }>
   }
 }
 

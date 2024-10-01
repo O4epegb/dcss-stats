@@ -11,7 +11,7 @@ export const draconians = [
   'Black Draconian',
   'Red Draconian',
   'Pale Draconian',
-]
+].sort()
 
 export const skills = orderBy(
   [

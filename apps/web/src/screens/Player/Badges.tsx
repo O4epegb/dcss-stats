@@ -1,27 +1,16 @@
 import { Tooltip } from '~/components/ui/Tooltip'
-import { formatNumber } from '~/utils'
 import { usePlayerPageContext } from './context'
 
-export const Badges = () => {
-  const { gods, summary } = usePlayerPageContext()
+export const Badges = ({
+  wonGodsStats,
+  tiamatStats,
+}: {
+  wonGodsStats: JSX.Element
+  tiamatStats: JSX.Element
+}) => {
+  const { summary } = usePlayerPageContext()
 
   const { isGreat, isGrand, isGreater, isPolytheist, isTiamat } = summary
-
-  const wonGodsStats = (
-    <ul>
-      {gods
-        .filter((god) => god.wins > 0)
-        .map((god) => (
-          <li key={god.name}>
-            {god.name}: {god.wins}W {god.games}G (
-            {formatNumber((god.wins / god.games || 0) * 100, {
-              maximumFractionDigits: 2,
-            })}
-            %)
-          </li>
-        ))}
-    </ul>
-  )
 
   return (
     <div className="flex flex-wrap gap-2 text-sm">
@@ -69,7 +58,15 @@ export const Badges = () => {
         </Tooltip>
       )}
       {isTiamat && (
-        <Tooltip content="Has won with every Draconian color">
+        <Tooltip
+          interactive
+          content={
+            <div className="space-y-2">
+              <div>Has won with every Draconian color:</div>
+              {tiamatStats}
+            </div>
+          }
+        >
           <div className="rounded bg-purple-300 px-1 py-0.5 text-black">Tiamat</div>
         </Tooltip>
       )}

@@ -124,6 +124,8 @@ export const playersRoute = (app: AppType) => {
         }
       })
 
+      const gamesByRace = groupBy(games, (g) => g.race)
+
       return {
         player,
         stats,
@@ -150,10 +152,21 @@ export const playersRoute = (app: AppType) => {
           win: Boolean(winsByGodName[god.name]),
           wins: winsByGodName[god.name]?.length ?? 0,
           games: gamesByGodName[god.name]?.length ?? 0,
+          gamesToFirstWin: (gamesByGodName[god.name] ?? []).findIndex((g) => g.isWin) + 1,
         })),
         tiamat: {
           total: draconians.length,
           unwon: Array.from(tiamat),
+          detailed: draconians.map((name) => {
+            const games = gamesByRace[name] || []
+
+            return {
+              name,
+              games: games.length,
+              wins: games.filter((g) => g.isWin).length,
+              gamesToFirstWin: games.findIndex((g) => g.isWin) + 1,
+            }
+          }),
         },
       }
     }
