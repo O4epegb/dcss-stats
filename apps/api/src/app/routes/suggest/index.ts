@@ -21,12 +21,18 @@ export const suggestRoute = (app: AppType) => {
     '/api/suggest',
     { schema: { querystring: SuggestQuery } },
     async (request, reply) => {
-      const { race: raceAbbr, class: classAbbr, god: godName, version, filter = [] } = request.query
+      const {
+        race: raceNameOrAbbr,
+        class: classNameOrAbbr,
+        god: godName,
+        version,
+        filter = [],
+      } = request.query
 
       const { races, classes, gods, versions } = await getStaticData()
 
-      const race = races.find((r) => r.abbr === raceAbbr)
-      const cls = classes.find((c) => c.abbr === classAbbr)
+      const race = races.find((r) => r.abbr === raceNameOrAbbr || r.name === raceNameOrAbbr)
+      const cls = classes.find((c) => c.abbr === classNameOrAbbr || c.name === classNameOrAbbr)
       const god = gods.find((g) => g.name === godName)
       const versionShort = version ?? versions[0]
 
