@@ -46,7 +46,6 @@ export const ProgressBadges = ({
       )}
       {!isPolytheist && (
         <Badge
-          open
           title="Polytheist"
           total={gods.length}
           completed={wonGods.length}
