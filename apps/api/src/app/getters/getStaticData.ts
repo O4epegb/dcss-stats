@@ -1,12 +1,36 @@
 import { memoize, orderBy, uniq } from 'lodash-es'
 import semver from 'semver'
+import { draconians } from '~/app/constants'
 import { prisma } from '~/prisma'
 
 export const getStaticData = memoize(async () => {
   const [races, classes, gods, versions] = await Promise.all([
-    prisma.race.findMany({
-      orderBy: [{ trunk: 'desc' }, { name: 'asc' }],
-    }),
+    prisma.race
+      .findMany({
+        orderBy: [{ trunk: 'desc' }, { name: 'asc' }],
+      })
+      .then((data) => {
+        return data.flatMap((r) => {
+          if (r.name !== 'Draconian') {
+            return {
+              ...r,
+              isSubRace: false,
+            }
+          }
+
+          return [
+            {
+              ...r,
+              isSubRace: false,
+            },
+            ...draconians.map((name) => ({
+              ...r,
+              name,
+              isSubRace: true,
+            })),
+          ]
+        })
+      }),
     prisma.class.findMany({
       orderBy: [{ trunk: 'desc' }, { name: 'asc' }],
     }),

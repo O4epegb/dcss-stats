@@ -183,6 +183,7 @@ const PopularList = ({
         {data.slice(0, 7).map((x, index) => (
           <Link
             key={index}
+            prefetch={false}
             href={{
               pathname: '/suggest',
               query: pickBy(

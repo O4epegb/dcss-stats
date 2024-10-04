@@ -131,6 +131,14 @@ export const getFilterOptions = async () => {
       conditions: defaultConditions,
       values: races.map((r) => r.name),
       transformValue: (value: string) => value,
+      getValue: (item: FilterItem, condition: (typeof defaultConditions)[number]) => {
+        const isSubRace = races.some((r) => r.name === item.value && r.isSubRace)
+        return {
+          [isSubRace ? 'race' : 'normalizedRace']: {
+            [condition.toSql]: item.value,
+          },
+        }
+      },
     },
     {
       type: 'select',

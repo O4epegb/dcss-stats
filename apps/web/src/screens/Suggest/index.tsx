@@ -24,7 +24,7 @@ import { WinrateStats } from '~/components/WinrateStats'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { Class, God, Race, StaticData } from '~/types'
+import { StaticData } from '~/types'
 import { formatNumber, notEmpty, stringifyQuery } from '~/utils'
 import { GameList } from './GameList'
 import { Layout } from './Layout'
@@ -38,7 +38,6 @@ enum FilterValue {
 type Stats = { wins: number; total: number }
 type Combos = Record<string, Stats>
 type SuggestResponse = Stats & { combos: Combos }
-type Data = SuggestResponse & { race?: Race; class?: Class; god?: God; version?: string }
 
 type MainFilter = {
   race: string
@@ -175,8 +174,8 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     () => {
       const mainParams = pickBy(
         {
-          race: race?.abbr,
-          class: klass?.abbr,
+          race: race?.name,
+          class: klass?.name,
           god: god?.name,
         },
         (value) => value,
@@ -198,15 +197,15 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     ([url, params]) => api.get<SuggestResponse>(url, { params }).then((res) => res.data),
   )
 
-  const normalizeData = ({ combos, race, class: klass, god }: Data) => {
+  const normalizeData = ({ combos }: SuggestResponse) => {
     let data = map(combos, (value, key) => {
       const [raceAbbr, classAbbr, godName] = key.split(',')
 
       return {
         ...value,
-        race: race || races.find((x) => x.abbr === raceAbbr),
-        class: klass || classes.find((x) => x.abbr === classAbbr),
-        god: god || gods.find((x) => x.name === godName),
+        race: races.find((x) => x.abbr === raceAbbr),
+        class: classes.find((x) => x.abbr === classAbbr),
+        god: gods.find((x) => x.name === godName),
         winrate: (value.wins / value.total) * 100,
       }
     })

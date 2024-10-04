@@ -25,8 +25,9 @@ export const allUnavailableCombos = keyBy([
 ])
 
 export const getSummary = (data: PlayerInfoResponse) => {
-  const { matrix, races, classes, gods, gamesToFirstWin, tiamat } = data
+  const { matrix, races: allRaces, classes, gods, gamesToFirstWin, tiamat } = data
 
+  const races = allRaces.filter((r) => !r.isSubRace)
   const trunkRaces = orderBy(
     races.filter((x) => x.trunk),
     (x) => x.abbr,

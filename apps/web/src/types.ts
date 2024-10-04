@@ -129,6 +129,7 @@ export interface Race {
   name: string
   abbr: string
   trunk: boolean
+  isSubRace: boolean
 }
 
 export interface Class {

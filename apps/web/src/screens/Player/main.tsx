@@ -18,8 +18,6 @@ import { usePlayerPageContext } from './context'
 export const Player = () => {
   const { player, summary, gods, tiamat } = usePlayerPageContext()
 
-  const { allActualClasses, allActualRaces } = summary
-
   const wonGodsStats = <TooltipTable data={gods} />
   const tiamatStats = <TooltipTable data={tiamat.detailed} />
 
@@ -42,7 +40,7 @@ export const Player = () => {
           <Calendar />
           <Titles />
           <Streaks />
-          <Games allActualRaces={allActualRaces} allActualClasses={allActualClasses} />
+          <Games />
         </div>
       </div>
       <div className="min-w-0 xl:col-span-2">

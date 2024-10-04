@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react'
 import { GamesList } from '~/components/GamesList'
 import { Select } from '~/components/ui/Select'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { Class, Race } from '~/types'
 import { usePlayerPageContext } from './context'
 
 enum Filter {
@@ -25,14 +24,16 @@ const runeOptions = [
   ...range(0, 15).map((value) => ({ value: [value], name: String(value) })),
 ]
 
-export const Games = ({
-  allActualRaces,
-  allActualClasses,
-}: {
-  allActualRaces: Race[]
-  allActualClasses: Class[]
-}) => {
-  const { lastGames, stats, player, gods, toggleOption, isOptionEnabled } = usePlayerPageContext()
+export const Games = () => {
+  const {
+    lastGames,
+    stats,
+    player,
+    gods,
+    toggleOption,
+    isOptionEnabled,
+    summary: { allActualClasses, allActualRaces },
+  } = usePlayerPageContext()
   const [data, setData] = useState(() => ({ games: lastGames, total: stats.total.games }))
   const sortedGods = useMemo(() => orderBy(gods, (x) => x.name.toLowerCase()), [gods])
   const [filter, setFilter] = useState(() => ({

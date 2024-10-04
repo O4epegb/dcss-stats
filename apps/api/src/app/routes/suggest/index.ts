@@ -59,7 +59,8 @@ export const suggestRoute = (app: AppType) => {
           getCombosData({
             where: {
               ...where,
-              normalizedRace: race?.name,
+              normalizedRace: race && !race.isSubRace ? race.name : undefined,
+              race: race && race.isSubRace ? race.name : undefined,
               normalizedClass: cls?.name,
               god: god?.name,
               versionShort: version ?? versions[0],
