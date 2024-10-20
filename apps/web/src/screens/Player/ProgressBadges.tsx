@@ -1,14 +1,9 @@
 import { ReactNode } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
+import { TooltipTable } from './TooltipTable'
 import { usePlayerPageContext } from './context'
 
-export const ProgressBadges = ({
-  wonGodsStats,
-  tiamatStats,
-}: {
-  wonGodsStats: JSX.Element
-  tiamatStats: JSX.Element
-}) => {
+export const ProgressBadges = () => {
   const { gods, tiamat, summary } = usePlayerPageContext()
 
   const {
@@ -50,12 +45,7 @@ export const ProgressBadges = ({
           total={gods.length}
           completed={wonGods.length}
           leftToWinWith={notWonGods}
-          additionalContent={
-            <>
-              <div>Already won:</div>
-              {wonGodsStats}
-            </>
-          }
+          additionalContent={<TooltipTable title="Already won:" data={gods} />}
         />
       )}
       {!isTiamat && (
@@ -64,12 +54,7 @@ export const ProgressBadges = ({
           total={tiamat.total}
           completed={tiamat.total - tiamat.unwon.length}
           leftToWinWith={tiamat.detailed.filter((drac) => drac.wins === 0)}
-          additionalContent={
-            <>
-              <div>Already won:</div>
-              {tiamatStats}
-            </>
-          }
+          additionalContent={<TooltipTable title="Already won:" data={tiamat.detailed} />}
         />
       )}
     </section>

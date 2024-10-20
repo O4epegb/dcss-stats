@@ -1,14 +1,9 @@
 import { Tooltip } from '~/components/ui/Tooltip'
+import { TooltipTable } from './TooltipTable'
 import { usePlayerPageContext } from './context'
 
-export const Badges = ({
-  wonGodsStats,
-  tiamatStats,
-}: {
-  wonGodsStats: JSX.Element
-  tiamatStats: JSX.Element
-}) => {
-  const { summary } = usePlayerPageContext()
+export const Badges = () => {
+  const { summary, gods, tiamat } = usePlayerPageContext()
 
   const { isGreat, isGrand, isGreater, isPolytheist, isTiamat } = summary
 
@@ -45,15 +40,7 @@ export const Badges = ({
         </>
       )}
       {isPolytheist && (
-        <Tooltip
-          interactive
-          content={
-            <div className="space-y-2">
-              <div>Has won with all gods:</div>
-              {wonGodsStats}
-            </div>
-          }
-        >
+        <Tooltip interactive content={<TooltipTable title="Has won with all gods:" data={gods} />}>
           <div className="rounded bg-sky-300 px-1 py-0.5 text-black">Polytheist</div>
         </Tooltip>
       )}
@@ -61,10 +48,7 @@ export const Badges = ({
         <Tooltip
           interactive
           content={
-            <div className="space-y-2">
-              <div>Has won with every Draconian color:</div>
-              {tiamatStats}
-            </div>
+            <TooltipTable title="Has won with every Draconian color:" data={tiamat.detailed} />
           }
         >
           <div className="rounded bg-purple-300 px-1 py-0.5 text-black">Tiamat</div>
