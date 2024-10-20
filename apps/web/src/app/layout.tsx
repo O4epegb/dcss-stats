@@ -1,5 +1,6 @@
 import '~/styles/globals.css'
 import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
 import { Providers } from './providers'
 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             data-website-id="ddb2a2da-618f-4c49-b230-c7b9b66ccd7c"
           />
         )}
+        <SpeedInsights />
       </body>
     </html>
   )
