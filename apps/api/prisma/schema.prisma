@@ -65,6 +65,8 @@ model Game {
   duration        Int
   uniqueRunes     Int
   runes           Int
+  gems            Int      @default(0)
+  intactGems      Int      @default(0)
   branch          String
   lvl             Int
   fifteenskills   String[]
@@ -79,6 +81,7 @@ model Game {
   god             String?
   piety           Int?
   killer          String?
+  killerType      String?
   scrollsused     Int?
   potionsused     Int?
   gold            Int?

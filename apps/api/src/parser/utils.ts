@@ -64,12 +64,15 @@ export type ParsedGame = RequiredKeysMap & {
   piety: string | null
   nrune: string
   urune: string
+  fgem: string
+  igem: string
   fifteenskills: string | null
   maxskills: string | null
   ac: string | null
   ev: string | null
   sh: string | null
   killer: string | null
+  killerType: string | null
   scrollsused: string | null
   potionsused: string | null
   gold: string | null
@@ -92,12 +95,15 @@ export const getGameFromCandidate = (candidate: Record<string, string>): ParsedG
     piety: candidate.piety || null,
     nrune: candidate.nrune || candidate.urune || '0',
     urune: candidate.urune || candidate.nrune || '0',
+    fgem: candidate.fgem || '0',
+    igem: candidate.igem || '0',
     fifteenskills: candidate.fifteenskills || null,
     maxskills: candidate.maxskills || null,
     ac: candidate.ac || null,
     ev: candidate.ev || null,
     sh: candidate.sh || null,
     killer: candidate.killer || null,
+    killerType: candidate.killer_flags === 'unique' ? candidate.killer_flags : null,
     scrollsused: candidate.scrollsused || null,
     potionsused: candidate.potionsused || null,
     gold: candidate.gold || null,
