@@ -29,7 +29,7 @@ export const Streams = () => {
               <img
                 width={640}
                 height={360}
-                alt={`${stream.username} stream`}
+                alt={`${stream.username} stream thumbnail`}
                 src={stream.thumbnail.replace('{width}', '640').replace('{height}', '360')}
                 className="transition-all hover:-translate-y-1 hover:translate-x-1 hover:shadow-[-4px_4px_#772ce8,-3px_3px_#772ce8,-2px_2px_#772ce8,-1px_1px_#772ce8]"
               />
