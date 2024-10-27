@@ -16,6 +16,7 @@ model Server {
   baseUrl      String
   morgueUrl    String?
   logfile      Logfile[]
+  isDormant    Boolean   @default(false)
 }
 
 model Logfile {

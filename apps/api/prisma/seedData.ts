@@ -337,6 +337,7 @@ export const data = {
       url: 'http://webzook.net:8080',
       baseUrl: 'https://webzook.net',
       morgueUrl: 'http://webzook.net/soup/morgue',
+      isDormant: true,
       logfiles: [
         ...range(13, 32).map((version) => ({
           path: `/soup/0.${version}/logfile`,

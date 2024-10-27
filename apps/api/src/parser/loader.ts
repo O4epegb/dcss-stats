@@ -65,7 +65,10 @@ export const startFetchQueue = async () => {
   })
 
   const main = async () => {
-    const logfiles = await prisma.logfile.findMany({ include: { server: true } })
+    const logfiles = await prisma.logfile.findMany({
+      where: { server: { isDormant: false } },
+      include: { server: true },
+    })
 
     for (const file of shuffle(logfiles)) {
       queue.add(() =>

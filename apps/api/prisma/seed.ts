@@ -11,6 +11,7 @@ async function main() {
       url: server.url,
       baseUrl: server.baseUrl,
       morgueUrl: server.morgueUrl,
+      isDormant: 'isDormant' in server ? server.isDormant : false,
     }
     const s = await prisma.server.upsert({
       create: data,
