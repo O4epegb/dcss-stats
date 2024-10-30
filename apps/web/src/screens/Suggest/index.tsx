@@ -28,6 +28,7 @@ import { StaticData } from '~/types'
 import { formatNumber, notEmpty, stringifyQuery } from '~/utils'
 import { GameList } from './GameList'
 import { Layout } from './Layout'
+import { SkillProgression } from './SkillProgression'
 
 export const revalidate = 300
 
@@ -170,29 +171,28 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     ['Win rate', 'winrate', 'numeric'],
   ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>
 
+  const mainParams = pickBy(
+    {
+      race: race?.name,
+      class: klass?.name,
+      god: god?.name,
+    },
+    (value) => value,
+  )
+  const apiParams = {
+    ...mainParams,
+    version: filterForSearch.version,
+    filter: filterForSearch.advanced.map((x) => omit(x, 'id')),
+  }
+  const isSwrDisabled = isEmpty(mainParams) || !advancedFilter
+
   const { data, error, isValidating } = useSWRImmutable(
     () => {
-      const mainParams = pickBy(
-        {
-          race: race?.name,
-          class: klass?.name,
-          god: god?.name,
-        },
-        (value) => value,
-      )
-
-      if (isEmpty(mainParams) || !advancedFilter) {
+      if (isSwrDisabled) {
         return null
       }
 
-      return [
-        '/suggest',
-        {
-          ...mainParams,
-          version: filterForSearch.version,
-          filter: filterForSearch.advanced.map((x) => omit(x, 'id')),
-        },
-      ]
+      return ['/suggest', apiParams]
     },
     ([url, params]) => api.get<SuggestResponse>(url, { params }).then((res) => res.data),
   )
@@ -362,6 +362,11 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
           {data.total > 0 && columns && (
             <>
               <section className="m-auto flex w-full max-w-lg flex-wrap items-center justify-between">
+                <SkillProgression
+                  isLastVersion={filter.version === versions[0]}
+                  apiParams={apiParams}
+                  isSwrDisabled={isSwrDisabled}
+                />
                 {view === 'stats' && onlyOneFilterWasSelected && (
                   <div className="flex w-full gap-4">
                     {(

@@ -24,9 +24,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ReactNode, useRef, useState, cloneElement, FC } from 'react'
 import { XOR } from '~/types'
 
-export const HelpBubble: FC<{ content: ReactNode }> = ({ content }) => {
+export const HelpBubble: FC<{
+  interactive?: boolean
+  content: ReactNode
+}> = ({ interactive, content }) => {
   return (
-    <Tooltip content={content}>
+    <Tooltip interactive={interactive} content={content}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         className="h-5 w-5 text-gray-400"

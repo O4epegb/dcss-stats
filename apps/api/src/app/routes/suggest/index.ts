@@ -5,6 +5,7 @@ import { getCombosData } from '~/app/getters/getCombosData'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
 import { prisma } from '~/prisma'
+import { suggestExperimentalRoute } from './experimental'
 
 export const suggestRoute = (app: AppType) => {
   const SuggestQuery = Type.Object({
@@ -95,4 +96,6 @@ export const suggestRoute = (app: AppType) => {
       return cache.get(cacheKey)?.promise
     },
   )
+
+  suggestExperimentalRoute(app)
 }
