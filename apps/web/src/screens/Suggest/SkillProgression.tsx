@@ -159,14 +159,25 @@ export const SkillProgression = ({
                 <div>
                   Each skill graph is divided by XL on 27 bars.
                   <br />
-                  The height of each bar represents the average skill level of all players who
-                  reached that XL.
+                  The <b>height</b> of each bar represents the average skill level of all players
+                  who reached that XL.
                   <br />
-                  The color of the bar represents the number of players who who had such skill at
-                  that XL.
+                  The <b>color</b> of the bar represents the number of players who who had such
+                  skill at that XL.
                   <br />
-                  <span className="text-green-700">Green</span> means more players.{' '}
-                  <span className="text-amber-600">Yellow</span> means fewer players.
+                  <b className="text-green-700">Green</b> means more players.{' '}
+                  <b className="text-amber-600">Yellow</b> means fewer players.
+                  <br />
+                  <br />
+                  <b>For example</b>, if the bar is <b>thick</b> and{' '}
+                  <b className="text-green-700">green</b>, it means that many players leveled and
+                  used a skill.
+                  <br />
+                  If the bar is <b>thick</b> and <b className="text-amber-600">yellow</b>, it means
+                  that only a few players leveled and used a skill.
+                  <br />
+                  If the bar is <b>thin</b> and <b className="text-amber-600">yellow</b>, it means
+                  that almost no one leveled and used a skill.
                   <br />
                   <br />
                   Let us know what you think @totalnoob on{' '}
