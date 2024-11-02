@@ -236,6 +236,14 @@ export const getFilterOptions = async () => {
       transformValue: (value: string) => Number(value),
     },
     {
+      type: 'number',
+      dbField: 'xl',
+      queryName: 'XL',
+      conditions: numberConditions,
+      placeholder: 'Enter number',
+      transformValue: (value: string) => Number(value),
+    },
+    {
       type: 'select',
       dbField: 'versionShort',
       queryName: 'Version',
