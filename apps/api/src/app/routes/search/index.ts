@@ -183,7 +183,7 @@ export const getFilterOptions = async () => {
       queryName: 'Title',
       conditions: defaultConditions,
       placeholder: 'Enter title',
-      transformValue: (value: string) => value.toLowerCase(),
+      transformValue: (value: string) => value,
     },
     {
       type: 'select',
