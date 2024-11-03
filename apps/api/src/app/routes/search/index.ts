@@ -178,6 +178,14 @@ export const getFilterOptions = async () => {
       transformValue: (value: string) => value.toLowerCase(),
     },
     {
+      type: 'text',
+      dbField: 'title',
+      queryName: 'Title',
+      conditions: defaultConditions,
+      placeholder: 'Enter title',
+      transformValue: (value: string) => value.toLowerCase(),
+    },
+    {
       type: 'select',
       queryName: 'Skill',
       suboptions: skills.map((s) => s.name),
