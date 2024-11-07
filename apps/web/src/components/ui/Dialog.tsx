@@ -13,10 +13,10 @@ export const DialogContent = ({
 }>) => {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Overlay className="fixed inset-0 bg-black/50 data-[state=open]:animate-overlayShow" />
+      <DialogPrimitive.Overlay className="fixed inset-0 z-10 bg-black/50 data-[state=open]:animate-overlayShow" />
       <DialogPrimitive.Content
         aria-describedby={undefined}
-        className="//w-[750px] //w-full fixed left-[50%] top-[50%] flex max-h-[85vh] max-w-[90vw] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded bg-white text-gray-900 focus:outline-none data-[state=open]:animate-contentShow dark:border dark:border-zinc-700 dark:bg-black dark:text-white"
+        className="//w-[750px] //w-full fixed left-[50%] top-[50%] z-10 flex max-h-[85vh] max-w-[90vw] translate-x-[-50%] translate-y-[-50%] flex-col overflow-hidden rounded bg-white text-gray-900 focus:outline-none data-[state=open]:animate-contentShow dark:border dark:border-zinc-700 dark:bg-black dark:text-white"
       >
         <div className="relative flex items-center justify-between p-5">
           {title && (
