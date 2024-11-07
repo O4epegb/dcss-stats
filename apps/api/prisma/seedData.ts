@@ -251,6 +251,7 @@ export const data = {
       url: 'https://crawl.kelbi.org',
       baseUrl: 'https://crawl.kelbi.org',
       morgueUrl: 'https://crawl.kelbi.org/crawl/morgue',
+      isDormant: true,
       logfiles: [
         {
           path: `/crawl/meta/0.18/logfile`,
