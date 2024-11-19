@@ -1,4 +1,4 @@
-import { orderBy, map, uniq } from 'lodash-es'
+import { uniq } from 'lodash-es'
 import { prisma } from '~/prisma'
 import { findGamesIncludeServer } from './findGamesIncludeServer'
 
@@ -6,36 +6,14 @@ const LIMIT = 10
 
 export const getTopStats = async () => {
   const [titles, winrates, winners, gamesByTC, gamesByDuration, gamesByScore] = await Promise.all([
-    prisma.game
-      .groupBy({
-        by: ['title', 'playerId'],
-        where: { isWin: true },
-      })
-      .then((data) => {
-        const byPlayerId = data.reduce(
-          (acc, { playerId, title }) => {
-            if (!acc[playerId]) {
-              acc[playerId] = []
-            }
-
-            acc[playerId].push(title)
-
-            return acc
-          },
-          {} as Record<string, string[]>,
-        )
-
-        return orderBy(
-          map(byPlayerId, (titles, playerId) => {
-            return {
-              playerId,
-              titles: uniq(titles).length,
-            }
-          }),
-          (x) => x.titles,
-          'desc',
-        ).slice(0, 10)
-      }),
+    prisma.$queryRaw<Array<{ playerId: string; titles: number }>>`
+      SELECT "playerId", CAST(COUNT(DISTINCT "title") AS INTEGER) AS titles
+      FROM "Game"
+      WHERE "isWin" = TRUE
+      GROUP BY "playerId"
+      ORDER BY titles DESC
+      LIMIT 10;
+    `,
     prisma.$queryRaw<Array<{ playerId: string; winrate: number }>>`
       SELECT "playerId"
         , 1.0 * SUM(CASE WHEN "isWin" THEN 1 ELSE 0 END) / COUNT("playerId") AS winrate
