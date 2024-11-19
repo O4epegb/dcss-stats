@@ -49,6 +49,7 @@ export const skills = orderBy(
     { name: 'Poison Magic', trunk: true },
     { name: 'Invocations', trunk: true },
     { name: 'Evocations', trunk: true },
+    { name: 'Forgecraft', trunk: true },
   ],
   [(x) => x.trunk, (x) => x.name],
   ['desc', 'asc'],
