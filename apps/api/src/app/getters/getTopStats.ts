@@ -5,7 +5,17 @@ import { findGamesIncludeServer } from './findGamesIncludeServer'
 const LIMIT = 10
 
 export const getTopStats = async () => {
-  const [titles, winrates, winners, gamesByTC, gamesByDuration, gamesByScore] = await Promise.all([
+  const [
+    titles,
+    winrates,
+    winners,
+    gamesByTC,
+    gamesByDuration,
+    gamesByScore,
+    gamesByTC15Runes,
+    gamesByDuration15Runes,
+    gamesByScore3Runes,
+  ] = await Promise.all([
     prisma.$queryRaw<Array<{ playerId: string; titles: number }>>`
       SELECT "playerId", CAST(COUNT(DISTINCT "title") AS INTEGER) AS titles
       FROM "Game"
@@ -22,7 +32,7 @@ export const getTopStats = async () => {
       HAVING COUNT("playerId") >= 75
       ORDER BY winrate DESC
       LIMIT 10
-`,
+    `,
     prisma.game.groupBy({
       by: ['playerId'],
       where: { isWin: true },
@@ -42,6 +52,21 @@ export const getTopStats = async () => {
     }),
     findGamesIncludeServer({
       where: { isWin: true, player: { isBot: false } },
+      orderBy: { score: 'desc' },
+      take: LIMIT,
+    }),
+    findGamesIncludeServer({
+      where: { isWin: true, runes: 15, player: { isBot: false } },
+      orderBy: { turns: 'asc' },
+      take: LIMIT,
+    }),
+    findGamesIncludeServer({
+      where: { isWin: true, runes: 15, player: { isBot: false } },
+      orderBy: { duration: 'asc' },
+      take: LIMIT,
+    }),
+    findGamesIncludeServer({
+      where: { isWin: true, runes: 3, player: { isBot: false } },
       orderBy: { score: 'desc' },
       take: LIMIT,
     }),
@@ -71,5 +96,8 @@ export const getTopStats = async () => {
     gamesByTC,
     gamesByDuration,
     gamesByScore,
+    gamesByTC15Runes,
+    gamesByDuration15Runes,
+    gamesByScore3Runes,
   }
 }

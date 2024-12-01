@@ -107,6 +107,9 @@ export type Response = {
     gamesByTC: Array<Game>
     gamesByDuration: Array<Game>
     gamesByScore: Array<Game>
+    gamesByTC15Runes: Array<Game>
+    gamesByDuration15Runes: Array<Game>
+    gamesByScore3Runes: Array<Game>
   }
 }
 

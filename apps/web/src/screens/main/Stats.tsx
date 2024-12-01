@@ -154,6 +154,24 @@ export const Stats = memo(
           onLinkClick={onLinkClick}
         />
         <Table
+          games={top.gamesByScore3Runes}
+          title="Top highscores (3 runes only)"
+          highlight="Score"
+          onLinkClick={onLinkClick}
+        />
+        <Table
+          games={top.gamesByTC15Runes}
+          title="Fastest wins by turn count (15 runes only)"
+          highlight="Turns"
+          onLinkClick={onLinkClick}
+        />
+        <Table
+          games={top.gamesByDuration15Runes}
+          title="Fastest wins by realtime (15 runes only)"
+          highlight="Duration"
+          onLinkClick={onLinkClick}
+        />
+        <Table
           games={top.gamesByScore}
           title="Top highscores"
           highlight="Score"
