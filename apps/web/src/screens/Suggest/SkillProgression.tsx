@@ -92,9 +92,6 @@ export const SkillProgression = ({
             />
             Show skill progression
             {isValidating && <Loader />}
-            <div className="absolute left-0 top-[-10px] rounded bg-indigo-500 px-1 text-xs text-white">
-              new
-            </div>
           </label>
         </Tooltip>
 
@@ -157,13 +154,13 @@ export const SkillProgression = ({
               interactive
               content={
                 <div>
-                  Each skill graph is divided by XL on 27 bars.
+                  Each skill graph is divided by <b>XL</b> on 27 bars.
                   <br />
                   The <b>height</b> of each bar represents the average skill level of all players
-                  who reached that XL.
+                  who reached that <b>XL</b>.
                   <br />
                   The <b>color</b> of the bar represents the number of players who who had such
-                  skill at that XL.
+                  skill at that <b>XL</b>.
                   <br />
                   <b className="text-green-700">Green</b> means more players.{' '}
                   <b className="text-amber-600">Yellow</b> means fewer players.
@@ -178,17 +175,6 @@ export const SkillProgression = ({
                   <br />
                   If the bar is <b>thin</b> and <b className="text-amber-600">yellow</b>, it means
                   that almost no one leveled and used a skill.
-                  <br />
-                  <br />
-                  Let us know what you think @totalnoob on{' '}
-                  <a
-                    href="https://discord.gg/pKCNTunFeW"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    RL Discord
-                  </a>
                 </div>
               }
             />
