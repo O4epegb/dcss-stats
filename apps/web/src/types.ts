@@ -103,6 +103,7 @@ export interface Stats {
     runesWon: number | null
     runesLost: number | null
     gameTime: number | null
+    gameTurnCount: number | null
     winTime: number | null
     winTurnCount: number | null
   }
@@ -119,6 +120,8 @@ export interface Stats {
     score: number | null
     runesWon: number | null
     runesLost: number | null
+    gemsWon: number | null
+    gemsLost: number | null
     games: number
     wins: number
     timePlayed: number | null

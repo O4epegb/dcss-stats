@@ -31,16 +31,6 @@ export const Stats = ({ summary }: { summary: Summary }) => {
             ['Best score', roundAndFormat(stats.max.score)],
             ['Average score', roundAndFormat(stats.average.score, { maximumFractionDigits: 0 })],
             ['Combos completed', `${combosCompleted} of ${totalCombos}`],
-          ]}
-        />
-        <List
-          items={[
-            ['Total runes extracted', roundAndFormat(stats.total.runesWon)],
-            ['Total runes lost', roundAndFormat(stats.total.runesLost)],
-            [
-              'Average runes extracted',
-              roundAndFormat(stats.average.runesWon, { maximumFractionDigits: 1 }),
-            ],
             [
               <span key="">One-and-won</span>,
               `${oneAndWons} ${pluralize('time', oneAndWons)}`,
@@ -55,6 +45,18 @@ export const Stats = ({ summary }: { summary: Summary }) => {
                 </div>
               </div>,
             ],
+          ]}
+        />
+        <List
+          items={[
+            ['Total runes extracted', roundAndFormat(stats.total.runesWon)],
+            ['Total runes lost', roundAndFormat(stats.total.runesLost)],
+            [
+              'Average runes extracted',
+              roundAndFormat(stats.average.runesWon, { maximumFractionDigits: 1 }),
+            ],
+            ['Total gems extracted', roundAndFormat(stats.total.gemsWon)],
+            ['Total gems lost', roundAndFormat(stats.total.gemsLost)],
           ]}
         />
         <List
@@ -85,6 +87,12 @@ export const Stats = ({ summary }: { summary: Summary }) => {
               'Average win turn count',
               stats.average.winTurnCount
                 ? roundAndFormat(stats.average.winTurnCount, { maximumFractionDigits: 0 })
+                : 'n/a',
+            ],
+            [
+              'Average game turn count',
+              stats.average.gameTurnCount
+                ? roundAndFormat(stats.average.gameTurnCount, { maximumFractionDigits: 0 })
                 : 'n/a',
             ],
           ]}
