@@ -10,17 +10,7 @@ export const Badges = () => {
   return (
     <div className="flex flex-wrap gap-2 text-sm">
       {isGreater ? (
-        <Tooltip
-          content={
-            <div>
-              Has won with all races and all classes
-              <div className="pt-2 text-xs text-gray-300 dark:text-gray-700">
-                Achievements were renamed to Great/Grand/Greater because of <br />
-                name clash with Discord command
-              </div>
-            </div>
-          }
-        >
+        <Tooltip content={<div>Has won with all races and all classes</div>}>
           <div className="rounded bg-amber-300 px-1 py-0.5 text-black ring-2 ring-inset ring-amber-600">
             Greater Player
           </div>
