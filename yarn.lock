@@ -160,7 +160,7 @@ __metadata:
   dependencies:
     husky: "npm:^9.1.7"
     lint-staged: "npm:^15.4.3"
-    turbo: "npm:^2.4.0"
+    turbo: "npm:^2.4.2"
   languageName: unknown
   linkType: soft
 
@@ -198,7 +198,7 @@ __metadata:
     framer-motion: "npm:^11.3.6"
     globals: "npm:^15.8.0"
     lodash-es: "npm:^4.17.21"
-    next: "npm:^14.2.5"
+    next: "npm:^14.2.24"
     next-themes: "npm:^0.3.0"
     nookies: "npm:^2.5.2"
     postcss: "npm:^8.5.1"
@@ -981,72 +981,72 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/env@npm:14.2.5"
-  checksum: 10/0462db6a82120220ad518eabbe85144b75cf741cf96f520b1b3dd5978c51c5e7a92ad4bff2b8157f029cdc87ba0f8eeed9f3a30711822fae5195fa5db4e40280
+"@next/env@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/env@npm:14.2.24"
+  checksum: 10/e1edf34c5fc8b2ba31636fb62404d0e9f9f1a2746a45ab226271ccd4c06e6f85eaff5e6e52d864b0ced144b5f5355b4b8c016d054ad5b71e4d5230d3c58dce4a
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-arm64@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-darwin-arm64@npm:14.2.5"
+"@next/swc-darwin-arm64@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-darwin-arm64@npm:14.2.24"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-darwin-x64@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-darwin-x64@npm:14.2.5"
+"@next/swc-darwin-x64@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-darwin-x64@npm:14.2.24"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-gnu@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-linux-arm64-gnu@npm:14.2.5"
+"@next/swc-linux-arm64-gnu@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-linux-arm64-gnu@npm:14.2.24"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-arm64-musl@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-linux-arm64-musl@npm:14.2.5"
+"@next/swc-linux-arm64-musl@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-linux-arm64-musl@npm:14.2.24"
   conditions: os=linux & cpu=arm64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-gnu@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-linux-x64-gnu@npm:14.2.5"
+"@next/swc-linux-x64-gnu@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-linux-x64-gnu@npm:14.2.24"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
 
-"@next/swc-linux-x64-musl@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-linux-x64-musl@npm:14.2.5"
+"@next/swc-linux-x64-musl@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-linux-x64-musl@npm:14.2.24"
   conditions: os=linux & cpu=x64 & libc=musl
   languageName: node
   linkType: hard
 
-"@next/swc-win32-arm64-msvc@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-win32-arm64-msvc@npm:14.2.5"
+"@next/swc-win32-arm64-msvc@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-win32-arm64-msvc@npm:14.2.24"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@next/swc-win32-ia32-msvc@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-win32-ia32-msvc@npm:14.2.5"
+"@next/swc-win32-ia32-msvc@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-win32-ia32-msvc@npm:14.2.24"
   conditions: os=win32 & cpu=ia32
   languageName: node
   linkType: hard
 
-"@next/swc-win32-x64-msvc@npm:14.2.5":
-  version: 14.2.5
-  resolution: "@next/swc-win32-x64-msvc@npm:14.2.5"
+"@next/swc-win32-x64-msvc@npm:14.2.24":
+  version: 14.2.24
+  resolution: "@next/swc-win32-x64-msvc@npm:14.2.24"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -6285,20 +6285,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:^14.2.5":
-  version: 14.2.5
-  resolution: "next@npm:14.2.5"
+"next@npm:^14.2.24":
+  version: 14.2.24
+  resolution: "next@npm:14.2.24"
   dependencies:
-    "@next/env": "npm:14.2.5"
-    "@next/swc-darwin-arm64": "npm:14.2.5"
-    "@next/swc-darwin-x64": "npm:14.2.5"
-    "@next/swc-linux-arm64-gnu": "npm:14.2.5"
-    "@next/swc-linux-arm64-musl": "npm:14.2.5"
-    "@next/swc-linux-x64-gnu": "npm:14.2.5"
-    "@next/swc-linux-x64-musl": "npm:14.2.5"
-    "@next/swc-win32-arm64-msvc": "npm:14.2.5"
-    "@next/swc-win32-ia32-msvc": "npm:14.2.5"
-    "@next/swc-win32-x64-msvc": "npm:14.2.5"
+    "@next/env": "npm:14.2.24"
+    "@next/swc-darwin-arm64": "npm:14.2.24"
+    "@next/swc-darwin-x64": "npm:14.2.24"
+    "@next/swc-linux-arm64-gnu": "npm:14.2.24"
+    "@next/swc-linux-arm64-musl": "npm:14.2.24"
+    "@next/swc-linux-x64-gnu": "npm:14.2.24"
+    "@next/swc-linux-x64-musl": "npm:14.2.24"
+    "@next/swc-win32-arm64-msvc": "npm:14.2.24"
+    "@next/swc-win32-ia32-msvc": "npm:14.2.24"
+    "@next/swc-win32-x64-msvc": "npm:14.2.24"
     "@swc/helpers": "npm:0.5.5"
     busboy: "npm:1.6.0"
     caniuse-lite: "npm:^1.0.30001579"
@@ -6339,7 +6339,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10/c107b45ffe7b75649618d8b5fc0bfe4936317daf12384d2546603b250ceb4e24aca9862cb062c6302a6bafafe5e682bb83f25f2f30ab7533bf0c4a30b3be6875
+  checksum: 10/103d1eed8fd75385af3624e6195441f08e90aad81d61b9bf7d573686f5ce922fddaa99aafebc3dd1f407b66ddda69aba773317308b731070f8dd5739c9648ecd
   languageName: node
   linkType: hard
 
@@ -8614,58 +8614,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-darwin-64@npm:2.4.0"
+"turbo-darwin-64@npm:2.4.2":
+  version: 2.4.2
+  resolution: "turbo-darwin-64@npm:2.4.2"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-darwin-arm64@npm:2.4.0"
+"turbo-darwin-arm64@npm:2.4.2":
+  version: 2.4.2
+  resolution: "turbo-darwin-arm64@npm:2.4.2"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-linux-64@npm:2.4.0"
+"turbo-linux-64@npm:2.4.2":
+  version: 2.4.2
+  resolution: "turbo-linux-64@npm:2.4.2"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-linux-arm64@npm:2.4.0"
+"turbo-linux-arm64@npm:2.4.2":
+  version: 2.4.2
+  resolution: "turbo-linux-arm64@npm:2.4.2"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-windows-64@npm:2.4.0"
+"turbo-windows-64@npm:2.4.2":
+  version: 2.4.2
+  resolution: "turbo-windows-64@npm:2.4.2"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.4.0":
-  version: 2.4.0
-  resolution: "turbo-windows-arm64@npm:2.4.0"
+"turbo-windows-arm64@npm:2.4.2":
+  version: 2.4.2
+  resolution: "turbo-windows-arm64@npm:2.4.2"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "turbo@npm:2.4.0"
+"turbo@npm:^2.4.2":
+  version: 2.4.2
+  resolution: "turbo@npm:2.4.2"
   dependencies:
-    turbo-darwin-64: "npm:2.4.0"
-    turbo-darwin-arm64: "npm:2.4.0"
-    turbo-linux-64: "npm:2.4.0"
-    turbo-linux-arm64: "npm:2.4.0"
-    turbo-windows-64: "npm:2.4.0"
-    turbo-windows-arm64: "npm:2.4.0"
+    turbo-darwin-64: "npm:2.4.2"
+    turbo-darwin-arm64: "npm:2.4.2"
+    turbo-linux-64: "npm:2.4.2"
+    turbo-linux-arm64: "npm:2.4.2"
+    turbo-windows-64: "npm:2.4.2"
+    turbo-windows-arm64: "npm:2.4.2"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -8681,7 +8681,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/074e612c5258132e52d1aeed3152178c6f8b2a8c77625ec734b5eb71a77ab123639446404b6c9ea126a382594359e4a095c4fafa860c2bc451dbec8846cebdab
+  checksum: 10/31f0d3a6f1453afebbd1b38ac8080b9b846662452c8312ab98e382249b3e4b978535cba9437e3966802ce55992064f44d4632a62eb85ceec1fa46a1a2bf9d1e0
   languageName: node
   linkType: hard
 

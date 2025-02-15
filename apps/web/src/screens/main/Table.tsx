@@ -1,9 +1,8 @@
 import clsx from 'clsx'
 import dayjs from 'dayjs'
 import Link from 'next/link'
-import { getMorgueUrl } from '~/components/GameItem'
 import { Game } from '~/types'
-import { formatDuration, formatNumber } from '~/utils'
+import { formatDuration, formatNumber, getMorgueUrl } from '~/utils'
 
 export const Table = ({
   games,

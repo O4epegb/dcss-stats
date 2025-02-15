@@ -35,7 +35,7 @@
     "downshift": "^9.0.8",
     "framer-motion": "^11.3.6",
     "lodash-es": "^4.17.21",
-    "next": "^14.2.5",
+    "next": "^14.2.24",
     "next-themes": "^0.3.0",
     "nookies": "^2.5.2",
     "qs": "^6.12.3",

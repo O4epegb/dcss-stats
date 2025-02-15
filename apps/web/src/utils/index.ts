@@ -8,6 +8,7 @@ import utc from 'dayjs/plugin/utc'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
 import qs from 'qs'
 import { twMerge } from 'tailwind-merge'
+import { Game } from '~/types'
 
 dayjs.extend(updateLocale)
 dayjs.extend(localizedFormat)
@@ -59,4 +60,10 @@ export const stringifyQuery: typeof qs.stringify = (query, options) => {
     format: 'RFC1738',
     ...options,
   })
+}
+
+export const getMorgueUrl = (morgueUrl: string, game: Game) => {
+  return `${morgueUrl}/${game.name}/morgue-${game.name}-${date(game.endAt)
+    .utc()
+    .format('YYYYMMDD-HHmmss')}.txt`
 }

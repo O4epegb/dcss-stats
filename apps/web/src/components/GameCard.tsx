@@ -2,16 +2,27 @@ import clsx from 'clsx'
 import { first, without } from 'lodash-es'
 import { forwardRef, memo } from 'react'
 import { Game } from '~/types'
-import { pluralize, date, formatNumber } from '~/utils'
+import { pluralize, date, formatNumber, getMorgueUrl } from '~/utils'
 
 type Props = {
   game: Game
   includePlayer?: boolean
   shadow?: boolean
   showSkills?: boolean
+  size?: 'full' | 'compact'
 }
 
-export const GameItem = memo(
+export const GameCard = memo(
+  forwardRef<HTMLDivElement, Props>(({ size = 'full', ...props }, ref) => {
+    return size === 'full' ? (
+      <GameItemFull ref={ref} {...props} />
+    ) : (
+      <CompactGameItem ref={ref} {...props} />
+    )
+  }),
+)
+
+const GameItemFull = memo(
   forwardRef<HTMLDivElement, Props>(({ game, includePlayer, shadow, showSkills }, ref) => {
     const duration = date.duration(game.duration, 'seconds')
 
@@ -56,9 +67,15 @@ export const GameItem = memo(
           {game.uniqueRunes > 0 && (
             <span className="text-indigo-600 dark:text-indigo-400">
               {game.isWin ? 'and' : 'with'} {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}
-              !
             </span>
           )}
+          {game.gems > 0 && (
+            <span className="text-indigo-600 dark:text-indigo-400">
+              {' '}
+              {game.uniqueRunes === 0 ? 'with' : 'and'} {game.gems} {pluralize('gem', game.gems)}
+            </span>
+          )}
+          {(game.uniqueRunes > 0 || game.gems > 0) && '!'}
         </div>
         <div>
           {game.god ? (
@@ -116,7 +133,7 @@ export const GameItem = memo(
   }),
 )
 
-export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
+const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
   const duration = date.duration(game.duration, 'seconds')
 
   return (
@@ -135,9 +152,16 @@ export const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref)
         )}
         {game.uniqueRunes > 0 && (
           <span className="text-indigo-600 dark:text-indigo-400">
-            with {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}!
+            with {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}
           </span>
         )}
+        {game.gems > 0 && (
+          <span className="text-indigo-600 dark:text-indigo-400">
+            {' '}
+            {game.uniqueRunes === 0 ? 'with' : 'and'} {game.gems} {pluralize('gem', game.gems)}
+          </span>
+        )}
+        {(game.uniqueRunes > 0 || game.gems > 0) && '!'}
       </div>
       <div className="flex justify-between gap-2 text-xs text-gray-400">
         XL:{game.xl}; score {formatNumber(game.score)}; turns {formatNumber(game.turns)}; lasted for{' '}
@@ -217,12 +241,6 @@ const MorgueLink = ({ game }: { game: Game }) => {
       </svg>
     </a>
   )
-}
-
-export const getMorgueUrl = (morgueUrl: string, game: Game) => {
-  return `${morgueUrl}/${game.name}/morgue-${game.name}-${date(game.endAt)
-    .utc()
-    .format('YYYYMMDD-HHmmss')}.txt`
 }
 
 const breakpoints = [30, 50, 75, 100, 120, 160]

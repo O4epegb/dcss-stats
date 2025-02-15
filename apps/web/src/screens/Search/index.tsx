@@ -6,7 +6,7 @@ import { useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
 import { Filter, Filters } from '~/components/Filters'
-import { GameItem } from '~/components/GameItem'
+import { GameCard } from '~/components/GameCard'
 import { Logo } from '~/components/Logo'
 import { Loader } from '~/components/ui/Loader'
 import { HelpBubble } from '~/components/ui/Tooltip'
@@ -75,7 +75,7 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
                 {games.map((game) => {
                   return (
                     <li key={game.id}>
-                      <GameItem showSkills includePlayer game={game} />
+                      <GameCard showSkills includePlayer game={game} />
                     </li>
                   )
                 })}

@@ -2,7 +2,7 @@ import { omit, flatten, last, isError } from 'lodash-es'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
 import { Filter } from '~/components/Filters'
-import { GameItem } from '~/components/GameItem'
+import { GameCard } from '~/components/GameCard'
 import { Loader } from '~/components/ui/Loader'
 import { Game } from '~/types'
 
@@ -45,7 +45,7 @@ export const GameList = (props: { filter: null | Filter[] }) => {
           {games.map((game) => {
             return (
               <li key={game.id}>
-                <GameItem showSkills includePlayer game={game} />
+                <GameCard showSkills includePlayer game={game} />
               </li>
             )
           })}

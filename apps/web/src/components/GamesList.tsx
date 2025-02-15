@@ -4,7 +4,7 @@ import { last, throttle } from 'lodash-es'
 import { useState, useEffect } from 'react'
 import { api } from '~/api'
 import { Game } from '~/types'
-import { CompactGameItem, GameItem } from './GameItem'
+import { GameCard } from './GameCard'
 import { Loader } from './ui/Loader'
 
 export const GamesList = (props: {
@@ -46,7 +46,6 @@ export const GamesList = (props: {
   const [count, setCount] = useState(initialTotal)
 
   const hasMore = count > games.length
-  const GameComponent = isCompactView ? CompactGameItem : GameItem
 
   const loadData = (after?: string) => {
     setIsLoading(true)
@@ -107,7 +106,7 @@ export const GamesList = (props: {
     <div className="relative">
       {showUp && (
         <button
-          className="sticky top-0 w-full bg-white/80 py-4"
+          className="sticky top-0 w-full bg-white/80 py-4 dark:bg-black/50"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           Return to top
@@ -120,7 +119,12 @@ export const GamesList = (props: {
         {games.map((game) => {
           return (
             <li key={game.id}>
-              <GameComponent game={game} includePlayer={includePlayer} showSkills={showSkills} />
+              <GameCard
+                size={isCompactView ? 'compact' : 'full'}
+                game={game}
+                includePlayer={includePlayer}
+                showSkills={showSkills}
+              />
             </li>
           )
         })}

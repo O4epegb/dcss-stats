@@ -3,7 +3,7 @@ import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Tooltip } from '~/components/ui/Tooltip'
 import { Game } from '~/types'
-import { GameItem } from './GameItem'
+import { GameCard } from './GameCard'
 
 export const GameTooltip = ({
   children,
@@ -33,7 +33,7 @@ export const GameTooltip = ({
       content={
         data ? (
           data.data.length > 0 ? (
-            <GameItem game={data.data[0]} />
+            <GameCard game={data.data[0]} />
           ) : (
             'Game not found'
           )

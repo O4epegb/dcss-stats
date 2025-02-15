@@ -81,6 +81,7 @@ export interface Game {
   lvl: number
   runes: number
   uniqueRunes: number
+  gems: number
   fifteenskills: string[]
   maxskills: string[]
   name: string

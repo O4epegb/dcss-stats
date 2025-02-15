@@ -1,6 +1,6 @@
 import { filter } from 'lodash-es'
 import { ReactNode, FC } from 'react'
-import { GameItem } from '~/components/GameItem'
+import { GameCard } from '~/components/GameCard'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Date } from '~/components/ui/Date'
 import { Tooltip } from '~/components/ui/Tooltip'
@@ -177,7 +177,7 @@ export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] })
 
 const StatsGameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
   return (
-    <Tooltip interactive content={<GameItem shadow game={game} />}>
+    <Tooltip interactive content={<GameCard shadow game={game} />}>
       <span>{children}</span>
     </Tooltip>
   )
