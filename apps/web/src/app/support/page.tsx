@@ -62,10 +62,7 @@ const SupportPage = async () => {
           <p>Thank you for your contribution!</p>
           <p className="text-sm">
             Code source on{' '}
-            <a
-              className="font-bold hover:underline"
-              href="https://github.com/O4epegb/dcss-stats-app"
-            >
+            <a className="font-bold hover:underline" href="https://github.com/O4epegb/dcss-stats">
               GitHub
             </a>
           </p>
