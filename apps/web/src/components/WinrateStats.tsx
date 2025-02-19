@@ -1,17 +1,18 @@
-import clsx from 'clsx'
-import { formatNumber } from '~/utils'
+import { cn, formatNumber } from '~/utils'
 
 export const WinrateStats = ({
   games,
   wins,
   small,
+  className,
 }: {
   games: number
   wins: number
   small?: boolean
+  className?: string
 }) => {
   return (
-    <div className={clsx('flex font-bold', small ? 'space-x-1' : 'space-x-4 text-xl')}>
+    <div className={cn('flex font-bold', small ? 'space-x-1' : 'space-x-4 text-xl', className)}>
       <div className="whitespace-nowrap text-emerald-600 dark:text-emerald-400">
         {formatNumber(wins)}W
       </div>

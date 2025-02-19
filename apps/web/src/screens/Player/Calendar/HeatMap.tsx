@@ -196,7 +196,7 @@ export const HeatMapFlat = ({
                 )}
                 <div
                   className={cn('flex size-full items-center justify-center rounded', {
-                    'border border-zinc-300 dark:border-zinc-400':
+                    'border border-zinc-300 dark:border-zinc-600':
                       day.games < maxGamesPerDay * 0.75,
                   })}
                   onMouseEnter={(e) => {

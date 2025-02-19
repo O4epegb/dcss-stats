@@ -2,10 +2,11 @@ import { groupBy, range } from 'lodash-es'
 import { useMemo } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
+import { WinrateStats } from '~/components/WinrateStats'
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/Dialog'
 import { Loader } from '~/components/ui/Loader'
 import { usePlayerPageContext } from '~/screens/Player/context'
-import { date, formatNumber } from '~/utils'
+import { date } from '~/utils'
 import { DayData, HeatMapFlat } from './HeatMap'
 
 export const HistoryDialog = () => {
@@ -107,19 +108,9 @@ const Content = () => {
 
           return (
             <div key={yearIndex} className="space-y-0.5">
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2 leading-none">
                 <h3 className="text-sm font-bold">{yearData.year}</h3>
-                <span className="inline-flex items-center gap-1">
-                  <span className="text-xs">Games: {games}</span>
-                  <span className="text-xs">Wins: {wins}</span>
-                  <span className="text-xs">
-                    Winrate:{' '}
-                    {formatNumber((wins / (games || 1)) * 100, {
-                      maximumFractionDigits: 2,
-                    })}
-                    %
-                  </span>
-                </span>
+                <WinrateStats small className="text-sm" games={games} wins={wins} />
               </div>
               <HeatMapFlat
                 maxGamesPerDay={maxGamesPerDay}
