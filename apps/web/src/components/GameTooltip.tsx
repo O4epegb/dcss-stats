@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Tooltip } from '~/components/ui/Tooltip'

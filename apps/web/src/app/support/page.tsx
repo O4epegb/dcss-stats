@@ -5,7 +5,9 @@ import { SupportersCurrentResponse } from '~/types'
 export const revalidate = 30
 
 const SupportPage = async () => {
-  const res = await fetchApi('/supporters/current')
+  const res = await fetchApi('/supporters/current', {
+    cache: 'force-cache',
+  })
   const data: SupportersCurrentResponse = await res.json()
 
   if (!res.ok) {

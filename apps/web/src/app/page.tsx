@@ -19,7 +19,7 @@ const nicknames = [
 ].map((n) => n.replaceAll(' ', ''))
 
 async function getData() {
-  const res = await fetchApi('/stats', { next: { revalidate: 300 } })
+  const res = await fetchApi('/stats', { next: { revalidate: 300 }, cache: 'force-cache' })
   const response: { data: Response } = await res.json()
 
   return {

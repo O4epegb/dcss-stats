@@ -21,7 +21,7 @@ import {
 import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ReactNode, useRef, useState, cloneElement, FC } from 'react'
+import { ReactNode, useRef, useState, cloneElement, FC, type JSX } from 'react'
 import { XOR } from '~/types'
 
 export const HelpBubble: FC<{

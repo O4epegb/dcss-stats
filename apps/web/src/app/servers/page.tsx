@@ -9,6 +9,9 @@ export const revalidate = 300
 const ServersPage = async () => {
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(
     '/servers',
+    {
+      cache: 'force-cache',
+    },
   ).then((r) => r.json())
 
   return (

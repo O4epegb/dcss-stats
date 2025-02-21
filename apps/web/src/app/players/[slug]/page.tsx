@@ -6,7 +6,8 @@ import { cookiesStoreDefault } from '~/screens/Player/utils'
 import { PlayerInfoResponse } from '~/types'
 
 async function getData(slug: string) {
-  const response = await fetchApi(`/players/${slug}`, { cache: 'no-store' })
+  const response = await fetchApi(`/players/${slug}`)
+  const cookieStore = await cookies()
 
   if (response.ok) {
     const data: PlayerInfoResponse = await response.json()
@@ -18,7 +19,7 @@ async function getData(slug: string) {
     return {
       ...data,
       cookiesStore: Object.keys(cookiesStoreDefault).reduce(
-        (acc, key) => ({ ...acc, [key]: cookies().has(key) }),
+        (acc, key) => ({ ...acc, [key]: cookieStore.has(key) }),
         {},
       ),
     }
@@ -31,7 +32,8 @@ async function getData(slug: string) {
   }
 }
 
-export default async function Page({ params }: { params: { slug: string } }) {
+export default async function Page(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params
   const data = await getData(params.slug)
 
   return <PlayerPage {...data} />
