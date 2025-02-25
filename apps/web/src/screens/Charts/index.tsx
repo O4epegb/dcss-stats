@@ -150,6 +150,7 @@ export const ChartsScreen = ({
   const chartTextColor = resolvedTheme === 'dark' ? 'white' : 'black'
   const chartGridColor =
     resolvedTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+  const canvasBackgroundColor = resolvedTheme === 'dark' ? '#121212' : '#ffffff'
   const chartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: true,
@@ -189,7 +190,7 @@ export const ChartsScreen = ({
       },
       ...{
         customCanvasBackgroundColor: {
-          color: 'Canvas',
+          color: canvasBackgroundColor,
         },
       },
     },

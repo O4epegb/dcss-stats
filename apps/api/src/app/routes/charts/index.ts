@@ -18,7 +18,6 @@ export const chartRoute = async (app: AppType) => {
           filters: filterQuerystringPart,
         }),
         {
-          // minItems: 1,
           maxItems: 5,
         },
       ),
