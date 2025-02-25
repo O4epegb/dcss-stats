@@ -1,5 +1,6 @@
 import cors from '@fastify/cors'
 import { app } from './app'
+import { chartRoute } from './routes/charts'
 import { devRoute } from './routes/dev'
 import { gamesRoute } from './routes/games'
 import { logfilesRoute } from './routes/logfiles'
@@ -33,6 +34,7 @@ for (const route of [
   playersRoute,
   streamsRoute,
   supportersRoute,
+  chartRoute,
   devRoute,
 ] as const) {
   await route(app)

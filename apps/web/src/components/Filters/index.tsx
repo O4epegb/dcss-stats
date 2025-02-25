@@ -18,12 +18,13 @@ import clsx from 'clsx'
 import { last, first } from 'lodash-es'
 import { useSearchParams } from 'next/navigation'
 import qs from 'qs'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction, useMemo } from 'react'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
 import { StaticData } from '~/types'
 import { notEmpty, stringifyQuery } from '~/utils'
 import { SortableItem } from './SortableItem'
+import { operators } from './constants'
 
 // Order by selector
 // Hotkey for submit
@@ -39,7 +40,6 @@ export type Filter = {
   operator: string
 }
 
-const operators = ['and', 'or'] as [string, string]
 const maxFilters = 15
 
 type Data = Pick<StaticData, 'filterOptions'>
@@ -53,18 +53,30 @@ export const filtersToQuery = (filters: Filter[]) => {
 }
 
 type Props = {
+  title?: string
+  filters?: Filter[]
+  setFilters?: Dispatch<SetStateAction<Filter[]>>
   excludeFilters?: string[]
-  onInit: (filters: Filter[]) => void
+  replaceQuery?: boolean
+  onInit?: (filters: Filter[]) => void
   onFiltersChange?: (filters: Filter[]) => void
   onSubmit?: (filters: Filter[]) => void
+  getDefaultFilters?: (filters: Filter[]) => Filter[]
+  onDelete?: () => void
 } & Data
 
 export const Filters = ({
+  title,
   filterOptions,
   excludeFilters = [],
+  replaceQuery = true,
+  getDefaultFilters: propsGetDefaultFilters = (filters) => filters,
   onInit,
   onSubmit,
   onFiltersChange,
+  onDelete,
+  filters: propsFilters,
+  setFilters: propsSetFilters,
 }: Props) => {
   const searchParams = useSearchParams()
   const sensors = useSensors(
@@ -75,13 +87,19 @@ export const Filters = ({
   )
   const [isDragging, setIsDragging] = useState(false)
 
-  const options = filterOptions.filter(
-    (x) => !excludeFilters.includes(x.name) && (x.type !== 'select' || x.values.length > 0),
+  const options = useMemo(
+    () =>
+      filterOptions.filter(
+        (x) => !excludeFilters.includes(x.name) && (x.type !== 'select' || x.values.length > 0),
+      ),
+    [filterOptions, String(excludeFilters)],
   )
 
-  const [filters, setFilters] = useState<Filter[]>(() => [])
+  const [_filters, _setFilters] = useState<Filter[]>(() => [])
+  const filters = propsFilters ?? _filters
+  const setFilters = propsSetFilters ?? _setFilters
 
-  const getDefaultFilters = () =>
+  const getAllPossibleFilters = () =>
     options.map(({ name, conditions, suboptions }) => {
       return {
         id: Math.random().toString(),
@@ -93,62 +111,74 @@ export const Filters = ({
       }
     })
 
+  const getDefaultFilters = () => propsGetDefaultFilters(getAllPossibleFilters())
+
   useEffect(() => {
-    const queryFilters = searchParams.getAll('filter').filter(notEmpty)
-
-    let potentialFilters: Filter[] = queryFilters
-      .map((item) => {
-        const parts = item.split('_')
-        let [option, condition, value, operator, suboption] = parts
-
-        if (['Skill', 'Stat'].includes(parts[0])) {
-          ;[option, suboption, condition, value, operator] = parts
-        }
-
-        const optionItem = options.find((x) => x.name === option)
-
-        const isValid =
-          optionItem &&
-          (optionItem.type !== 'select' || optionItem.values.find((x) => x === value)) &&
-          optionItem.conditions.includes(condition) &&
-          (!operator || operators.includes(operator)) &&
-          (!suboption || optionItem.suboptions.some((x) => x === suboption))
-
-        if (!isValid) {
-          return
-        }
-
-        return {
-          id: Math.random().toString(),
-          option,
-          suboption,
-          condition,
-          value,
-          operator: operator ?? operators[0],
-        }
-      })
-      .filter(notEmpty)
-
-    if (potentialFilters.length > 1) {
-      const lastOne = potentialFilters[potentialFilters.length - 1]
-      lastOne.operator = potentialFilters[potentialFilters.length - 2].operator
+    if (propsFilters) {
+      return
     }
 
-    if (potentialFilters.length !== queryFilters.length) {
-      potentialFilters = getDefaultFilters()
+    let potentialFilters: Filter[] = []
 
-      const params = new URLSearchParams(searchParams.toString())
+    if (replaceQuery) {
+      const queryFilters = searchParams.getAll('filter').filter(notEmpty)
 
-      params.delete('filter')
+      potentialFilters = queryFilters
+        .map((item) => {
+          const parts = item.split('_')
+          let [option, condition, value, operator, suboption] = parts
 
-      window.history.replaceState(null, '', `?${params.toString()}`)
-    } else if (queryFilters.length === 0) {
+          if (['Skill', 'Stat'].includes(parts[0])) {
+            ;[option, suboption, condition, value, operator] = parts
+          }
+
+          const optionItem = options.find((x) => x.name === option)
+
+          const isValid =
+            optionItem &&
+            (optionItem.type !== 'select' || optionItem.values.find((x) => x === value)) &&
+            optionItem.conditions.includes(condition) &&
+            (!operator || operators.includes(operator)) &&
+            (!suboption || optionItem.suboptions.some((x) => x === suboption))
+
+          if (!isValid) {
+            return
+          }
+
+          return {
+            id: Math.random().toString(),
+            option,
+            suboption,
+            condition,
+            value,
+            operator: operator ?? operators[0],
+          }
+        })
+        .filter(notEmpty)
+
+      if (potentialFilters.length > 1) {
+        const lastOne = potentialFilters[potentialFilters.length - 1]
+        lastOne.operator = potentialFilters[potentialFilters.length - 2].operator
+      }
+
+      if (potentialFilters.length !== queryFilters.length) {
+        potentialFilters = getDefaultFilters()
+
+        const params = new URLSearchParams(searchParams.toString())
+
+        params.delete('filter')
+
+        window.history.replaceState(null, '', `?${params.toString()}`)
+      } else if (queryFilters.length === 0) {
+        potentialFilters = getDefaultFilters()
+      }
+    } else {
       potentialFilters = getDefaultFilters()
     }
 
     const nonEmptyFilters = potentialFilters.filter((x) => x.value && x.condition)
 
-    onInit(nonEmptyFilters)
+    onInit?.(nonEmptyFilters)
     setFilters(potentialFilters)
   }, [])
 
@@ -181,7 +211,7 @@ export const Filters = ({
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-1">
-        <div className="text-xl">Filters</div>
+        <div className="text-xl">{title ?? 'Filters'}</div>
         <HelpBubble
           content={
             <>
@@ -263,7 +293,7 @@ export const Filters = ({
                                   state.map((x) => {
                                     return x !== filter
                                       ? x
-                                      : (getDefaultFilters().find(
+                                      : (getAllPossibleFilters().find(
                                           (x) => x.option === e.target.value,
                                         ) ?? x)
                                   }),
@@ -463,6 +493,17 @@ export const Filters = ({
             </div>
           </Tooltip>
 
+          {onDelete && (
+            <button
+              className="rounded border border-transparent px-4 py-2 transition-all hover:border-red-500 hover:text-red-500"
+              onClick={() => {
+                onDelete()
+              }}
+            >
+              Delete
+            </button>
+          )}
+
           {onSubmit && (
             <button
               className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
@@ -472,7 +513,10 @@ export const Filters = ({
                 const query = { ...currentQuery, filter: filtersToQuery(nonEmptyFilters) }
 
                 onSubmit(nonEmptyFilters)
-                window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
+
+                if (replaceQuery) {
+                  window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
+                }
               }}
             >
               This is how I like it!

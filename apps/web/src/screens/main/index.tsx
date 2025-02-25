@@ -51,6 +51,12 @@ export const MainPage = (props: Props) => {
                 </span>
               )}
             </Link>
+            <Link className="group relative flex items-center justify-center" href="/charts">
+              <span className="text-xs group-hover:underline sm:text-base">Charts</span>
+              <span className="absolute top-full text-nowrap rounded bg-indigo-400 px-1 text-xs text-white">
+                beta
+              </span>
+            </Link>
             <Link className="group flex items-center justify-center" href="/suggest">
               <span className="text-xs group-hover:underline sm:text-base">Combos</span>
             </Link>

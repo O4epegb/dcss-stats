@@ -6,6 +6,7 @@ import relativeTimePlugin from 'dayjs/plugin/relativeTime'
 import updateLocale from 'dayjs/plugin/updateLocale'
 import utc from 'dayjs/plugin/utc'
 import weekOfYear from 'dayjs/plugin/weekOfYear'
+import { customAlphabet } from 'nanoid'
 import qs from 'qs'
 import { twMerge } from 'tailwind-merge'
 import { Game } from '~/types'
@@ -67,3 +68,5 @@ export const getMorgueUrl = (morgueUrl: string, game: Game) => {
     .utc()
     .format('YYYYMMDD-HHmmss')}.txt`
 }
+
+export const getShortId = customAlphabet('abcdefghijklmnopqrstuvwxyz', 10)
