@@ -36,6 +36,7 @@ export const getStaticData = memoize(async () => {
     }),
     prisma.god.findMany().then((gods) => orderBy(gods, (god) => god.name.toLowerCase())),
     prisma.logfile.findMany().then((logfiles) => {
+      const gitLogfileOnlyVersions = ['0.3', '0.2', '0.1']
       const versions = logfiles
         .map((logfile) => logfile.version)
         .filter((version) => !isNaN(parseFloat(version)))
@@ -44,7 +45,7 @@ export const getStaticData = memoize(async () => {
       const { major, minor } = semver.coerce(versions[0], { loose: true })?.inc('minor') ?? {}
       const additional = major !== undefined && minor !== undefined ? [`${major}.${minor}`] : []
 
-      return uniq(additional.concat(versions))
+      return uniq(additional.concat(versions).concat(gitLogfileOnlyVersions))
     }),
   ])
 
