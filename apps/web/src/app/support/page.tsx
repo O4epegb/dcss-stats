@@ -3,11 +3,10 @@ import { Logo } from '~/components/Logo'
 import { SupportersCurrentResponse } from '~/types'
 
 export const revalidate = 30
+export const fetchCache = 'force-cache'
 
 const SupportPage = async () => {
-  const res = await fetchApi('/supporters/current', {
-    cache: 'force-cache',
-  })
+  const res = await fetchApi('/supporters/current')
   const data: SupportersCurrentResponse = await res.json()
 
   if (!res.ok) {

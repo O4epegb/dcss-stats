@@ -5,13 +5,11 @@ import { Logfile, Server } from '~/types'
 import { pluralize, date, formatNumber } from '~/utils'
 
 export const revalidate = 300
+export const fetchCache = 'force-cache'
 
 const ServersPage = async () => {
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(
     '/servers',
-    {
-      cache: 'force-cache',
-    },
   ).then((r) => r.json())
 
   return (

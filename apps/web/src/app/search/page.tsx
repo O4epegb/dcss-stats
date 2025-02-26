@@ -4,9 +4,10 @@ import { SearchScreen } from '~/screens/Search'
 import { StaticData } from '~/types'
 
 export const revalidate = 300
+export const fetchCache = 'force-cache'
 
 export default async function SearchPage() {
-  const res = await fetchApi('/static-data', { cache: 'force-cache' })
+  const res = await fetchApi('/static-data')
   const data: StaticData = await res.json()
 
   if (!res.ok) {
