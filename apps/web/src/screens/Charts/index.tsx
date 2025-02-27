@@ -146,6 +146,7 @@ export const ChartsScreen = ({
   )
 
   const isEmpty = data && (data.data.length === 0 || data.data.every((x) => x.items.length === 0))
+  const lotsOfData = Boolean(data && data.data.some((x) => x.items.length > 50))
 
   const chartTextColor = resolvedTheme === 'dark' ? 'white' : 'black'
   const chartGridColor =
@@ -157,11 +158,17 @@ export const ChartsScreen = ({
     scales: {
       x: {
         grid: {
+          display: true,
           color: chartGridColor,
         },
         ticks: {
           display: true,
-          autoSkip: false,
+          autoSkip: lotsOfData,
+          font: lotsOfData
+            ? {
+                size: 10,
+              }
+            : undefined,
           color: chartTextColor,
           maxRotation: 90,
         },
@@ -347,11 +354,11 @@ export const ChartsScreen = ({
               </option>
               <option value="raceAbbr">Race</option>
               <option value="classAbbr">Class</option>
+              <option value="char">Race + Class</option>
               <option value="god">God</option>
               <option value="isWin">Is win</option>
               <option value="versionShort">Version</option>
               <option value="xl">XL</option>
-              <option value="char">Race + Class</option>
               <option value="uniqueRunes">Runes</option>
               <option value="gems">Gems</option>
               <option value="branch">Branch</option>
