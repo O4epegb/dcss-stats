@@ -260,6 +260,22 @@ export const getFilterOptions = async () => {
       transformValue: (value: string) => Number(value),
     },
     {
+      type: 'text',
+      dbField: 'killer',
+      queryName: 'Killer',
+      conditions: defaultConditions,
+      placeholder: 'Enter name',
+      transformValue: (value: string) => value,
+      getValue: (item: FilterItem, condition: (typeof defaultConditions)[number]) => {
+        return {
+          killer: {
+            [condition.toSql]: item.value,
+            mode: 'insensitive' as const,
+          },
+        }
+      },
+    },
+    {
       type: 'select',
       dbField: 'versionShort',
       queryName: 'Version',
