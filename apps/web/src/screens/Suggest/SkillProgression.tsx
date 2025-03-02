@@ -72,8 +72,8 @@ export const SkillProgression = ({
   const maxSkillLevel = Math.max(...(data?.map((item) => item.data.values.length) ?? []), 0)
 
   return (
-    <div className="w-full space-y-1 pb-2">
-      <div className="flex min-h-8 gap-2">
+    <div className="w-full space-y-1">
+      <div className="flex gap-2">
         <Tooltip
           disabled={isButtonEnabled}
           content="Only available for the last version of the game for now"

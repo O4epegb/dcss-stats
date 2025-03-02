@@ -23,7 +23,7 @@ import { Filter, Filters, filtersToQuery } from '~/components/Filters'
 import { WinrateStats } from '~/components/WinrateStats'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
-import { Tooltip } from '~/components/ui/Tooltip'
+import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
 import { StaticData } from '~/types'
 import { formatNumber, notEmpty, stringifyQuery } from '~/utils'
 import { GameList } from './GameList'
@@ -54,6 +54,13 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
+  const { value: showTableFilters, set: setShowTableFilters } = useLocalStorageValue(
+    'showTableFilters',
+    {
+      defaultValue: true,
+      initializeWithValue: false,
+    },
+  )
   const { value: showAdvancedFilters, set: setShowAdvancedFilters } = useLocalStorageValue(
     'showAdvancedFilters',
     {
@@ -171,6 +178,10 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     ['Win rate', 'winrate', 'numeric'],
   ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>
 
+  const [tableFilters, setTableFilters] = useState(
+    () => new Map(columns.map(([, key]) => [key, ''])),
+  )
+
   const mainParams = pickBy(
     {
       race: race?.name,
@@ -205,7 +216,12 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
         ...value,
         race: races.find((x) => x.abbr === raceAbbr),
         class: classes.find((x) => x.abbr === classAbbr),
-        god: gods.find((x) => x.name === godName),
+        god: godName
+          ? gods.find((x) => x.name === godName)
+          : {
+              name: 'Atheist',
+              abbr: 'AT',
+            },
         winrate: (value.wins / value.total) * 100,
       }
     })
@@ -245,6 +261,59 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       )
     })
   }
+
+  const dataToShow = flow(
+    () => (data ? normalizeData(data) : []),
+    (x) =>
+      orderBy(
+        x,
+        (x) => {
+          const data = x[sorting.key]
+
+          return typeof data === 'number' ? data : data?.name.toLowerCase()
+        },
+        sorting.direction,
+      ),
+    (x) => x.filter((item) => !showWins || item.wins > 0),
+    (x) => {
+      if (!showTableFilters) {
+        return x
+      }
+
+      const activeTableFilters = Array.from(tableFilters.entries()).filter(
+        ([key, value]) =>
+          value.trim() && columns.find(([, colKey]) => colKey === key)?.[3] !== false,
+      )
+
+      return x.filter((item) =>
+        activeTableFilters.every(([key, value]) => {
+          const itemValue = item[key]
+
+          if (itemValue === undefined) {
+            return false
+          }
+
+          if (typeof itemValue === 'number') {
+            if (value.startsWith('>=')) {
+              return itemValue >= Number(value.slice(2))
+            } else if (value.startsWith('<=')) {
+              return itemValue <= Number(value.slice(2))
+            } else if (value.startsWith('>')) {
+              return itemValue > Number(value.slice(1))
+            } else if (value.startsWith('<')) {
+              return itemValue < Number(value.slice(1))
+            } else if (value.startsWith('=')) {
+              return itemValue === Number(value.slice(1))
+            }
+
+            return itemValue === Number(value)
+          }
+
+          return itemValue.name.toLowerCase().includes(value.toLowerCase())
+        }),
+      )
+    },
+  )()
 
   return (
     <Layout centered={!race && !klass && !god}>
@@ -359,9 +428,9 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
               {data.total === 0 && 'No games recorded for this combination, try another one'}
             </div>
           )}
-          {data.total > 0 && columns && (
+          {data.total > 0 && (
             <>
-              <section className="m-auto flex w-full max-w-lg flex-wrap items-center justify-between">
+              <section className="m-auto flex w-full max-w-lg flex-wrap items-center justify-between gap-2">
                 <SkillProgression
                   isLastVersion={filter.version === versions[0]}
                   apiParams={apiParams}
@@ -401,6 +470,35 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                     )}
                   </div>
                 )}
+                <div className="flex w-full gap-2">
+                  <label className="flex w-max cursor-pointer select-none items-center gap-1">
+                    <input
+                      checked={showTableFilters}
+                      className="cursor-pointer"
+                      type="checkbox"
+                      onChange={(e) => setShowTableFilters(e.target.checked)}
+                    />
+                    Show table filters
+                    <HelpBubble
+                      content={
+                        <div>
+                          <p>
+                            Filter the table by entering a value in the input fields under each
+                            column.
+                          </p>
+                          <p>
+                            Filter numeric values by using the following operators:{' '}
+                            <code>&gt;</code>, <code>&gt;=</code>, <code>&lt;</code>,{' '}
+                            <code>&lt;=</code>, <code>=</code>.
+                          </p>
+                          <p>
+                            Filter text values by entering a part of the text you want to filter by.
+                          </p>
+                        </div>
+                      }
+                    />
+                  </label>
+                </div>
                 <label className="flex cursor-pointer select-none items-center gap-1">
                   <input
                     checked={showWins}
@@ -440,104 +538,122 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
               </section>
               <section className="m-auto w-full max-w-lg overflow-x-auto xl:overflow-x-visible">
                 {view === 'stats' ? (
-                  <table className="w-full table-auto">
-                    <thead>
-                      <tr>
-                        {columns.map(([title, sortingKey, type, isVisible = true]) => {
-                          if (!isVisible) {
-                            return null
-                          }
+                  <>
+                    <table className="w-full table-auto">
+                      <thead>
+                        <tr>
+                          {columns.map(([title, sortingKey, type, isVisible = true]) => {
+                            if (!isVisible) {
+                              return null
+                            }
 
-                          const sortingButton = sorting.key === sortingKey && (
-                            <button>
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className={clsx(
-                                  'h-5 w-5 transition-transform',
-                                  sorting.direction === 'asc' ? 'rotate-180' : '',
-                                )}
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            </button>
-                          )
-
-                          return (
-                            isVisible && (
-                              <th
-                                key={title}
-                                className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
-                              >
-                                <div
-                                  className="inline-flex cursor-pointer select-none items-center whitespace-nowrap"
-                                  onClick={() =>
-                                    setSorting({
-                                      key: sortingKey,
-                                      direction:
-                                        sorting.key === sortingKey
-                                          ? sorting.direction === 'desc'
-                                            ? 'asc'
-                                            : 'desc'
-                                          : sorting.direction,
-                                    })
-                                  }
+                            const sortingButton = sorting.key === sortingKey && (
+                              <button>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className={clsx(
+                                    'h-5 w-5 transition-transform',
+                                    sorting.direction === 'asc' ? 'rotate-180' : '',
+                                  )}
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
                                 >
-                                  {title}
-                                  {sortingButton}
-                                </div>
-                              </th>
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
                             )
+
+                            return (
+                              isVisible && (
+                                <th
+                                  key={title}
+                                  className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
+                                >
+                                  <div
+                                    className="inline-flex cursor-pointer select-none items-center whitespace-nowrap"
+                                    onClick={() =>
+                                      setSorting({
+                                        key: sortingKey,
+                                        direction:
+                                          sorting.key === sortingKey
+                                            ? sorting.direction === 'desc'
+                                              ? 'asc'
+                                              : 'desc'
+                                            : sorting.direction,
+                                      })
+                                    }
+                                  >
+                                    {title}
+                                    {sortingButton}
+                                  </div>
+                                </th>
+                              )
+                            )
+                          })}
+                        </tr>
+                        {showTableFilters && (
+                          <tr>
+                            {columns.map(([title, sortingKey, type, isVisible = true]) => {
+                              if (!isVisible) {
+                                return null
+                              }
+
+                              return (
+                                <th
+                                  key={title}
+                                  className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
+                                >
+                                  <input
+                                    type="text"
+                                    className="w-full rounded border px-1 font-normal"
+                                    value={tableFilters.get(sortingKey)}
+                                    onChange={(e) => {
+                                      setTableFilters((prev) => {
+                                        prev.set(sortingKey, e.target.value)
+
+                                        return new Map(prev)
+                                      })
+                                    }}
+                                  />
+                                </th>
+                              )
+                            })}
+                          </tr>
+                        )}
+                      </thead>
+                      <tbody>
+                        {dataToShow.map((item, index) => {
+                          return (
+                            <tr key={index} className="hover:bg-amber-100 dark:hover:bg-amber-700">
+                              {columns[0][3] && <td>{item.race?.name}</td>}
+                              {columns[1][3] && <td>{item.class?.name}</td>}
+                              {columns[2][3] && (
+                                <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>
+                              )}
+                              <td className="text-right tabular-nums">{item.total}</td>
+                              <td className="text-right tabular-nums">{item.wins}</td>
+                              <td className="text-right tabular-nums">
+                                {formatNumber(item.winrate, {
+                                  maximumFractionDigits: 2,
+                                  minimumFractionDigits: 2,
+                                })}{' '}
+                                %
+                              </td>
+                            </tr>
                           )
                         })}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {flow(
-                        () => normalizeData(data),
-                        (x) =>
-                          orderBy(
-                            x,
-                            (x) => {
-                              const data = x[sorting.key]
-
-                              return typeof data === 'number' ? data : data?.name.toLowerCase()
-                            },
-                            sorting.direction,
-                          ),
-                        (x) => x.filter((item) => !showWins || item.wins > 0),
-                        (x) =>
-                          x.map((item, index) => {
-                            return (
-                              <tr
-                                key={index}
-                                className="hover:bg-amber-100 dark:hover:bg-amber-700"
-                              >
-                                {columns[0][3] && <td>{item.race?.name}</td>}
-                                {columns[1][3] && <td>{item.class?.name}</td>}
-                                {columns[2][3] && (
-                                  <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>
-                                )}
-                                <td className="text-right tabular-nums">{item.total}</td>
-                                <td className="text-right tabular-nums">{item.wins}</td>
-                                <td className="text-right tabular-nums">
-                                  {formatNumber(item.winrate, {
-                                    maximumFractionDigits: 2,
-                                    minimumFractionDigits: 2,
-                                  })}{' '}
-                                  %
-                                </td>
-                              </tr>
-                            )
-                          }),
-                      )()}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
+                    {dataToShow.length === 0 && (
+                      <div className="flex min-h-[300px] items-center justify-center">
+                        No matching data found
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <GameList
                     filter={[
