@@ -2,11 +2,11 @@ import { Logo } from '~/components/Logo'
 import { rootUrl } from '~/constants'
 import { SupportersCurrentResponse } from '~/types'
 
-export const revalidate = 30
-export const fetchCache = 'force-cache'
-
 const SupportPage = async () => {
-  const res = await fetch(`${rootUrl}/api/supporters/current`)
+  const res = await fetch(`${rootUrl}/api/supporters/current`, {
+    next: { revalidate: 300 },
+    cache: 'force-cache',
+  })
   const data: SupportersCurrentResponse = await res.json()
 
   if (!res.ok) {

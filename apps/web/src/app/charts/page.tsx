@@ -6,11 +6,8 @@ import { ChartsScreen } from '~/screens/Charts'
 import { StaticData } from '~/types'
 import { getShortId } from '~/utils'
 
-export const revalidate = 300
-export const fetchCache = 'force-cache'
-
 export default async function SearchPage() {
-  const res = await fetchApi('/static-data')
+  const res = await fetchApi('/static-data', { next: { revalidate: 300 }, cache: 'force-cache' })
   const data: StaticData = await res.json()
 
   if (!res.ok) {
