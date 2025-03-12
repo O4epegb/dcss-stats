@@ -16,6 +16,11 @@ const nicknames = [
   'Zig Zagger',
   'Spider Slayer',
   'Loot Looter',
+  'Vault Vandal',
+  'Crawl Crusher',
+  'Dungeon Delver',
+  'Rune Ransacker',
+  'Scroll Snatcher',
 ].map((n) => n.replaceAll(' ', ''))
 
 async function getData() {
