@@ -30,8 +30,6 @@ import { GameList } from './GameList'
 import { Layout } from './Layout'
 import { SkillProgression } from './SkillProgression'
 
-export const revalidate = 300
-
 enum FilterValue {
   Any = 'any',
 }
