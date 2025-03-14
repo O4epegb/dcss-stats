@@ -18,7 +18,7 @@ export const Footer = ({ className }: { className?: string }) => (
     </div>
 
     <div className="flex gap-4 md:justify-end">
-      <Link className="hover:underline" prefetch={false} href="/servers">
+      <Link prefetch={false} href="/servers" className="hover:underline">
         Tracked servers
       </Link>
 
@@ -31,14 +31,9 @@ export const Footer = ({ className }: { className?: string }) => (
         Github
       </a>
 
-      <a
-        href="https://www.buymeacoffee.com/totalnoob"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="hover:underline"
-      >
+      <Link href="/support" className="hover:underline">
         Donate to support this app
-      </a>
+      </Link>
     </div>
 
     <div>
