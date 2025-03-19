@@ -17,7 +17,7 @@
 ## Bootstrap Local Development
 
 ```sh
-yarn bootstrap
+yarn install && yarn bootstrap
 ```
 
 It will install all npm dependencies, run Postgres with Docker Compose and create seeded database.
@@ -30,7 +30,7 @@ yarn dev
 
 It will start both frontend and backend in development mode.
 
-## Install Packages
+## Install Packages and Update Versions
 
 This is a `yarn` monorepo, so you need to install packages in the root folder with:
 
