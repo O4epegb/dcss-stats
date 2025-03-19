@@ -68,10 +68,22 @@ Start Postgres with Docker Compose:
 yarn workspace @dcss-stats/api compose
 ```
 
-Run backend with:
+If you want to run backend with local Postgres database, you need to set `DATABASE_URL` env variable in `.env.local` file:
+
+```yml
+DATABASE_URL="postgresql://postgres:password@localhost:5432/dcss_stats"
+```
+
+Then you can run migrations and seed the database:
 
 ```sh
-yarn dev --filter=@dcss-stats/api
+yarn migrate
+```
+
+Run only the backend with:
+
+```sh
+yarn dev:api
 ```
 
 ## Environment Variables

@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development tsx watch ./src/index.ts",
-    "bootstrap": "yarn compose && yarn prisma dev generate && yarn prisma dev migrate deploy && yarn prisma dev db seed",
+    "bootstrap": "yarn compose && yarn migrate",
+    "migrate": "yarn prisma dev generate && yarn prisma dev migrate deploy && yarn prisma dev db seed",
     "compose": "docker compose -f ./docker-compose.local.yml up -d --remove-orphans",
     "start": "yarn prisma prod migrate deploy && yarn prisma prod db seed && NODE_ENV=production tsx ./src/index.ts",
     "build": "yarn prisma prod generate",
