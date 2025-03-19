@@ -48,7 +48,7 @@ yarn upgrade-interactive
 
 ## Frontend
 
-If you only want to run frontend, point `NEXT_PUBLIC_ROOT_URL` env variable to the production backend at `https://dcss-stats.com`:
+If you only want to run frontend, create `.env.local` file in `apps/web` folder if it doesn't exist and add:
 
 ```yml
 NEXT_PUBLIC_ROOT_URL="https://dcss-stats.com"
@@ -57,7 +57,7 @@ NEXT_PUBLIC_ROOT_URL="https://dcss-stats.com"
 Then run frontend with:
 
 ```sh
-yarn dev --filter=@dcss-stats/web
+yarn dev:web
 ```
 
 ## Backend
