@@ -142,6 +142,12 @@ export const Stats = memo(
         <hr />
 
         <Table
+          games={top.gamesByEndAt}
+          title="Recent wins"
+          highlight="Date"
+          onLinkClick={onLinkClick}
+        />
+        <Table
           games={top.gamesByTC}
           title="Fastest wins by turn count"
           highlight="Turns"

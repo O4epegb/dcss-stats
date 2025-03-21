@@ -99,6 +99,7 @@ export type Response = {
     byWins: Array<Pick<Player, 'name'> & { wins: number }>
     byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>
     byTitles: Array<Pick<Player, 'name'> & { titles: number }>
+    gamesByEndAt: Array<Game>
     gamesByTC: Array<Game>
     gamesByDuration: Array<Game>
     gamesByScore: Array<Game>

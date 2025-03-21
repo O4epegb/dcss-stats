@@ -9,6 +9,7 @@ export const getTopStats = async () => {
     titles,
     winrates,
     winners,
+    gamesByEndAt,
     gamesByTC,
     gamesByDuration,
     gamesByScore,
@@ -38,6 +39,11 @@ export const getTopStats = async () => {
       where: { isWin: true },
       _count: { isWin: true },
       orderBy: { _count: { isWin: 'desc' } },
+      take: LIMIT,
+    }),
+    findGamesIncludeServer({
+      where: { isWin: true, player: { isBot: false } },
+      orderBy: { endAt: 'desc' },
       take: LIMIT,
     }),
     findGamesIncludeServer({
@@ -93,6 +99,7 @@ export const getTopStats = async () => {
       titles,
       name: players.find((p) => p.id === playerId)?.name ?? playerId,
     })),
+    gamesByEndAt,
     gamesByTC,
     gamesByDuration,
     gamesByScore,
