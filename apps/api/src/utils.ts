@@ -1,4 +1,5 @@
 import path from 'path'
+import Bugsnag from '@bugsnag/js'
 import { LogfileWithServer } from './types'
 
 export const getRemoteLogPath = (file: LogfileWithServer) => {
@@ -21,4 +22,10 @@ export const delay = (ms: number) =>
 
 export function isDefined<T>(value: T | null | undefined): value is T {
   return value !== null && value !== undefined
+}
+
+export const trackError = (error: Error) => {
+  if (process.env.NODE_ENV === 'production') {
+    Bugsnag.notify(error)
+  }
 }

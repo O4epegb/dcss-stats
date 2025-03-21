@@ -2,6 +2,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
+import { trackError } from '~/utils'
 
 const token = process.env.BUYMEACOFFEE_TOKEN
 
@@ -15,34 +16,39 @@ export const supportersRoute = (app: AppType) => {
     }
 
     const getData = async () => {
-      // const subscriptionsResponse = await axios.get<SubscriptionsResponse>(
-      //   'https://developers.buymeacoffee.com/api/v1/subscriptions',
-      //   {
-      //     params: {
-      //       status: 'active',
-      //       per_page: 100,
-      //     },
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   },
-      // )
-
-      // const activeSubscriptions = 'error' in subscriptionsResponse.data ? [] : subscriptionsResponse.data.data
-
-      const supportersResponse = await axios.get<SupporterResponse>(
-        'https://developers.buymeacoffee.com/api/v1/supporters',
-        {
+      const [subscriptionsResponse, supportersResponse] = await Promise.all([
+        axios.get<SubscriptionsResponse>(
+          'https://developers.buymeacoffee.com/api/v1/subscriptions',
+          {
+            params: {
+              status: 'active',
+              per_page: 100,
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        ),
+        axios.get<SupporterResponse>('https://developers.buymeacoffee.com/api/v1/supporters', {
           params: {
             per_page: 100,
           },
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        },
-      )
+        }),
+      ])
+
+      const activeSubscriptions =
+        'error' in subscriptionsResponse.data ? [] : subscriptionsResponse.data.data
+
+      if ('error' in subscriptionsResponse.data) {
+        trackError(new Error(subscriptionsResponse.data.error))
+      }
 
       if ('error' in supportersResponse.data) {
+        trackError(new Error(supportersResponse.data.error))
+
         return reply.status(500).send({
           error: supportersResponse.data.error,
         })
@@ -59,8 +65,23 @@ export const supportersRoute = (app: AppType) => {
         })
         .filter((supporter) => dayjs(supporter.createdOn).isAfter(dayjs().startOf('month')))
 
+      const perMonthFromSubscriptions = activeSubscriptions.reduce((acc, subscription) => {
+        const subscriptionStart = dayjs(subscription.subscription_current_period_start)
+        const subscriptionEnd = dayjs(subscription.subscription_current_period_end)
+        const subscriptionMonths = subscriptionEnd.diff(subscriptionStart, 'month')
+        const subscriptionPrice = parseFloat(subscription.subscription_coffee_price)
+        const total = subscriptionPrice / subscriptionMonths
+
+        return acc + total
+      }, 0)
+
+      const totalFromSupporters = supportersForCurrentMonth.reduce(
+        (acc, supporter) => acc + supporter.total,
+        0,
+      )
+
       return {
-        total: supportersForCurrentMonth.reduce((acc, supporter) => acc + supporter.total, 0),
+        total: Math.round((totalFromSupporters + perMonthFromSubscriptions) * 100) / 100,
         goal: 20,
       }
     }
@@ -73,46 +94,46 @@ export const supportersRoute = (app: AppType) => {
   })
 }
 
-// type SubscriptionsResponse =
-//   | {
-//       current_page: number
-//       data: SubscriptionData[]
-//       first_page_url: string
-//       from: number
-//       last_page: number
-//       last_page_url: string
-//       next_page_url: string
-//       path: string
-//       per_page: number
-//       prev_page_url: any
-//       to: number
-//       total: number
-//     }
-//   | {
-//       error: string
-//     }
+type SubscriptionsResponse =
+  | {
+      current_page: number
+      data: SubscriptionData[]
+      first_page_url: string
+      from: number
+      last_page: number
+      last_page_url: string
+      next_page_url: string
+      path: string
+      per_page: number
+      prev_page_url: any
+      to: number
+      total: number
+    }
+  | {
+      error: string
+    }
 
-// type SubscriptionData = {
-//   subscription_id: number
-//   subscription_cancelled_on: any
-//   subscription_created_on: string
-//   subscription_updated_on: string
-//   subscription_current_period_start: string
-//   subscription_current_period_end: string
-//   subscription_coffee_price: string
-//   subscription_coffee_num: number
-//   subscription_is_cancelled: any
-//   subscription_is_cancelled_at_period_end: any
-//   subscription_currency: string
-//   subscription_message: any
-//   message_visibility: number
-//   subscription_duration_type: string
-//   referer: any
-//   country: any
-//   transaction_id: string
-//   payer_email: string
-//   payer_name: string
-// }
+type SubscriptionData = {
+  subscription_id: number
+  subscription_cancelled_on: null
+  subscription_created_on: string
+  subscription_updated_on: string
+  subscription_current_period_start: string
+  subscription_current_period_end: string
+  subscription_coffee_price: string
+  subscription_coffee_num: number
+  subscription_is_cancelled: null
+  subscription_is_cancelled_at_period_end: null
+  subscription_currency: string
+  subscription_message: string | null
+  message_visibility: number
+  subscription_duration_type: string
+  referer: null
+  country: null
+  transaction_id: string
+  payer_email: string
+  payer_name: string
+}
 
 type SupporterResponse =
   | {
