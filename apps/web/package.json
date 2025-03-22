@@ -19,6 +19,7 @@
     ]
   },
   "dependencies": {
+    "@bprogress/next": "^3.2.10",
     "@bugsnag/js": "^8.2.0",
     "@bugsnag/plugin-react": "^8.2.0",
     "@dnd-kit/core": "^6.3.1",

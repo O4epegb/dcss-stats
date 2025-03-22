@@ -28,6 +28,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@bprogress/core@npm:^1.3.3":
+  version: 1.3.3
+  resolution: "@bprogress/core@npm:1.3.3"
+  checksum: 10/cbb7c49614be80d33cb7f2943638b7e9858fc75cde5012110d3ecae4e34e23b175d8b0df48e14796155c3bf4baae030cad48b6e5ac738fa06609cb8fd93747ca
+  languageName: node
+  linkType: hard
+
+"@bprogress/next@npm:^3.2.10":
+  version: 3.2.10
+  resolution: "@bprogress/next@npm:3.2.10"
+  dependencies:
+    "@bprogress/core": "npm:^1.3.3"
+    "@bprogress/react": "npm:^1.2.4"
+  peerDependencies:
+    next: ">=13.0.0"
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  checksum: 10/bafb7362b077d6392fa0c7615055f2aa2fd8cc68bc8ca9381f9022727bb892ad9b74c98d737e0063196f5c73dd7bd22d969ea2fc2a3f3ae34363c66b23c14510
+  languageName: node
+  linkType: hard
+
+"@bprogress/react@npm:^1.2.4":
+  version: 1.2.5
+  resolution: "@bprogress/react@npm:1.2.5"
+  dependencies:
+    "@bprogress/core": "npm:^1.3.3"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-dom: ">=18.0.0"
+  checksum: 10/611370338181d0f75775343107194c296ea40e1f702f58f1ef8d5695fee121e6269b12bf52854f9572c48db41ccc6aa9238dc548da5255aec3efe0ec8f09791a
+  languageName: node
+  linkType: hard
+
 "@bugsnag/browser@npm:^8.2.0":
   version: 8.2.0
   resolution: "@bugsnag/browser@npm:8.2.0"
@@ -158,6 +191,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dcss-stats/web@workspace:apps/web"
   dependencies:
+    "@bprogress/next": "npm:^3.2.10"
     "@bugsnag/js": "npm:^8.2.0"
     "@bugsnag/plugin-react": "npm:^8.2.0"
     "@dnd-kit/core": "npm:^6.3.1"
