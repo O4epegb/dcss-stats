@@ -40,7 +40,7 @@ const ServersPage = async () => {
                   href={server.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="white-nowrap overflow-hidden overflow-ellipsis"
+                  className="white-nowrap overflow-hidden overflow-ellipsis hover:underline"
                 >
                   <span className="font-medium">{server.abbreviation}</span> - {server.url}
                 </a>
@@ -53,28 +53,34 @@ const ServersPage = async () => {
                   {server.logfile.length} {pluralize('logfile', server.logfile.length)}
                 </summary>
                 <ul className="text-sm">
-                  {orderBy(server.logfile, (x) => Number(x.version)).map((file) => {
-                    return (
-                      <li
-                        key={file.path}
-                        className="flex justify-between px-1 hover:bg-gray-100 dark:hover:bg-zinc-700"
-                        title={
-                          file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
-                        }
-                      >
-                        <a
-                          href={server.baseUrl + file.path}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          {file.path}
-                        </a>
-                        <div className="whitespace-nowrap">
-                          {formatNumber(file.games)} {pluralize('game', file.games)}
-                        </div>
-                      </li>
+                  {server.logfile
+                    .slice()
+                    .sort((a, b) =>
+                      b.version.localeCompare(a.version, undefined, { numeric: true }),
                     )
-                  })}
+                    .map((file) => {
+                      return (
+                        <li
+                          key={file.path}
+                          className="flex justify-between px-1 hover:bg-gray-100 dark:hover:bg-zinc-700"
+                          title={
+                            file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
+                          }
+                        >
+                          <a
+                            href={server.baseUrl + file.path}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                          >
+                            {file.path}
+                          </a>
+                          <div className="whitespace-nowrap">
+                            {formatNumber(file.games)} {pluralize('game', file.games)}
+                          </div>
+                        </li>
+                      )
+                    })}
                 </ul>
               </details>
             </div>
