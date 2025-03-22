@@ -2,6 +2,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
+import { logger } from '~/utils'
 
 const tokenData = {
   token: '',
@@ -22,7 +23,7 @@ export const streamsRoute = (app: AppType) => {
 
     const getData = async () => {
       if (tokenData.expiresAt.diff(dayjs(), 'seconds') <= 10) {
-        console.log('fetching twitch token')
+        logger('fetching twitch token')
 
         const res = await axios.post<TwitchOauthResponse>('https://id.twitch.tv/oauth2/token', {
           client_id: twClientId,

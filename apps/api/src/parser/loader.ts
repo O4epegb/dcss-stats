@@ -4,7 +4,7 @@ import PQueue from 'p-queue'
 import semver from 'semver'
 import { prisma } from '~/prisma'
 import { LogfileWithServer } from '~/types'
-import { getLocalLogPath, getRemoteLogPath, isDefined } from '~/utils'
+import { getLocalLogPath, getRemoteLogPath, isDefined, logger } from '~/utils'
 import { fetchLogfile } from './fetchLogfile'
 
 const oneMinuteInMs = 60 * 1000
@@ -30,7 +30,7 @@ const fetchFile = async (file: LogfileWithServer, latestVersion: semver.SemVer |
   const timeoutMs = getFetchTimeout(latestVersion, semver.coerce(file.version))
   const shouldFetch = dayjs().diff(file.lastFetched, 'ms') >= timeoutMs
 
-  console.log(
+  logger(
     `loader: ${file.server.abbreviation}@${file.version} last fetch ${dayjs().diff(
       file.lastFetched,
       's',

@@ -3,6 +3,7 @@ import dayjs from 'dayjs'
 import utcPlugin from 'dayjs/plugin/utc'
 import fse from 'fs-extra'
 import { GameWithLogfileAndServer } from '~/types'
+import { logger } from '~/utils'
 
 dayjs.extend(utcPlugin)
 
@@ -34,7 +35,7 @@ export const getLocalMorguePath = (game: GameWithLogfileAndServer) => {
 }
 
 export const fetchMorgueFile = async (remoteUrl: string, localUrl: string) => {
-  console.log(`fetchMorgueFile: starting ${remoteUrl}`)
+  logger(`fetchMorgueFile: starting ${remoteUrl}`)
 
   const startTime = dayjs()
   const res = await fetch(remoteUrl)
@@ -45,7 +46,7 @@ export const fetchMorgueFile = async (remoteUrl: string, localUrl: string) => {
     await fse.ensureFile(localUrl)
     await fse.writeFile(localUrl, text)
 
-    console.log(
+    logger(
       `fetchMorgueFile: finished in ${dayjs().diff(
         startTime,
         'ms',

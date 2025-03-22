@@ -58,7 +58,7 @@ export default [
       ],
 
       'object-shorthand': ['warn', 'always'],
-      'no-console': ['off'],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
       'prefer-const': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',

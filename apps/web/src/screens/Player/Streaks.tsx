@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { last, first, orderBy } from 'lodash-es'
-import { Fragment, useState } from 'react'
+import { useState } from 'react'
 import { api } from '~/api'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Loader } from '~/components/ui/Loader'

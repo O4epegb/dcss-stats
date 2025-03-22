@@ -3,6 +3,7 @@ import util from 'util'
 import dayjs from 'dayjs'
 import fse from 'fs-extra'
 import prettyBytes from 'pretty-bytes'
+import { logger } from '~/utils'
 
 const pExec = util.promisify(exec)
 
@@ -12,7 +13,7 @@ export const fetchLogfile = async (remoteUrl: string, localUrl: string) => {
   const localSize = fse.statSync(localUrl).size
   const startTime = dayjs()
 
-  console.log(`wget: starting ${remoteUrl}`)
+  logger(`wget: starting ${remoteUrl}`)
 
   await pExec(
     `wget --no-check-certificate --tries=2 --quiet --timeout=90 --continue ${remoteUrl} -O ${localUrl}`,
@@ -20,7 +21,7 @@ export const fetchLogfile = async (remoteUrl: string, localUrl: string) => {
 
   const newSize = fse.statSync(localUrl).size
 
-  console.log(
+  logger(
     `wget: finished in ${dayjs().diff(
       startTime,
       'seconds',
@@ -28,12 +29,12 @@ export const fetchLogfile = async (remoteUrl: string, localUrl: string) => {
   )
 
   if (localSize !== newSize) {
-    console.log(
+    logger(
       `File updated: ${prettyBytes(localSize)} -> ${prettyBytes(newSize)}, diff ${prettyBytes(
         newSize - localSize,
       )}`,
     )
   } else {
-    console.log(`File in sync: ${prettyBytes(localSize)}`)
+    logger(`File in sync: ${prettyBytes(localSize)}`)
   }
 }

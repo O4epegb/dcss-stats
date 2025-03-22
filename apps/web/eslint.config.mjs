@@ -1,33 +1,25 @@
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
-import { FlatCompat } from '@eslint/eslintrc'
-import js from '@eslint/js'
-import tsParser from '@typescript-eslint/parser'
+import eslint from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
-import _import from 'eslint-plugin-import'
+import importPlugin from 'eslint-plugin-import'
 import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
+import reactPlugin from 'eslint-plugin-react'
 import globals from 'globals'
 import tsEslint from 'typescript-eslint'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-})
-
-export default [
+export default tsEslint.config(
   {
     ignores: ['**/out/*', '**/.*'],
   },
-  ...fixupConfigRules(compat.extends('eslint:recommended', 'plugin:react/recommended')),
+
+  eslint.configs.recommended,
   ...tsEslint.configs.recommended,
+  reactPlugin.configs.flat.recommended,
+  reactPlugin.configs.flat['jsx-runtime'],
   eslintConfigPrettier,
+  importPlugin.flatConfigs.recommended,
+
   {
     plugins: {
-      import: fixupPluginRules(_import),
       'no-relative-import-paths': eslintPluginImportsPaths,
     },
 
@@ -36,13 +28,21 @@ export default [
         ...globals.browser,
         ...globals.node,
       },
-
-      parser: tsParser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      parser: tsEslint.parser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
 
     settings: {
       react: {
         version: 'detect',
+      },
+      'import/resolver': {
+        typescript: {},
       },
     },
 
@@ -79,12 +79,12 @@ export default [
       ],
 
       'object-shorthand': ['error', 'always'],
+      'no-console': ['warn'],
+
       'react/react-in-jsx-scope': 'off',
       'react/display-name': 'off',
-      'no-console': ['warn'],
       'react/prop-types': 'off',
       'react/jsx-curly-brace-presence': 'warn',
-
       'react/jsx-sort-props': [
         'warn',
         {
@@ -126,4 +126,8 @@ export default [
       ],
     },
   },
-]
+  {
+    files: ['eslint.config.mjs'],
+    extends: [tsEslint.configs.disableTypeChecked],
+  },
+)

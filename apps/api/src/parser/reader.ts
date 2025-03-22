@@ -3,7 +3,7 @@ import PQueue from 'p-queue'
 import prettyBytes from 'pretty-bytes'
 import { prisma } from '~/prisma'
 import { LogfileWithServer } from '~/types'
-import { delay, getLocalLogPath } from '~/utils'
+import { delay, getLocalLogPath, logger } from '~/utils'
 import { processGames } from './processGames'
 import { readLines } from './utils'
 
@@ -27,7 +27,7 @@ const parseFile = async (file: LogfileWithServer) => {
   const localSize = fse.statSync(localPath).size
   const shouldRead = file.bytesRead < localSize
 
-  console.log(
+  logger(
     `reader: ${file.server.abbreviation}:${file.path}, bytesRead: ${prettyBytes(
       file.bytesRead,
     )}, localSize: ${prettyBytes(localSize)}, shouldRead: ${shouldRead}`,
@@ -39,7 +39,7 @@ const parseFile = async (file: LogfileWithServer) => {
 
   const end = Math.min(file.bytesRead + bytesToRead, localSize - 1)
 
-  console.log(
+  logger(
     `reader: ${file.server.abbreviation}:${file.path}, reading ${prettyBytes(
       file.bytesRead,
     )}-${prettyBytes(end)} of ${prettyBytes(localSize)}`,
@@ -47,7 +47,7 @@ const parseFile = async (file: LogfileWithServer) => {
 
   const linesResponse = await readLines(localPath, file.bytesRead, end)
 
-  console.log(
+  logger(
     `reader: ${file.server.abbreviation}:${file.path}, new lines: ${linesResponse.lines.length}, extra text: ${linesResponse.rest}`,
   )
 
@@ -67,7 +67,7 @@ const parseFile = async (file: LogfileWithServer) => {
     data: { bytesRead: file.bytesRead + linesResponse.totalLength },
   })
 
-  console.log(
+  logger(
     `reader: ${file.server.abbreviation}:${file.path}, successfully processed ${linesResponse.lines.length} lines`,
   )
 
