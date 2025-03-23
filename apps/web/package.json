@@ -26,6 +26,7 @@
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",
     "@floating-ui/react": "^0.27.5",
+    "@heroicons/react": "^2.2.0",
     "@radix-ui/react-dialog": "^1.1.6",
     "@react-hookz/web": "^25.1.0",
     "@vercel/analytics": "^1.5.0",

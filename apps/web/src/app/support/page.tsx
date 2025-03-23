@@ -1,6 +1,10 @@
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Logo } from '~/components/Logo'
 import { rootUrl } from '~/constants'
 import { SupportersCurrentResponse } from '~/types'
+import { BitcoinBlock } from './BitcoinBlock'
+
+const btcWallet = process.env.NEXT_PUBLIC_BITCOIN_WALLET
 
 const SupportPage = async () => {
   const res = await fetch(`${rootUrl}/api/supporters/current`, {
@@ -53,11 +57,15 @@ const SupportPage = async () => {
               target="_blank"
               href="https://www.buymeacoffee.com/totalnoob"
               rel="noreferrer"
-              className="block w-full rounded-full bg-[#ffdd00] px-6 py-3 font-medium text-black transition-all hover:bg-[#ffc800]"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#ffdd00] px-6 py-3 font-medium text-black transition-all hover:bg-[#ffc800]"
             >
-              Support on <b>Buy Me a Coffee</b>
+              <span>
+                Support on <b>Buy Me a Coffee</b>
+              </span>{' '}
+              <ArrowTopRightOnSquareIcon className="size-5" />
             </a>
           </div>
+          {btcWallet && <BitcoinBlock wallet={btcWallet} />}
         </div>
         <div className="space-y-2 text-center text-zinc-500 dark:text-zinc-400">
           <p>Thank you for your contribution!</p>
