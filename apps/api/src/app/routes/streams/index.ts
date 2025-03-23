@@ -1,5 +1,6 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { random, range } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 import { logger } from '~/utils'
@@ -12,12 +13,28 @@ const tokenData = {
 const twClientId = process.env.TWITCH_CLIENT_ID
 const twSecret = process.env.TWITCH_SECRET
 
+const getMockedSteams = (): Stream[] =>
+  range(random(1, 10)).map((index) => ({
+    username: `Mocked User ${index}`,
+    login: 'twitch',
+    viewers: random(1, 100),
+    thumbnail: 'https://placehold.co/640x360',
+  }))
+
 export const streamsRoute = (app: AppType) => {
   app.get('/api/streams', async (request, reply) => {
     const cacheKey = request.routeOptions.url ?? request.url
     const cached = cache.get(cacheKey)
 
     if (!twClientId || !twSecret) {
+      if (process.env.NODE_ENV === 'development') {
+        return {
+          data: {
+            streams: getMockedSteams(),
+          },
+        }
+      }
+
       return reply.status(404).send('Twitch ENVs are not set')
     }
 
@@ -46,16 +63,20 @@ export const streamsRoute = (app: AppType) => {
         },
       })
 
-      const streams = res.data.data.map((stream) => ({
+      const streams: Stream[] = res.data.data.map((stream) => ({
         username: stream.user_name,
         login: stream.user_login,
         viewers: stream.viewer_count,
         thumbnail: stream.thumbnail_url,
       }))
 
+      if (streams.length === 0 && process.env.NODE_ENV === 'development') {
+        streams.push(...getMockedSteams())
+      }
+
       return {
         data: {
-          streams: streams.slice(0, 6),
+          streams: streams.slice(0, 10),
         },
       }
     }
@@ -66,6 +87,13 @@ export const streamsRoute = (app: AppType) => {
 
     return cache.get(cacheKey)?.promise
   })
+}
+
+type Stream = {
+  username: string
+  login: string
+  viewers: number
+  thumbnail: string
 }
 
 type TwitchStreamsResponse = {
