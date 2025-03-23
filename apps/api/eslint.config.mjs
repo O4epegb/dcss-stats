@@ -1,27 +1,43 @@
-import { fixupPluginRules } from '@eslint/compat'
 import jsEslint from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
-import _import from 'eslint-plugin-import'
+// @ts-expect-error no types
+import importPlugin from 'eslint-plugin-import'
 import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
 import globals from 'globals'
 import tsEslint from 'typescript-eslint'
 
-export default [
+export default tsEslint.config(
   {
     ignores: ['**/out/*', '**/forever-ignore/*', 'logfiles/*', '.yarn'],
   },
+
   jsEslint.configs.recommended,
   ...tsEslint.configs.recommended,
   eslintConfigPrettier,
+  importPlugin.flatConfigs.recommended,
+
   {
     plugins: {
-      import: fixupPluginRules(_import),
       'no-relative-import-paths': eslintPluginImportsPaths,
     },
 
     languageOptions: {
       globals: {
         ...globals.node,
+      },
+      parser: tsEslint.parser,
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['*.js'],
+          defaultProject: './tsconfig.json',
+        },
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+
+    settings: {
+      'import/resolver': {
+        typescript: {},
       },
     },
 
@@ -78,4 +94,8 @@ export default [
       ],
     },
   },
-]
+  {
+    files: ['eslint.config.mjs', 'prisma.js'],
+    extends: [tsEslint.configs.disableTypeChecked],
+  },
+)
