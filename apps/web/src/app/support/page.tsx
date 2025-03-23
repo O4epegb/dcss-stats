@@ -5,6 +5,8 @@ import { SupportersCurrentResponse } from '~/types'
 import { BitcoinBlock } from './BitcoinBlock'
 
 const btcWallet = process.env.NEXT_PUBLIC_BITCOIN_WALLET
+const githubSponsorUrl = process.env.NEXT_PUBLIC_GITHUB_SPONSOR_URL
+const kofiUrl = process.env.NEXT_PUBLIC_KOFI_URL
 
 const SupportPage = async () => {
   const res = await fetch(`${rootUrl}/api/supporters/current`, {
@@ -65,6 +67,32 @@ const SupportPage = async () => {
               <ArrowTopRightOnSquareIcon className="size-5" />
             </a>
           </div>
+          {githubSponsorUrl && (
+            <a
+              target="_blank"
+              href={githubSponsorUrl}
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#24292e] px-6 py-3 font-medium text-white transition-all hover:bg-[#1b1f23]"
+            >
+              <span>
+                Sponsor on <b>GitHub</b>
+              </span>{' '}
+              <ArrowTopRightOnSquareIcon className="size-5" />
+            </a>
+          )}
+          {kofiUrl && (
+            <a
+              target="_blank"
+              href={kofiUrl}
+              rel="noreferrer"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#29abe0] px-6 py-3 font-medium text-white transition-all hover:bg-[#1c7ebd]"
+            >
+              <span>
+                Support on <b>Ko-fi</b>
+              </span>{' '}
+              <ArrowTopRightOnSquareIcon className="size-5" />
+            </a>
+          )}
           {btcWallet && <BitcoinBlock wallet={btcWallet} />}
         </div>
         <div className="space-y-2 text-center text-zinc-500 dark:text-zinc-400">
