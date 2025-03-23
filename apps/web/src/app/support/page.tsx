@@ -1,8 +1,13 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import { Metadata } from 'next'
 import { Logo } from '~/components/Logo'
-import { rootUrl } from '~/constants'
+import { defaultMetaTitle, rootUrl } from '~/constants'
 import { SupportersCurrentResponse } from '~/types'
 import { BitcoinBlock } from './BitcoinBlock'
+
+export const metadata: Metadata = {
+  title: `Support Us | ${defaultMetaTitle}`,
+}
 
 const btcWallet = process.env.NEXT_PUBLIC_BITCOIN_WALLET
 const buyMeACoffeeUrl = process.env.NEXT_PUBLIC_BUY_ME_A_COFFEE_URL

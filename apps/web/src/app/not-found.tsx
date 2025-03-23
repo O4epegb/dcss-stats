@@ -1,4 +1,10 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
+import { defaultMetaTitle } from '~/constants'
+
+export const metadata: Metadata = {
+  title: `404 | ${defaultMetaTitle}`,
+}
 
 const Page404 = () => {
   const abyssImage = (

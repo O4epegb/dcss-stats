@@ -1,8 +1,14 @@
 import { orderBy } from 'lodash-es'
+import { Metadata } from 'next'
 import { fetchApi } from '~/api/server'
 import { Logo } from '~/components/Logo'
+import { defaultMetaTitle } from '~/constants'
 import { Logfile, Server } from '~/types'
 import { pluralize, date, formatNumber } from '~/utils'
+
+export const metadata: Metadata = {
+  title: `Servers | ${defaultMetaTitle}`,
+}
 
 const ServersPage = async () => {
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(

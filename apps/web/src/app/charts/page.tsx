@@ -1,10 +1,16 @@
+import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import type { Filter } from '~/components/Filters'
 import { operators } from '~/components/Filters/constants'
+import { defaultMetaTitle } from '~/constants'
 import { ChartsScreen } from '~/screens/Charts'
 import { StaticData } from '~/types'
 import { getShortId } from '~/utils'
+
+export const metadata: Metadata = {
+  title: `Charts | ${defaultMetaTitle}`,
+}
 
 export default async function SearchPage() {
   const res = await fetchApi('/static-data', { next: { revalidate: 300 }, cache: 'force-cache' })
