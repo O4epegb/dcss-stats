@@ -5,6 +5,7 @@ import { SupportersCurrentResponse } from '~/types'
 import { BitcoinBlock } from './BitcoinBlock'
 
 const btcWallet = process.env.NEXT_PUBLIC_BITCOIN_WALLET
+const buyMeACoffeeUrl = process.env.NEXT_PUBLIC_BUY_ME_A_COFFEE_URL
 const githubSponsorUrl = process.env.NEXT_PUBLIC_GITHUB_SPONSOR_URL
 const kofiUrl = process.env.NEXT_PUBLIC_KOFI_URL
 
@@ -54,19 +55,19 @@ const SupportPage = async () => {
         </div>
         <div className="flex flex-col items-center justify-center gap-4 rounded border-zinc-500">
           <h3 className="text-2xl font-semibold leading-none">Methods</h3>
-          <div>
+          {buyMeACoffeeUrl && (
             <a
               target="_blank"
-              href="https://www.buymeacoffee.com/totalnoob"
+              href={buyMeACoffeeUrl}
               rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-full bg-[#ffdd00] px-6 py-3 font-medium text-black transition-all hover:bg-[#ffc800]"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#ffdd00] px-6 py-3 font-medium text-black transition-all hover:bg-[#ffc800]"
             >
               <span>
                 Support on <b>Buy Me a Coffee</b>
               </span>{' '}
               <ArrowTopRightOnSquareIcon className="size-5" />
             </a>
-          </div>
+          )}
           {githubSponsorUrl && (
             <a
               target="_blank"
@@ -85,7 +86,7 @@ const SupportPage = async () => {
               target="_blank"
               href={kofiUrl}
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#29abe0] px-6 py-3 font-medium text-white transition-all hover:bg-[#1c7ebd]"
+              className="flex items-center justify-center gap-2 rounded-full bg-[#29abe0] px-6 py-3 font-medium text-white transition-all hover:bg-[#3b9fc6]"
             >
               <span>
                 Support on <b>Ko-fi</b>
