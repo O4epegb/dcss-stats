@@ -1,5 +1,5 @@
 import '~/styles/globals.css'
-import { Analytics } from '@vercel/analytics/react'
+import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Script from 'next/script'
 import { Providers } from './providers'
