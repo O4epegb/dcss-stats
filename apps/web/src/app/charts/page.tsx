@@ -8,8 +8,13 @@ import { ChartsScreen } from '~/screens/Charts'
 import { StaticData } from '~/types'
 import { getShortId } from '~/utils'
 
+const title = `Charts | ${defaultMetaTitle}`
+
 export const metadata: Metadata = {
-  title: `Charts | ${defaultMetaTitle}`,
+  title,
+  openGraph: {
+    title,
+  },
 }
 
 export default async function SearchPage() {

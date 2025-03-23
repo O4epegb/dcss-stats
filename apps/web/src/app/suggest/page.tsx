@@ -5,8 +5,13 @@ import { defaultMetaTitle } from '~/constants'
 import { SuggestScreen } from '~/screens/Suggest'
 import { StaticData } from '~/types'
 
+const title = `Suggest | ${defaultMetaTitle}`
+
 export const metadata: Metadata = {
-  title: `Suggest | ${defaultMetaTitle}`,
+  title,
+  openGraph: {
+    title,
+  },
 }
 
 export default async function SuggestPage() {

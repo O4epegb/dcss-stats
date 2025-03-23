@@ -2,8 +2,13 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { defaultMetaTitle } from '~/constants'
 
+const title = `404 | ${defaultMetaTitle}`
+
 export const metadata: Metadata = {
-  title: `404 | ${defaultMetaTitle}`,
+  title,
+  openGraph: {
+    title,
+  },
 }
 
 const Page404 = () => {

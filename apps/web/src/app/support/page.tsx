@@ -5,8 +5,13 @@ import { defaultMetaTitle, rootUrl } from '~/constants'
 import { SupportersCurrentResponse } from '~/types'
 import { BitcoinBlock } from './BitcoinBlock'
 
+const title = `Support Us | ${defaultMetaTitle}`
+
 export const metadata: Metadata = {
-  title: `Support Us | ${defaultMetaTitle}`,
+  title,
+  openGraph: {
+    title,
+  },
 }
 
 const btcWallet = process.env.NEXT_PUBLIC_BITCOIN_WALLET

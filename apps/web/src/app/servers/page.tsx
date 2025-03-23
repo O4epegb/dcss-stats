@@ -6,8 +6,13 @@ import { defaultMetaTitle } from '~/constants'
 import { Logfile, Server } from '~/types'
 import { pluralize, date, formatNumber } from '~/utils'
 
+const title = `Servers | ${defaultMetaTitle}`
+
 export const metadata: Metadata = {
-  title: `Servers | ${defaultMetaTitle}`,
+  title,
+  openGraph: {
+    title,
+  },
 }
 
 const ServersPage = async () => {

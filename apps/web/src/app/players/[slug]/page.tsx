@@ -58,13 +58,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       maximumFractionDigits: 2,
     })
 
+    const title = `${data.player.name} | ${defaultMetaTitle}`
+    const description = `${data.player.name} stats - ${wins}W ${games}G ${winrate}% WR | ${defaultMetaDescription}`
+
     return {
-      title: `${data.player.name} | ${defaultMetaTitle}`,
-      description: `${data.player.name} stats - ${wins}W ${games}G ${winrate}% WR | ${defaultMetaDescription}`,
+      title,
+      description,
+      openGraph: {
+        title,
+        description,
+      },
     }
   } else {
+    const title = `Player not found | ${defaultMetaTitle}`
     return {
-      title: `Player not found | ${defaultMetaTitle}`,
+      title,
+      openGraph: {
+        title,
+      },
     }
   }
 }

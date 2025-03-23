@@ -5,8 +5,13 @@ import { defaultMetaTitle } from '~/constants'
 import { SearchScreen } from '~/screens/Search'
 import { StaticData } from '~/types'
 
+const title = `Search | ${defaultMetaTitle}`
+
 export const metadata: Metadata = {
-  title: `Search | ${defaultMetaTitle}`,
+  title,
+  openGraph: {
+    title,
+  },
 }
 
 export default async function SearchPage() {
