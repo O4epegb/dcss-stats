@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
+import { sharedOGMetadata } from '~/app/shared-metadata'
 import { defaultMetaTitle } from '~/constants'
 import { SuggestScreen } from '~/screens/Suggest'
 import { StaticData } from '~/types'
@@ -10,6 +11,7 @@ const title = `Suggest | ${defaultMetaTitle}`
 export const metadata: Metadata = {
   title,
   openGraph: {
+    ...sharedOGMetadata,
     title,
   },
 }

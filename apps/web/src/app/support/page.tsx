@@ -1,5 +1,6 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
+import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { defaultMetaTitle, rootUrl } from '~/constants'
 import { SupportersCurrentResponse } from '~/types'
@@ -10,6 +11,7 @@ const title = `Support Us | ${defaultMetaTitle}`
 export const metadata: Metadata = {
   title,
   openGraph: {
+    ...sharedOGMetadata,
     title,
   },
 }

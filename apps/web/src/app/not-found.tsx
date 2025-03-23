@@ -1,12 +1,14 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { defaultMetaTitle } from '~/constants'
+import { sharedOGMetadata } from './shared-metadata'
 
 const title = `404 | ${defaultMetaTitle}`
 
 export const metadata: Metadata = {
   title,
   openGraph: {
+    ...sharedOGMetadata,
     title,
   },
 }

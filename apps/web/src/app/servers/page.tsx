@@ -1,6 +1,7 @@
 import { orderBy } from 'lodash-es'
 import { Metadata } from 'next'
 import { fetchApi } from '~/api/server'
+import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { defaultMetaTitle } from '~/constants'
 import { Logfile, Server } from '~/types'
@@ -11,6 +12,7 @@ const title = `Servers | ${defaultMetaTitle}`
 export const metadata: Metadata = {
   title,
   openGraph: {
+    ...sharedOGMetadata,
     title,
   },
 }

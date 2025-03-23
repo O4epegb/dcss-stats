@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
+import { sharedOGMetadata } from '~/app/shared-metadata'
 import type { Filter } from '~/components/Filters'
 import { operators } from '~/components/Filters/constants'
 import { defaultMetaTitle } from '~/constants'
@@ -13,6 +14,7 @@ const title = `Charts | ${defaultMetaTitle}`
 export const metadata: Metadata = {
   title,
   openGraph: {
+    ...sharedOGMetadata,
     title,
   },
 }

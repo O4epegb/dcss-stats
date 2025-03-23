@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import Script from 'next/script'
 import { defaultMetaDescription, defaultMetaTitle } from '~/constants'
 import { Providers } from './providers'
+import { sharedOGMetadata } from './shared-metadata'
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://dcss-stats.com'),
@@ -13,17 +14,7 @@ export const metadata: Metadata = {
   keywords:
     "Dungeon Crawl Stone Soup, DCSS Online, Dungeon Crawl Online, DCSS Webtiles, Linley's Dungeon Crawl, Dungeon Crawl Stone Soup Stats, DCSS Stats, DCSS statistics, DCSS player stats, DCSS player history",
   openGraph: {
-    title: defaultMetaTitle,
-    description: defaultMetaDescription,
-    type: 'website',
-    images: [
-      {
-        url: '/logo-256.png',
-        width: 256,
-        height: 256,
-        alt: 'DCSS Stats',
-      },
-    ],
+    ...sharedOGMetadata,
   },
 }
 
