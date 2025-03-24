@@ -1,3 +1,4 @@
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { cn } from '~/utils'
 
@@ -11,7 +12,7 @@ export const Footer = ({ className }: { className?: string }) => (
         href="https://crawl.develz.org/"
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:underline"
+        className="underline"
       >
         Dungeon Crawl Stone Soup
       </a>
@@ -22,18 +23,19 @@ export const Footer = ({ className }: { className?: string }) => (
         Tracked servers
       </Link>
 
+      <Link href="/support" className="hover:underline">
+        Donate to support this app
+      </Link>
+
       <a
         href="https://github.com/O4epegb/dcss-stats"
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:underline"
+        className="flex items-center gap-1 hover:underline"
       >
         Github
+        <ArrowTopRightOnSquareIcon className="size-4" />
       </a>
-
-      <Link href="/support" className="hover:underline">
-        Donate to support this app
-      </Link>
     </div>
 
     <div>
@@ -42,7 +44,7 @@ export const Footer = ({ className }: { className?: string }) => (
         href="https://discord.gg/pKCNTunFeW"
         target="_blank"
         rel="noopener noreferrer"
-        className="hover:underline"
+        className="underline"
       >
         RL Discord
       </a>{' '}
