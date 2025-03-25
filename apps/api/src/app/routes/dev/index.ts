@@ -85,4 +85,38 @@ export const devRoute = (app: AppType) => {
       result: orderBy(result, (x) => x.oneandwons, 'desc'),
     }
   })
+
+  app.get('/api/dev/count', async () => {
+    const count = await prisma.game.count()
+
+    return {
+      count,
+    }
+  })
+
+  app.get('/api/dev/count-sql', async () => {
+    const result = await prisma.$queryRaw<[{ count: bigint }]>`
+    SELECT COUNT(*) as count FROM "Game";
+  `
+    return {
+      count: Number(result[0].count),
+    }
+  })
+
+  app.get('/api/dev/count2', async () => {
+    const count = await prisma.game.count({ where: { isWin: true } })
+
+    return {
+      count,
+    }
+  })
+
+  app.get('/api/dev/count-sql2', async () => {
+    const result = await prisma.$queryRaw<[{ count: bigint }]>`
+    SELECT COUNT(*) as count FROM "Game" WHERE "isWin" = true;
+  `
+    return {
+      count: Number(result[0].count),
+    }
+  })
 }
