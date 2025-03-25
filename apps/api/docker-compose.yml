@@ -49,6 +49,20 @@ services:
       - 'bgwriter_delay=50ms'
       - '-c'
       - 'bgwriter_lru_maxpages=200'
+      - '-c'
+      - 'shared_buffers=1GB'
+      - '-c'
+      - 'work_mem=32MB'
+      - '-c'
+      - 'maintenance_work_mem=256MB'
+      - '-c'
+      - 'effective_cache_size=3GB'
+      - '-c'
+      - 'default_statistics_target=100'
+      - '-c'
+      - 'checkpoint_timeout=15min'
+      - '-c'
+      - 'checkpoint_completion_target=0.9'
 
 volumes:
   app-volume:
