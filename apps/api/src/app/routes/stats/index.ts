@@ -19,7 +19,10 @@ export const statsRoute = (app: AppType) => {
       const { races, classes, gods, versions } = await getStaticData()
 
       const [games, wins, combosData] = await Promise.all([
-        prisma.game.count(),
+        // At the time of writing, prisma.game.count() is much slower than the raw query for unknown reason
+        prisma.$queryRaw<[{ count: bigint }]>`SELECT COUNT(*) as count FROM "Game"`.then((result) =>
+          Number(result[0].count),
+        ),
         prisma.game.count({ where: { isWin: true } }),
         getCombosData({
           where: {
