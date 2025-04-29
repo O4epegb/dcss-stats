@@ -8,7 +8,7 @@ import tsEslint from 'typescript-eslint'
 
 export default tsEslint.config(
   {
-    ignores: ['**/out/*', '**/forever-ignore/*', 'logfiles/*', '.yarn'],
+    ignores: ['**/out/*', '**/forever-ignore/*', 'morgues/*', 'logfiles/*', '.yarn', 'crawl/**/*'],
   },
 
   jsEslint.configs.recommended,
