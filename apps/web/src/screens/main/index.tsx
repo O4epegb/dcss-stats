@@ -26,21 +26,21 @@ export const MainPage = (props: Props) => {
   )
 
   return (
-    <div className="container mx-auto flex min-h-screen flex-col items-center px-4 pt-8 md:justify-center md:pt-0">
+    <div className="container mx-auto flex min-h-screen flex-col items-center px-4 md:justify-center">
       <div className="w-full max-w-5xl space-y-4 py-4">
-        <header className="flex w-full items-center justify-between">
+        <header className="flex w-full flex-wrap items-center justify-between gap-1 gap-y-2 sm:flex-nowrap">
           <Logo />
 
-          <div className="flex gap-5">
+          <div className="ml-auto flex flex-1 justify-end gap-3 sm:w-auto sm:gap-5">
             <Link
-              className="group relative hidden flex-col items-center justify-center sm:flex"
+              className="group relative flex flex-col items-center justify-center"
               href="/support"
             >
               <span className="flex items-center justify-center gap-1 text-xs group-hover:underline sm:text-base">
                 Support
               </span>
               {data && (
-                <span className="absolute top-full text-nowrap text-xs text-gray-400">
+                <span className="absolute top-full text-nowrap text-2xs text-gray-400 sm:text-xs">
                   {data.total >= data.goal ? (
                     <>Goal: done! (${data.total})</>
                   ) : (

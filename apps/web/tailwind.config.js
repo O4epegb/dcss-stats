@@ -18,6 +18,10 @@ module.exports = {
         overlayShow: 'overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
         contentShow: 'contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)',
       },
+      fontSize: {
+        '2xs': ['0.625rem', { lineHeight: '1rem' }],
+        '3xs': ['0.5rem', { lineHeight: '1rem' }],
+      },
     },
   },
 }
