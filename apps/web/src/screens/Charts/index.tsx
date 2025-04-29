@@ -1,5 +1,6 @@
 'use client'
 
+import { ClipboardDocumentCheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -63,6 +64,8 @@ type Dataset = {
   [key: string]: any
 }
 
+let copyTimeoutId: NodeJS.Timeout
+
 export const ChartsScreen = ({
   staticData,
   defaultDatasets,
@@ -77,6 +80,7 @@ export const ChartsScreen = ({
 
   const [showValidations, setShowValidations] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
     setIsMounted(() => true)
@@ -271,7 +275,7 @@ export const ChartsScreen = ({
                 </>
               )}
               <button
-                className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
+                className="rounded border border-current bg-gray-800 px-2 py-2 text-white transition-colors hover:bg-gray-700 sm:px-4"
                 onClick={() => {
                   const raceFilter = filterOptions.find((x) => x.name === 'Race')
                   const endFilter = filterOptions.find((x) => x.name === 'End')
@@ -494,10 +498,10 @@ export const ChartsScreen = ({
               )
             })}
         </div>
-        <div className="sticky bottom-4 flex items-center justify-between gap-2 rounded border border-zinc-700 bg-[Canvas] p-4">
+        <div className="sticky bottom-4 flex items-center justify-between gap-2 rounded border border-zinc-700 bg-[Canvas] p-2 sm:p-4">
           <Tooltip disabled={datasets.length < 5} content="Maximum 5 datasets">
             <button
-              className="rounded border px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+              className="rounded border px-4 py-2 text-xs transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 sm:text-base"
               disabled={datasets.length === 5}
               onClick={() => {
                 const newDataset = {
@@ -517,8 +521,50 @@ export const ChartsScreen = ({
               + Add dataset
             </button>
           </Tooltip>
+          {!isLoading && data && (
+            <button
+              className="flex items-center justify-center gap-1 rounded border px-2 py-2 text-xs transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 sm:px-4 sm:text-base"
+              onClick={() => {
+                const canvas = document.querySelector('canvas')
+                if (!canvas) {
+                  return
+                }
+                canvas.toBlob(async (blob) => {
+                  if (!blob) {
+                    alert('Failed to copy image: Could not create image data.')
+                    throw new Error('Failed to create blob from canvas')
+                  }
+                  try {
+                    await navigator.clipboard.write([
+                      new ClipboardItem({
+                        [blob.type]: blob,
+                      }),
+                    ])
+
+                    setIsCopied(true)
+
+                    clearTimeout(copyTimeoutId)
+                    copyTimeoutId = setTimeout(() => {
+                      setIsCopied(false)
+                    }, 3000)
+                  } catch (error) {
+                    alert('Failed to copy image')
+
+                    throw error
+                  }
+                })
+              }}
+            >
+              {isCopied ? (
+                <ClipboardDocumentCheckIcon className="size-4 shrink-0 text-green-500 sm:size-6" />
+              ) : (
+                <ClipboardDocumentIcon className="size-4 shrink-0 sm:size-6" />
+              )}
+              Copy as Image
+            </button>
+          )}
           <button
-            className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
+            className="rounded border border-current bg-gray-800 px-2 py-2 text-xs text-white transition-colors hover:bg-gray-700 sm:px-4 sm:text-base"
             onClick={() => {
               setParamsForSWR({
                 datasets,
