@@ -1,8 +1,8 @@
 import { date } from '~/utils'
 
-const version = '0.32'
-const start = '2024-08-30T20:00:00.000Z'
-const end = '2024-09-15T20:00:00.000Z'
+const version = '0.33'
+const start = '2025-05-07T20:00:00.000Z'
+const end = '2025-05-18T20:00:00.000Z'
 
 export const TournamentBanner = () => {
   const now = date()
