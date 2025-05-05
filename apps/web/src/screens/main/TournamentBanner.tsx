@@ -1,7 +1,7 @@
 import { date } from '~/utils'
 
 const version = '0.33'
-const start = '2025-05-07T20:00:00.000Z'
+const start = '2025-05-02T20:00:00.000Z'
 const end = '2025-05-18T20:00:00.000Z'
 
 export const TournamentBanner = () => {
