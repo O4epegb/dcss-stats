@@ -22,6 +22,8 @@ export const allUnavailableCombos = keyBy([
   'FeGl',
   'FeBr',
   'FeHs',
+  'PoSh',
+  'ReSh',
 ])
 
 export const getSummary = (data: PlayerInfoResponse) => {
