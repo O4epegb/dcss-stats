@@ -21,13 +21,13 @@ export const metadata: Metadata = {
 
 export default async function SearchPage() {
   const res = await fetchApi('/static-data', { next: { revalidate: 300 }, cache: 'force-cache' })
-  const data: StaticData = await res.json()
+  const staticData: StaticData = await res.json()
 
   if (!res.ok) {
     throw res
   }
 
-  const raceFilterOption = data.filterOptions.find((x) => x.name === 'Race')
+  const raceFilterOption = staticData.filterOptions.find((x) => x.name === 'Race')
 
   const defaultDatasets = [
     {
@@ -49,7 +49,7 @@ export default async function SearchPage() {
 
   return (
     <Suspense fallback={null}>
-      <ChartsScreen staticData={data} defaultDatasets={defaultDatasets} />
+      <ChartsScreen staticData={staticData} defaultDatasets={defaultDatasets} />
     </Suspense>
   )
 }

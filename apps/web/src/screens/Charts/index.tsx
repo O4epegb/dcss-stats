@@ -140,7 +140,27 @@ export const ChartsScreen = ({
         .then((data) => ({
           data: data.data.map((items, index) => ({
             items,
-            label: params.datasets[index]?.filters.map((x) => x.value).join(', ') ?? 'No filters',
+            label:
+              params.datasets[index]?.filters
+                .map((filter) => {
+                  if (['Race', 'Class', 'God', 'End'].includes(filter.option)) {
+                    return [
+                      filter.condition === 'is'
+                        ? ''
+                        : filter.condition === 'is not'
+                          ? '!'
+                          : filter.condition + ' ',
+                      filter.value,
+                    ]
+                      .filter(Boolean)
+                      .join('')
+                  }
+
+                  return [filter.option, filter.condition, filter.suboption, filter.value]
+                    .filter(Boolean)
+                    .join(' ')
+                })
+                .join(', ') ?? 'No filters',
           })),
           ...params,
         })),
