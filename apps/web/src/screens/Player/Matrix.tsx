@@ -49,7 +49,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
           <button
             key={key}
             className={clsx(
-              'rounded px-2 py-0.5 font-light',
+              'rounded-sm px-2 py-0.5 font-light',
               category === key ? 'bg-amber-700 text-white' : 'bg-gray-100 dark:bg-zinc-700',
             )}
             onClick={() => setCategory(key)}
@@ -221,10 +221,12 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
               const value = stats.races[race.abbr]?.[category]
 
               return (
-                <tr key={race.abbr} className="h-[24px]">
+                <tr
+                  key={race.abbr}
+                  className="h-[24px] *:p-[1px] *:first:text-left *:first:font-bold"
+                >
                   <td
                     className={clsx(
-                      'text-left font-bold',
                       greatRaces[race.abbr]
                         ? 'bg-amber-200 dark:bg-amber-700'
                         : activeRace === race.abbr && 'bg-amber-100 dark:bg-zinc-800',
@@ -278,7 +280,7 @@ export const Matrix = ({ summary }: { summary: Summary }) => {
                           stats.combos[char]?.wins > 0
                             ? 'text-amber-600 dark:text-amber-500'
                             : allUnavailableCombos[char]
-                              ? 'select-none text-gray-200 dark:text-gray-600'
+                              ? 'text-gray-200 select-none dark:text-gray-600'
                               : 'dark:text-gray-200',
                         )}
                         onMouseEnter={(e) => {

@@ -168,7 +168,7 @@ export const Tooltip = ({
                 ref: refs.setFloating,
                 className: clsx(
                   !unstyled &&
-                    'max-w-[calc(100vw-8px)] text-white rounded bg-slate-800 px-2 py-1.5 text-sm dark:bg-zinc-100 dark:text-black',
+                    'max-w-[calc(100vw-8px)] text-white rounded-sm bg-slate-800 px-2 py-1.5 text-sm dark:bg-zinc-100 dark:text-black',
                   className,
                 ),
                 style: {

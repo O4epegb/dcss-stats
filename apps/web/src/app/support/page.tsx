@@ -52,9 +52,9 @@ const SupportPage = async () => {
             <span className="text-amber-500 dark:text-amber-400">${data.goal}</span>
           </div>
         </div>
-        <div className="space-y-4 rounded border border-zinc-500 p-6">
+        <div className="space-y-4 rounded-sm border border-zinc-500 p-6">
           <div className="flex flex-col space-y-2">
-            <h3 className="text-2xl font-semibold leading-none">Why Support Us?</h3>
+            <h3 className="text-2xl leading-none font-semibold">Why Support Us?</h3>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
               Your support directly contributes to:
             </p>
@@ -65,8 +65,8 @@ const SupportPage = async () => {
             <li>Maintenance and updates to keep everything running smoothly</li>
           </ul>
         </div>
-        <div className="flex flex-col items-center justify-center gap-4 rounded border-zinc-500">
-          <h3 className="text-2xl font-semibold leading-none">Methods</h3>
+        <div className="flex flex-col items-center justify-center gap-4 rounded-sm border-zinc-500">
+          <h3 className="text-2xl leading-none font-semibold">Methods</h3>
           {buyMeACoffeeUrl && (
             <a
               target="_blank"

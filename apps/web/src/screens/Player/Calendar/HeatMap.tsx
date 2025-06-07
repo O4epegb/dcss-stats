@@ -88,13 +88,13 @@ export const HeatMap = ({
                       }
                     >
                       <div
-                        className={cn('flex items-center justify-center rounded', cellSizeCss, {
+                        className={cn('flex items-center justify-center rounded-sm', cellSizeCss, {
                           'border border-zinc-300 dark:border-zinc-400': day.games < maxGames * 0.9,
                         })}
                       >
                         {day.games > 0 && (
                           <div
-                            className={cn('rounded', {
+                            className={cn('rounded-sm', {
                               'size-[30%]': day.games > 0,
                               'size-[50%]': day.games >= maxGames * 0.2,
                               'size-[70%]': day.games >= maxGames * 0.55,
@@ -195,7 +195,7 @@ export const HeatMapFlat = ({
                   </Tooltip>
                 )}
                 <div
-                  className={cn('flex size-full items-center justify-center rounded', {
+                  className={cn('flex size-full items-center justify-center rounded-sm', {
                     'border border-zinc-300 dark:border-zinc-600':
                       day.games < maxGamesPerDay * 0.75,
                   })}
@@ -209,7 +209,7 @@ export const HeatMapFlat = ({
                 >
                   {day.games > 0 && (
                     <div
-                      className={cn('rounded', {
+                      className={cn('rounded-sm', {
                         'size-[30%]': day.games > 0,
                         'size-[50%]': day.games >= maxGamesPerDay * 0.25,
                         'size-[75%]': day.games >= maxGamesPerDay * 0.5,

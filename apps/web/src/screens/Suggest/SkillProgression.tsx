@@ -78,7 +78,7 @@ export const SkillProgression = ({
           disabled={isButtonEnabled}
           content="Only available for the last version of the game for now"
         >
-          <label className="relative flex cursor-pointer select-none items-center gap-1">
+          <label className="relative flex cursor-pointer items-center gap-1 select-none">
             <input
               checked={showSkillProgression}
               className="cursor-pointer"
@@ -98,7 +98,7 @@ export const SkillProgression = ({
         {data && data.length > 0 && (
           <Dialog>
             <DialogTrigger asChild>
-              <button className="flex items-center gap-1 rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700">
+              <button className="flex items-center gap-1 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700">
                 Show table view
               </button>
             </DialogTrigger>
@@ -141,7 +141,7 @@ export const SkillProgression = ({
       {data && !data.length && <div>No skill progression data</div>}
 
       {isValidating && (
-        <div className="m-auto w-full rounded bg-blue-100 px-2 py-1 text-sm text-black">
+        <div className="m-auto w-full rounded-sm bg-blue-100 px-2 py-1 text-sm text-black">
           This feature is experimental and may take up to a minute to load
         </div>
       )}
@@ -183,7 +183,7 @@ export const SkillProgression = ({
             {data.map((skill) => (
               <div key={skill.skillName} className="flex items-center gap-2">
                 <div className="relative flex h-[28px] flex-1 items-center">
-                  <div className="pointer-events-none absolute left-0 top-[-6px]">
+                  <div className="pointer-events-none absolute top-[-6px] left-0">
                     {skill.skillName}
                   </div>
                   {skill.data.values.map((value, i) => {

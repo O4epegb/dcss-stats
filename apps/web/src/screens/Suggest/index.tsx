@@ -332,9 +332,9 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
         </Select>
       </div>
 
-      <div className="m-auto flex w-full max-w-lg items-center gap-2">
+      <div className="flex w-full max-w-lg items-center gap-2">
         <button
-          className="-ml-2 flex items-center gap-1 rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-zinc-700"
+          className="-ml-2 flex items-center gap-1 rounded-sm px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-zinc-700"
           onClick={() => setShowAdvancedFilters((x) => !x)}
         >
           {showAdvancedFilters ? 'Hide' : 'Show'} advanced filters{' '}
@@ -370,12 +370,12 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
         />
       </div>
 
-      <div className="m-auto flex w-full max-w-lg items-center justify-center gap-2">
+      <div className="flex w-full max-w-lg items-center justify-center gap-2">
         <Tooltip disabled={buttonEnabled} content="Select at least one option from Race/Class/God">
           <button
             type="button"
             className={clsx(
-              'flex items-center gap-x-2 rounded border bg-gray-800 px-4 py-2 text-white transition-colors',
+              'flex items-center gap-x-2 rounded-sm border bg-gray-800 px-4 py-2 text-white transition-colors',
               buttonEnabled && 'hover:bg-gray-700',
             )}
             onClick={() => {
@@ -447,7 +447,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                         !isHidden && (
                           <label
                             key={key}
-                            className={clsx('flex cursor-pointer select-none items-center gap-1')}
+                            className={clsx('flex cursor-pointer items-center gap-1 select-none')}
                           >
                             <input
                               type="radio"
@@ -469,7 +469,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                   </div>
                 )}
                 <div className="flex w-full gap-2">
-                  <label className="flex w-max cursor-pointer select-none items-center gap-1">
+                  <label className="flex w-max cursor-pointer items-center gap-1 select-none">
                     <input
                       checked={showTableFilters}
                       className="cursor-pointer"
@@ -497,7 +497,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                     />
                   </label>
                 </div>
-                <label className="flex cursor-pointer select-none items-center gap-1">
+                <label className="flex cursor-pointer items-center gap-1 select-none">
                   <input
                     checked={showWins}
                     className="cursor-pointer"
@@ -510,14 +510,14 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                   {(['stats', 'games'] as const).map((item) => (
                     <button
                       key={item}
-                      className="flex rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100"
+                      className="flex rounded-md focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100"
                       onClick={() => setView(item)}
                     >
                       <span
                         className={clsx(
-                          'rounded-md p-1.5 text-sm font-medium lg:pl-2.5 lg:pr-2.5',
+                          'rounded-md p-1.5 text-sm font-medium lg:pr-2.5 lg:pl-2.5',
                           view === item &&
-                            'bg-white shadow-sm ring-1 ring-black ring-opacity-5 dark:bg-zinc-500',
+                            'ring-opacity-5 bg-white shadow-xs ring-1 ring-black dark:bg-zinc-500',
                         )}
                       >
                         <span
@@ -572,7 +572,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                                   className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
                                 >
                                   <div
-                                    className="inline-flex cursor-pointer select-none items-center whitespace-nowrap"
+                                    className="inline-flex cursor-pointer items-center whitespace-nowrap select-none"
                                     onClick={() =>
                                       setSorting({
                                         key: sortingKey,
@@ -603,11 +603,14 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                               return (
                                 <th
                                   key={title}
-                                  className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
+                                  className={clsx(
+                                    'p-[1px]',
+                                    type === 'numeric' ? 'text-right' : 'text-left',
+                                  )}
                                 >
                                   <input
                                     type="text"
-                                    className="w-full rounded border px-1 font-normal"
+                                    className="w-full rounded-sm border px-1 font-normal"
                                     value={tableFilters.get(sortingKey)}
                                     onChange={(e) => {
                                       setTableFilters((prev) => {

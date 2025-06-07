@@ -247,7 +247,7 @@ export const ChartsScreen = ({
   }
 
   return (
-    <div className="container mx-auto flex flex-col space-y-4 p-4">
+    <div className="container mx-auto flex flex-col gap-4 p-4">
       <header className="m-auto flex w-full items-center gap-4">
         <Logo />
         <div className="ml-auto">
@@ -354,7 +354,7 @@ export const ChartsScreen = ({
         </div>
 
         {isError(error) && (
-          <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
+          <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
             <div>Error occured, try to reload the page</div>
             {error.message && (
               <code className="bg-gray-100 p-2 dark:bg-zinc-700">{error.message}</code>
@@ -518,10 +518,10 @@ export const ChartsScreen = ({
               )
             })}
         </div>
-        <div className="sticky bottom-4 flex items-center justify-between gap-2 rounded border border-zinc-700 bg-[Canvas] p-2 sm:p-4">
+        <div className="sticky bottom-4 flex items-center justify-between gap-2 rounded-sm border border-zinc-700 bg-[Canvas] p-2 sm:p-4">
           <Tooltip disabled={datasets.length < 5} content="Maximum 5 datasets">
             <button
-              className="rounded border px-4 py-2 text-xs transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 sm:text-base"
+              className="rounded border px-4 py-2 text-xs transition-colors hover:bg-gray-100 sm:text-base dark:hover:bg-zinc-800"
               disabled={datasets.length === 5}
               onClick={() => {
                 const newDataset = {
@@ -543,7 +543,7 @@ export const ChartsScreen = ({
           </Tooltip>
           {!isLoading && data && (
             <button
-              className="flex items-center justify-center gap-1 rounded border px-2 py-2 text-xs transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800 sm:px-4 sm:text-base"
+              className="flex items-center justify-center gap-1 rounded-sm border px-2 py-2 text-xs transition-colors hover:bg-gray-100 sm:px-4 sm:text-base dark:hover:bg-zinc-800"
               onClick={() => {
                 const canvas = document.querySelector('canvas')
                 if (!canvas) {

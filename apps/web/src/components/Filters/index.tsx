@@ -223,13 +223,13 @@ export const Filters = ({
           }
         />
         <button
-          className="-mr-2 ml-auto rounded px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-800"
+          className="-mr-2 ml-auto rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-800"
           onClick={() => setFilters(getDefaultFilters())}
         >
           Reset
         </button>
       </div>
-      <div className="space-y-3">
+      <div>
         <DndContext
           sensors={sensors}
           modifiers={[restrictToVerticalAxis]}
@@ -373,7 +373,7 @@ export const Filters = ({
                                 <input
                                   type={option.type}
                                   placeholder={option.placeholder}
-                                  className="w-full rounded bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
+                                  className="w-full rounded-sm bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
                                   value={filter.value}
                                   onFocus={(e) => e.target.select()}
                                   onChange={(e) => {
@@ -421,7 +421,7 @@ export const Filters = ({
 
                             <Tooltip content="Remove filter">
                               <button
-                                className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded bg-gray-200 text-xs text-red-900"
+                                className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gray-200 text-xs text-red-900"
                                 onClick={() => {
                                   setFilters((state) => state.filter((x) => x !== filter))
                                 }}
@@ -451,7 +451,7 @@ export const Filters = ({
           </SortableContext>
         </DndContext>
 
-        <div className="flex items-center justify-between">
+        <div className="mt-3 flex items-center justify-between">
           <Tooltip
             content={`Maximum ${maxFilters} filters at this moment`}
             disabled={filters.length < maxFilters}
@@ -492,7 +492,6 @@ export const Filters = ({
               </button>
             </div>
           </Tooltip>
-
           {onDelete && (
             <button
               className="rounded border border-transparent px-4 py-2 transition-all hover:border-red-500 hover:text-red-500"
@@ -503,7 +502,6 @@ export const Filters = ({
               Delete
             </button>
           )}
-
           {onSubmit && (
             <button
               className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"

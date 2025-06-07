@@ -98,14 +98,14 @@ const Badge = ({
         </div>
       }
     >
-      <div className="relative overflow-hidden rounded bg-gray-100 px-1 py-0.5 dark:bg-zinc-700">
+      <div className="relative overflow-hidden rounded-sm bg-gray-100 px-1 py-0.5 dark:bg-zinc-700">
         <div
-          className="absolute bottom-0 left-0 top-0 bg-gray-200 dark:bg-zinc-600"
+          className="absolute top-0 bottom-0 left-0 bg-gray-200 dark:bg-zinc-600"
           style={{
             width: `${(completed / total) * 100}%`,
           }}
         />
-        <span className="relative z-[1]">
+        <span className="relative z-1">
           {title} {completed} of {total}
         </span>
       </div>

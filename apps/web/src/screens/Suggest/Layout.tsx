@@ -1,19 +1,19 @@
-import clsx from 'clsx'
 import { PropsWithChildren } from 'react'
 import { Logo } from '~/components/Logo'
+import { cn } from '~/utils'
 
 export const Layout = ({ centered, children }: PropsWithChildren<{ centered: boolean }>) => {
   return (
     <div
-      className={clsx(
-        'container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 pb-8 pt-8',
+      className={cn(
+        'container mx-auto flex min-h-screen flex-col items-center gap-4 px-4 pt-8 pb-8',
         centered && 'md:justify-center md:pt-0',
       )}
     >
       <header>
         <Logo />
       </header>
-      <div className="m-auto w-full max-w-md rounded bg-blue-100 px-2 py-1 text-sm text-black">
+      <div className="w-full max-w-md rounded-sm bg-blue-100 px-2 py-1 text-sm text-black">
         <span className="font-semibold">TL;DR:</span> Choose the race, class or god you want to play
         (or any combination of these). Press the button to see the win rate of your combination, as
         well as other people&apos;s games.

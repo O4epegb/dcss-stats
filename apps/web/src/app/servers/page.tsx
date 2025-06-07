@@ -53,7 +53,7 @@ const ServersPage = async () => {
                   href={server.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="white-nowrap overflow-hidden overflow-ellipsis hover:underline"
+                  className="white-nowrap overflow-hidden text-ellipsis hover:underline"
                 >
                   <span className="font-medium">{server.abbreviation}</span> - {server.url}
                 </a>

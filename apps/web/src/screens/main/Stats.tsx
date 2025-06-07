@@ -219,7 +219,7 @@ const PopularList = ({
                 (value) => Boolean(value),
               ),
             }}
-            className="-mx-1 flex justify-between rounded px-1 hover:bg-amber-100 dark:hover:bg-zinc-700"
+            className="-mx-1 flex justify-between rounded-sm px-1 hover:bg-amber-100 dark:hover:bg-zinc-700"
           >
             <div>
               {x.race?.abbr}

@@ -24,7 +24,7 @@ export const TournamentBanner = () => {
       }
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 rounded border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
+      className="flex items-center justify-center gap-2 rounded-sm border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
     >
       {isUpcoming && (
         <span suppressHydrationWarning>

@@ -64,14 +64,14 @@ export const Search = ({
   return (
     <div className="relative">
       {isNavigating && (
-        <div className="absolute right-2 top-[50%] -translate-y-1/2">
+        <div className="absolute top-[50%] right-2 -translate-y-1/2">
           <Loader />
         </div>
       )}
 
       <input
         placeholder={`Search player by nickname, e.g. "${nickname}"`}
-        className="block h-10 w-full rounded border border-gray-400 px-2"
+        className="block h-10 w-full rounded-sm border border-gray-400 px-2"
         {...getInputProps({
           value: query,
           disabled: isNavigating,
@@ -92,7 +92,7 @@ export const Search = ({
 
       <div
         className={clsx(
-          'absolute left-0 top-full z-20 mt-2 w-full overflow-hidden rounded shadow',
+          'absolute top-full left-0 z-20 mt-2 w-full overflow-hidden rounded-sm shadow-sm',
           isOpen ? 'block' : 'hidden',
         )}
       >

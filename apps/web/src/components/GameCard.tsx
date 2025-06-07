@@ -37,7 +37,7 @@ const GameItemFull = memo(
       <div
         ref={ref}
         className={clsx(
-          'flex-1 rounded border border-gray-200 bg-white px-2 py-1 text-sm text-black dark:border-gray-300 dark:bg-transparent dark:bg-zinc-900 dark:text-white',
+          'flex-1 rounded-sm border border-gray-200 bg-white px-2 py-1 text-sm text-black dark:border-gray-300 dark:bg-zinc-900 dark:text-white',
           game.isWin && 'border-l-2 border-l-emerald-500 dark:border-l-emerald-400',
           shadow && 'shadow-md',
         )}

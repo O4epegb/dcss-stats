@@ -1,7 +1,6 @@
 'use client'
 
 import { last, flatten, first, omit, isError } from 'lodash-es'
-import Link from 'next/link'
 import { useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
@@ -46,12 +45,9 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
   const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data?.length < 10)
 
   return (
-    <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pb-4 pt-4">
-      <header className="flex items-center gap-4 divide-x">
+    <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pt-4 pb-4">
+      <header className="flex items-center gap-4">
         <Logo />
-        <h2 className="pl-4 text-2xl">
-          <Link href="/search">Search</Link>
-        </h2>
       </header>
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
@@ -83,7 +79,7 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
             )}
 
             {!isEmpty && !error && (
-              <div className="flex items-center justify-center pb-4 pt-8">
+              <div className="flex items-center justify-center pt-8 pb-4">
                 <button
                   className="flex items-center justify-center space-x-1"
                   disabled={isLoadingMore || isReachingEnd}
@@ -98,7 +94,7 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
             )}
 
             {isError(error) && (
-              <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
+              <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
                 <div>Error occured, try to reload the page</div>
                 {error.message && (
                   <code className="bg-gray-100 p-2 dark:bg-zinc-700">{error.message}</code>

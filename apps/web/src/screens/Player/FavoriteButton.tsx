@@ -17,7 +17,7 @@ export const FavoriteButton = () => {
     <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
       <button
         className={clsx(
-          'flex h-6 w-6 items-center justify-center rounded transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700',
+          'flex h-6 w-6 items-center justify-center rounded-sm transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700',
           isFavorite ? 'text-amber-400' : 'text-gray-300',
         )}
         onClick={() => {

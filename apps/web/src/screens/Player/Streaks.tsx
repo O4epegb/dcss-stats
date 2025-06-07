@@ -37,7 +37,7 @@ export const Streaks = () => {
         )}
       </header>
       {streaks.total > 0 && (
-        <div className="flex items-center gap-2 whitespace-nowrap text-sm">
+        <div className="flex items-center gap-2 text-sm whitespace-nowrap">
           <div className="flex gap-4">
             <List items={[['Best', `${streaks.best} ${pluralize('win', streaks.best)}`]]} />
             <List
@@ -101,7 +101,7 @@ export const Streaks = () => {
               <div
                 key={index}
                 className={clsx(
-                  'rounded border border-gray-200 px-2 py-1 text-sm dark:border-gray-300',
+                  'rounded-sm border border-gray-200 px-2 py-1 text-sm dark:border-gray-300',
                   isActive && 'border-l-2 border-l-emerald-500 dark:border-l-emerald-500',
                 )}
               >
