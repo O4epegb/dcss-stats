@@ -1,6 +1,5 @@
 import jsEslint from '@eslint/js'
 import eslintConfigPrettier from 'eslint-config-prettier'
-// @ts-expect-error no types
 import importPlugin from 'eslint-plugin-import'
 import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
 import globals from 'globals'
