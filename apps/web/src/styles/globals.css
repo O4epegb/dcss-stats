@@ -48,3 +48,9 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 }
+
+@layer components {
+  .dcss-list-item {
+    @apply -mx-1 flex justify-between px-1 transition-all odd:bg-white even:bg-gray-50 hover:rounded-sm hover:bg-amber-100 odd:dark:bg-zinc-900 even:dark:bg-zinc-800 dark:hover:bg-zinc-700;
+  }
+}

@@ -62,7 +62,8 @@ export const Stats = memo(
           <div className="space-y-1">
             <div className="flex justify-between gap-1">
               <h3 className="text-xl font-semibold">
-                Top Players <span className="font-normal text-gray-600">(Last year)</span>
+                Top Players{' '}
+                <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
               </h3>
             </div>
             <TopList
@@ -75,7 +76,8 @@ export const Stats = memo(
           <div className="space-y-1">
             <div className="flex justify-between gap-1">
               <h3 className="text-xl font-semibold">
-                Top Players <span className="font-normal text-gray-600">(All Time)</span>
+                Top Players{' '}
+                <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
               </h3>
             </div>
             <TopList top={topPlayers} onLinkClick={onLinkClick} />

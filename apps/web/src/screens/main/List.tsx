@@ -31,7 +31,7 @@ export const List = ({
             key={item.name}
             prefetch={false}
             href={`/players/${item.name}`}
-            className="-mx-1 flex justify-between rounded-sm px-1 hover:bg-amber-100 dark:hover:bg-zinc-700"
+            className="dcss-list-item"
             onClick={(e) => {
               if (!e.metaKey && !e.ctrlKey) {
                 onLinkClick(item.name)
