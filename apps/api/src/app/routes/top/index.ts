@@ -12,6 +12,7 @@ export const topRoute = (app: AppType) => {
   const Querystring = Type.Object({
     noCache: Type.Optional(Type.String()),
     since: Type.Optional(Type.String({ format: 'date-time' })),
+    minGamesThresholdForWinrate: Type.Number({ minimum: 0, default: 75 }),
   })
 
   app.get<{
@@ -21,10 +22,16 @@ export const topRoute = (app: AppType) => {
     const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
 
     const getData = async () => {
-      const top = await getTopStats(request.query.since ? new Date(request.query.since) : undefined)
+      const top = await getTopStats({
+        since: request.query.since ? new Date(request.query.since) : undefined,
+        minGamesThresholdForWinrate: request.query.minGamesThresholdForWinrate,
+      })
 
       return {
-        data: top,
+        data: {
+          minGamesThresholdForWinrate: request.query.minGamesThresholdForWinrate,
+          ...top,
+        },
       }
     }
 
@@ -47,14 +54,14 @@ const getTopTitles = async (since?: Date) => {
   `
 }
 
-const getTopWinrates = async (since?: Date) => {
+const getTopWinrates = async (minGamesThresholdForWinrate: number, since?: Date) => {
   return prisma.$queryRaw<Array<{ playerId: string; winrate: number }>>`
     SELECT "playerId",
            1.0 * SUM(CASE WHEN "isWin" THEN 1 ELSE 0 END) / COUNT("playerId") AS winrate
     FROM "Game"
     ${since ? Prisma.sql`WHERE "endAt" >= ${since}` : Prisma.sql``}
     GROUP BY "playerId"
-    HAVING COUNT("playerId") >= 75
+    HAVING COUNT("playerId") >= ${minGamesThresholdForWinrate}
     ORDER BY winrate DESC
     LIMIT ${LIMIT};
   `
@@ -70,10 +77,16 @@ const getTopWinners = async (since?: Date) => {
   })
 }
 
-const getTopStats = async (since?: Date) => {
+const getTopStats = async ({
+  since,
+  minGamesThresholdForWinrate,
+}: {
+  since?: Date
+  minGamesThresholdForWinrate: number
+}) => {
   const [titles, winrates, winners, gamesTotal, winsTotal] = await Promise.all([
     getTopTitles(since),
-    getTopWinrates(since),
+    getTopWinrates(minGamesThresholdForWinrate, since),
     getTopWinners(since),
     prisma.$queryRaw<[{ count: bigint }]>`
     SELECT COUNT(*) as count FROM "Game"
