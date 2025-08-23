@@ -51,6 +51,6 @@
 
 @layer components {
   .dcss-list-item {
-    @apply -mx-1 flex justify-between px-1 transition-all odd:bg-white even:bg-gray-50 hover:rounded-sm hover:bg-amber-100 odd:dark:bg-zinc-900 even:dark:bg-zinc-800 dark:hover:bg-zinc-700;
+    @apply -mx-1 flex justify-between px-1 transition-all odd:bg-gray-50 even:bg-white hover:rounded-sm hover:bg-amber-100 odd:dark:bg-zinc-800 even:dark:bg-zinc-900 dark:hover:bg-zinc-700;
   }
 }

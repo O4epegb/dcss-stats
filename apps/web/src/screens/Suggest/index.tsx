@@ -631,7 +631,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                           return (
                             <tr
                               key={index}
-                              className="odd:bg-white even:bg-gray-50 hover:bg-amber-100 odd:dark:bg-zinc-900 even:dark:bg-zinc-800 dark:hover:bg-amber-700"
+                              className="odd:bg-gray-50 even:bg-white hover:bg-amber-100 odd:dark:bg-zinc-800 even:dark:bg-zinc-900 dark:hover:bg-amber-700"
                             >
                               {columns[0][3] && <td>{item.race?.name}</td>}
                               {columns[1][3] && <td>{item.class?.name}</td>}
