@@ -21,7 +21,7 @@ export const List = ({
   return (
     <div className="space-y-1">
       <div className="flex justify-between gap-1">
-        <h2 className="font-semibold">{title}:</h2>
+        <h3 className="font-semibold">{title}:</h3>
         {tooltip && <HelpBubble content={tooltip} />}
       </div>
       <div>

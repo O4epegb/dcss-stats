@@ -8,7 +8,7 @@ import tsEslint from 'typescript-eslint'
 
 export default tsEslint.config(
   {
-    ignores: ['**/out/*', '**/.*'],
+    ignores: ['**/out/*', '**/.*', 'next-env.d.ts'],
   },
 
   eslint.configs.recommended,
@@ -47,6 +47,8 @@ export default tsEslint.config(
     },
 
     rules: {
+      'import/no-unresolved': 'off',
+
       'import/newline-after-import': [
         'warn',
         {

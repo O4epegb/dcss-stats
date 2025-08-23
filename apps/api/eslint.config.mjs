@@ -41,6 +41,8 @@ export default tsEslint.config(
     },
 
     rules: {
+      'import/no-unresolved': 'off',
+
       'import/newline-after-import': [
         'warn',
         {

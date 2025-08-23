@@ -1,6 +1,8 @@
+import dayjs from 'dayjs'
 import { sample } from 'lodash-es'
 import { fetchApi } from '~/api/server'
-import { MainPage, Response } from '~/screens/main'
+import { MainPage } from '~/screens/main'
+import { Game, Player, StaticData } from '~/types'
 
 const nicknames = [
   'MegaDestroyer3000',
@@ -24,17 +26,60 @@ const nicknames = [
 ].map((n) => n.replaceAll(' ', ''))
 
 async function getData() {
-  const res = await fetchApi('/stats', { next: { revalidate: 300 }, cache: 'force-cache' })
-  const response: { data: Response } = await res.json()
+  const topRes: { data: TopPlayers } = await fetchApi('/top', {
+    next: { revalidate: 300 },
+    cache: 'force-cache',
+  }).then((r) => r.json())
+  const topRecentRes: { data: TopPlayers } = await fetchApi(
+    `/top?since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
+    { next: { revalidate: 300 }, cache: 'force-cache' },
+  ).then((r) => r.json())
+  const res = await fetchApi('/main', { next: { revalidate: 300 }, cache: 'force-cache' })
+  const response: {
+    data: {
+      combosData?: CombosData
+      gamesByEndAt: Array<Game>
+      gamesByTC: Array<Game>
+      gamesByDuration: Array<Game>
+      gamesByScore: Array<Game>
+      gamesByTC15Runes: Array<Game>
+      gamesByDuration15Runes: Array<Game>
+      gamesByScore3Runes: Array<Game>
+    }
+  } = await res.json()
+  const staticRes = await fetchApi('/static-data', {
+    next: { revalidate: 300 },
+    cache: 'force-cache',
+  })
+  const staticData: StaticData = await staticRes.json()
 
   return {
     ...response.data,
+    races: staticData.races,
+    classes: staticData.classes,
+    gods: staticData.gods,
+    topPlayers: topRes.data,
+    topPlayersRecent: topRecentRes.data,
     nickname: sample(nicknames) ?? '',
   }
 }
 
-export default async function Page() {
+export type MainPageData = Awaited<ReturnType<typeof getData>>
+
+export default async function Page(_props: PageProps<'/'>) {
   const data = await getData()
 
   return <MainPage {...data} />
+}
+
+type Stats = { wins: number; total: number }
+type Combos = Record<string, Stats>
+type CombosData = Stats & { combos: Combos }
+
+type TopPlayers = {
+  gamesTotal: number
+  winsTotal: number
+  byWins: Array<Pick<Player, 'name'> & { wins: number }>
+  byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>
+  byTitles: Array<Pick<Player, 'name'> & { titles: number }>
 }

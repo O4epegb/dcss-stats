@@ -4,13 +4,16 @@ import Link from 'next/link'
 import { useState, useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
+import type { MainPageData } from '~/app/page'
 import { Footer } from '~/components/Footer'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
-import { Class, Game, God, Player, Race, SupportersCurrentResponse } from '~/types'
+import { SupportersCurrentResponse } from '~/types'
 import { Search } from './Search'
 import { Stats } from './Stats'
 import { TournamentBanner } from './TournamentBanner'
+
+export type Props = MainPageData
 
 export const MainPage = (props: Props) => {
   const [isNavigating, setIsNavigating] = useState(false)
@@ -40,7 +43,7 @@ export const MainPage = (props: Props) => {
                 Support
               </span>
               {data && (
-                <span className="absolute top-full text-nowrap text-2xs text-gray-400 sm:text-xs">
+                <span className="text-2xs absolute top-full text-nowrap text-gray-400 sm:text-xs">
                   {data.total >= data.goal ? (
                     <>Goal: done! (${data.total})</>
                   ) : (
@@ -79,33 +82,4 @@ export const MainPage = (props: Props) => {
       </div>
     </div>
   )
-}
-
-type Stats = { wins: number; total: number }
-type Combos = Record<string, Stats>
-type CombosData = Stats & { combos: Combos }
-
-export type Response = {
-  games: number
-  wins: number
-  races: Race[]
-  classes: Class[]
-  gods: God[]
-  combosData: CombosData
-  top: {
-    byWins: Array<Pick<Player, 'name'> & { wins: number }>
-    byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>
-    byTitles: Array<Pick<Player, 'name'> & { titles: number }>
-    gamesByEndAt: Array<Game>
-    gamesByTC: Array<Game>
-    gamesByDuration: Array<Game>
-    gamesByScore: Array<Game>
-    gamesByTC15Runes: Array<Game>
-    gamesByDuration15Runes: Array<Game>
-    gamesByScore3Runes: Array<Game>
-  }
-}
-
-export type Props = Response & {
-  nickname: string
 }

@@ -8,8 +8,6 @@ import { cookiesStoreDefault } from '~/screens/Player/utils'
 import { PlayerInfoResponse } from '~/types'
 import { formatNumber } from '~/utils'
 
-type Props = { params: Promise<{ slug: string }> }
-
 async function getData(slug: string) {
   const response = await fetchApi(`/players/${slug}`)
   const cookieStore = await cookies()
@@ -37,14 +35,16 @@ async function getData(slug: string) {
   }
 }
 
-export default async function Page(props: Props) {
+export default async function Page(props: PageProps<'/players/[slug]'>) {
   const params = await props.params
   const data = await getData(params.slug)
 
   return <PlayerPage {...data} />
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<'/players/[slug]'>): Promise<Metadata> {
   const { slug } = await params
 
   const response = await fetchApi(`/players/${slug}`)
