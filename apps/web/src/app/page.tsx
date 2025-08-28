@@ -30,8 +30,15 @@ async function getData() {
     next: { revalidate: 300 },
     cache: 'force-cache',
   }).then((r) => r.json())
+  const topWithManyGamesRes: { data: TopPlayers } = await fetchApi(
+    '/top?minGamesThresholdForWinrate=500',
+    {
+      next: { revalidate: 300 },
+      cache: 'force-cache',
+    },
+  ).then((r) => r.json())
   const topRecentRes: { data: TopPlayers } = await fetchApi(
-    `/top?since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
+    `/top?minGamesThresholdForWinrate=27&since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
     { next: { revalidate: 300 }, cache: 'force-cache' },
   ).then((r) => r.json())
   const res = await fetchApi('/main', { next: { revalidate: 300 }, cache: 'force-cache' })
@@ -59,6 +66,7 @@ async function getData() {
     classes: staticData.classes,
     gods: staticData.gods,
     topPlayers: topRes.data,
+    topPlayersWithManyGames: topWithManyGamesRes.data,
     topPlayersRecent: topRecentRes.data,
     nickname: sample(nicknames) ?? '',
   }
@@ -79,6 +87,7 @@ type CombosData = Stats & { combos: Combos }
 type TopPlayers = {
   gamesTotal: number
   winsTotal: number
+  minGamesThresholdForWinrate: number
   byWins: Array<Pick<Player, 'name'> & { wins: number }>
   byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>
   byTitles: Array<Pick<Player, 'name'> & { titles: number }>

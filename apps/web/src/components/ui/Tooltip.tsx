@@ -23,16 +23,18 @@ import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ReactNode, useRef, useState, cloneElement, FC, type JSX } from 'react'
 import { XOR } from '~/types'
+import { cn } from '~/utils'
 
 export const HelpBubble: FC<{
   interactive?: boolean
+  className?: string
   content: ReactNode
-}> = ({ interactive, content }) => {
+}> = ({ interactive, content, className }) => {
   return (
     <Tooltip interactive={interactive} content={content}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 text-gray-400"
+        className={cn('h-5 w-5 text-gray-400', className)}
         viewBox="0 0 20 20"
         fill="currentColor"
       >

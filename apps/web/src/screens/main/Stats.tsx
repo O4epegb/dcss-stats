@@ -1,6 +1,6 @@
 import { map, pickBy } from 'lodash-es'
 import Link from 'next/link'
-import { useState, memo, useEffect } from 'react'
+import { useState, memo, useEffect, PropsWithChildren } from 'react'
 import { WinrateStats } from '~/components/WinrateStats'
 import { HelpBubble } from '~/components/ui/Tooltip'
 import { getFavorites } from '~/screens/Player/utils'
@@ -35,6 +35,7 @@ export const Stats = memo(
     combosData,
     topPlayers,
     topPlayersRecent,
+    topPlayersWithManyGames,
     onLinkClick,
   }: Props & { onLinkClick: (name: string) => void }) => {
     const [favorites, setFavorites] = useState<null | string[]>(null)
@@ -80,7 +81,24 @@ export const Stats = memo(
                 <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
               </h3>
             </div>
-            <TopList top={topPlayers} onLinkClick={onLinkClick} />
+            <TopList top={topPlayers} onLinkClick={onLinkClick}>
+              <List
+                title="By win rate, %"
+                afterTitle={
+                  <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
+                    (min. {topPlayersWithManyGames.minGamesThresholdForWinrate} games)
+                  </span>
+                }
+                items={topPlayersWithManyGames.byWinrate.map((item) => ({
+                  name: item.name,
+                  count: formatNumber(item.winrate * 100, {
+                    maximumFractionDigits: 2,
+                    minimumFractionDigits: 2,
+                  }),
+                }))}
+                onLinkClick={onLinkClick}
+              />
+            </TopList>
           </div>
 
           {/* <hr className="md:hidden" /> */}
@@ -211,18 +229,23 @@ const TopList = ({
   favorites,
   showFavorites,
   onLinkClick,
-}: {
+  children,
+}: PropsWithChildren<{
   top: Props['topPlayers']
   favorites?: string[] | null
   showFavorites?: boolean
   onLinkClick: (name: string) => void
-}) => {
+}>) => {
   return (
     <div className="grid grid-cols-1 gap-x-10 gap-y-4 text-sm sm:grid-cols-2 md:grid-cols-4">
       <div className="space-y-2">
         <List
           title="By win rate, %"
-          tooltip="Minimum 75 games played"
+          afterTitle={
+            <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
+              (min. {top.minGamesThresholdForWinrate} games)
+            </span>
+          }
           items={top.byWinrate.map((item) => ({
             name: item.name,
             count: formatNumber(item.winrate * 100, {
@@ -284,6 +307,8 @@ const TopList = ({
           onLinkClick={onLinkClick}
         />
       )}
+
+      {children}
     </div>
   )
 }

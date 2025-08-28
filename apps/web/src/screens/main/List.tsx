@@ -4,12 +4,14 @@ import { HelpBubble } from '~/components/ui/Tooltip'
 
 export const List = ({
   title,
+  afterTitle,
   tooltip,
   items,
   placeholder,
   onLinkClick,
 }: {
   title: string
+  afterTitle?: ReactNode
   items: Array<{
     name: string
     count?: string
@@ -20,9 +22,10 @@ export const List = ({
 }) => {
   return (
     <div className="space-y-1">
-      <div className="flex justify-between gap-1">
+      <div className="flex items-center gap-1">
         <h3 className="font-semibold">{title}:</h3>
-        {tooltip && <HelpBubble content={tooltip} />}
+        {afterTitle}
+        {tooltip && <HelpBubble className="ml-auto" content={tooltip} />}
       </div>
       <div>
         {placeholder}
