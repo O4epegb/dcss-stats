@@ -22,6 +22,8 @@ services:
     container_name: postgres16
     restart: always
     image: postgres:16
+    ports:
+      - '5432:5432'
     volumes:
       - postgres16-volume:/var/lib/postgresql/data
     environment:
