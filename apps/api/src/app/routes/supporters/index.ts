@@ -1,5 +1,6 @@
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { orderBy } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 import { trackError } from '~/utils'
@@ -54,7 +55,7 @@ export const supportersRoute = (app: AppType) => {
         })
       }
 
-      const supportersForCurrentMonth = supportersResponse.data.data
+      const supportersForLastMonth = supportersResponse.data.data
         .map((supporter) => {
           return {
             id: supporter.support_id,
@@ -63,7 +64,7 @@ export const supportersRoute = (app: AppType) => {
             createdOn: supporter.support_created_on,
           }
         })
-        .filter((supporter) => dayjs(supporter.createdOn).isAfter(dayjs().startOf('month')))
+        .filter((supporter) => dayjs(supporter.createdOn).isAfter(dayjs().subtract(1, 'month')))
 
       const perMonthFromSubscriptions = activeSubscriptions.reduce((acc, subscription) => {
         const subscriptionStart = dayjs(subscription.subscription_current_period_start)
@@ -75,7 +76,7 @@ export const supportersRoute = (app: AppType) => {
         return acc + total
       }, 0)
 
-      const totalFromSupporters = supportersForCurrentMonth.reduce(
+      const totalFromSupporters = supportersForLastMonth.reduce(
         (acc, supporter) => acc + supporter.total,
         0,
       )
@@ -83,6 +84,100 @@ export const supportersRoute = (app: AppType) => {
       return {
         total: Math.round((totalFromSupporters + perMonthFromSubscriptions) * 100) / 100,
         goal: 20,
+      }
+    }
+
+    if (!cached || Date.now() - cached.ttl > ttl) {
+      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+    }
+
+    return cache.get(cacheKey)?.promise
+  })
+
+  app.get('/api/supporters', async (request, reply) => {
+    const cacheKey = request.routeOptions.url ?? request.url
+    const cached = cache.get(cacheKey)
+
+    if (!token) {
+      return reply.status(404).send('Token ENV is not set')
+    }
+
+    const getData = async () => {
+      const [subscriptionsResponse, supportersResponse] = await Promise.all([
+        axios.get<SubscriptionsResponse>(
+          'https://developers.buymeacoffee.com/api/v1/subscriptions',
+          {
+            params: {
+              status: 'active',
+              per_page: 100,
+            },
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        ),
+        axios.get<SupporterResponse>('https://developers.buymeacoffee.com/api/v1/supporters', {
+          params: {
+            per_page: 100,
+          },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }),
+      ])
+
+      const activeSubscriptions =
+        'error' in subscriptionsResponse.data ? [] : subscriptionsResponse.data.data
+
+      if ('error' in subscriptionsResponse.data) {
+        trackError(new Error(subscriptionsResponse.data.error))
+      }
+
+      if ('error' in supportersResponse.data) {
+        trackError(new Error(supportersResponse.data.error))
+        return reply.status(500).send({
+          error: supportersResponse.data.error,
+        })
+      }
+
+      const oneTimeDonations = supportersResponse.data.data
+        .map((supporter) => ({
+          id: String(supporter.support_id),
+          type: 'one-time' as const,
+          amount: supporter.support_coffees * parseFloat(supporter.support_coffee_price),
+          currency: supporter.support_currency,
+          createdAt: supporter.support_created_on,
+          source: 'buymeacoffee',
+        }))
+        .concat([
+          // Donations not tracked by BuyMeACoffee
+          // Not many, so just hardcoding here
+          {
+            id: 'kofi-1',
+            type: 'one-time' as const,
+            amount: 50,
+            currency: 'USD',
+            createdAt: dayjs('2025-05-20').toISOString(),
+            source: 'kofi',
+          },
+        ])
+
+      const subscriptionDonations = activeSubscriptions.map((subscription) => ({
+        id: subscription.subscription_id,
+        type: 'subscription' as const,
+        amount: parseFloat(subscription.subscription_coffee_price),
+        currency: subscription.subscription_currency,
+        createdAt: subscription.subscription_created_on,
+        currentPeriodStart: subscription.subscription_current_period_start,
+        currentPeriodEnd: subscription.subscription_current_period_end,
+        isActiveNow: dayjs().isBefore(dayjs(subscription.subscription_current_period_end)),
+        durationType: subscription.subscription_duration_type,
+        source: 'buymeacoffee',
+      }))
+
+      return {
+        oneTimeDonations: orderBy(oneTimeDonations, ['createdAt'], ['desc']),
+        subscriptionDonations,
       }
     }
 

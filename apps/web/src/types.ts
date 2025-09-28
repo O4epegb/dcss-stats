@@ -205,3 +205,21 @@ export type SupportersCurrentResponse = {
   total: number
   goal: number
 }
+
+export type SupportersListResponse = {
+  oneTimeDonations: Donation[]
+  subscriptionDonations: Donation[]
+}
+
+export type Donation = {
+  id: number | string
+  type: 'one-time' | 'subscription'
+  source: 'buymeacoffee' | 'kofi' | 'other'
+  amount: number
+  currency: string
+  createdAt: string
+  currentPeriodStart?: string
+  currentPeriodEnd?: string
+  isActiveNow?: boolean
+  durationType?: string
+}

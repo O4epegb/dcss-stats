@@ -1,12 +1,72 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
+import { SupportersCurrentResponse, SupportersListResponse, Donation } from '~/types'
+import { cn } from '~/utils'
 import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { defaultMetaTitle, rootUrl } from '~/constants'
-import { SupportersCurrentResponse } from '~/types'
 import { BitcoinBlock } from './BitcoinBlock'
 
 const title = `Support Us | ${defaultMetaTitle}`
+
+interface DonationListProps {
+  donations: Donation[]
+  title: string
+  titleColor: string
+  maxItems?: number
+  showDurationType?: boolean
+}
+
+const DonationList = ({
+  donations,
+  title,
+  titleColor,
+  maxItems,
+  showDurationType = false,
+}: DonationListProps) => {
+  const displayedDonations = maxItems ? donations.slice(0, maxItems) : donations
+  const remainingCount = maxItems && donations.length > maxItems ? donations.length - maxItems : 0
+
+  return (
+    <div className="space-y-3">
+      <h4 className={`text-lg font-medium ${titleColor}`}>{title}</h4>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {displayedDonations.map((donation) => (
+          <div
+            key={`${showDurationType ? 'subscription' : 'onetime'}-${donation.id}`}
+            className="rounded border border-zinc-600 bg-zinc-50 p-3 dark:bg-zinc-800"
+          >
+            <div className="flex items-center justify-between gap-1">
+              <span className="font-medium">{showDurationType ? 'Subscriber' : 'Supporter'}</span>
+              <span
+                className={cn(
+                  'text-amber-500 dark:text-amber-400',
+                  donation.amount >= 10 && 'font-semibold',
+                )}
+              >
+                {donation.currency} {donation.amount.toFixed(2)}
+              </span>
+            </div>
+            <div className="text-sm text-zinc-500 dark:text-zinc-400">
+              {showDurationType && donation.durationType && <>{donation.durationType} • Since </>}
+              <span suppressHydrationWarning>
+                {new Date(donation.createdAt).toLocaleDateString()}
+              </span>
+            </div>
+            {donation.isActiveNow && (
+              <div className="mt-1 text-xs text-green-600 dark:text-green-400">Active</div>
+            )}
+          </div>
+        ))}
+      </div>
+      {remainingCount > 0 && (
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          ... and {remainingCount} more supporters
+        </p>
+      )}
+    </div>
+  )
+}
 
 export const metadata: Metadata = {
   title,
@@ -26,11 +86,17 @@ const SupportPage = async () => {
     next: { revalidate: 300 },
     cache: 'force-cache',
   })
-  const data: SupportersCurrentResponse = await res.json()
+  const listRes = await fetch(`${rootUrl}/api/supporters`, {
+    next: { revalidate: 300 },
+    cache: 'force-cache',
+  })
 
-  if (!res.ok) {
+  if (!res.ok || !listRes.ok) {
     throw res
   }
+
+  const data: SupportersCurrentResponse = await res.json()
+  const listData: SupportersListResponse = await listRes.json()
 
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 py-4 pt-4">
@@ -108,6 +174,29 @@ const SupportPage = async () => {
           )}
           {btcWallet && <BitcoinBlock wallet={btcWallet} />}
         </div>
+
+        {(listData.oneTimeDonations.length > 0 || listData.subscriptionDonations.length > 0) && (
+          <div className="space-y-4 rounded-sm border border-zinc-500 p-6">
+            {listData.subscriptionDonations.length > 0 && (
+              <DonationList
+                donations={listData.subscriptionDonations}
+                title="Subscribers"
+                titleColor="text-amber-500 dark:text-amber-400"
+                showDurationType={true}
+              />
+            )}
+
+            {listData.oneTimeDonations.length > 0 && (
+              <DonationList
+                donations={listData.oneTimeDonations}
+                title="Recent One-Time Donations"
+                titleColor="text-blue-500 dark:text-blue-400"
+                maxItems={12}
+              />
+            )}
+          </div>
+        )}
+
         <div className="space-y-2 text-center text-zinc-500 dark:text-zinc-400">
           <p>Thank you for your contribution!</p>
           <p className="text-sm">
