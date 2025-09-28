@@ -35,6 +35,7 @@ export const Stats = memo(
     combosData,
     topPlayers,
     topPlayersRecent,
+    topPlayersVeryRecent,
     topPlayersWithManyGames,
     onLinkClick,
   }: Props & { onLinkClick: (name: string) => void }) => {
@@ -64,15 +65,24 @@ export const Stats = memo(
             <div className="flex justify-between gap-1">
               <h3 className="text-xl font-semibold">
                 Top Players{' '}
-                <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
+                <span className="font-normal text-gray-600 dark:text-gray-400">(Last month)</span>
               </h3>
             </div>
             <TopList
               showFavorites
-              top={topPlayersRecent}
               favorites={favorites}
+              top={topPlayersVeryRecent}
               onLinkClick={onLinkClick}
             />
+          </div>
+          <div className="space-y-1">
+            <div className="flex justify-between gap-1">
+              <h3 className="text-xl font-semibold">
+                Top Players{' '}
+                <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
+              </h3>
+            </div>
+            <TopList top={topPlayersRecent} onLinkClick={onLinkClick} />
           </div>
           <div className="space-y-1">
             <div className="flex justify-between gap-1">
@@ -248,6 +258,7 @@ const TopList = ({
           }
           items={top.byWinrate.map((item) => ({
             name: item.name,
+            secondaryCount: `${item.games}g`,
             count: formatNumber(item.winrate * 100, {
               maximumFractionDigits: 2,
               minimumFractionDigits: 2,

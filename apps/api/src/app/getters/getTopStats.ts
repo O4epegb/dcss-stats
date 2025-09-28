@@ -25,8 +25,9 @@ export const getTopStats = async () => {
       ORDER BY titles DESC
       LIMIT 10;
     `,
-    prisma.$queryRaw<Array<{ playerId: string; winrate: number }>>`
+    prisma.$queryRaw<Array<{ playerId: string; winrate: number; games: number }>>`
       SELECT "playerId"
+        , CAST(COUNT("playerId") AS INTEGER) AS games
         , 1.0 * SUM(CASE WHEN "isWin" THEN 1 ELSE 0 END) / COUNT("playerId") AS winrate
       FROM "Game"
       GROUP BY "playerId"
@@ -87,8 +88,9 @@ export const getTopStats = async () => {
   })
 
   return {
-    byWinrate: winrates.map(({ playerId, winrate }) => ({
+    byWinrate: winrates.map(({ playerId, winrate, games }) => ({
       winrate,
+      games,
       name: players.find((x) => x.id === playerId)?.name,
     })),
     byWins: winners.map(({ playerId, _count }) => ({

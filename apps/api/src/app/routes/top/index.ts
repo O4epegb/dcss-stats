@@ -55,8 +55,9 @@ const getTopTitles = async (since?: Date) => {
 }
 
 const getTopWinrates = async (minGamesThresholdForWinrate: number, since?: Date) => {
-  return prisma.$queryRaw<Array<{ playerId: string; winrate: number }>>`
+  return prisma.$queryRaw<Array<{ playerId: string; winrate: number; games: number }>>`
     SELECT "playerId",
+           CAST(COUNT("playerId") AS INTEGER) AS games,
            1.0 * SUM(CASE WHEN "isWin" THEN 1 ELSE 0 END) / COUNT("playerId") AS winrate
     FROM "Game"
     ${since ? Prisma.sql`WHERE "endAt" >= ${since}` : Prisma.sql``}
@@ -106,8 +107,9 @@ const getTopStats = async ({
   return {
     gamesTotal,
     winsTotal,
-    byWinrate: winrates.map(({ playerId, winrate }) => ({
+    byWinrate: winrates.map(({ playerId, winrate, games }) => ({
       winrate,
+      games,
       name: players.find((x) => x.id === playerId)?.name,
     })),
     byWins: winners.map(({ playerId, _count }) => ({

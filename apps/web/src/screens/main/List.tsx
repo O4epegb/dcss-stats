@@ -15,6 +15,7 @@ export const List = ({
   items: Array<{
     name: string
     count?: string
+    secondaryCount?: string
   }>
   onLinkClick: (name: string) => void
   placeholder?: ReactNode
@@ -42,7 +43,16 @@ export const List = ({
             }}
           >
             <span className="overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</span>
-            {item.count && <span className="tabular-nums">{item.count}</span>}
+            {item.count && (
+              <span className="ml-auto tabular-nums">
+                {item.secondaryCount && (
+                  <span className="mr-1 text-xs text-gray-400 dark:text-gray-500">
+                    {item.secondaryCount}
+                  </span>
+                )}
+                {item.count}
+              </span>
+            )}
           </Link>
         ))}
       </div>

@@ -41,6 +41,10 @@ async function getData() {
     `/top?minGamesThresholdForWinrate=27&since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
     { next: { revalidate: 300 }, cache: 'force-cache' },
   ).then((r) => r.json())
+  const topVeryRecentRes: { data: TopPlayers } = await fetchApi(
+    `/top?minGamesThresholdForWinrate=15&since=${encodeURIComponent(dayjs().subtract(1, 'month').toISOString())}`,
+    { next: { revalidate: 300 }, cache: 'force-cache' },
+  ).then((r) => r.json())
   const res = await fetchApi('/main', { next: { revalidate: 300 }, cache: 'force-cache' })
   const response: {
     data: {
@@ -68,6 +72,7 @@ async function getData() {
     topPlayers: topRes.data,
     topPlayersWithManyGames: topWithManyGamesRes.data,
     topPlayersRecent: topRecentRes.data,
+    topPlayersVeryRecent: topVeryRecentRes.data,
     nickname: sample(nicknames) ?? '',
   }
 }
@@ -89,6 +94,6 @@ type TopPlayers = {
   winsTotal: number
   minGamesThresholdForWinrate: number
   byWins: Array<Pick<Player, 'name'> & { wins: number }>
-  byWinrate: Array<Pick<Player, 'name'> & { winrate: number }>
+  byWinrate: Array<Pick<Player, 'name'> & { winrate: number; games: number }>
   byTitles: Array<Pick<Player, 'name'> & { titles: number }>
 }
