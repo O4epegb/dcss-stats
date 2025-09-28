@@ -1,4 +1,5 @@
 import eslint from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import importPlugin from 'eslint-plugin-import'
 import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
@@ -6,7 +7,7 @@ import reactPlugin from 'eslint-plugin-react'
 import globals from 'globals'
 import tsEslint from 'typescript-eslint'
 
-export default tsEslint.config(
+export default defineConfig(
   {
     ignores: ['**/out/*', '**/.*', 'next-env.d.ts'],
   },
@@ -20,6 +21,7 @@ export default tsEslint.config(
 
   {
     plugins: {
+      '@typescript-eslint': tsEslint.plugin,
       'no-relative-import-paths': eslintPluginImportsPaths,
     },
 

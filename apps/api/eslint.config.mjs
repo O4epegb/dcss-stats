@@ -1,11 +1,12 @@
 import jsEslint from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import eslintConfigPrettier from 'eslint-config-prettier'
 import importPlugin from 'eslint-plugin-import'
 import eslintPluginImportsPaths from 'eslint-plugin-no-relative-import-paths'
 import globals from 'globals'
 import tsEslint from 'typescript-eslint'
 
-export default tsEslint.config(
+export default defineConfig(
   {
     ignores: ['**/out/*', '**/forever-ignore/*', 'morgues/*', 'logfiles/*', '.yarn', 'crawl/**/*'],
   },
@@ -17,6 +18,7 @@ export default tsEslint.config(
 
   {
     plugins: {
+      '@typescript-eslint': tsEslint.plugin,
       'no-relative-import-paths': eslintPluginImportsPaths,
     },
 
