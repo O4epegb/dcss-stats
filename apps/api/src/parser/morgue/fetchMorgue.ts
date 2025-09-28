@@ -38,25 +38,32 @@ export const fetchMorgueFile = async (remoteUrl: string, localUrl: string) => {
   logger(`fetchMorgueFile: starting ${remoteUrl}`)
 
   const startTime = dayjs()
-  const res = await fetch(remoteUrl)
 
-  if (res.ok) {
-    const text = await res.text()
+  try {
+    const res = await fetch(remoteUrl, {
+      signal: AbortSignal.timeout(5000),
+    })
 
-    await fse.ensureFile(localUrl)
-    await fse.writeFile(localUrl, text)
+    if (res.ok) {
+      const text = await res.text()
 
-    logger(
-      `fetchMorgueFile: finished in ${dayjs().diff(
-        startTime,
-        'ms',
-      )}ms, ${remoteUrl} downloaded to ${localUrl}`,
-    )
-  } else {
-    if (res.status === 404) {
       await fse.ensureFile(localUrl)
-    }
+      await fse.writeFile(localUrl, text)
 
-    console.error(`fetchMorgueFile: failed (${res.status}) ${remoteUrl} to ${localUrl}`)
+      logger(
+        `fetchMorgueFile: finished in ${dayjs().diff(
+          startTime,
+          'ms',
+        )}ms, ${remoteUrl} downloaded to ${localUrl}`,
+      )
+    } else {
+      if (res.status === 404) {
+        await fse.ensureFile(localUrl)
+      }
+
+      console.error(`fetchMorgueFile: failed (${res.status}) ${remoteUrl} to ${localUrl}`)
+    }
+  } catch (e) {
+    console.error(`fetchMorgueFile: error ${remoteUrl} to ${localUrl}`, e)
   }
 }

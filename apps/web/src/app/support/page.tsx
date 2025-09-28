@@ -1,10 +1,10 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { Metadata } from 'next'
-import { SupportersCurrentResponse, SupportersListResponse, Donation } from '~/types'
-import { cn } from '~/utils'
 import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { defaultMetaTitle, rootUrl } from '~/constants'
+import { SupportersCurrentResponse, SupportersListResponse, Donation } from '~/types'
+import { cn } from '~/utils'
 import { BitcoinBlock } from './BitcoinBlock'
 
 const title = `Support Us | ${defaultMetaTitle}`
