@@ -101,6 +101,7 @@ export const Stats = memo(
                 }
                 items={topPlayersWithManyGames.byWinrate.map((item) => ({
                   name: item.name,
+                  secondaryCount: `${item.games}g`,
                   count: formatNumber(item.winrate * 100, {
                     maximumFractionDigits: 2,
                     minimumFractionDigits: 2,
