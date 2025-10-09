@@ -16,15 +16,17 @@ import {
   orderBy,
 } from 'lodash-es'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Filter, Filters, filtersToQuery } from '~/components/Filters'
+import { Matrix } from '~/components/Matrix'
 import { WinrateStats } from '~/components/WinrateStats'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
-import { StaticData } from '~/types'
+import { getStatsFromMatrix } from '~/screens/Player/utils'
+import { MatrixRecordType, StaticData } from '~/types'
 import { formatNumber, notEmpty, stringifyQuery } from '~/utils'
 import { GameList } from './GameList'
 import { Layout } from './Layout'
@@ -136,6 +138,11 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
 
     setFilter(newFilter)
 
+    setFilterForSearch((x) => ({
+      ...x,
+      version: newFilter.version,
+    }))
+
     if (!every(omit(newFilter, 'version'), (value) => value === FilterValue.Any)) {
       setFilterForSearch((x) => ({ ...x, ...newFilter }))
     }
@@ -204,6 +211,51 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       return ['/suggest', apiParams]
     },
     ([url, params]) => api.get<SuggestResponse>(url, { params }).then((res) => res.data),
+  )
+
+  const {
+    data: matrixData,
+    error: matrixError,
+    isValidating: matrixIsValidating,
+  } = useSWRImmutable(
+    () => {
+      if (!advancedFilter) {
+        return null
+      }
+
+      const godFilter: Filter | null =
+        filterForSearch.god !== FilterValue.Any
+          ? {
+              id: '',
+              condition: 'is',
+              operator: 'and',
+              value: filterForSearch.god,
+              option: 'God',
+              suboption: undefined,
+            }
+          : null
+
+      return [
+        '/matrix',
+        {
+          version: filterForSearch.version,
+          filter: [godFilter, ...filterForSearch.advanced]
+            .filter(notEmpty)
+            .map((x) => omit(x, 'id')),
+        },
+      ]
+    },
+    ([url, params]) =>
+      api
+        .get<{
+          matrix: Array<{
+            char: string
+            games: number
+            wins: number
+            winrate: number
+          }>
+        }>(url, { params })
+        .then((res) => res.data),
   )
 
   const normalizeData = ({ combos }: SuggestResponse) => {
@@ -313,8 +365,47 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     },
   )()
 
+  const statsData = useMemo(() => {
+    const matrix = (matrixData?.matrix ?? []).reduce((acc, item) => {
+      acc[item.char] = {
+        games: item.games,
+        wins: item.wins,
+        winRate: item.wins / item.games,
+        maxXl: undefined,
+        gamesToFirstWin: undefined,
+      }
+
+      return acc
+    }, {} as MatrixRecordType)
+
+    return getStatsFromMatrix({
+      matrix,
+      allClasses: classes,
+      allRaces: races,
+    })
+  }, [matrixData?.matrix])
+
+  const matrixComponent = matrixError ? (
+    <div className="flex items-center justify-center p-8 text-red-600">
+      Error fetching matrix data
+    </div>
+  ) : (
+    <Matrix
+      stats={statsData.stats}
+      allActualClasses={statsData.allActualClasses}
+      allActualRaces={statsData.allActualRaces}
+    >
+      {matrixIsValidating && (
+        <div className="absolute inset-0 z-1 flex animate-pulse flex-col items-center justify-center gap-4 bg-white/80 pt-20 dark:bg-zinc-800/80">
+          Matrix is loading...
+          <Loader />
+        </div>
+      )}
+    </Matrix>
+  )
+
   return (
-    <Layout centered={!race && !klass && !god}>
+    <Layout rightColumn={matrixComponent}>
       <div className="flex w-full flex-wrap gap-2 md:justify-center">
         I want to play
         <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>

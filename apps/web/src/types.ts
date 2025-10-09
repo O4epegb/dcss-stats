@@ -13,7 +13,7 @@ export interface PlayerInfoResponse {
   firstWin?: Game
   gamesBeforeFirstWin: number
   lowestXlWin: Game | null
-  matrix: Matrix
+  matrix: MatrixRecordType
   gamesToFirstWin: GamesToFirstWin
   gods: Array<
     God & {
@@ -142,14 +142,14 @@ export interface Class {
   trunk: boolean
 }
 
-export type Matrix = Record<string, CharStat>
+export type MatrixRecordType = Record<string, CharStat>
 
 export interface CharStat {
   wins: number
   games: number
-  maxXl: number
   winRate: number
-  gamesToFirstWin: number
+  maxXl: number | undefined
+  gamesToFirstWin: number | undefined
 }
 
 export type Server = {
