@@ -34,7 +34,7 @@
     "@fastify/type-provider-typebox": "^6.0.0",
     "@prisma/client": "6.10.0",
     "@scalar/fastify-api-reference": "^1.38.0",
-    "axios": "^1.8.4",
+    "axios": "^1.12.2",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
     "fastify": "^5.6.1",
