@@ -4,7 +4,6 @@ import { cache, ttl } from '~/app/cache'
 import { getCombosData } from '~/app/getters/getCombosData'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
-import { prisma } from '~/prisma'
 import { suggestExperimentalRoute } from './experimental'
 
 export const suggestRoute = (app: AppType) => {
@@ -35,7 +34,6 @@ export const suggestRoute = (app: AppType) => {
       const race = races.find((r) => r.abbr === raceNameOrAbbr || r.name === raceNameOrAbbr)
       const cls = classes.find((c) => c.abbr === classNameOrAbbr || c.name === classNameOrAbbr)
       const god = gods.find((g) => g.name === godName)
-      const versionShort = version ?? versions[0]
 
       if (!race && !cls && !god) {
         return reply.status(422).send('Race, class or god should be present')
@@ -46,17 +44,7 @@ export const suggestRoute = (app: AppType) => {
 
       const getData = async () => {
         const where = await getWhereQueryFromFilter(filter)
-        const [gamesByChar, winsByChar, combosData] = await Promise.all([
-          prisma.game.groupBy({
-            by: ['char'],
-            where: { ...where, versionShort },
-            _count: { _all: true },
-          }),
-          prisma.game.groupBy({
-            by: ['char'],
-            where: { ...where, versionShort, isWin: true },
-            _count: { _all: true },
-          }),
+        const [combosData] = await Promise.all([
           getCombosData({
             where: {
               ...where,
@@ -70,23 +58,7 @@ export const suggestRoute = (app: AppType) => {
           }),
         ])
 
-        const matrix = gamesByChar.map((game) => {
-          const games = game._count._all
-          const wins = winsByChar.find((x) => x.char === game.char)?._count._all ?? 0
-          const winrate = Math.round((wins / games) * 100) / 100
-
-          return {
-            char: game.char,
-            games,
-            wins,
-            winrate,
-          }
-        })
-
-        return {
-          matrix,
-          ...combosData,
-        }
+        return combosData
       }
 
       if (!cached || Date.now() - cached.ttl > ttl) {

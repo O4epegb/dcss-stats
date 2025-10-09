@@ -5,6 +5,7 @@ import { devRoute } from './routes/dev'
 import { gamesRoute } from './routes/games'
 import { logfilesRoute } from './routes/logfiles'
 import { mainRoute } from './routes/main'
+import { matrixRoute } from './routes/matrix'
 import { playersRoute } from './routes/players'
 import { searchRoute } from './routes/search'
 import { serversRoute } from './routes/servers'
@@ -33,6 +34,7 @@ for (const route of [
   serversRoute,
   staticDataRoute,
   suggestRoute,
+  matrixRoute,
   searchRoute,
   gamesRoute,
   playersRoute,
