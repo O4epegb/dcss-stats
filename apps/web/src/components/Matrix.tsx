@@ -13,6 +13,7 @@ export const Matrix = ({
   greatRaces,
   greatClasses,
   showTrunkData,
+  coloredHeatMap = false,
   toggleShowTrunkData,
   children,
 }: PropsWithChildren<{
@@ -22,6 +23,7 @@ export const Matrix = ({
   greatRaces?: Summary['greatRaces']
   greatClasses?: Summary['greatClasses']
   showTrunkData?: boolean
+  coloredHeatMap?: boolean
   toggleShowTrunkData?: () => void
 }>) => {
   const isWide = useMediaQuery('(min-width: 1280px)', { initializeWithValue: false })
@@ -69,6 +71,26 @@ export const Matrix = ({
       someItemHasFirstWin ? (['first win', 'gamesToFirstWin'] as const) : null,
     ] as const
   ).filter(notEmpty)
+
+  const valueScales = useMemo(() => buildValueScales(stats), [stats])
+  const currentScale = valueScales[category]
+  const isInverted = invertedCategories.has(category)
+  const backgroundClassMaps: BackgroundClassMaps = useMemo(
+    () =>
+      coloredHeatMap
+        ? buildBackgroundClassMaps({
+            stats,
+            category,
+            scale: currentScale,
+            invert: isInverted,
+          })
+        : {
+            combos: {},
+            races: {},
+            classes: {},
+          },
+    [stats, category, currentScale, isInverted, coloredHeatMap],
+  )
 
   return (
     <div ref={ref} className={clsx('relative w-full', isSticky && 'sticky top-0')}>
@@ -229,15 +251,21 @@ export const Matrix = ({
               {classesToShow.map((klass) => {
                 const value = stats.classes[klass.abbr]?.[category]
                 const content = value ? formatter(value) : '-'
+                const highlightFirstWin =
+                  category === 'gamesToFirstWin' && stats.classes[klass.abbr]?.gamesToFirstWin === 1
+                const isActiveClass = activeClass === klass.abbr
+                const baseBackgroundClass = backgroundClassMaps.classes[klass.abbr] || ''
+                const backgroundClass =
+                  !highlightFirstWin && !isActiveClass ? baseBackgroundClass : ''
 
                 return (
                   <td
                     key={klass.abbr}
                     className={clsx(
-                      category === 'gamesToFirstWin' &&
-                        stats.classes[klass.abbr]?.gamesToFirstWin === 1
+                      backgroundClass,
+                      highlightFirstWin
                         ? 'bg-amber-200 dark:bg-amber-900'
-                        : activeClass === klass.abbr && 'bg-amber-100 dark:bg-zinc-800',
+                        : isActiveClass && 'bg-amber-100 dark:bg-zinc-800',
                       stats.classes[klass.abbr]?.wins > 0
                         ? 'text-amber-600 dark:text-amber-500'
                         : 'dark:text-gray-200',
@@ -258,6 +286,11 @@ export const Matrix = ({
             {racesToShow.map((race) => {
               const value = stats.races[race.abbr]?.[category]
               const content = value ? formatter(value) : '-'
+              const highlightFirstWin =
+                category === 'gamesToFirstWin' && stats.races[race.abbr]?.gamesToFirstWin === 1
+              const isActiveRace = activeRace === race.abbr
+              const baseBackgroundClass = backgroundClassMaps.races[race.abbr] || ''
+              const backgroundClass = !highlightFirstWin && !isActiveRace ? baseBackgroundClass : ''
 
               return (
                 <tr
@@ -282,10 +315,10 @@ export const Matrix = ({
                   </td>
                   <td
                     className={clsx(
-                      category === 'gamesToFirstWin' &&
-                        stats.races[race.abbr]?.gamesToFirstWin === 1
+                      backgroundClass,
+                      highlightFirstWin
                         ? 'bg-amber-200 dark:bg-amber-900'
-                        : activeRace === race.abbr && 'bg-amber-100 dark:bg-zinc-800',
+                        : isActiveRace && 'bg-amber-100 dark:bg-zinc-800',
                       stats.races[race.abbr]?.wins > 0
                         ? 'text-amber-600 dark:text-amber-500'
                         : 'dark:text-gray-200',
@@ -304,22 +337,31 @@ export const Matrix = ({
                     const char = race.abbr + klass.abbr
                     const value = stats.combos[char]?.[category]
                     const content = value ? formatter(value) : null
+                    const highlightFirstWin =
+                      category === 'gamesToFirstWin' && stats.combos[char]?.gamesToFirstWin === 1
+                    const isActiveCell = activeClass === klass.abbr || activeRace === race.abbr
+                    const isUnavailable = Boolean(allUnavailableCombos[char])
+                    const baseBackgroundClass = backgroundClassMaps.combos[char] || ''
+                    const backgroundClass =
+                      !highlightFirstWin && !isActiveCell && !isUnavailable
+                        ? baseBackgroundClass
+                        : ''
 
                     return (
                       <td
                         key={char}
                         className={clsx(
                           'border dark:border-gray-600',
-                          category === 'gamesToFirstWin' &&
-                            stats.combos[char]?.gamesToFirstWin === 1
+                          backgroundClass,
+                          highlightFirstWin
                             ? 'bg-amber-200 dark:bg-amber-900'
-                            : activeClass === klass.abbr || activeRace === race.abbr
+                            : isActiveCell
                               ? 'bg-amber-100 dark:bg-zinc-800'
-                              : allUnavailableCombos[char] && 'bg-gray-50 dark:bg-zinc-900',
+                              : isUnavailable && 'bg-gray-50 dark:bg-zinc-900',
                           getTextSizeClass(content),
                           stats.combos[char]?.wins > 0
                             ? 'text-amber-600 dark:text-amber-500'
-                            : allUnavailableCombos[char]
+                            : isUnavailable
                               ? 'text-gray-200 select-none dark:text-gray-600'
                               : 'dark:text-gray-200',
                         )}
@@ -329,7 +371,7 @@ export const Matrix = ({
                         }}
                         onMouseLeave={() => setActive([])}
                       >
-                        {content || (allUnavailableCombos[char] && 'x')}
+                        {content || (isUnavailable && 'x')}
                       </td>
                     )
                   })}
@@ -354,4 +396,152 @@ const getTextSizeClass = (content: string | null) => {
           ? 'text-xs 2xl:text-xs'
           : '')
   )
+}
+
+type ValueRange = {
+  min: number
+  max: number
+}
+
+type ValueScale = {
+  combos: ValueRange | null
+  races: ValueRange | null
+  classes: ValueRange | null
+}
+
+const COLOR_LEVELS = [
+  '',
+  'bg-emerald-50/50 dark:bg-emerald-950/75',
+  'bg-emerald-100/50 dark:bg-emerald-900/75',
+  'bg-emerald-200/50 dark:bg-emerald-800/75',
+  'bg-emerald-300/50 dark:bg-emerald-700/75',
+  'bg-emerald-400/50 dark:bg-emerald-600/75',
+] as const
+
+const invertedCategories = new Set<keyof CharStat>(['gamesToFirstWin'])
+
+const buildValueScales = (stats: Summary['stats']) => {
+  const keys: Array<keyof CharStat> = ['wins', 'games', 'winRate', 'maxXl', 'gamesToFirstWin']
+
+  return keys.reduce(
+    (acc, key) => {
+      acc[key] = {
+        combos: getValueRange(stats.combos, key),
+        races: getValueRange(stats.races, key),
+        classes: getValueRange(stats.classes, key),
+      }
+
+      return acc
+    },
+    {} as Record<keyof CharStat, ValueScale>,
+  )
+}
+
+const getValueRange = (
+  records: Record<string, CharStat>,
+  key: keyof CharStat,
+): ValueRange | null => {
+  const values = Object.values(records)
+    .map((item) => item?.[key])
+    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+
+  if (!values.length) {
+    return null
+  }
+
+  return {
+    min: Math.min(...values),
+    max: Math.max(...values),
+  }
+}
+
+type BackgroundClassMaps = {
+  combos: Record<string, string>
+  races: Record<string, string>
+  classes: Record<string, string>
+}
+
+const buildBackgroundClassMaps = ({
+  stats,
+  category,
+  scale,
+  invert,
+}: {
+  stats: Summary['stats']
+  category: keyof CharStat
+  scale: ValueScale | undefined
+  invert: boolean
+}): BackgroundClassMaps => {
+  const result: BackgroundClassMaps = {
+    combos: {},
+    races: {},
+    classes: {},
+  }
+
+  if (!scale) {
+    return result
+  }
+
+  for (const [abbr, stat] of Object.entries(stats.classes)) {
+    const value = stat?.[category]
+    result.classes[abbr] =
+      typeof value === 'number' ? getBackgroundClass(value, scale.classes, invert) : ''
+  }
+
+  for (const [abbr, stat] of Object.entries(stats.races)) {
+    const value = stat?.[category]
+    result.races[abbr] =
+      typeof value === 'number' ? getBackgroundClass(value, scale.races, invert) : ''
+  }
+
+  for (const [abbr, stat] of Object.entries(stats.combos)) {
+    const value = stat?.[category]
+    result.combos[abbr] =
+      typeof value === 'number' ? getBackgroundClass(value, scale.combos, invert) : ''
+  }
+
+  return result
+}
+
+const getBackgroundClass = (
+  value: number | undefined,
+  range: ValueRange | null | undefined,
+  invert: boolean,
+) => {
+  const grade = getColorGrade(value, range, COLOR_LEVELS.length - 1, invert)
+
+  return grade ? COLOR_LEVELS[grade] : ''
+}
+
+const getColorGrade = (
+  value: number | undefined,
+  range: ValueRange | null | undefined,
+  steps: number,
+  invert: boolean,
+) => {
+  if (!range || value == null || !Number.isFinite(value)) {
+    return 0
+  }
+
+  if (value <= 0 && range.max > 0) {
+    return 0
+  }
+
+  if (range.max === range.min) {
+    return range.max === 0 ? 0 : steps
+  }
+
+  let ratio = invert
+    ? (range.max - value) / (range.max - range.min)
+    : (value - range.min) / (range.max - range.min)
+
+  if (!Number.isFinite(ratio)) {
+    return 0
+  }
+
+  ratio = Math.min(Math.max(ratio, 0), 1)
+
+  const grade = Math.floor(ratio * steps)
+
+  return Math.min(grade, steps)
 }

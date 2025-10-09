@@ -391,6 +391,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     </div>
   ) : (
     <Matrix
+      coloredHeatMap
       stats={statsData.stats}
       allActualClasses={statsData.allActualClasses}
       allActualRaces={statsData.allActualRaces}
