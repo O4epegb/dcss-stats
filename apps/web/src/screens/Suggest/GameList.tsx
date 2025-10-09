@@ -53,7 +53,7 @@ export const GameList = (props: { filter: null | Filter[] }) => {
       )}
 
       {!isEmpty && !error && (
-        <div className="flex items-center justify-center pb-4 pt-8">
+        <div className="flex items-center justify-center pt-8 pb-4">
           <button
             className="flex items-center justify-center space-x-1"
             disabled={isLoadingMore || isReachingEnd}
@@ -66,7 +66,7 @@ export const GameList = (props: { filter: null | Filter[] }) => {
       )}
 
       {isError(error) && (
-        <div className="flex flex-col items-center justify-center gap-2 pb-4 pt-8">
+        <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
           <div>Error occured, try to reload the page</div>
           {error.message && <code className="bg-gray-100 p-2">{error.message}</code>}
         </div>

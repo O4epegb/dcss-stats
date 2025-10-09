@@ -19,7 +19,7 @@ export const Player = () => {
   return (
     <div className="container mx-auto grid gap-4 px-4 xl:grid-cols-3">
       <div className="min-w-0">
-        <header className="flex items-center justify-between pb-2 pr-4 pt-4">
+        <header className="flex items-center justify-between pt-4 pr-4 pb-2">
           <Logo />
           <ThemeSelector />
         </header>
@@ -41,7 +41,7 @@ export const Player = () => {
       <div className="min-w-0 xl:col-span-2">
         <Matrix summary={summary} />
       </div>
-      <Footer className="col-span-full mt-0 border-t border-zinc-700 pb-4 pt-4" />
+      <Footer className="col-span-full mt-0 border-t border-zinc-700 pt-4 pb-4" />
     </div>
   )
 }

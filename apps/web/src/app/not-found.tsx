@@ -32,7 +32,7 @@ const Page404 = () => {
         <img width={32} height={32} src="/lich_form_octopode.png" alt="" className="size-10" />
       </h1>
       <p className="mb-2 text-xl">* The page you were looking for has vanished into the Abyss. *</p>
-      <p className="mb-8 text-base italic text-gray-600 dark:text-gray-400">
+      <p className="mb-8 text-base text-gray-600 italic dark:text-gray-400">
         You feel a terrible presence watching...
       </p>
       <Link

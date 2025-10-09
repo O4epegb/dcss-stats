@@ -93,7 +93,7 @@ export const Table = ({
               <th
                 key={title}
                 className={clsx(
-                  'w-[10%] whitespace-nowrap text-left font-medium md:overflow-visible',
+                  'w-[10%] text-left font-medium whitespace-nowrap md:overflow-visible',
                   index === 0 && 'w-[15%]',
                   index !== 0 && index !== tableData.length && 'px-1',
                 )}
@@ -113,7 +113,7 @@ export const Table = ({
                 <td
                   key={title}
                   className={clsx(
-                    'whitespace-nowrap text-left tabular-nums md:overflow-visible',
+                    'text-left whitespace-nowrap tabular-nums md:overflow-visible',
                     highlight === title && 'text-amber-700 dark:text-amber-600',
                     index === 0 && 'relative',
                   )}
@@ -124,7 +124,7 @@ export const Table = ({
                         <a
                           target="_blank"
                           rel="noreferrer"
-                          className="absolute bottom-0 left-0 right-0 top-0"
+                          className="absolute top-0 right-0 bottom-0 left-0"
                           href={getMorgueUrl(game.server.morgueUrl, game)}
                         />
                       )}

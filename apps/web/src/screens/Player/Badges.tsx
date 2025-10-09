@@ -11,7 +11,7 @@ export const Badges = () => {
     <div className="flex flex-wrap gap-2 text-sm">
       {isGreater ? (
         <Tooltip content={<div>Has won with all races and all classes</div>}>
-          <div className="rounded bg-amber-300 px-1 py-0.5 text-black ring-2 ring-inset ring-amber-600">
+          <div className="rounded bg-amber-300 px-1 py-0.5 text-black ring-2 ring-amber-600 ring-inset">
             Greater Player
           </div>
         </Tooltip>
