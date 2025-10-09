@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
-import { Static, Type } from '@sinclair/typebox'
 import { isEmpty } from 'lodash-es'
+import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { skills } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'

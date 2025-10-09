@@ -1,4 +1,4 @@
-import { Static, Type } from '@sinclair/typebox'
+import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 import { getCombosData } from '~/app/getters/getCombosData'

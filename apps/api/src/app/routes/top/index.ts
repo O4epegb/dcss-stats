@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
-import { Type, Static } from '@sinclair/typebox'
 import { uniq } from 'lodash-es'
+import { Type, Static } from 'typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 

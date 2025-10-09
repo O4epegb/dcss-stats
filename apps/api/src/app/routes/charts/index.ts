@@ -1,6 +1,6 @@
 import { Prisma } from '@prisma/client'
-import { Static, Type } from '@sinclair/typebox'
 import semver from 'semver'
+import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
