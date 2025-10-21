@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "strict": true,
+    "noUncheckedIndexedAccess": true,
     "noUnusedLocals": false,
     "allowJs": true,
     "checkJs": true,
@@ -15,5 +16,5 @@
       "~/*": ["./src/*"]
     }
   },
-  "exclude": ["./crawl"]
+  "exclude": ["./crawl", "./src/forever-ignore/*"]
 }

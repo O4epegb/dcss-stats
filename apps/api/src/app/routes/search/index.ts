@@ -197,9 +197,14 @@ export const getFilterOptions = async () => {
           'Level 27': 'maxskills',
         }
         const skillName = (item.suboption ?? '').toLowerCase()
+        const skillsKey = values[item.value]
+
+        if (!skillsKey) {
+          throw new Error(`Unknown skill value: ${item.value}`)
+        }
 
         const value = {
-          [values[item.value]]: {
+          [skillsKey]: {
             has: skillName,
           },
         }

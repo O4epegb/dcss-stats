@@ -124,7 +124,7 @@ export const suggestExperimentalRoute = (app: AppType) => {
         let hasGames = false
 
         for (const server in gamesByServer) {
-          const game = gamesByServer[server].pop()
+          const game = gamesByServer[server]?.pop()
 
           if (game) {
             hasGames = true
@@ -188,14 +188,18 @@ export const suggestExperimentalRoute = (app: AppType) => {
       const averages = Object.keys(dataBySkill).reduce(
         (acc, skillName) => {
           const skillData = orderBy(
-            dataBySkill[skillName].map((item) => item.data),
-            (x) => x.length,
+            dataBySkill[skillName]?.map((item) => item.data),
+            (x) => x?.length,
             'desc',
           )
 
-          const dataPoints = skillData[0].map((_, i) => {
+          if (!skillData[0]) {
+            throw new Error('This should not happen')
+          }
+
+          const dataPoints = skillData[0]?.map((_, i) => {
             const howManySkillsHaveDataOnThisLevel = skillData.filter(
-              (x) => x[i] !== undefined && x[i] !== 0,
+              (x) => x?.[i] !== undefined && x[i] !== 0,
             ).length
 
             return howManySkillsHaveDataOnThisLevel
@@ -209,7 +213,8 @@ export const suggestExperimentalRoute = (app: AppType) => {
               }
 
               const averageValue =
-                skillData.reduce((acc, current) => acc + (current[i] ?? 0), 0) / dataPoints[i]
+                skillData.reduce((acc, current) => acc + (current?.[i] ?? 0), 0) /
+                (dataPoints?.[i] ?? 1)
 
               return Math.round(averageValue * 10) / 10
             }),
@@ -232,7 +237,7 @@ export const suggestExperimentalRoute = (app: AppType) => {
           ...item,
           skills: Object.fromEntries(
             Object.keys(item.skills).map((skillName) => {
-              const normalizedData = item.skills[skillName].slice()
+              const normalizedData = item.skills[skillName]?.slice()
 
               return [skillName, normalizedData]
             }),
@@ -281,12 +286,14 @@ async function parseSkills(filePath: string) {
   }
 
   for (let i = skillHeadingIndex + 2; i < lines.length; i++) {
-    const match = lines[i].match(/^(\w*).+\|(.+)\|/)
+    const match = lines[i]?.match(/^(\w*).+\|(.+)\|/)
 
     if (match) {
       const [, name, levelsPart] = match
 
-      skillLines.push({ name, levelsPart })
+      if (name && levelsPart) {
+        skillLines.push({ name, levelsPart })
+      }
     } else {
       break
     }
@@ -294,16 +301,20 @@ async function parseSkills(filePath: string) {
 
   const headingLevels = skillHeading.match(/^Skill.+\|(.+)\|/) ?? []
   const levelsPart = headingLevels[1]
-  const chars = levelsPart.split('')
+  const chars = (levelsPart ?? '').split('')
 
   for (let i = 0; i < chars.length; i++) {
     const char = chars[i]
+
+    if (!char) {
+      continue
+    }
 
     if (char.match(/\s/)) {
       continue
     }
 
-    if (chars[i + 1].match(/\d/)) {
+    if (chars[i + 1]?.match(/\d/)) {
       i++
     }
 

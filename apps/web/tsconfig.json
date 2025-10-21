@@ -16,6 +16,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "strict": true,
+    // "noUncheckedIndexedAccess": true,
     "baseUrl": "./src",
     "paths": {
       // "~*": ["*"]

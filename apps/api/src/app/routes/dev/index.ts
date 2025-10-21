@@ -75,6 +75,11 @@ export const devRoute = (app: AppType) => {
 
     for (const item of playersWithLotsOfWins) {
       const games = groupedGames[item.playerId]
+
+      if (!games) {
+        continue
+      }
+
       const { matrix } = getMatrix(games)
       const oneandwons = filter(matrix, (value) => value.gamesToFirstWin === 1).length
 
