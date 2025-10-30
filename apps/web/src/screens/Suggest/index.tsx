@@ -14,6 +14,7 @@ import {
   capitalize,
   flow,
   orderBy,
+  sample,
 } from 'lodash-es'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Fragment, useEffect, useMemo, useState } from 'react'
@@ -96,6 +97,16 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     ...filter,
     advanced: [] as Filter[],
   }))
+
+  const loadingMessages = [
+    'Teleporting to a random location...',
+    'Reading a scroll of acquirement...',
+    'Summoning butterflies...',
+    'Tabbing through Lair...',
+    'Quaffing !degeneration...',
+  ]
+
+  const [currentLoadingMessage, setCurrentLoadingMessage] = useState(loadingMessages[0])
 
   const changeFilter = (key: keyof typeof filter, value: string) => {
     setFilter((current) => ({ ...current, [key]: value }))
@@ -245,8 +256,14 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
         },
       ]
     },
-    ([url, params]) =>
-      api
+    ([url, params]) => {
+      const newMessage = sample(loadingMessages)
+
+      if (newMessage) {
+        setCurrentLoadingMessage(newMessage)
+      }
+
+      return api
         .get<{
           matrix: Array<{
             char: string
@@ -255,7 +272,8 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
             winrate: number
           }>
         }>(url, { params })
-        .then((res) => res.data),
+        .then((res) => res.data)
+    },
   )
 
   const normalizeData = ({ combos }: SuggestResponse) => {
@@ -398,7 +416,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     >
       {matrixIsValidating && (
         <div className="absolute inset-0 z-1 flex animate-pulse flex-col items-center justify-center gap-4 bg-white/80 pt-20 dark:bg-zinc-800/80">
-          Matrix is loading...
+          {currentLoadingMessage}
           <Loader />
         </div>
       )}
