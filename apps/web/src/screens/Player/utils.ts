@@ -165,14 +165,14 @@ export const getStatsFromMatrix = ({
     return trunkClasses.every((klass) => {
       const combo = race.abbr + klass.abbr
 
-      return allUnavailableCombos[combo] || matrix[combo]?.wins > 0
+      return allUnavailableCombos[combo] || stats.combos[combo]?.wins > 0
     })
   })
   const greatClasses = wonClasses.filter((klass) => {
     return trunkRaces.every((race) => {
       const combo = race.abbr + klass.abbr
 
-      return allUnavailableCombos[combo] || matrix[combo]?.wins > 0
+      return allUnavailableCombos[combo] || stats.combos[combo]?.wins > 0
     })
   })
 

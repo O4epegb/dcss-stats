@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
@@ -30,32 +31,42 @@ export const matrixRoute = (app: AppType) => {
       const cached = request.query.noCache ? false : cache.get(cacheKey)
 
       const getData = async () => {
+        const groupBy: Prisma.GameScalarFieldEnum[] = ['char', 'god']
+
         const where = await getWhereQueryFromFilter(filter)
-        const [gamesByChar, winsByChar] = await Promise.all([
+        const [gamesGrouped, winsGrouped] = await Promise.all([
           prisma.game.groupBy({
-            by: ['char'],
+            by: groupBy,
             where: { ...where, versionShort },
             _count: { _all: true },
           }),
           prisma.game.groupBy({
-            by: ['char'],
+            by: groupBy,
             where: { ...where, versionShort, isWin: true },
             _count: { _all: true },
           }),
         ])
 
-        const matrix = gamesByChar.map((game) => {
-          const games = game._count._all
-          const wins = winsByChar.find((x) => x.char === game.char)?._count._all ?? 0
-          const winrate = Math.round((wins / games) * 100) / 100
+        const winsByKey = new Map(
+          winsGrouped.map((item) => [groupBy.map((key) => item[key]).join(','), item._count._all]),
+        )
 
-          return {
-            char: game.char,
-            games,
-            wins,
-            winrate,
-          }
-        })
+        const matrix = gamesGrouped.reduce(
+          (acc, item) => {
+            const key = item.char + (item.god ? ',' + item.god : '')
+            const accItem = acc[key] ?? [0, 0]
+
+            const wins = winsByKey.get(key) ?? 0
+
+            accItem[0] += item._count._all
+            accItem[1] += wins
+
+            acc[key] = accItem
+
+            return acc
+          },
+          {} as Record<string, [number, number]>,
+        )
 
         return {
           matrix,

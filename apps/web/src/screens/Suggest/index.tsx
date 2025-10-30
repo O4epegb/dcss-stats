@@ -227,6 +227,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   const {
     data: matrixData,
     error: matrixError,
+    isLoading: matrixIsLoading,
     isValidating: matrixIsValidating,
   } = useSWRImmutable(
     () => {
@@ -265,12 +266,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
 
       return api
         .get<{
-          matrix: Array<{
-            char: string
-            games: number
-            wins: number
-            winrate: number
-          }>
+          matrix: Record<string, [number, number]>
         }>(url, { params })
         .then((res) => res.data)
     },
@@ -384,14 +380,22 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   )()
 
   const statsData = useMemo(() => {
-    const matrix = (matrixData?.matrix ?? []).reduce((acc, item) => {
-      acc[item.char] = {
-        games: item.games,
-        wins: item.wins,
-        winRate: item.wins / item.games,
-        maxXl: undefined,
-        gamesToFirstWin: undefined,
-      }
+    const matrix = Object.entries(matrixData?.matrix ?? {}).reduce((acc, [key, [games, wins]]) => {
+      const [char] = key.split(',')
+
+      acc[char] =
+        acc[char] ??
+        ({
+          games: 0,
+          wins: 0,
+          winRate: 0,
+          maxXl: undefined,
+          gamesToFirstWin: undefined,
+        } as MatrixRecordType[string])
+
+      acc[char].games += games
+      acc[char].wins += wins
+      acc[char].winRate = acc[char].wins / acc[char].games
 
       return acc
     }, {} as MatrixRecordType)
@@ -414,7 +418,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       allActualClasses={statsData.allActualClasses}
       allActualRaces={statsData.allActualRaces}
     >
-      {matrixIsValidating && (
+      {(!advancedFilter || matrixIsValidating || matrixIsLoading) && (
         <div className="absolute inset-0 z-1 flex animate-pulse flex-col items-center justify-center gap-4 bg-white/80 pt-20 dark:bg-zinc-800/80">
           {currentLoadingMessage}
           <Loader />
