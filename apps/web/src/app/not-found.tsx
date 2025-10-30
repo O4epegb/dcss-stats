@@ -27,11 +27,11 @@ const Page404 = () => {
   return (
     <div className="flex h-screen flex-col items-center justify-center p-4 text-center font-mono">
       <h1 className="mb-4 flex items-center justify-center gap-4 text-6xl text-red-500">
-        <img width={32} height={32} src="/dragon_form_octopode.png" alt="" className="size-10" />
+        <img width={32} height={32} src="/dragon_form_octopode.png" alt="" className="size-8" />
         404
-        <img width={32} height={32} src="/lich_form_octopode.png" alt="" className="size-10" />
+        <img width={32} height={32} src="/lich_form_octopode.png" alt="" className="size-8" />
       </h1>
-      <p className="mb-2 text-xl">* The page you were looking for has vanished into the Abyss. *</p>
+      <p className="mb-2 text-xl">* The page you were looking for has vanished into the Abyss *</p>
       <p className="mb-8 text-base text-gray-600 italic dark:text-gray-400">
         You feel a terrible presence watching...
       </p>
