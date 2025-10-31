@@ -89,6 +89,7 @@ const getTopStats = async ({
     getTopTitles(since),
     getTopWinrates(minGamesThresholdForWinrate, since),
     getTopWinners(since),
+    // At the time of writing, prisma.game.count() is much slower than the raw query for unknown reason
     prisma.$queryRaw<[{ count: bigint }]>`
     SELECT COUNT(*) as count FROM "Game"
     ${since ? Prisma.sql`WHERE "endAt" >= ${since}` : Prisma.sql``}

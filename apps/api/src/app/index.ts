@@ -10,7 +10,6 @@ import { playersRoute } from './routes/players'
 import { searchRoute } from './routes/search'
 import { serversRoute } from './routes/servers'
 import { staticDataRoute } from './routes/static-data'
-import { statsRoute } from './routes/stats'
 import { streamsRoute } from './routes/streams'
 import { suggestRoute } from './routes/suggest'
 import { supportersRoute } from './routes/supporters'
@@ -29,7 +28,6 @@ for (const route of [
   initSwagger,
   mainRoute,
   topRoute,
-  statsRoute,
   logfilesRoute,
   serversRoute,
   staticDataRoute,
