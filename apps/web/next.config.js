@@ -5,8 +5,8 @@ const config = {
   transpilePackages: ['lodash-es'],
   // For some reason needed for /api/docs to work
   skipTrailingSlashRedirect: true,
-  eslint: {
-    ignoreDuringBuilds: true,
+  images: {
+    qualities: [75, 100],
   },
   async rewrites() {
     return {

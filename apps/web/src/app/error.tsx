@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect } from 'react'
 import { notify } from '~/utils/bugsnag'
@@ -10,7 +11,7 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
   }, [error])
 
   const teleportImage = (
-    <img
+    <Image
       width={32}
       height={32}
       src="/teleport_permanent.png"
@@ -20,7 +21,7 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
   )
 
   const orbImage = (
-    <img
+    <Image
       width={32}
       height={32}
       src="/orb_of_zot5.png"
@@ -32,9 +33,9 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
   return (
     <div className="flex h-screen flex-col items-center justify-center p-4 text-center font-mono">
       <h1 className="mb-4 flex items-center justify-center gap-4 text-6xl text-red-500">
-        <img width={32} height={32} src="/dragon_form_octopode.png" alt="" className="size-8" />
+        <Image width={32} height={32} src="/dragon_form_octopode.png" alt="" className="size-8" />
         500
-        <img width={32} height={32} src="/lich_form_octopode.png" alt="" className="size-8" />
+        <Image width={32} height={32} src="/lich_form_octopode.png" alt="" className="size-8" />
       </h1>
       <p className="mb-2 text-xl">* A terrible malfunction echoes through the Dungeon *</p>
       <p className="mb-8 text-base text-gray-600 italic dark:text-gray-400">
