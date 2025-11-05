@@ -26,9 +26,6 @@ const currentFetches = new Map<string, Promise<unknown>>()
 
 export const suggestExperimentalRoute = (app: AppType) => {
   const Query = Type.Object({
-    race: Type.Optional(Type.String()),
-    class: Type.Optional(Type.String()),
-    god: Type.Optional(Type.String()),
     version: Type.Optional(Type.String()),
     noCache: Type.Optional(Type.Boolean()),
     filter: filterQuerystringPart,
@@ -39,24 +36,11 @@ export const suggestExperimentalRoute = (app: AppType) => {
     '/api/suggest/experimental',
     { schema: { querystring: Query } },
     async (request, reply) => {
-      const {
-        race: raceNameOrAbbr,
-        class: classNameOrAbbr,
-        god: godName,
-        version,
-        filter = [],
-      } = request.query
+      const { version, filter = [] } = request.query
 
-      const { races, classes, gods, versions } = await getStaticData()
+      const { versions } = await getStaticData()
 
-      const race = races.find((r) => r.abbr === raceNameOrAbbr || r.name === raceNameOrAbbr)
-      const cls = classes.find((c) => c.abbr === classNameOrAbbr || c.name === classNameOrAbbr)
-      const god = gods.find((g) => g.name === godName)
       const versionShort = version ?? versions[0]
-
-      if (!race && !cls && !god) {
-        return reply.status(422).send('Race, class or god should be present')
-      }
 
       if (process.env.NODE_ENV !== 'development' && versionShort !== versions[0]) {
         return reply.status(422).send('Only the latest version is supported for now')
@@ -68,10 +52,6 @@ export const suggestExperimentalRoute = (app: AppType) => {
           where: {
             ...where,
             isWin: true,
-            normalizedRace: race && !race.isSubRace ? race.name : undefined,
-            race: race && race.isSubRace ? race.name : undefined,
-            normalizedClass: cls?.name,
-            god: god?.name,
             versionShort,
             logfile: {
               server: {

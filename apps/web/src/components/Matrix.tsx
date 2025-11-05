@@ -426,7 +426,7 @@ const buildValueScales = (stats: Summary['stats']) => {
   return keys.reduce(
     (acc, key) => {
       acc[key] = {
-        combos: getValueRange(stats.combos, key),
+        combos: getValueRange(stats.combos, key, { excludeZero: true }),
         races: getValueRange(stats.races, key),
         classes: getValueRange(stats.classes, key),
       }
@@ -440,19 +440,23 @@ const buildValueScales = (stats: Summary['stats']) => {
 const getValueRange = (
   records: Record<string, CharStat>,
   key: keyof CharStat,
+  { excludeZero = false } = {},
 ): ValueRange | null => {
-  const values = Object.values(records)
-    .map((item) => item?.[key])
-    .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+  return Object.values(records).reduce<ValueRange | null>((range, item) => {
+    const value = item?.[key]
+    if (typeof value !== 'number' || !Number.isFinite(value) || (excludeZero && value === 0)) {
+      return range
+    }
 
-  if (!values.length) {
-    return null
-  }
+    if (!range) {
+      return { min: value, max: value }
+    }
 
-  return {
-    min: Math.min(...values),
-    max: Math.max(...values),
-  }
+    return {
+      min: Math.min(range.min, value),
+      max: Math.max(range.max, value),
+    }
+  }, null)
 }
 
 type BackgroundClassMaps = {

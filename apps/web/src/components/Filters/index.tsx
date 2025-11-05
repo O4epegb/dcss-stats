@@ -309,6 +309,7 @@ export const Filters = ({
 
                             {option.suboptions.length > 0 && (
                               <Select
+                                className="max-w-[min(30%,100px)]"
                                 value={filter.suboption}
                                 onChange={(e) => {
                                   setFilters((state) =>

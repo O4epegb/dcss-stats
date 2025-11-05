@@ -8,8 +8,6 @@ import {
   map,
   omit,
   pickBy,
-  filter as _filter,
-  isEmpty,
   noop,
   capitalize,
   flow,
@@ -17,7 +15,7 @@ import {
   sample,
 } from 'lodash-es'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Filter, Filters, filtersToQuery } from '~/components/Filters'
@@ -25,10 +23,10 @@ import { Matrix } from '~/components/Matrix'
 import { WinrateStats } from '~/components/WinrateStats'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
-import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
+import { HelpBubble } from '~/components/ui/Tooltip'
 import { getStatsFromMatrix } from '~/screens/Player/utils'
 import { MatrixRecordType, StaticData } from '~/types'
-import { formatNumber, notEmpty, stringifyQuery } from '~/utils'
+import { cn, formatNumber, notEmpty, stringifyQuery } from '~/utils'
 import { GameList } from './GameList'
 import { Layout } from './Layout'
 import { SkillProgression } from './SkillProgression'
@@ -37,9 +35,8 @@ enum FilterValue {
   Any = 'any',
 }
 
-type Stats = { wins: number; total: number }
-type Combos = Record<string, Stats>
-type SuggestResponse = Stats & { combos: Combos }
+// [charAbbr,godName]: [games, wins]
+type MatrixData = Record<string, [games: number, wins: number]>
 
 type MainFilter = {
   race: string
@@ -159,16 +156,18 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     }
   }, [])
 
-  const buttonEnabled = _filter(filter, (value) => value !== FilterValue.Any).length > 1
-
-  const filterData = {
-    race: races.find((x) => x.name === filterForSearch.race),
-    class: classes.find((x) => x.name === filterForSearch.class),
-    god: gods.find((x) => x.name === filterForSearch.god),
-  } as const
+  const filterData = useMemo(
+    () =>
+      ({
+        race: races.find((x) => x.name === filterForSearch.race),
+        class: classes.find((x) => x.name === filterForSearch.class),
+        god: gods.find((x) => x.name === filterForSearch.god),
+      }) as const,
+    [filterForSearch.race, filterForSearch.class, filterForSearch.god, races, classes, gods],
+  )
   const { race, class: klass, god } = filterData
 
-  const onlyOneFilterWasSelected = [race, klass, god].filter(notEmpty).length === 1
+  const showGroupingControls = [race, klass, god].filter(notEmpty).length <= 1
 
   const columns = [
     [
@@ -192,37 +191,34 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     ['Games', 'total', 'numeric'],
     ['Wins', 'wins', 'numeric'],
     ['Win rate', 'winrate', 'numeric'],
-  ] as Array<[string, SortingKey, 'numeric' | 'text', boolean?]>
+  ] as Array<[title: string, sortingKey: SortingKey, type: 'numeric' | 'text', isVisible?: boolean]>
 
   const [tableFilters, setTableFilters] = useState(
     () => new Map(columns.map(([, key]) => [key, ''])),
   )
 
-  const mainParams = pickBy(
-    {
-      race: race?.name,
-      class: klass?.name,
-      god: god?.name,
-    },
-    (value) => value,
-  )
-  const apiParams = {
-    ...mainParams,
-    version: filterForSearch.version,
-    filter: filterForSearch.advanced.map((x) => omit(x, 'id')),
-  }
-  const isSwrDisabled = isEmpty(mainParams) || !advancedFilter
+  const isSwrDisabled = !advancedFilter
 
-  const { data, error, isValidating } = useSWRImmutable(
-    () => {
-      if (isSwrDisabled) {
-        return null
+  const godFilterParam: Filter | null =
+    filterForSearch.god !== FilterValue.Any
+      ? {
+          id: '',
+          condition: 'is',
+          operator: 'and',
+          value: filterForSearch.god,
+          option: 'God',
+          suboption: undefined,
+        }
+      : null
+
+  const matrixParams = isSwrDisabled
+    ? null
+    : {
+        version: filterForSearch.version,
+        filter: [godFilterParam, ...filterForSearch.advanced]
+          .filter(notEmpty)
+          .map((x) => omit(x, 'id')),
       }
-
-      return ['/suggest', apiParams]
-    },
-    ([url, params]) => api.get<SuggestResponse>(url, { params }).then((res) => res.data),
-  )
 
   const {
     data: matrixData,
@@ -231,31 +227,11 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     isValidating: matrixIsValidating,
   } = useSWRImmutable(
     () => {
-      if (!advancedFilter) {
+      if (!matrixParams) {
         return null
       }
 
-      const godFilter: Filter | null =
-        filterForSearch.god !== FilterValue.Any
-          ? {
-              id: '',
-              condition: 'is',
-              operator: 'and',
-              value: filterForSearch.god,
-              option: 'God',
-              suboption: undefined,
-            }
-          : null
-
-      return [
-        '/matrix',
-        {
-          version: filterForSearch.version,
-          filter: [godFilter, ...filterForSearch.advanced]
-            .filter(notEmpty)
-            .map((x) => omit(x, 'id')),
-        },
-      ]
+      return ['/matrix', matrixParams]
     },
     ([url, params]) => {
       const newMessage = sample(loadingMessages)
@@ -266,52 +242,166 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
 
       return api
         .get<{
-          matrix: Record<string, [number, number]>
+          matrix: MatrixData
         }>(url, { params })
         .then((res) => res.data)
     },
   )
 
-  const normalizeData = ({ combos }: SuggestResponse) => {
-    let data = map(combos, (value, key) => {
-      const [raceAbbr, classAbbr, godName] = key.split(',')
+  const skillProgressionParams =
+    isSwrDisabled || filterForSearch.advanced.length === 0
+      ? null
+      : {
+          version: filterForSearch.version,
+          filter: [
+            godFilterParam,
+            filterData.race
+              ? {
+                  condition: 'is',
+                  operator: 'and',
+                  value: filterData.race.name,
+                  option: 'Race',
+                  suboption: undefined,
+                }
+              : null,
+            filterData.class
+              ? {
+                  condition: 'is',
+                  operator: 'and',
+                  value: filterData.class.name,
+                  option: 'Class',
+                  suboption: undefined,
+                }
+              : null,
+            ...filterForSearch.advanced,
+          ]
+            .filter(notEmpty)
+            .map((x) => omit(x, 'id')),
+        }
 
-      return {
-        ...value,
-        race: races.find((x) => x.abbr === raceAbbr),
-        class: classes.find((x) => x.abbr === classAbbr),
-        god: godName
-          ? gods.find((x) => x.name === godName)
-          : {
-              name: 'Atheist',
-              abbr: 'AT',
-            },
-        winrate: (value.wins / value.total) * 100,
+  const tableParams =
+    isSwrDisabled || filterForSearch.advanced.length === 0
+      ? null
+      : {
+          version: filterForSearch.version,
+          filter: [
+            godFilterParam,
+            filterData.race?.isSubRace
+              ? {
+                  condition: 'is',
+                  operator: 'and',
+                  value: filterData.race.name,
+                  option: 'Race',
+                  suboption: undefined,
+                }
+              : null,
+            ...filterForSearch.advanced,
+          ]
+            .filter(notEmpty)
+            .map((x) => omit(x, 'id')),
+        }
+
+  const {
+    data: tableData,
+    // error: tableError,
+    isValidating: tableIsValidating,
+  } = useSWRImmutable(
+    () => {
+      if (!tableParams) {
+        return null
       }
-    })
 
-    if (groupingKey && !filterData[groupingKey]) {
-      const grouped = groupBy(data, (x) => x[groupingKey]?.name)
-      data = map(grouped, (items) => {
-        return items.reduce((acc, item) => {
-          const wins = acc.wins + item.wins
-          const total = acc.total + item.total
-          const winrate = (wins / total || 0) * 100
+      return ['/matrix', tableParams]
+    },
+    ([url, params]) => {
+      return api
+        .get<{
+          matrix: MatrixData
+        }>(url, { params })
+        .then((res) => res.data)
+    },
+  )
 
-          return {
-            ...acc,
-            wins,
-            total,
-            winrate,
-          }
-        })
+  const normalizeData = useCallback(
+    ({ combos }: { combos: Record<string, [number, number]> }) => {
+      let data = map(combos, ([games, wins], key) => {
+        const [charAbbr, godName] = key.split(',')
+        const raceAbbr = charAbbr.slice(0, 2)
+        const classAbbr = charAbbr.slice(2)
+
+        return {
+          race: races.find((x) => x.abbr === raceAbbr),
+          class: classes.find((x) => x.abbr === classAbbr),
+          god: godName
+            ? gods.find((x) => x.name === godName)
+            : {
+                name: 'Atheist',
+                abbr: 'AT',
+              },
+          wins,
+          total: games,
+          winrate: (wins / games) * 100,
+        }
       })
-    }
 
-    return data
-  }
+      if (groupingKey && !filterData[groupingKey]) {
+        const grouped = groupBy(data, (x) => x[groupingKey]?.name)
+        data = map(grouped, (items) => {
+          return items.reduce((acc, item) => {
+            const wins = acc.wins + item.wins
+            const total = acc.total + item.total
+            const winrate = (wins / total || 0) * 100
 
-  const isLoading = !data && !error && isValidating
+            return {
+              ...acc,
+              wins,
+              total,
+              winrate,
+            }
+          })
+        })
+      }
+
+      return data
+    },
+    [classes, gods, races, groupingKey, filterData],
+  )
+
+  const dataForTable = useMemo(() => {
+    const filteredData = Object.entries(tableData?.matrix ?? {})
+      .filter(([key]) => {
+        const [charAbbr] = key.split(',')
+        const raceAbbr = charAbbr.slice(0, 2)
+        const classAbbr = charAbbr.slice(2)
+
+        const raceFilterMatches =
+          !filterData.race || filterData.race.isSubRace || raceAbbr === filterData.race.abbr
+        const classFilterMatches = !filterData.class || classAbbr === filterData.class.abbr
+
+        return raceFilterMatches && classFilterMatches
+      })
+      .reduce(
+        (acc, [key, values]) => {
+          acc.combos[key] = values
+
+          acc.wins += values[1]
+          acc.total += values[0]
+
+          return acc
+        },
+        {
+          combos: {} as MatrixData,
+          wins: 0,
+          total: 0,
+        },
+      )
+
+    return filteredData.total > 0 ? filteredData : null
+  }, [tableData, filterData.race, filterData.class])
+
+  const normalizedData = useMemo(() => {
+    return dataForTable ? normalizeData(dataForTable) : []
+  }, [dataForTable, normalizeData])
 
   const renderOptionList = (options: Array<{ name: string; trunk: boolean }>) => {
     return options.map(({ name, trunk }, index, array) => {
@@ -327,12 +417,11 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   }
 
   const dataToShow = flow(
-    () => (data ? normalizeData(data) : []),
-    (x) =>
+    () =>
       orderBy(
-        x,
-        (x) => {
-          const data = x[sorting.key]
+        normalizedData,
+        (item) => {
+          const data = item[sorting.key]
 
           return typeof data === 'number' ? data : data?.name.toLowerCase()
         },
@@ -485,41 +574,34 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       </div>
 
       <div className="flex w-full max-w-lg items-center justify-center gap-2">
-        <Tooltip disabled={buttonEnabled} content="Select at least one option from Race/Class/God">
-          <button
-            type="button"
-            className={clsx(
-              'flex items-center gap-x-2 rounded-sm border bg-gray-800 px-4 py-2 text-white transition-colors',
-              buttonEnabled && 'hover:bg-gray-700',
-            )}
-            onClick={() => {
-              if (!buttonEnabled) {
-                return
-              }
+        <button
+          type="button"
+          className={clsx(
+            'flex items-center gap-x-2 rounded-sm border bg-gray-800 px-4 py-2 text-white transition-colors',
+          )}
+          onClick={() => {
+            setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
 
-              setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
+            const query = pickBy(
+              {
+                race: filter.race,
+                class: filter.class,
+                god: filter.god,
+                version: filter.version,
+                filter: advancedFilter ? filtersToQuery(advancedFilter) : FilterValue.Any,
+              },
+              (value) => value !== FilterValue.Any,
+            )
 
-              const query = pickBy(
-                {
-                  race: filter.race,
-                  class: filter.class,
-                  god: filter.god,
-                  version: filter.version,
-                  filter: advancedFilter ? filtersToQuery(advancedFilter) : FilterValue.Any,
-                },
-                (value) => value !== FilterValue.Any,
-              )
-
-              window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
-            }}
-          >
-            Time to have some fun!
-            {isLoading && <Loader />}
-          </button>
-        </Tooltip>
+            window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
+          }}
+        >
+          Time to have some fun!
+          {tableIsValidating && <Loader />}
+        </button>
       </div>
 
-      {data && (
+      {dataForTable && (
         <>
           <div className="m-auto w-full max-w-lg space-y-2">
             <hr />
@@ -532,29 +614,30 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
               )}
             </h2>
             <section className="flex justify-center">
-              <WinrateStats games={data.total} wins={data.wins} />
+              <WinrateStats games={dataForTable.total} wins={dataForTable.wins} />
             </section>
           </div>
-          {data.total === 0 && (
+          {dataForTable.total === 0 && (
             <div>
-              {data.total === 0 && 'No games recorded for this combination, try another one'}
+              {dataForTable.total === 0 &&
+                'No games recorded for this combination, try another one'}
             </div>
           )}
-          {data.total > 0 && (
+          {dataForTable.total > 0 && (
             <>
               <section className="m-auto flex w-full max-w-lg flex-wrap items-center justify-between gap-2">
                 <SkillProgression
                   isLastVersion={filter.version === versions[0]}
-                  apiParams={apiParams}
+                  apiParams={skillProgressionParams}
                   isSwrDisabled={isSwrDisabled}
                 />
-                {view === 'stats' && onlyOneFilterWasSelected && (
+                {view === 'stats' && showGroupingControls && (
                   <div className="flex w-full gap-4">
                     {(
                       [
-                        ['race', race],
-                        ['class', klass],
-                        ['god', god],
+                        ['race', Boolean(race)],
+                        ['class', Boolean(klass)],
+                        ['god', Boolean(god)],
                       ] as const
                     ).map(
                       ([key, isHidden]) =>
@@ -651,7 +734,13 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
               <section className="m-auto w-full max-w-lg overflow-x-auto xl:overflow-x-visible">
                 {view === 'stats' ? (
                   <>
-                    <table className="w-full table-auto">
+                    <table
+                      className={cn(
+                        'w-full table-auto',
+                        columns.filter(([, , , isVisible = true]) => isVisible).length >= 6 &&
+                          'xl:table-fixed',
+                      )}
+                    >
                       <thead>
                         <tr>
                           {columns.map(([title, sortingKey, type, isVisible = true]) => {
@@ -747,10 +836,18 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                               key={index}
                               className="odd:bg-gray-50 even:bg-white hover:bg-amber-100 odd:dark:bg-zinc-800 even:dark:bg-zinc-900 dark:hover:bg-amber-700"
                             >
-                              {columns[0][3] && <td>{item.race?.name}</td>}
-                              {columns[1][3] && <td>{item.class?.name}</td>}
+                              {columns[0][3] && (
+                                <td className="overflow-hidden text-ellipsis">{item.race?.name}</td>
+                              )}
+                              {columns[1][3] && (
+                                <td className="overflow-hidden text-ellipsis">
+                                  {item.class?.name}
+                                </td>
+                              )}
                               {columns[2][3] && (
-                                <td>{item.god ? `${item.god.name}` : 'Atheist'}</td>
+                                <td className="overflow-hidden text-ellipsis">
+                                  {item.god ? `${item.god.name}` : 'Atheist'}
+                                </td>
                               )}
                               <td className="text-right tabular-nums">{item.total}</td>
                               <td className="text-right tabular-nums">{item.wins}</td>
