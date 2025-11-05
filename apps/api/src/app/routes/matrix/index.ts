@@ -31,29 +31,30 @@ export const matrixRoute = (app: AppType) => {
       const cached = request.query.noCache ? false : cache.get(cacheKey)
 
       const getData = async () => {
-        const groupBy: Prisma.GameScalarFieldEnum[] = ['char', 'god']
+        const groupByList: Prisma.GameScalarFieldEnum[] = ['char', 'god']
 
         const where = await getWhereQueryFromFilter(filter)
         const [gamesGrouped, winsGrouped] = await Promise.all([
           prisma.game.groupBy({
-            by: groupBy,
+            by: groupByList,
             where: { ...where, versionShort },
             _count: { _all: true },
           }),
           prisma.game.groupBy({
-            by: groupBy,
+            by: groupByList,
             where: { ...where, versionShort, isWin: true },
             _count: { _all: true },
           }),
         ])
 
-        const winsByKey = new Map(
-          winsGrouped.map((item) => [groupBy.map((key) => item[key]).join(','), item._count._all]),
-        )
+        const getItemKey = (item: { char: string; god: string | null }) =>
+          item.char + (item.god ? ',' + item.god : '')
+
+        const winsByKey = new Map(winsGrouped.map((item) => [getItemKey(item), item._count._all]))
 
         const matrix = gamesGrouped.reduce(
           (acc, item) => {
-            const key = item.char + (item.god ? ',' + item.god : '')
+            const key = getItemKey(item)
             const accItem = acc[key] ?? [0, 0]
 
             const wins = winsByKey.get(key) ?? 0
