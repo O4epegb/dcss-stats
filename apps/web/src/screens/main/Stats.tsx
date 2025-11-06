@@ -1,15 +1,18 @@
-import { map, pickBy } from 'lodash-es'
+import dayjs from 'dayjs'
+import {
+  // map,
+  pickBy,
+} from 'lodash-es'
 import Link from 'next/link'
-import { useState, memo, useEffect, PropsWithChildren } from 'react'
+import { memo, PropsWithChildren } from 'react'
+import { fetchApi } from '~/api/server'
 import { WinrateStats } from '~/components/WinrateStats'
 import { HelpBubble } from '~/components/ui/Tooltip'
-import { getFavorites } from '~/screens/Player/utils'
-import { Class, God, Race } from '~/types'
+import { Class, God, Player, Race } from '~/types'
 import { formatNumber } from '~/utils'
+import { FavoritesList } from './FavoritesList'
+import { HighscoreTables } from './HighscoreTables'
 import { List } from './List'
-import { Streams } from './Streams'
-import { Table } from './Table'
-import type { Props } from '.'
 
 type NormalizedData = {
   race: Race | undefined
@@ -20,101 +23,99 @@ type NormalizedData = {
   total: number
 }[]
 
-export const Stats = memo(
-  ({
-    gamesByEndAt,
-    gamesByDuration,
-    gamesByScore,
-    gamesByTC,
-    gamesByTC15Runes,
-    gamesByDuration15Runes,
-    gamesByScore3Runes,
-    races,
-    classes,
-    gods,
-    combosData,
-    topPlayers,
-    topPlayersRecent,
-    topPlayersVeryRecent,
-    topPlayersWithManyGames,
-    onLinkClick,
-  }: Props & { onLinkClick: (name: string) => void }) => {
-    const [favorites, setFavorites] = useState<null | string[]>(null)
+type TopPlayers = {
+  gamesTotal: number
+  winsTotal: number
+  minGamesThresholdForWinrate: number
+  byWins: Array<Pick<Player, 'name'> & { wins: number }>
+  byWinrate: Array<Pick<Player, 'name'> & { winrate: number; games: number }>
+  byTitles: Array<Pick<Player, 'name'> & { titles: number }>
+}
 
-    useEffect(() => {
-      setFavorites(getFavorites().split(',').filter(Boolean))
-    }, [])
+export const Stats = memo(async () => {
+  // const staticRes = await fetchApi('/static-data')
+  // const staticData: StaticData = await staticRes.json()
+  // const popularPicksData: NormalizedData = map(combosData?.combos, (value, key) => {
+  //   const [raceAbbr, classAbbr, godName] = key.split(',')
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const popularPicksData: NormalizedData = map(combosData?.combos, (value, key) => {
-      const [raceAbbr, classAbbr, godName] = key.split(',')
+  //   return {
+  //     ...value,
+  //     race: races.find((x) => x.abbr === raceAbbr),
+  //     class: classes.find((x) => x.abbr === classAbbr),
+  //     god: gods.find((x) => x.name === godName),
+  //     winrate: (value.wins / value.total) * 100,
+  //   }
+  // })
 
-      return {
-        ...value,
-        race: races.find((x) => x.abbr === raceAbbr),
-        class: classes.find((x) => x.abbr === classAbbr),
-        god: gods.find((x) => x.name === godName),
-        winrate: (value.wins / value.total) * 100,
-      }
-    })
+  'use cache'
 
-    return (
-      <div className="flex flex-col gap-x-10 gap-y-4">
-        <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-1">
-          <div className="space-y-1">
-            <div className="flex justify-between gap-1">
-              <h3 className="text-xl font-semibold">
-                Top Players{' '}
-                <span className="font-normal text-gray-600 dark:text-gray-400">(Last month)</span>
-              </h3>
-            </div>
-            <TopList
-              showFavorites
-              favorites={favorites}
-              top={topPlayersVeryRecent}
-              onLinkClick={onLinkClick}
+  const topRes: { data: TopPlayers } = await fetchApi('/top').then((r) => r.json())
+  const topWithManyGamesRes: { data: TopPlayers } = await fetchApi(
+    '/top?minGamesThresholdForWinrate=500',
+  ).then((r) => r.json())
+  const topRecentRes: { data: TopPlayers } = await fetchApi(
+    `/top?minGamesThresholdForWinrate=27&since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
+  ).then((r) => r.json())
+  const topVeryRecentRes: { data: TopPlayers } = await fetchApi(
+    `/top?minGamesThresholdForWinrate=15&since=${encodeURIComponent(dayjs().subtract(1, 'month').toISOString())}`,
+  ).then((r) => r.json())
+
+  const topPlayers = topRes.data
+  const topPlayersWithManyGames = topWithManyGamesRes.data
+  const topPlayersRecent = topRecentRes.data
+  const topPlayersVeryRecent = topVeryRecentRes.data
+
+  return (
+    <div className="flex flex-col gap-x-10 gap-y-4">
+      <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-1">
+        <div className="space-y-1">
+          <div className="flex justify-between gap-1">
+            <h3 className="text-xl font-semibold">
+              Top Players{' '}
+              <span className="font-normal text-gray-600 dark:text-gray-400">(Last month)</span>
+            </h3>
+          </div>
+          <TopList showFavorites top={topPlayersVeryRecent} />
+        </div>
+        <div className="space-y-1">
+          <div className="flex justify-between gap-1">
+            <h3 className="text-xl font-semibold">
+              Top Players{' '}
+              <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
+            </h3>
+          </div>
+          <TopList top={topPlayersRecent} />
+        </div>
+        <div className="space-y-1">
+          <div className="flex justify-between gap-1">
+            <h3 className="text-xl font-semibold">
+              Top Players{' '}
+              <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
+            </h3>
+          </div>
+          <TopList top={topPlayers}>
+            <List
+              title="By win rate, %"
+              afterTitle={
+                <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
+                  (min. {topPlayersWithManyGames.minGamesThresholdForWinrate} games)
+                </span>
+              }
+              items={topPlayersWithManyGames.byWinrate.map((item) => ({
+                name: item.name,
+                secondaryCount: `${item.games}g`,
+                count: formatNumber(item.winrate * 100, {
+                  maximumFractionDigits: 2,
+                  minimumFractionDigits: 2,
+                }),
+              }))}
             />
-          </div>
-          <div className="space-y-1">
-            <div className="flex justify-between gap-1">
-              <h3 className="text-xl font-semibold">
-                Top Players{' '}
-                <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
-              </h3>
-            </div>
-            <TopList top={topPlayersRecent} onLinkClick={onLinkClick} />
-          </div>
-          <div className="space-y-1">
-            <div className="flex justify-between gap-1">
-              <h3 className="text-xl font-semibold">
-                Top Players{' '}
-                <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
-              </h3>
-            </div>
-            <TopList top={topPlayers} onLinkClick={onLinkClick}>
-              <List
-                title="By win rate, %"
-                afterTitle={
-                  <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
-                    (min. {topPlayersWithManyGames.minGamesThresholdForWinrate} games)
-                  </span>
-                }
-                items={topPlayersWithManyGames.byWinrate.map((item) => ({
-                  name: item.name,
-                  secondaryCount: `${item.games}g`,
-                  count: formatNumber(item.winrate * 100, {
-                    maximumFractionDigits: 2,
-                    minimumFractionDigits: 2,
-                  }),
-                }))}
-                onLinkClick={onLinkClick}
-              />
-            </TopList>
-          </div>
+          </TopList>
+        </div>
 
-          {/* <hr className="md:hidden" /> */}
+        {/* <hr className="md:hidden" /> */}
 
-          {/* <div className="space-y-1 text-sm">
+        {/* <div className="space-y-1 text-sm">
             <h2 className="flex gap-1 font-semibold">
               Popular picks in the last 7 days
               <HelpBubble content="Latest game version only" />
@@ -136,58 +137,14 @@ export const Stats = memo(
               />
             </div>
           </div> */}
-        </div>
-
-        <Streams />
-
-        <hr />
-
-        <Table
-          games={gamesByEndAt}
-          title="Recent wins"
-          highlight="Date"
-          onLinkClick={onLinkClick}
-        />
-        <Table
-          games={gamesByTC}
-          title="Fastest wins by turn count"
-          highlight="Turns"
-          onLinkClick={onLinkClick}
-        />
-        <Table
-          games={gamesByDuration}
-          title="Fastest wins by realtime"
-          highlight="Duration"
-          onLinkClick={onLinkClick}
-        />
-        <Table
-          games={gamesByScore3Runes}
-          title="Top highscores (3 runes only)"
-          highlight="Score"
-          onLinkClick={onLinkClick}
-        />
-        <Table
-          games={gamesByTC15Runes}
-          title="Fastest wins by turn count (15 runes only)"
-          highlight="Turns"
-          onLinkClick={onLinkClick}
-        />
-        <Table
-          games={gamesByDuration15Runes}
-          title="Fastest wins by realtime (15 runes only)"
-          highlight="Duration"
-          onLinkClick={onLinkClick}
-        />
-        <Table
-          games={gamesByScore}
-          title="Top highscores"
-          highlight="Score"
-          onLinkClick={onLinkClick}
-        />
       </div>
-    )
-  },
-)
+
+      <hr />
+
+      <HighscoreTables />
+    </div>
+  )
+})
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PopularList = ({
@@ -237,15 +194,11 @@ const PopularList = ({
 
 const TopList = ({
   top,
-  favorites,
   showFavorites,
-  onLinkClick,
   children,
 }: PropsWithChildren<{
-  top: Props['topPlayers']
-  favorites?: string[] | null
+  top: TopPlayers
   showFavorites?: boolean
-  onLinkClick: (name: string) => void
 }>) => {
   return (
     <div className="grid grid-cols-1 gap-x-10 gap-y-4 text-sm sm:grid-cols-2 md:grid-cols-4">
@@ -265,7 +218,6 @@ const TopList = ({
               minimumFractionDigits: 2,
             }),
           }))}
-          onLinkClick={onLinkClick}
         />
         {top.gamesTotal != undefined && (
           <h2 className="flex justify-between font-semibold">
@@ -280,7 +232,6 @@ const TopList = ({
             name: item.name,
             count: formatNumber(item.wins),
           }))}
-          onLinkClick={onLinkClick}
         />
         {top.winsTotal != undefined && (
           <h2 className="flex justify-between font-semibold">
@@ -295,30 +246,9 @@ const TopList = ({
           name: item.name,
           count: formatNumber(item.titles),
         }))}
-        onLinkClick={onLinkClick}
       />
 
-      {showFavorites && (
-        <List
-          title="Your favorites"
-          placeholder={
-            favorites && favorites.length === 0 ? (
-              <div className="text-gray-400">
-                Nobody added yet
-                <div className="mt-1">
-                  Use <span className="font-medium">star</span> icon on player page next to their
-                  name
-                </div>
-                <div>Data is stored locally on your device</div>
-              </div>
-            ) : undefined
-          }
-          items={(favorites ?? []).map((name) => ({
-            name,
-          }))}
-          onLinkClick={onLinkClick}
-        />
-      )}
+      {showFavorites && <FavoritesList />}
 
       {children}
     </div>

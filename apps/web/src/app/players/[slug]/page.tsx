@@ -1,16 +1,24 @@
 import { Metadata } from 'next'
+import { cacheLife } from 'next/cache'
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
+import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
+import { Loader } from '~/components/ui/Loader'
 import { defaultMetaDescription, defaultMetaTitle } from '~/constants'
 import PlayerPage from '~/screens/Player'
 import { cookiesStoreDefault } from '~/screens/Player/utils'
 import { PlayerInfoResponse } from '~/types'
 import { formatNumber } from '~/utils'
 
-async function getData(slug: string) {
+async function getPlayerData(params: PageProps<'/players/[slug]'>['params']) {
+  'use cache'
+
+  cacheLife('seconds')
+
+  const { slug } = await params
+
   const response = await fetchApi(`/players/${slug}`)
-  const cookieStore = await cookies()
 
   if (response.ok) {
     const data: PlayerInfoResponse = await response.json()
@@ -19,13 +27,7 @@ async function getData(slug: string) {
       redirect(`/players/${data.player.name}`)
     }
 
-    return {
-      ...data,
-      cookiesStore: Object.keys(cookiesStoreDefault).reduce(
-        (acc, key) => ({ ...acc, [key]: cookieStore.has(key) }),
-        {},
-      ),
-    }
+    return data
   } else {
     if (response.status === 404) {
       notFound()
@@ -35,16 +37,44 @@ async function getData(slug: string) {
   }
 }
 
-export default async function Page(props: PageProps<'/players/[slug]'>) {
-  const params = await props.params
-  const data = await getData(params.slug)
+async function getCookieStoreData() {
+  const cookieStore = await cookies()
 
-  return <PlayerPage {...data} />
+  return Object.keys(cookiesStoreDefault).reduce(
+    (acc, key) => ({ ...acc, [key]: cookieStore.has(key) }),
+    {},
+  )
+}
+
+export default async function Page(props: PageProps<'/players/[slug]'>) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-4">
+          <Loader />
+          Loading player data
+        </div>
+      }
+    >
+      <PageContent {...props} />
+    </Suspense>
+  )
+}
+
+async function PageContent(props: PageProps<'/players/[slug]'>) {
+  const cookiesStoreData = await getCookieStoreData()
+  const data = await getPlayerData(props.params)
+
+  return <PlayerPage {...data} cookiesStore={cookiesStoreData} />
 }
 
 export async function generateMetadata({
   params,
 }: PageProps<'/players/[slug]'>): Promise<Metadata> {
+  'use cache'
+
+  cacheLife('seconds')
+
   const { slug } = await params
 
   const response = await fetchApi(`/players/${slug}`)

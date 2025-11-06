@@ -18,9 +18,10 @@ export const metadata: Metadata = {
 }
 
 const ServersPage = async () => {
+  'use cache'
+
   const { servers }: { servers: Array<Server & { logfile: Array<Logfile> }> } = await fetchApi(
     '/servers',
-    { next: { revalidate: 300 }, cache: 'force-cache' },
   ).then((r) => r.json())
 
   return (

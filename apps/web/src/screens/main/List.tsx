@@ -8,7 +8,6 @@ export const List = ({
   tooltip,
   items,
   placeholder,
-  onLinkClick,
 }: {
   title: string
   afterTitle?: ReactNode
@@ -17,7 +16,6 @@ export const List = ({
     count?: string
     secondaryCount?: string
   }>
-  onLinkClick: (name: string) => void
   placeholder?: ReactNode
   tooltip?: string
 }) => {
@@ -36,11 +34,6 @@ export const List = ({
             prefetch={false}
             href={`/players/${item.name}`}
             className="dcss-list-item"
-            onClick={(e) => {
-              if (!e.metaKey && !e.ctrlKey) {
-                onLinkClick(item.name)
-              }
-            }}
           >
             <span className="overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</span>
             {item.count && (

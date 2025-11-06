@@ -1,3 +1,5 @@
+'use client'
+
 import {
   arrow,
   autoUpdate as autoUpdateUtility,

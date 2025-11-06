@@ -1,33 +1,15 @@
-'use client'
-
 import Link from 'next/link'
-import { useState, useCallback } from 'react'
-import useSWRImmutable from 'swr/immutable'
-import { api } from '~/api'
-import type { MainPageData } from '~/app/page'
+import { Suspense } from 'react'
 import { Footer } from '~/components/Footer'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
-import { SupportersCurrentResponse } from '~/types'
 import { Search } from './Search'
 import { Stats } from './Stats'
+import { Streams } from './Streams'
+import { SupportGoalText } from './SupportGoalText'
 import { TournamentBanner } from './TournamentBanner'
 
-export type Props = MainPageData
-
-export const MainPage = (props: Props) => {
-  const [isNavigating, setIsNavigating] = useState(false)
-  const [query, setQuery] = useState('')
-
-  const onLinkClick = useCallback((name: string) => {
-    setIsNavigating(true)
-    setQuery(name)
-  }, [])
-
-  const { data } = useSWRImmutable('/supporters/current', (url) =>
-    api.get<SupportersCurrentResponse>(url).then((res) => res.data),
-  )
-
+export const MainPage = () => {
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center px-4 md:justify-center">
       <div className="w-full max-w-5xl space-y-4 py-4">
@@ -42,17 +24,9 @@ export const MainPage = (props: Props) => {
               <span className="flex items-center justify-center gap-1 text-xs group-hover:underline sm:text-base">
                 Support
               </span>
-              {data && (
-                <span className="text-2xs absolute top-full text-nowrap text-gray-400 sm:text-xs">
-                  {data.total >= data.goal ? (
-                    <>Goal: done! (${data.total})</>
-                  ) : (
-                    <>
-                      Goal: ${data.total} of ${data.goal}
-                    </>
-                  )}
-                </span>
-              )}
+              <Suspense>
+                <SupportGoalText />
+              </Suspense>
             </Link>
             <Link className="group relative flex items-center justify-center" href="/charts">
               <span className="text-xs group-hover:underline sm:text-base">Charts</span>
@@ -66,17 +40,16 @@ export const MainPage = (props: Props) => {
             <ThemeSelector />
           </div>
         </header>
-        <Search
-          nickname={props.nickname}
-          isNavigating={isNavigating}
-          setIsNavigating={setIsNavigating}
-          query={query}
-          setQuery={setQuery}
-        />
+
+        <Search />
 
         <TournamentBanner />
 
-        <Stats {...props} onLinkClick={onLinkClick} />
+        <Suspense>
+          <Streams />
+        </Suspense>
+
+        <Stats />
 
         <Footer />
       </div>

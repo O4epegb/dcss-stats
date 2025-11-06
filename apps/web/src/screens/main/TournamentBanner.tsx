@@ -1,10 +1,14 @@
+import { cacheLife } from 'next/cache'
 import { date } from '~/utils'
 
 const version = '0.33'
 const start = '2025-05-02T20:00:00.000Z'
 const end = '2025-05-18T20:00:00.000Z'
 
-export const TournamentBanner = () => {
+export const TournamentBanner = async () => {
+  'use cache'
+  cacheLife('minutes')
+
   const now = date()
 
   if (now.diff(end, 'week') > 3) {

@@ -8,28 +8,17 @@ export const Table = ({
   games,
   title,
   highlight,
-  onLinkClick,
 }: {
   games: Game[]
   title: string
   highlight: string
-  onLinkClick: (name: string) => void
 }) => {
   const tableData = [
     {
       title: 'Player',
       type: 'string',
       getter: (game: Game) => (
-        <Link
-          prefetch={false}
-          href={`/players/${game.name}`}
-          className="relative hover:underline"
-          onClick={(e) => {
-            if (!e.metaKey && !e.ctrlKey) {
-              onLinkClick(game.name)
-            }
-          }}
-        >
+        <Link prefetch={false} href={`/players/${game.name}`} className="relative hover:underline">
           {game.name}
         </Link>
       ),
