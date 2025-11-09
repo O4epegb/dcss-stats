@@ -1,10 +1,23 @@
 import { cacheLife } from 'next/cache'
-import { memo } from 'react'
+import { memo, Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { Game } from '~/types'
 import { Table } from './Table'
 
-export const HighscoreTables = memo(async () => {
+export const HighscoreTables = () => {
+  return (
+    <>
+      <Suspense>
+        <RecentWinsTable />
+      </Suspense>
+      <Suspense>
+        <RestTables />
+      </Suspense>
+    </>
+  )
+}
+
+export const RestTables = memo(async () => {
   'use cache'
 
   cacheLife('days')
@@ -32,7 +45,6 @@ export const HighscoreTables = memo(async () => {
 
   return (
     <>
-      <RecentWinsTable />
       <Table games={gamesByTC} title="Fastest wins by turn count" highlight="Turns" />
       <Table games={gamesByDuration} title="Fastest wins by realtime" highlight="Duration" />
       <Table games={gamesByScore3Runes} title="Top highscores (3 runes only)" highlight="Score" />

@@ -51,7 +51,9 @@ export const MainPage = async () => {
           <Streams />
         </Suspense>
 
-        <Stats />
+        <Suspense>
+          <Stats />
+        </Suspense>
 
         <Footer />
       </div>
