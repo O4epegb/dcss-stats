@@ -249,9 +249,9 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   )
 
   const skillProgressionParams =
-    isSwrDisabled || filterForSearch.advanced.length === 0
-      ? null
-      : {
+    !isSwrDisabled &&
+    (filterForSearch.advanced.length > 0 || godFilterParam || filterData.race || filterData.class)
+      ? {
           version: filterForSearch.version,
           filter: [
             godFilterParam,
@@ -278,11 +278,12 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
             .filter(notEmpty)
             .map((x) => omit(x, 'id')),
         }
+      : null
 
   const tableParams =
-    isSwrDisabled || filterForSearch.advanced.length === 0
-      ? null
-      : {
+    !isSwrDisabled &&
+    (filterForSearch.advanced.length > 0 || godFilterParam || filterData.race || filterData.class)
+      ? {
           version: filterForSearch.version,
           filter: [
             godFilterParam,
@@ -300,6 +301,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
             .filter(notEmpty)
             .map((x) => omit(x, 'id')),
         }
+      : null
 
   const {
     data: tableData,
