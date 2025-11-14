@@ -30,6 +30,22 @@ import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
 import { StaticData } from '~/types'
 import { cn, getShortId } from '~/utils'
 
+const customColors = [
+  'rgba(216, 124, 124, 1)',
+  'rgba(145, 158, 139, 1)',
+  'rgba(215, 171, 130, 1)',
+  'rgba(110, 112, 116, 1)',
+  'rgba(97, 160, 168, 1)',
+]
+
+// const customColors2 = [
+//   'rgba(193, 46, 52, 0.75)',
+//   'rgba(230, 182, 0, 0.75)',
+//   'rgba(0, 152, 217, 0.75)',
+//   'rgba(43, 130, 29, 0.75)',
+//   'rgba(0, 94, 170, 0.75)',
+// ]
+
 const CustomCanvasBackgroundColor: Plugin<
   'bar',
   {
@@ -236,12 +252,13 @@ export const ChartsScreen = ({
     }[]
   > = {
     datasets: data
-      ? data.data.map((set) => ({
+      ? data.data.map((set, index) => ({
           label: set.label,
           data: set.items.map((item) => ({
             x: String(item[data.groupBy]) as string,
             y: item[`_${data.aggregationType}`][data.aggregationField] as number,
           })),
+          backgroundColor: customColors[index % customColors.length],
         }))
       : [],
   }
