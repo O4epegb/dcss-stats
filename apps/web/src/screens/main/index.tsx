@@ -9,9 +9,7 @@ import { Streams } from './Streams'
 import { SupportGoalText } from './SupportGoalText'
 import { TournamentBanner } from './TournamentBanner'
 
-export const MainPage = async () => {
-  'use cache'
-
+export const MainPage = () => {
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center px-4 md:justify-center">
       <div className="w-full max-w-5xl space-y-4 py-4">

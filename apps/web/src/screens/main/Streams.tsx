@@ -24,7 +24,7 @@ export const Streams = async () => {
         {streams.map((stream) => (
           <a
             key={stream.username}
-            className="flex w-48 min-w-[12rem] flex-shrink-0 flex-col gap-1 sm:w-full sm:min-w-0"
+            className="flex w-48 min-w-48 shrink-0 flex-col gap-1 sm:w-full sm:min-w-0"
             target="_blank"
             rel="noreferrer"
             href={`https://www.twitch.tv/${stream.login}`}

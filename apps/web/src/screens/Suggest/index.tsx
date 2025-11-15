@@ -809,7 +809,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                                 <th
                                   key={title}
                                   className={clsx(
-                                    'p-[1px]',
+                                    'p-px',
                                     type === 'numeric' ? 'text-right' : 'text-left',
                                   )}
                                 >

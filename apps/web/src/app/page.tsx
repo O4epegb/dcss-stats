@@ -1,9 +1,7 @@
 import { Suspense } from 'react'
 import { MainPage } from '~/screens/main'
 
-export default async function Page(_props: PageProps<'/'>) {
-  'use cache'
-
+export default function Page(_props: PageProps<'/'>) {
   return (
     <Suspense>
       <MainPage />

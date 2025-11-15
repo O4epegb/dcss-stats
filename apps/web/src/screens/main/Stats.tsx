@@ -4,7 +4,7 @@ import {
   pickBy,
 } from 'lodash-es'
 import Link from 'next/link'
-import { memo, PropsWithChildren, Suspense } from 'react'
+import { PropsWithChildren, Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { WinrateStats } from '~/components/WinrateStats'
 import { HelpBubble } from '~/components/ui/Tooltip'
@@ -32,7 +32,7 @@ type TopPlayers = {
   byTitles: Array<Pick<Player, 'name'> & { titles: number }>
 }
 
-export const Stats = memo(() => {
+export const Stats = () => {
   // const staticRes = await fetchApi('/static-data')
   // const staticData: StaticData = await staticRes.json()
   // const popularPicksData: NormalizedData = map(combosData?.combos, (value, key) => {
@@ -91,7 +91,7 @@ export const Stats = memo(() => {
       <HighscoreTables />
     </div>
   )
-})
+}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PopularList = ({
