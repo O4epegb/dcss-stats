@@ -3,7 +3,7 @@ import { MainPage } from '~/screens/main'
 
 export default function Page(_props: PageProps<'/'>) {
   return (
-    <Suspense>
+    <Suspense fallback={null}>
       <MainPage />
     </Suspense>
   )

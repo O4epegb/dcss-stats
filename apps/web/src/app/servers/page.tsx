@@ -18,9 +18,7 @@ export const metadata: Metadata = {
   },
 }
 
-const ServersPage = async () => {
-  'use cache'
-
+const ServersPage = () => {
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 py-4 pt-4">
       <header>
@@ -31,7 +29,7 @@ const ServersPage = async () => {
         <Suspense
           fallback={
             <>
-              <div className="h-[28px] w-full animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+              <div className="h-7 w-full animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
               {range(15).map((i) => (
                 <div
                   key={i}
