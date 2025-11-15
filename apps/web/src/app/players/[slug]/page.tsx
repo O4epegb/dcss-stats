@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { cacheLife } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { Suspense } from 'react'
@@ -11,13 +11,7 @@ import { cookiesStoreDefault } from '~/screens/Player/utils'
 import { PlayerInfoResponse } from '~/types'
 import { formatNumber } from '~/utils'
 
-async function getPlayerData(params: PageProps<'/players/[slug]'>['params']) {
-  'use cache'
-
-  cacheLife('seconds')
-
-  const { slug } = await params
-
+async function getPlayerData(slug: string) {
   const response = await fetchApi(`/players/${slug}`)
 
   if (response.ok) {
@@ -47,6 +41,8 @@ async function getCookieStoreData() {
 }
 
 export default async function Page(props: PageProps<'/players/[slug]'>) {
+  const { slug } = await props.params
+
   return (
     <Suspense
       fallback={
@@ -56,14 +52,19 @@ export default async function Page(props: PageProps<'/players/[slug]'>) {
         </div>
       }
     >
-      <PageContent {...props} />
+      <PageContent slug={slug} />
     </Suspense>
   )
 }
 
-async function PageContent(props: PageProps<'/players/[slug]'>) {
+async function PageContent({ slug }: { slug: string }) {
+  'use cache: private'
+
+  cacheTag(`player-${slug}`)
+  cacheLife('seconds')
+
   const cookiesStoreData = await getCookieStoreData()
-  const data = await getPlayerData(props.params)
+  const data = await getPlayerData(slug)
 
   return <PlayerPage {...data} cookiesStore={cookiesStoreData} />
 }

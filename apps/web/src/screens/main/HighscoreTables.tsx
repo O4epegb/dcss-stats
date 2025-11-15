@@ -1,4 +1,4 @@
-import { cacheLife } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import { memo, Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { Game } from '~/types'
@@ -7,10 +7,10 @@ import { Table } from './Table'
 export const HighscoreTables = () => {
   return (
     <>
-      <Suspense>
+      <Suspense fallback={null}>
         <RecentWinsTable />
       </Suspense>
-      <Suspense>
+      <Suspense fallback={null}>
         <RestTables />
       </Suspense>
     </>
@@ -20,9 +20,10 @@ export const HighscoreTables = () => {
 export const RestTables = memo(async () => {
   'use cache'
 
+  cacheTag('gamesHighscores')
   cacheLife('days')
 
-  const res = await fetchApi('/main')
+  const res = await fetchApi('/main?highscores=true')
   const {
     data: {
       gamesByTC,
@@ -66,9 +67,10 @@ export const RestTables = memo(async () => {
 const RecentWinsTable = memo(async () => {
   'use cache'
 
+  cacheTag('gamesRecentWins')
   cacheLife('minutes')
 
-  const res = await fetchApi('/main')
+  const res = await fetchApi('/main?recentWins=true')
   const {
     data: { gamesByEndAt },
   }: {

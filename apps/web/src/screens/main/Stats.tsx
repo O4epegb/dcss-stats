@@ -4,7 +4,7 @@ import {
   pickBy,
 } from 'lodash-es'
 import Link from 'next/link'
-import { memo, PropsWithChildren } from 'react'
+import { memo, PropsWithChildren, Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { WinrateStats } from '~/components/WinrateStats'
 import { HelpBubble } from '~/components/ui/Tooltip'
@@ -32,7 +32,7 @@ type TopPlayers = {
   byTitles: Array<Pick<Player, 'name'> & { titles: number }>
 }
 
-export const Stats = memo(async () => {
+export const Stats = memo(() => {
   // const staticRes = await fetchApi('/static-data')
   // const staticData: StaticData = await staticRes.json()
   // const popularPicksData: NormalizedData = map(combosData?.combos, (value, key) => {
@@ -47,71 +47,18 @@ export const Stats = memo(async () => {
   //   }
   // })
 
-  'use cache'
-
-  const topRes: { data: TopPlayers } = await fetchApi('/top').then((r) => r.json())
-  const topWithManyGamesRes: { data: TopPlayers } = await fetchApi(
-    '/top?minGamesThresholdForWinrate=500',
-  ).then((r) => r.json())
-  const topRecentRes: { data: TopPlayers } = await fetchApi(
-    `/top?minGamesThresholdForWinrate=27&since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
-  ).then((r) => r.json())
-  const topVeryRecentRes: { data: TopPlayers } = await fetchApi(
-    `/top?minGamesThresholdForWinrate=15&since=${encodeURIComponent(dayjs().subtract(1, 'month').toISOString())}`,
-  ).then((r) => r.json())
-
-  const topPlayers = topRes.data
-  const topPlayersWithManyGames = topWithManyGamesRes.data
-  const topPlayersRecent = topRecentRes.data
-  const topPlayersVeryRecent = topVeryRecentRes.data
-
   return (
     <div className="flex flex-col gap-x-10 gap-y-4">
       <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-1">
-        <div className="space-y-1">
-          <div className="flex justify-between gap-1">
-            <h3 className="text-xl font-semibold">
-              Top Players{' '}
-              <span className="font-normal text-gray-600 dark:text-gray-400">(Last month)</span>
-            </h3>
-          </div>
-          <TopList showFavorites top={topPlayersVeryRecent} />
-        </div>
-        <div className="space-y-1">
-          <div className="flex justify-between gap-1">
-            <h3 className="text-xl font-semibold">
-              Top Players{' '}
-              <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
-            </h3>
-          </div>
-          <TopList top={topPlayersRecent} />
-        </div>
-        <div className="space-y-1">
-          <div className="flex justify-between gap-1">
-            <h3 className="text-xl font-semibold">
-              Top Players{' '}
-              <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
-            </h3>
-          </div>
-          <TopList top={topPlayers}>
-            <List
-              title="By win rate, %"
-              afterTitle={
-                <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
-                  (min. {topPlayersWithManyGames.minGamesThresholdForWinrate} games)
-                </span>
-              }
-              items={topPlayersWithManyGames.byWinrate.map((item) => ({
-                name: item.name,
-                secondaryCount: `${item.games}g`,
-                count: formatNumber(item.winrate * 100, {
-                  maximumFractionDigits: 2,
-                  minimumFractionDigits: 2,
-                }),
-              }))}
-            />
-          </TopList>
-        </div>
+        <Suspense fallback={null}>
+          <TopPlayersVeryRecent />
+        </Suspense>
+        <Suspense fallback={null}>
+          <TopPlayersRecent />
+        </Suspense>
+        <Suspense fallback={null}>
+          <TopPlayersAllTime />
+        </Suspense>
 
         {/* <hr className="md:hidden" /> */}
 
@@ -188,6 +135,84 @@ const PopularList = ({
           </Link>
         ))}
       </div>
+    </div>
+  )
+}
+
+const TopPlayersRecent = async () => {
+  'use cache'
+
+  const topRecentRes: { data: TopPlayers } = await fetchApi(
+    `/top?minGamesThresholdForWinrate=27&since=${encodeURIComponent(dayjs().subtract(1, 'year').toISOString())}`,
+  ).then((r) => r.json())
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between gap-1">
+        <h3 className="text-xl font-semibold">
+          Top Players{' '}
+          <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
+        </h3>
+      </div>
+      <TopList top={topRecentRes.data} />
+    </div>
+  )
+}
+
+const TopPlayersVeryRecent = async () => {
+  'use cache'
+
+  const topVeryRecentRes: { data: TopPlayers } = await fetchApi(
+    `/top?minGamesThresholdForWinrate=15&since=${encodeURIComponent(dayjs().subtract(1, 'month').toISOString())}`,
+  ).then((r) => r.json())
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between gap-1">
+        <h3 className="text-xl font-semibold">
+          Top Players{' '}
+          <span className="font-normal text-gray-600 dark:text-gray-400">(Last month)</span>
+        </h3>
+      </div>
+      <TopList showFavorites top={topVeryRecentRes.data} />
+    </div>
+  )
+}
+
+const TopPlayersAllTime = async () => {
+  'use cache'
+
+  const topRes: { data: TopPlayers } = await fetchApi('/top').then((r) => r.json())
+  const topWithManyGamesRes: { data: TopPlayers } = await fetchApi(
+    '/top?minGamesThresholdForWinrate=500',
+  ).then((r) => r.json())
+
+  return (
+    <div className="space-y-1">
+      <div className="flex justify-between gap-1">
+        <h3 className="text-xl font-semibold">
+          Top Players{' '}
+          <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
+        </h3>
+      </div>
+      <TopList top={topRes.data}>
+        <List
+          title="By win rate, %"
+          afterTitle={
+            <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
+              (min. {topWithManyGamesRes.data.minGamesThresholdForWinrate} games)
+            </span>
+          }
+          items={topWithManyGamesRes.data.byWinrate.map((item) => ({
+            name: item.name,
+            secondaryCount: `${item.games}g`,
+            count: formatNumber(item.winrate * 100, {
+              maximumFractionDigits: 2,
+              minimumFractionDigits: 2,
+            }),
+          }))}
+        />
+      </TopList>
     </div>
   )
 }

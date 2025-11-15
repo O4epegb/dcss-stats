@@ -26,7 +26,7 @@ export const MainPage = async () => {
               <span className="flex items-center justify-center gap-1 text-xs group-hover:underline sm:text-base">
                 Support
               </span>
-              <Suspense>
+              <Suspense fallback={null}>
                 <SupportGoalText />
               </Suspense>
             </Link>
@@ -45,15 +45,15 @@ export const MainPage = async () => {
 
         <Search />
 
-        <TournamentBanner />
+        <Suspense fallback={null}>
+          <TournamentBanner />
+        </Suspense>
 
-        <Suspense>
+        <Suspense fallback={null}>
           <Streams />
         </Suspense>
 
-        <Suspense>
-          <Stats />
-        </Suspense>
+        <Stats />
 
         <Footer />
       </div>

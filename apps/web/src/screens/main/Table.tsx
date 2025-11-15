@@ -1,8 +1,7 @@
-import clsx from 'clsx'
 import dayjs from 'dayjs'
 import Link from 'next/link'
 import { Game } from '~/types'
-import { formatDuration, formatNumber, getMorgueUrl } from '~/utils'
+import { cn, formatDuration, formatNumber, getMorgueUrl } from '~/utils'
 
 export const Table = ({
   games,
@@ -51,7 +50,7 @@ export const Table = ({
     {
       title: 'Duration',
       type: 'string',
-      getter: (game: Game) => formatDuration(game.duration),
+      getter: (game: Game) => <span suppressHydrationWarning>{formatDuration(game.duration)}</span>,
     },
     {
       title: 'Runes',
@@ -81,7 +80,7 @@ export const Table = ({
             {tableData.map(({ title }, index) => (
               <th
                 key={title}
-                className={clsx(
+                className={cn(
                   'w-[10%] text-left font-medium whitespace-nowrap md:overflow-visible',
                   index === 0 && 'w-[15%]',
                   index !== 0 && index !== tableData.length && 'px-1',
@@ -101,7 +100,7 @@ export const Table = ({
               {tableData.map(({ title, getter }, index) => (
                 <td
                   key={title}
-                  className={clsx(
+                  className={cn(
                     'text-left whitespace-nowrap tabular-nums md:overflow-visible',
                     highlight === title && 'text-amber-700 dark:text-amber-600',
                     index === 0 && 'relative',
@@ -124,7 +123,7 @@ export const Table = ({
                       <a
                         target="_blank"
                         rel="noreferrer"
-                        className={clsx('block', index !== 0 && 'px-1')}
+                        className={cn('block', index !== 0 && 'px-1')}
                         href={getMorgueUrl(game.server.morgueUrl, game)}
                       >
                         {getter(game)}
