@@ -2,7 +2,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { random, range } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { cache, ttl } from '~/app/cache'
+import { createCache, type CacheManager } from '~/app/cache'
 import { logger } from '~/utils'
 
 const tokenData = {
@@ -21,11 +21,15 @@ const getMockedSteams = (): Stream[] =>
     thumbnail: 'https://placehold.co/640x360',
   }))
 
-export const streamsRoute = (app: AppType) => {
-  app.get('/api/streams', async (request, reply) => {
-    const cacheKey = request.routeOptions.url ?? request.url
-    const cached = cache.get(cacheKey)
+type StreamsRouteOptions = {
+  cache?: CacheManager
+}
 
+export const streamsRoute = (
+  app: AppType,
+  { cache = createCache({ revalidate: 5 * 60 }) }: StreamsRouteOptions = {},
+) => {
+  app.get('/api/streams', async (request, reply) => {
     if (!twClientId || !twSecret) {
       if (process.env.NODE_ENV === 'development') {
         return {
@@ -81,11 +85,7 @@ export const streamsRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return cache.get(cacheKey)?.promise
+    return cache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
   })
 }
 
