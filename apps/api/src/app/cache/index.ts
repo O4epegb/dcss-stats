@@ -36,12 +36,11 @@ export const defaultCacheOptions: Required<CacheOptions> = {
   expire: Infinity,
 }
 
-type CacheEntry = {
-  promise: Promise<unknown>
-  value?: unknown
+type CacheEntry<TValue = unknown> = {
+  pendingPromise?: Promise<TValue>
+  value?: TValue
   resolvedAt?: number
   lastHit: number
-  revalidatePromise?: Promise<unknown>
 }
 
 export function createCache(options?: CacheOptions): CacheManager {
@@ -56,38 +55,49 @@ export function createCache(options?: CacheOptions): CacheManager {
   const store = new Map<CacheKey, CacheEntry>()
 
   return {
-    get<TValue>({ key, loader, skipCache }: CacheRequest<TValue>): Promise<TValue> {
+    async get<TValue>({ key, loader, skipCache }: CacheRequest<TValue>): Promise<TValue> {
       if (skipCache) {
-        return loadWithoutCache(key, loader)
+        return refreshNow(key, loader)
       }
 
-      const entry = store.get(key)
+      const entry = store.get(key) as CacheEntry<TValue> | undefined
       const now = Date.now()
 
       if (!entry) {
-        return loadAndShare(key, loader)
+        return loadAndStore(key, loader)
       }
 
       if (expireMs !== Infinity && now - entry.lastHit >= expireMs) {
         store.delete(key)
-        return loadAndShare(key, loader)
+        return loadAndStore(key, loader)
       }
 
       entry.lastHit = now
 
-      if (!entry.value) {
-        return entry.promise as Promise<TValue>
+      if (entry.pendingPromise && entry.value === undefined) {
+        return entry.pendingPromise
       }
 
-      if (
+      if (entry.value === undefined) {
+        store.delete(key)
+        return loadAndStore(key, loader)
+      }
+
+      const shouldRevalidate =
         revalidateMs !== Infinity &&
         entry.resolvedAt !== undefined &&
         now - entry.resolvedAt >= revalidateMs
-      ) {
-        triggerRevalidation(entry, key, loader)
+
+      if (shouldRevalidate && !entry.pendingPromise) {
+        refreshEntity(entry, key, loader).catch(() => undefined)
+        return entry.value
       }
 
-      return entry.promise as Promise<TValue>
+      if (entry.pendingPromise) {
+        return entry.pendingPromise
+      }
+
+      return entry.value
     },
     clear(key?: CacheKey) {
       if (key) {
@@ -98,11 +108,11 @@ export function createCache(options?: CacheOptions): CacheManager {
     },
   }
 
-  function loadAndShare<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
+  function loadAndStore<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
     const now = Date.now()
     const loaderPromise = loader()
     const entry: CacheEntry = {
-      promise: loaderPromise,
+      pendingPromise: loaderPromise,
       lastHit: now,
     }
 
@@ -126,61 +136,52 @@ export function createCache(options?: CacheOptions): CacheManager {
     return loaderPromise
   }
 
-  function loadWithoutCache<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
-    const existing = store.get(key)
+  function refreshNow<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
+    const entry = store.get(key) as CacheEntry<TValue> | undefined
 
-    if (existing) {
-      existing.lastHit = Date.now()
+    if (!entry) {
+      return loadAndStore(key, loader)
     }
 
-    return loader().then((value) => {
-      const entry = store.get(key)
-
-      if (entry) {
-        commitEntry(entry, value)
-      } else {
-        const resolvedEntry: CacheEntry = {
-          value,
-          resolvedAt: Date.now(),
-          lastHit: Date.now(),
-          promise: Promise.resolve(value),
-        }
-
-        store.set(key, resolvedEntry)
-      }
-
-      return value
-    })
+    entry.lastHit = Date.now()
+    return refreshEntity(entry, key, loader)
   }
 
-  function triggerRevalidation<TValue>(
-    entry: CacheEntry,
+  function refreshEntity<TValue>(
+    entry: CacheEntry<TValue>,
     key: CacheKey,
     loader: () => Promise<TValue>,
-  ): void {
-    if (entry.revalidatePromise) {
-      return
+  ): Promise<TValue> {
+    if (entry.pendingPromise) {
+      return entry.pendingPromise
     }
 
-    const revalidatePromise = loader()
+    const refreshPromise = loader()
       .then((value) => {
         if (store.get(key) !== entry) {
           return value
         }
 
         commitEntry(entry, value)
-        entry.revalidatePromise = undefined
         return value
       })
-      .catch(() => {
+      .catch((error) => {
         if (store.get(key) === entry) {
-          store.delete(key)
+          if (entry.value === undefined) {
+            store.delete(key)
+          }
         }
 
-        entry.revalidatePromise = undefined
+        throw error
+      })
+      .finally(() => {
+        if (entry.pendingPromise === refreshPromise) {
+          entry.pendingPromise = undefined
+        }
       })
 
-    entry.revalidatePromise = revalidatePromise
+    entry.pendingPromise = refreshPromise
+    return refreshPromise
   }
 
   function commitEntry(entry: CacheEntry, value: unknown) {
@@ -188,7 +189,6 @@ export function createCache(options?: CacheOptions): CacheManager {
     entry.value = value
     entry.resolvedAt = resolvedAt
     entry.lastHit = resolvedAt
-    entry.promise = Promise.resolve(value)
-    entry.revalidatePromise = undefined
+    entry.pendingPromise = undefined
   }
 }

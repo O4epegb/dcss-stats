@@ -86,6 +86,88 @@ describe('createCache', () => {
     expect(loader).toHaveBeenCalledTimes(2)
   })
 
+  test('skipCache deduplicates concurrent refreshes', async () => {
+    const cache = createCache()
+    const refresh = Promise.withResolvers<string>()
+    const loader = vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValueOnce('cached')
+      .mockReturnValueOnce(refresh.promise)
+
+    await cache.get({ key: 'supporters', loader })
+
+    const first = cache.get({ key: 'supporters', loader, skipCache: true })
+    const second = cache.get({ key: 'supporters', loader, skipCache: true })
+
+    expect(loader).toHaveBeenCalledTimes(2)
+    expect(first).toStrictEqual(second)
+
+    refresh.resolve('refreshed')
+    await expect(first).resolves.toBe('refreshed')
+    expect(await cache.get({ key: 'supporters', loader })).toBe('refreshed')
+  })
+
+  test('skipCache keeps the previous value when refresh fails', async () => {
+    const cache = createCache()
+    const error = new Error('refresh failed')
+    const loader = vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValueOnce('cached')
+      .mockRejectedValueOnce(error)
+
+    await cache.get({ key: 'supporters', loader })
+
+    await expect(cache.get({ key: 'supporters', loader, skipCache: true })).rejects.toThrow(error)
+    expect(await cache.get({ key: 'supporters', loader })).toBe('cached')
+  })
+
+  test('normal requests share the revalidation promise when stale', async () => {
+    const cache = createCache({ revalidate: 10 })
+    const refresh = Promise.withResolvers<string>()
+    const loader = vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValueOnce('initial')
+      .mockReturnValueOnce(refresh.promise)
+
+    await cache.get({ key: 'matrix', loader })
+
+    advanceSeconds(11)
+
+    const staleResponse = cache.get({ key: 'matrix', loader })
+    const pending = cache.get({ key: 'matrix', loader })
+
+    expect(loader).toHaveBeenCalledTimes(2)
+    await expect(staleResponse).resolves.toBe('initial')
+
+    refresh.resolve('fresh')
+    await expect(pending).resolves.toBe('fresh')
+  })
+
+  test('normal revalidation failure preserves the previous value', async () => {
+    const cache = createCache({ revalidate: 5 })
+    const error = new Error('boom')
+    const loader = vi
+      .fn<() => Promise<string>>()
+      .mockResolvedValueOnce('initial')
+      .mockRejectedValueOnce(error)
+      .mockResolvedValueOnce('recovered')
+
+    await cache.get({ key: 'matrix', loader })
+    advanceSeconds(6)
+
+    const staleResponse = cache.get({ key: 'matrix', loader })
+    const pending = cache.get({ key: 'matrix', loader })
+
+    await expect(staleResponse).resolves.toBe('initial')
+    await expect(pending).rejects.toThrow(error)
+
+    const nextStale = cache.get({ key: 'matrix', loader })
+    await expect(nextStale).resolves.toBe('initial')
+
+    await flushMicrotasks()
+    expect(await cache.get({ key: 'matrix', loader })).toBe('recovered')
+  })
+
   test('clear removes individual keys as well as the entire store', async () => {
     const cache = createCache()
     const loader = vi
