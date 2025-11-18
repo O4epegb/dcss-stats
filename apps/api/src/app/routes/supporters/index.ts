@@ -2,16 +2,14 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { orderBy } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { cache, ttl } from '~/app/cache'
+import { createCache } from '~/app/cache'
 import { trackError } from '~/utils'
 
 const token = process.env.BUYMEACOFFEE_TOKEN
+const supportersCache = createCache()
 
 export const supportersRoute = (app: AppType) => {
   app.get('/api/supporters/current', async (request, reply) => {
-    const cacheKey = request.routeOptions.url ?? request.url
-    const cached = cache.get(cacheKey)
-
     if (!token) {
       return reply.status(404).send('Token ENV is not set')
     }
@@ -87,17 +85,10 @@ export const supportersRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return cache.get(cacheKey)?.promise
+    return supportersCache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
   })
 
   app.get('/api/supporters', async (request, reply) => {
-    const cacheKey = request.routeOptions.url ?? request.url
-    const cached = cache.get(cacheKey)
-
     if (!token) {
       return reply.status(404).send('Token ENV is not set')
     }
@@ -181,11 +172,7 @@ export const supportersRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return cache.get(cacheKey)?.promise
+    return supportersCache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
   })
 }
 

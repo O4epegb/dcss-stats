@@ -31,7 +31,7 @@ export const streamsRoute = (
 ) => {
   app.get('/api/streams', async (request, reply) => {
     if (!twClientId || !twSecret) {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV !== 'production') {
         return {
           data: {
             streams: getMockedSteams(),
@@ -74,7 +74,7 @@ export const streamsRoute = (
         thumbnail: stream.thumbnail_url,
       }))
 
-      if (streams.length === 0 && process.env.NODE_ENV === 'development') {
+      if (streams.length === 0 && process.env.NODE_ENV !== 'production') {
         streams.push(...getMockedSteams())
       }
 

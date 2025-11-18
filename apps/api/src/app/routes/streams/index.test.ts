@@ -46,7 +46,7 @@ const createTwitchStream = (index: number) => ({
 
 const registerStreamsRoute = async () => {
   const { streamsRoute } = await import('./index')
-  const cache = createCache({ revalidate: 5 * 60 })
+  const cache = createCache()
   const testApp = fastify() as unknown as AppType
   streamsRoute(testApp, { cache })
   await testApp.ready()
