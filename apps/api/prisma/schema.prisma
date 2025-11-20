@@ -30,8 +30,7 @@ model Logfile {
   bytesRead       Int      @default(0)
   morgueUrlPrefix String?
 
-  DuplicateGame DuplicateGame[]
-  InvalidGame   InvalidGame[]
+  InvalidGame InvalidGame[]
 
   @@unique([serverId, path])
 }
@@ -102,15 +101,6 @@ model Game {
   @@index([normalizedRace])
   @@index([god])
   @@index([isWin])
-}
-
-model DuplicateGame {
-  id        String   @id @default(cuid())
-  gameId    String
-  logfileId String
-  logfile   Logfile  @relation(fields: [logfileId], references: [id])
-  logLine   String
-  createdAt DateTime @default(now())
 }
 
 model InvalidGame {
