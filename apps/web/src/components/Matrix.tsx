@@ -204,7 +204,9 @@ export const Matrix = ({
                 ) : (
                   !allUnavailableCombos[activeCombo] && <div>No data yet</div>
                 )}
-                {allUnavailableCombos[activeCombo] && <div>Combo is not playable</div>}
+                {allUnavailableCombos[activeCombo] && (
+                  <div>Combo is not{tooltipStats?.games > 0 ? ' (normally) ' : ' '}playable</div>
+                )}
                 {!(activeRace && activeClass) &&
                   (greatClasses?.[activeClass] || greatRaces?.[activeRace]) && (
                     <div className="text-xs">
@@ -336,7 +338,11 @@ export const Matrix = ({
                   {classesToShow.map((klass) => {
                     const char = race.abbr + klass.abbr
                     const value = stats.combos[char]?.[category]
-                    const content = value ? formatter(value) : null
+                    const categoryWithZeroAsValid =
+                      category === 'winRate' || category === 'gamesToFirstWin'
+                    const content =
+                      categoryWithZeroAsValid && value === 0 ? '-' : value ? formatter(value) : null
+                    const isGreyContent = categoryWithZeroAsValid && value === 0
                     const highlightFirstWin =
                       category === 'gamesToFirstWin' && stats.combos[char]?.gamesToFirstWin === 1
                     const isActiveCell = activeClass === klass.abbr || activeRace === race.abbr
@@ -363,7 +369,9 @@ export const Matrix = ({
                             ? 'text-amber-600 dark:text-amber-500'
                             : isUnavailable
                               ? 'text-gray-200 select-none dark:text-gray-600'
-                              : 'dark:text-gray-200',
+                              : isGreyContent
+                                ? 'text-gray-400 dark:text-gray-600'
+                                : 'dark:text-gray-200',
                         )}
                         onMouseEnter={(e) => {
                           setTooltipRef(e.currentTarget)
