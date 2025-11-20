@@ -182,8 +182,8 @@ export const SkillProgression = ({
           <div className="m-auto grid w-full grid-cols-1 gap-x-2 gap-y-0.5 pt-3 text-xs sm:grid-cols-2">
             {data.map((skill) => (
               <div key={skill.skillName} className="flex items-center gap-2">
-                <div className="relative flex h-[28px] flex-1 items-center">
-                  <div className="pointer-events-none absolute top-[-6px] left-0">
+                <div className="relative flex h-7 flex-1 items-center">
+                  <div className="pointer-events-none absolute -top-1.5 left-0">
                     {skill.skillName}
                   </div>
                   {skill.data.values.map((value, i) => {

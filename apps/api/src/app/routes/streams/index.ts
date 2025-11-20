@@ -25,10 +25,7 @@ type StreamsRouteOptions = {
   cache?: CacheManager
 }
 
-export const streamsRoute = (
-  app: AppType,
-  { cache = createCache({ revalidate: 5 * 60 }) }: StreamsRouteOptions = {},
-) => {
+export const streamsRoute = (app: AppType, { cache = createCache() }: StreamsRouteOptions = {}) => {
   app.get('/api/streams', async (request, reply) => {
     if (!twClientId || !twSecret) {
       if (process.env.NODE_ENV !== 'production') {

@@ -6,9 +6,11 @@ import { createCache } from '~/app/cache'
 import { trackError } from '~/utils'
 
 const token = process.env.BUYMEACOFFEE_TOKEN
-const supportersCache = createCache()
 
-export const supportersRoute = (app: AppType) => {
+export const supportersRoute = (
+  app: AppType,
+  { cache = createCache() }: { cache?: ReturnType<typeof createCache> } = {},
+) => {
   app.get('/api/supporters/current', async (request, reply) => {
     if (!token) {
       return reply.status(404).send('Token ENV is not set')
@@ -85,7 +87,7 @@ export const supportersRoute = (app: AppType) => {
       }
     }
 
-    return supportersCache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
+    return cache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
   })
 
   app.get('/api/supporters', async (request, reply) => {
@@ -172,7 +174,7 @@ export const supportersRoute = (app: AppType) => {
       }
     }
 
-    return supportersCache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
+    return cache.get({ key: request.routeOptions.url ?? request.url, loader: getData })
   })
 }
 
