@@ -1,5 +1,5 @@
 import { setCookie, destroyCookie } from 'nookies'
-import { useState, useContext, createContext } from 'react'
+import { useState, useContext, createContext, useMemo } from 'react'
 import { PlayerInfoResponse } from '~/types'
 import { trackEvent } from '~/utils'
 import { cookiesStoreDefault, getSummary } from './utils'
@@ -19,26 +19,31 @@ export const useContextStateValue = (
     ...defaultCookiesStore,
   }))
 
-  return {
-    ...data,
-    summary: getSummary(data),
-    isOptionEnabled(key: keyof typeof cookiesStoreDefault) {
-      return cookieState[key]
-    },
-    toggleOption(key: keyof typeof cookiesStoreDefault) {
-      const newState = !cookieState[key]
+  const summary = useMemo(() => getSummary(data), [data])
 
-      trackEvent('key', { state: String(newState) })
+  return useMemo(
+    () => ({
+      ...data,
+      summary,
+      isOptionEnabled(key: keyof typeof cookiesStoreDefault) {
+        return cookieState[key]
+      },
+      toggleOption(key: keyof typeof cookiesStoreDefault) {
+        const newState = !cookieState[key]
 
-      if (newState) {
-        saveCookie(key)
-      } else {
-        deleteCookie(key)
-      }
+        trackEvent('key', { state: String(newState) })
 
-      setCookieState((state) => ({ ...state, [key]: newState }))
-    },
-  }
+        if (newState) {
+          saveCookie(key)
+        } else {
+          deleteCookie(key)
+        }
+
+        setCookieState((state) => ({ ...state, [key]: newState }))
+      },
+    }),
+    [data, summary, cookieState],
+  )
 }
 
 const saveCookie = (key: string) => {

@@ -34,7 +34,14 @@ export const allUnavailableCombos = keyBy([
 ])
 
 export const getSummary = (data: PlayerInfoResponse) => {
-  const { matrix, races: allRaces, classes, gods, gamesToFirstWin, tiamat } = data
+  const { races: allRaces, classes, gods, gamesToFirstWin, tiamat } = data
+
+  const matrix = Object.fromEntries(
+    Object.entries(data.matrix).map(([key, value]) => [
+      key,
+      { ...value, winRate: value.wins / value.games },
+    ]),
+  )
 
   const {
     stats,
