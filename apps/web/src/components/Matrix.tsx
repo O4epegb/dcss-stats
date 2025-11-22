@@ -221,14 +221,13 @@ export const Matrix = ({
         <table className="w-auto min-w-full border-collapse text-center text-sm xl:w-full 2xl:text-base">
           <thead>
             <tr>
-              <th className="min-w-[24px]"></th>
-              <th className="min-w-[24px]"></th>
+              <th className="min-w-6"></th>
+              <th className="min-w-6"></th>
               {classesToShow.map((klass) => (
                 <th
                   key={klass.abbr}
                   className={clsx(
-                    'min-w-[24px] whitespace-nowrap',
-
+                    'min-w-6 whitespace-nowrap',
                     greatClasses?.[klass.abbr]
                       ? 'bg-amber-200 dark:bg-amber-700'
                       : activeClass === klass.abbr && 'bg-amber-100 dark:bg-zinc-800',
@@ -247,7 +246,7 @@ export const Matrix = ({
             </tr>
           </thead>
           <tbody>
-            <tr className="h-[24px]">
+            <tr className="h-6">
               <td></td>
               <td></td>
               {classesToShow.map((klass) => {
@@ -295,10 +294,7 @@ export const Matrix = ({
               const backgroundClass = !highlightFirstWin && !isActiveRace ? baseBackgroundClass : ''
 
               return (
-                <tr
-                  key={race.abbr}
-                  className="h-[24px] *:p-[1px] *:first:text-left *:first:font-bold"
-                >
+                <tr key={race.abbr} className="h-6 *:p-px *:first:text-left *:first:font-bold">
                   <td
                     className={clsx(
                       greatRaces?.[race.abbr]
