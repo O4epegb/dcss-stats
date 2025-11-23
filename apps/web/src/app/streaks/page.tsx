@@ -99,6 +99,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
         <div className="space-y-2">
           <div className="space-x-4">
             <Link
+              prefetch={false}
               href={{
                 pathname: '/streaks',
                 query: { type: undefined, isBroken: searchParams.isBroken },
@@ -108,6 +109,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
               All Types
             </Link>
             <Link
+              prefetch={false}
               href={{
                 pathname: '/streaks',
                 query: { type: 'mixed', isBroken: searchParams.isBroken },
@@ -117,6 +119,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
               Mixed
             </Link>
             <Link
+              prefetch={false}
               href={{
                 pathname: '/streaks',
                 query: { type: 'unique', isBroken: searchParams.isBroken },
@@ -126,6 +129,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
               Unique
             </Link>
             <Link
+              prefetch={false}
               href={{
                 pathname: '/streaks',
                 query: { type: 'mono', isBroken: searchParams.isBroken },
@@ -137,6 +141,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
           </div>
           <div className="space-x-4">
             <Link
+              prefetch={false}
               href={{
                 pathname: '/streaks',
                 query: { type: searchParams.type, isBroken: undefined },
@@ -146,12 +151,14 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
               All Statuses
             </Link>
             <Link
+              prefetch={false}
               href={{ pathname: '/streaks', query: { type: searchParams.type, isBroken: 'false' } }}
               className={cn(searchParams.isBroken === 'false' && 'underline')}
             >
               Ongoing
             </Link>
             <Link
+              prefetch={false}
               href={{ pathname: '/streaks', query: { type: searchParams.type, isBroken: 'true' } }}
               className={cn(searchParams.isBroken === 'true' && 'underline')}
             >
@@ -180,6 +187,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
                     {index + 1}.
                   </span>
                   <Link
+                    prefetch={false}
                     href={`/players/${streak.player.name}`}
                     className="font-bold hover:underline"
                   >
