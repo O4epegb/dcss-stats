@@ -1,4 +1,4 @@
-import { first, groupBy, omit, transform } from 'lodash-es'
+import { first, groupBy, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 import { draconians, LIMIT } from '~/app/constants'
@@ -6,7 +6,7 @@ import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 import { getAggregatedPlayerStats } from '~/app/getters/getAggregatedPlayerStats'
 import { getMatrix } from '~/app/getters/getMatrix'
 import { getStaticData } from '~/app/getters/getStaticData'
-import { getStreaks } from '~/app/getters/getStreaks'
+import { getStreaksByPlayer } from '~/app/getters/getStreaks'
 import { prisma } from '~/prisma'
 
 export const playersRoute = (app: AppType) => {
@@ -102,7 +102,7 @@ export const playersRoute = (app: AppType) => {
             take: 1,
             orderBy: [{ xl: 'asc' }, { endAt: 'asc' }],
           }),
-          getStreaks(player),
+          getStreaksByPlayer(player),
         ])
 
       const wins = games.filter((x) => x.isWin)
@@ -113,8 +113,10 @@ export const playersRoute = (app: AppType) => {
 
       const lastGame = first(lastGames)
       const currentStreakGroup = lastGame?.isWin
-        ? streaks.streaks.find((group) => group.some((g) => g.id === lastGame.id))
-        : []
+        ? streaks.streaksWithMetadata.find((streak) =>
+            streak.games.some((g) => g.id === lastGame.id),
+          )
+        : null
 
       const tiamat = new Set(draconians)
 
@@ -130,8 +132,10 @@ export const playersRoute = (app: AppType) => {
         player,
         stats,
         streaks: {
-          ...omit(streaks, 'streaks'),
-          current: currentStreakGroup?.length ?? 0,
+          total: streaks.total,
+          average: streaks.average,
+          best: streaks.best,
+          current: currentStreakGroup ? currentStreakGroup.games.length : 0,
         },
         races,
         classes,
@@ -205,10 +209,13 @@ export const playersRoute = (app: AppType) => {
         return null
       }
 
-      const [streaks] = await Promise.all([getStreaks(player)])
+      const streaks = await getStreaksByPlayer(player)
 
       return {
-        streaks,
+        average: streaks.average,
+        best: streaks.best,
+        total: streaks.total,
+        streaks: { streaks: streaks.streaksWithMetadata.map((item) => item.games) },
       }
     }
 

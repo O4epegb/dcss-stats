@@ -2,9 +2,11 @@ import { Player, Game } from '@prisma/client'
 import { orderBy, first } from 'lodash-es'
 import { prisma } from '~/prisma'
 
-export const getStreaks = async (player: Player) => {
-  const streakGames = await prisma.$queryRaw<Game[]>`
-    SELECT * FROM
+export const getStreaksByPlayer = async (player: { id: Player['id'] }) => {
+  type SimpleGame = Pick<Game, 'id' | 'isWin' | 'char' | 'endAt' | 'startAt'>
+
+  const streakGames = await prisma.$queryRaw<SimpleGame[]>`
+    SELECT id, "isWin", char, "endAt", "startAt" FROM
         (SELECT * 
           , LAG("isWin") OVER (ORDER BY "startAt") AS lag
           , LAG("isWin", 2) OVER (ORDER BY "startAt") AS lag2
@@ -14,8 +16,8 @@ export const getStreaks = async (player: Player) => {
     WHERE ("isWin" = TRUE AND (lag = TRUE OR lead = TRUE)) OR ("isWin" = FALSE AND lag = TRUE AND lag2 = TRUE)
     `
 
-  const streaks: Array<Game[]> = []
-  let current: Game[] = []
+  const streaks: Array<SimpleGame[]> = []
+  let current: SimpleGame[] = []
 
   streakGames.forEach((game, index) => {
     const next = streakGames[index + 1]
@@ -37,8 +39,15 @@ export const getStreaks = async (player: Player) => {
       streaksWithoutBreaks.reduce((acc, streak) => acc + streak.length, 0) /
       streaksWithoutBreaks.length,
     best: first(orderedStreaks)?.length,
-    streaks: streaks.map((streak) =>
-      streak.map(({ id, isWin, char, endAt }) => ({ id, isWin, char, endAt })),
-    ),
+    streaksWithMetadata: streaks.map((streak) => {
+      const games = streak.map(({ id, isWin, char, endAt }) => ({ id, isWin, char, endAt }))
+
+      return {
+        games,
+        isUniqueByChar:
+          new Set(games.filter((game) => game.isWin).map((game) => game.char)).size ===
+          games.length,
+      }
+    }),
   }
 }

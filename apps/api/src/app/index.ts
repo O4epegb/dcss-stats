@@ -10,6 +10,7 @@ import { playersRoute } from './routes/players'
 import { searchRoute } from './routes/search'
 import { serversRoute } from './routes/servers'
 import { staticDataRoute } from './routes/static-data'
+import { streaksRoute } from './routes/streaks'
 import { streamsRoute } from './routes/streams'
 import { suggestRoute } from './routes/suggest'
 import { supportersRoute } from './routes/supporters'
@@ -39,6 +40,7 @@ for (const route of [
   streamsRoute,
   supportersRoute,
   chartRoute,
+  streaksRoute,
   devRoute,
 ] as const) {
   await route(app)

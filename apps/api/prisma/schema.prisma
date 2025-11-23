@@ -36,14 +36,15 @@ model Logfile {
 }
 
 model Player {
-  id    String  @id
-  name  String  @unique
-  game  Game[]
-  isBot Boolean @default(false)
+  id      String   @id
+  name    String   @unique
+  game    Game[]
+  isBot   Boolean  @default(false)
+  streaks Streak[]
 }
 
 model Game {
-  id              String   @id
+  id              String       @id
   isWin           Boolean
   startAt         DateTime
   endAt           DateTime
@@ -64,8 +65,8 @@ model Game {
   duration        Int
   uniqueRunes     Int
   runes           Int
-  gems            Int      @default(0)
-  intactGems      Int      @default(0)
+  gems            Int          @default(0)
+  intactGems      Int          @default(0)
   branch          String
   lvl             Int
   fifteenskills   String[]
@@ -87,9 +88,10 @@ model Game {
   goldfound       Int?
   goldspent       Int?
   playerId        String
-  player          Player   @relation(fields: [playerId], references: [id])
+  player          Player       @relation(fields: [playerId], references: [id])
   logfileId       String
-  logfile         Logfile  @relation(fields: [logfileId], references: [id])
+  logfile         Logfile      @relation(fields: [logfileId], references: [id])
+  streakGames     StreakGame[]
 
   @@index([playerId])
   @@index([playerId, startAt])
@@ -101,6 +103,32 @@ model Game {
   @@index([normalizedRace])
   @@index([god])
   @@index([isWin])
+}
+
+model Streak {
+  id             String       @id @default(cuid())
+  playerId       String
+  player         Player       @relation(fields: [playerId], references: [id])
+  games          StreakGame[]
+  startedAt      DateTime
+  endedAt        DateTime
+  length         Int
+  isBroken       Boolean
+  isUniqueByChar Boolean
+
+  @@index([playerId, endedAt])
+  @@index([length, endedAt])
+}
+
+model StreakGame {
+  id       String @id
+  streakId String
+  streak   Streak @relation(fields: [streakId], references: [id])
+  gameId   String
+  game     Game   @relation(fields: [gameId], references: [id])
+
+  @@unique([streakId, gameId])
+  @@index([gameId])
 }
 
 model InvalidGame {

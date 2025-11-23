@@ -150,6 +150,7 @@ __metadata:
     "@types/qs": "npm:^6.9.18"
     "@types/semver": "npm:^7.5.8"
     axios: "npm:^1.12.2"
+    cron: "npm:^4.3.4"
     dayjs: "npm:^1.11.13"
     dotenv: "npm:^16.4.7"
     dotenv-flow: "npm:^4.1.0"
@@ -2154,6 +2155,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/luxon@npm:~3.7.0":
+  version: 3.7.1
+  resolution: "@types/luxon@npm:3.7.1"
+  checksum: 10/c7bc164c278393ea0be938f986c74b4cddfab9013b1aff4495b016f771ded1d5b7b7b4825b2c7f0b8799edce19c5f531c28ff434ab3dedf994ac2d99a20fd4c4
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 20.14.11
   resolution: "@types/node@npm:20.14.11"
@@ -3380,6 +3388,16 @@ __metadata:
   version: 1.0.2
   resolution: "cookie@npm:1.0.2"
   checksum: 10/f5817cdc84d8977761b12549eba29435e675e65c7fef172bc31737788cd8adc83796bf8abe6d950554e7987325ad2d9ac2971c5bd8ff0c4f81c145f82e4ab1be
+  languageName: node
+  linkType: hard
+
+"cron@npm:^4.3.4":
+  version: 4.3.4
+  resolution: "cron@npm:4.3.4"
+  dependencies:
+    "@types/luxon": "npm:~3.7.0"
+    luxon: "npm:~3.7.0"
+  checksum: 10/3350d1c2c34e5c159a7d2be5645eb52d72ac29cc081434703d118a64a5ff85d199ce940c446e6220aa2e348c7f05377c69f08d706eb5a076a0cda713cdd1f213
   languageName: node
   linkType: hard
 
@@ -6448,6 +6466,13 @@ __metadata:
   version: 7.10.1
   resolution: "lru-cache@npm:7.10.1"
   checksum: 10/34a917a3764992fa1e8ed9449afece4c2b1ee8787bb904770d76994f84d3d6bdc7175cc3017ce2f1faaf87518f49bfb1f986de20ab775791f50fea340e551bda
+  languageName: node
+  linkType: hard
+
+"luxon@npm:~3.7.0":
+  version: 3.7.2
+  resolution: "luxon@npm:3.7.2"
+  checksum: 10/b24cd205ed306ce7415991687897dcc4027921ae413c9116590bc33a95f93b86ce52cf74ba72b4f5c5ab1c10090517f54ac8edfb127c049e0bf55b90dc2260be
   languageName: node
   linkType: hard
 
