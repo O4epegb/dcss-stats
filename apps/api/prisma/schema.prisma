@@ -105,19 +105,26 @@ model Game {
   @@index([isWin])
 }
 
-model Streak {
-  id             String       @id @default(cuid())
-  playerId       String
-  player         Player       @relation(fields: [playerId], references: [id])
-  games          StreakGame[]
-  startedAt      DateTime
-  endedAt        DateTime
-  length         Int
-  isBroken       Boolean
-  isUniqueByChar Boolean
+enum StreakType {
+  UNIQUE
+  MIXED
+  MONO
+}
 
-  @@index([playerId, endedAt])
-  @@index([length, endedAt])
+model Streak {
+  id        String       @id @default(cuid())
+  playerId  String
+  player    Player       @relation(fields: [playerId], references: [id])
+  games     StreakGame[]
+  startedAt DateTime
+  endedAt   DateTime?
+  length    Int
+  isBroken  Boolean
+  type      StreakType
+
+  @@index([playerId])
+  @@index([length])
+  @@index([type])
 }
 
 model StreakGame {

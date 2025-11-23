@@ -1,4 +1,4 @@
-import { Player, Game } from '@prisma/client'
+import { Player, Game, StreakType } from '@prisma/client'
 import { orderBy, first } from 'lodash-es'
 import { prisma } from '~/prisma'
 
@@ -40,13 +40,26 @@ export const getStreaksByPlayer = async (player: { id: Player['id'] }) => {
       streaksWithoutBreaks.length,
     best: first(orderedStreaks)?.length,
     streaksWithMetadata: streaks.map((streak) => {
-      const games = streak.map(({ id, isWin, char, endAt }) => ({ id, isWin, char, endAt }))
+      const games = streak.map(({ id, isWin, char, endAt, startAt }) => ({
+        id,
+        isWin,
+        char,
+        endAt,
+        startAt,
+      }))
+
+      const winChars = games.filter((game) => game.isWin).map((game) => game.char)
+      const isUniqueByChar = new Set(winChars).size === games.length
+      const isMono = new Set(winChars).size === 1
+      const type: StreakType = isUniqueByChar
+        ? StreakType.UNIQUE
+        : isMono
+          ? StreakType.MONO
+          : StreakType.MIXED
 
       return {
         games,
-        isUniqueByChar:
-          new Set(games.filter((game) => game.isWin).map((game) => game.char)).size ===
-          games.length,
+        type,
       }
     }),
   }

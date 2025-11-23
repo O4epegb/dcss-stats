@@ -1,3 +1,4 @@
+import { StreakType } from '@prisma/client'
 import { CronJob } from 'cron'
 import dayjs from 'dayjs'
 import PQueue from 'p-queue'
@@ -68,7 +69,19 @@ export const streaksRoute = (app: AppType) => {
     const totalStreaks = await prisma.streak.count()
     const uniqueCharStreaks = await prisma.streak.count({
       where: {
-        isUniqueByChar: true,
+        type: 'UNIQUE',
+      },
+    })
+    const monoCharStreaks = await prisma.streak.count({
+      where: {
+        type: 'MONO',
+      },
+    })
+    const streaksWithGames = await prisma.streak.count({
+      where: {
+        games: {
+          some: {},
+        },
       },
     })
 
@@ -76,7 +89,9 @@ export const streaksRoute = (app: AppType) => {
       queueSize: streakQueue.size,
       queueStatus: streakQueue.isPaused ? 'paused' : 'running',
       totalStreaks,
+      streaksWithGames,
       uniqueCharStreaks,
+      monoCharStreaks,
       playersWithStreaks,
       playersWithoutStreaks,
     }
@@ -84,7 +99,7 @@ export const streaksRoute = (app: AppType) => {
 
   const Querystring = Type.Object({
     isBroken: Type.Optional(Type.Boolean()),
-    isUniqueByChar: Type.Optional(Type.Boolean()),
+    type: Type.Optional(Type.Enum(StreakType)),
   })
 
   app.get(
@@ -102,16 +117,21 @@ export const streaksRoute = (app: AppType) => {
         },
         where: {
           isBroken: request.query.isBroken,
-          isUniqueByChar: request.query.isUniqueByChar,
+          type: request.query.type,
+          length: {
+            gt: 0,
+          },
         },
         include: {
+          player: true,
           games: {
             orderBy: {
               game: {
                 startAt: 'asc',
               },
             },
-            include: {
+            select: {
+              gameId: true,
               game: {
                 select: {
                   char: true,
@@ -123,7 +143,9 @@ export const streaksRoute = (app: AppType) => {
         },
       })
 
-      return streaks
+      return {
+        data: streaks,
+      }
     },
   )
 }
@@ -188,7 +210,7 @@ const calculateStreaksForPlayer = async (playerId: string) => {
           endedAt: new Date(),
           length: 0,
           isBroken: true,
-          isUniqueByChar: false,
+          type: StreakType.MIXED,
         },
       })
     }
@@ -205,11 +227,11 @@ const calculateStreaksForPlayer = async (playerId: string) => {
       await tx.streak.create({
         data: {
           playerId,
-          startedAt: firstGame.endAt,
-          endedAt: lastGame.endAt,
+          startedAt: firstGame.startAt,
+          endedAt: lastGame.isWin ? undefined : lastGame.endAt,
           length: streakGames.filter((x) => x.isWin).length,
           isBroken: !lastGame.isWin,
-          isUniqueByChar: streaksWithMetadata.isUniqueByChar,
+          type: streaksWithMetadata.type,
           games: {
             createMany: {
               data: streakGames.map((game) => ({
