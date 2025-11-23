@@ -4,7 +4,7 @@ import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
 
-export const ThemeSelector = () => {
+export const ThemeSelector = ({ className }: { className?: string }) => {
   const [mounted, setMounted] = useState(false)
   const { theme, resolvedTheme, setTheme } = useTheme()
 
@@ -27,6 +27,7 @@ export const ThemeSelector = () => {
       }
     >
       <button
+        className={className}
         onClick={() => setTheme(theme === 'dark' ? 'light' : theme === 'light' ? 'system' : 'dark')}
       >
         <svg

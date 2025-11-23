@@ -136,6 +136,7 @@ export const streaksRoute = (app: AppType) => {
                 select: {
                   char: true,
                   isWin: true,
+                  endAt: true,
                 },
               },
             },
