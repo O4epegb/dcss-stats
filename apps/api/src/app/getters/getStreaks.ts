@@ -49,7 +49,7 @@ export const getStreaksByPlayer = async (player: { id: Player['id'] }) => {
       }))
 
       const winChars = games.filter((game) => game.isWin).map((game) => game.char)
-      const isUniqueByChar = new Set(winChars).size === games.length
+      const isUniqueByChar = new Set(winChars).size === winChars.length
       const isMono = new Set(winChars).size === 1
       const type: StreakType = isUniqueByChar
         ? StreakType.UNIQUE
