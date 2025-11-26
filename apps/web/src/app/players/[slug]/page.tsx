@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { cacheLife, cacheTag } from 'next/cache'
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { Suspense } from 'react'
@@ -58,11 +57,6 @@ export default async function Page(props: PageProps<'/players/[slug]'>) {
 }
 
 async function PageContent({ slug }: { slug: string }) {
-  'use cache: private'
-
-  cacheTag(`player-${slug}`)
-  cacheLife('seconds')
-
   const cookiesStoreData = await getCookieStoreData()
   const data = await getPlayerData(slug)
 
@@ -73,8 +67,6 @@ export async function generateMetadata({
   params,
 }: PageProps<'/players/[slug]'>): Promise<Metadata> {
   'use cache'
-
-  cacheLife('seconds')
 
   const { slug } = await params
 
