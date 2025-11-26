@@ -46,6 +46,11 @@ export interface StreaksInfo {
   best: number
   average: number
   current: number
+  inTop100: Array<
+    Pick<Streak, 'isBroken' | 'length' | 'type'> & {
+      rank: number
+    }
+  >
 }
 
 export interface Player {
@@ -222,4 +227,21 @@ export type Donation = {
   currentPeriodEnd?: string
   isActiveNow?: boolean
   durationType?: string
+}
+
+export type Streak = {
+  id: string
+  startedAt: string
+  endedAt?: string | null
+  isBroken: boolean
+  length: number
+  type: 'UNIQUE' | 'MONO' | 'MIXED'
+  player: Player
+  games: {
+    gameId: string
+    game: {
+      char: string
+      isWin: boolean
+    }
+  }[]
 }

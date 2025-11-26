@@ -8,6 +8,7 @@ import { getMatrix } from '~/app/getters/getMatrix'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { getStreaksByPlayer } from '~/app/getters/getStreaks'
 import { prisma } from '~/prisma'
+import { isDefined } from '~/utils'
 
 export const playersRoute = (app: AppType) => {
   app.get<{
@@ -79,31 +80,51 @@ export const playersRoute = (app: AppType) => {
         return null
       }
 
-      const [{ races, classes, gods }, games, firstGames, lastGames, stats, lowestXlWins, streaks] =
-        await Promise.all([
-          getStaticData(),
-          prisma.game.findMany({
-            where: { playerId: player.id },
-            orderBy: { startAt: 'asc' },
-          }),
-          findGamesIncludeServer({
-            where: { playerId: player.id },
-            take: 1,
-            orderBy: { startAt: 'asc' },
-          }),
-          findGamesIncludeServer({
-            where: { playerId: player.id },
-            take: LIMIT,
-            orderBy: { startAt: 'desc' },
-          }),
-          getAggregatedPlayerStats(player),
-          findGamesIncludeServer({
-            where: { playerId: player.id, isWin: true },
-            take: 1,
-            orderBy: [{ xl: 'asc' }, { endAt: 'asc' }],
-          }),
-          getStreaksByPlayer(player),
-        ])
+      const [
+        { races, classes, gods },
+        games,
+        firstGames,
+        lastGames,
+        stats,
+        lowestXlWins,
+        streaks,
+        top100Streaks,
+      ] = await Promise.all([
+        getStaticData(),
+        prisma.game.findMany({
+          where: { playerId: player.id },
+          orderBy: { startAt: 'asc' },
+        }),
+        findGamesIncludeServer({
+          where: { playerId: player.id },
+          take: 1,
+          orderBy: { startAt: 'asc' },
+        }),
+        findGamesIncludeServer({
+          where: { playerId: player.id },
+          take: LIMIT,
+          orderBy: { startAt: 'desc' },
+        }),
+        getAggregatedPlayerStats(player),
+        findGamesIncludeServer({
+          where: { playerId: player.id, isWin: true },
+          take: 1,
+          orderBy: [{ xl: 'asc' }, { endAt: 'asc' }],
+        }),
+        getStreaksByPlayer(player),
+        prisma.streak.findMany({
+          take: 100,
+          orderBy: {
+            length: 'desc',
+          },
+          select: {
+            playerId: true,
+            isBroken: true,
+            length: true,
+            type: true,
+          },
+        }),
+      ])
 
       const wins = games.filter((x) => x.isWin)
       const firstWin = wins[0]
@@ -128,6 +149,17 @@ export const playersRoute = (app: AppType) => {
 
       const gamesByRace = groupBy(games, (g) => g.race)
 
+      const streaksInTop100 = top100Streaks
+        .map((streak, index) =>
+          streak.playerId === player.id
+            ? {
+                rank: index + 1,
+                ...streak,
+              }
+            : null,
+        )
+        .filter(isDefined)
+
       return {
         player,
         stats,
@@ -136,6 +168,7 @@ export const playersRoute = (app: AppType) => {
           average: streaks.average,
           best: streaks.best,
           current: currentStreakGroup ? currentStreakGroup.games.length : 0,
+          inTop100: streaksInTop100,
         },
         races,
         classes,

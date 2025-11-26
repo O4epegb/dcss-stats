@@ -16,12 +16,12 @@ export const MainPage = () => {
         <header className="flex w-full flex-wrap items-center justify-between gap-1 gap-y-2 sm:flex-nowrap">
           <Logo />
 
-          <div className="ml-auto flex flex-1 justify-end gap-3 sm:w-auto sm:gap-5">
+          <div className="ml-auto flex flex-1 justify-end gap-2 text-xs sm:w-auto sm:gap-3 sm:text-sm md:gap-5 md:text-base">
             <Link
               className="group relative flex flex-col items-center justify-center"
               href="/support"
             >
-              <span className="flex items-center justify-center gap-1 text-xs group-hover:underline sm:text-base">
+              <span className="flex items-center justify-center gap-1 group-hover:underline">
                 Support
               </span>
               <Suspense fallback={null}>
@@ -29,13 +29,19 @@ export const MainPage = () => {
               </Suspense>
             </Link>
             <Link className="group relative flex items-center justify-center" href="/charts">
-              <span className="text-xs group-hover:underline sm:text-base">Charts</span>
+              <span className="group-hover:underline">Charts</span>
+            </Link>
+            <Link className="group relative flex items-center justify-center" href="/streaks">
+              <span className="group-hover:underline">Streaks</span>
+              <span className="absolute top-full rounded bg-amber-400 px-1 text-xs text-nowrap text-black">
+                new
+              </span>
             </Link>
             <Link className="group flex items-center justify-center" href="/suggest">
-              <span className="text-xs group-hover:underline sm:text-base">Combos</span>
+              <span className="group-hover:underline">Combos</span>
             </Link>
             <Link className="group flex items-center justify-center" href="/search">
-              <span className="text-xs group-hover:underline sm:text-base">Search</span>{' '}
+              <span className="group-hover:underline">Search</span>{' '}
             </Link>
             <ThemeSelector />
           </div>

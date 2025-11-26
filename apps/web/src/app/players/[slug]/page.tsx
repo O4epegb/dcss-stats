@@ -66,8 +66,6 @@ async function PageContent({ slug }: { slug: string }) {
 export async function generateMetadata({
   params,
 }: PageProps<'/players/[slug]'>): Promise<Metadata> {
-  'use cache'
-
   const { slug } = await params
 
   const response = await fetchApi(`/players/${slug}`)

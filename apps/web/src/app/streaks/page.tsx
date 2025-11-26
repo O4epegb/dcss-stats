@@ -7,7 +7,7 @@ import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
 import { defaultMetaTitle } from '~/constants'
-import { Player } from '~/types'
+import { Streak } from '~/types'
 import { cn, date } from '~/utils'
 
 const title = `Streaks | ${defaultMetaTitle}`
@@ -70,28 +70,9 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
     fetchParams.append('isBroken', String(searchParams.isBroken))
   }
 
-  const {
-    data,
-  }: {
-    data: {
-      id: string
-      startedAt: string
-      endedAt?: string | null
-      isBroken: boolean
-      length: number
-      type: 'UNIQUE' | 'MONO' | 'MIXED'
-      player: Player
-      games: {
-        gameId: string
-        game: {
-          char: string
-          isWin: boolean
-        }
-      }[]
-    }[]
-  } = await fetchApi('/streaks' + (fetchParams.size ? `?${fetchParams.toString()}` : '')).then(
-    (r) => r.json(),
-  )
+  const { data }: { data: Streak[] } = await fetchApi(
+    '/streaks' + (fetchParams.size ? `?${fetchParams.toString()}` : ''),
+  ).then((r) => r.json())
 
   return (
     <>
