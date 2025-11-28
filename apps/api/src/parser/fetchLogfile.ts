@@ -1,11 +1,11 @@
-import { exec } from 'child_process'
+import { execFile } from 'child_process'
 import util from 'util'
 import dayjs from 'dayjs'
 import fse from 'fs-extra'
 import prettyBytes from 'pretty-bytes'
 import { logger } from '~/utils'
 
-const pExec = util.promisify(exec)
+const pExecFile = util.promisify(execFile)
 
 export const fetchLogfile = async (remoteUrl: string, localUrl: string) => {
   await fse.ensureFile(localUrl)
@@ -15,9 +15,16 @@ export const fetchLogfile = async (remoteUrl: string, localUrl: string) => {
 
   logger(`wget: starting ${remoteUrl}`)
 
-  await pExec(
-    `wget --no-check-certificate --tries=2 --quiet --timeout=90 --continue ${remoteUrl} -O ${localUrl}`,
-  )
+  await pExecFile(`wget`, [
+    '--no-check-certificate',
+    '--tries=2',
+    '--quiet',
+    '--timeout=90',
+    '--continue',
+    remoteUrl,
+    '-O',
+    localUrl,
+  ])
 
   const newSize = fse.statSync(localUrl).size
 
