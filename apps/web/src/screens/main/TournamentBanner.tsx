@@ -1,4 +1,3 @@
-import { cacheLife } from 'next/cache'
 import { date } from '~/utils'
 
 const version = '0.33'
@@ -7,7 +6,6 @@ const end = '2025-05-18T20:00:00.000Z'
 
 export const TournamentBanner = async () => {
   'use cache'
-  cacheLife('minutes')
 
   const now = date()
 

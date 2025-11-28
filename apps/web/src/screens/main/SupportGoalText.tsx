@@ -1,10 +1,8 @@
-import { cacheLife } from 'next/cache'
 import { fetchApi } from '~/api/server'
 import { SupportersCurrentResponse } from '~/types'
 
 export const SupportGoalText = async () => {
   'use cache'
-  cacheLife('minutes')
 
   const data: SupportersCurrentResponse = await fetchApi('/supporters/current').then((r) =>
     r.json(),

@@ -1,4 +1,4 @@
-import { cacheLife, cacheTag } from 'next/cache'
+import { cacheLife } from 'next/cache'
 import { memo, Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { Game } from '~/types'
@@ -20,7 +20,6 @@ export const HighscoreTables = () => {
 export const RestTables = memo(async () => {
   'use cache'
 
-  cacheTag('gamesHighscores')
   cacheLife('days')
 
   const res = await fetchApi('/main?highscores=true')
@@ -66,9 +65,6 @@ export const RestTables = memo(async () => {
 
 const RecentWinsTable = memo(async () => {
   'use cache'
-
-  cacheTag('gamesRecentWins')
-  cacheLife('minutes')
 
   const res = await fetchApi('/main?recentWins=true')
   const {

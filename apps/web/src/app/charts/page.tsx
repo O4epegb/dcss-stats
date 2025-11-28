@@ -19,9 +19,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function SearchPage() {
-  'use cache'
-
+export default async function ChartsPage() {
   const res = await fetchApi('/static-data')
   const staticData: StaticData = await res.json()
 

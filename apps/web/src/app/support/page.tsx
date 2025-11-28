@@ -83,8 +83,6 @@ const githubSponsorUrl = process.env.NEXT_PUBLIC_GITHUB_SPONSOR_URL
 const kofiUrl = process.env.NEXT_PUBLIC_KOFI_URL
 
 const SupportPage = async () => {
-  'use cache'
-
   const res = await fetchApi('/supporters/current')
   const listRes = await fetchApi('/supporters')
 

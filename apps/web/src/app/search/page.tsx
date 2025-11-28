@@ -17,8 +17,6 @@ export const metadata: Metadata = {
 }
 
 export default async function SearchPage() {
-  'use cache'
-
   const res = await fetchApi('/static-data')
   const data: StaticData = await res.json()
 
