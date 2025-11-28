@@ -10,6 +10,12 @@ import { defaultMetaTitle } from '~/constants'
 import { Streak } from '~/types'
 import { cn, date } from '~/utils'
 
+// Ideas for streaks data tab:
+// Most streakable players (total combined length or average length)
+// Most streakable combo/race/class
+// Most streaks broken by X
+// Filters: min length, max length, date range
+
 const title = `Streaks | ${defaultMetaTitle}`
 
 export const metadata: Metadata = {

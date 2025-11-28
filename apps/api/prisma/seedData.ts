@@ -423,6 +423,7 @@ export const data = {
       url: 'http://s-z.org',
       baseUrl: 'https://loom.shalott.org',
       morgueUrl: 'https://f000.backblazeb2.com/file/dcss-archives/www.dobrazupa.org/morgue',
+      isDormant: true,
       logfiles: [
         ...range(10, 18).map((version) => ({
           path: `/server-xlogs/cszo/meta/0.${version}/logfile`,
@@ -442,6 +443,7 @@ export const data = {
       url: 'http://rl.heh.fi',
       baseUrl: 'https://loom.shalott.org',
       morgueUrl: 'http://rl.heh.fi/morgue',
+      isDormant: true,
       logfiles: [
         ...[5, 6, 7, 12].map((version) => ({
           path: `/server-xlogs/remote.rhf-logfile-0.${version}`,
@@ -466,6 +468,7 @@ export const data = {
       url: 'https://crawl.jorgrun.rocks',
       baseUrl: 'https://loom.shalott.org',
       morgueUrl: 'https://s3-us-west-2.amazonaws.com/crawl.jorgrun.rocks/morgue',
+      isDormant: true,
       logfiles: [
         ...range(17, 23).map((version) => ({
           path: `/server-xlogs/cjr/meta/0.${version}/logfile`,
