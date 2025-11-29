@@ -1,4 +1,5 @@
 import './env'
+import '~/telemetry'
 import Bugsnag from '@bugsnag/js'
 import { app } from './app'
 import { startParsing } from './parser'

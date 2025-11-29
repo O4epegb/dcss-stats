@@ -1,4 +1,5 @@
 import cors from '@fastify/cors'
+// import { fastifyOtelInstrumentation } from '~/telemetry'
 import { app } from './app'
 import { chartRoute } from './routes/charts'
 import { devRoute } from './routes/dev'
@@ -18,6 +19,12 @@ import { topRoute } from './routes/top'
 import { initSwagger } from './swagger'
 
 export * from './app'
+
+// if (process.env.ENABLE_OTEL) {
+// // Seems like it's needed with registerOnInitialization: true
+// // Keeping for now just in case
+//   await app.register(fastifyOtelInstrumentation.plugin())
+// }
 
 app.register(cors, {
   origin: true,

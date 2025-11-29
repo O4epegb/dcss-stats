@@ -3,7 +3,7 @@ name: 'dcss-api'
 services:
   postgres:
     container_name: postgres16
-    restart: always
+    restart: no
     image: postgres:16
     ports:
       - '5432:5432'
@@ -46,3 +46,43 @@ services:
       - 'checkpoint_timeout=15min'
       - '-c'
       - 'checkpoint_completion_target=0.9'
+
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    restart: no
+    profiles:
+      - metrics
+    ports:
+      - '9090:9090'
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - node_exporter
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.10.2
+    restart: no
+    profiles:
+      - metrics
+    container_name: node_exporter
+
+  grafana:
+    image: grafana/grafana-enterprise:12.1
+    container_name: grafana
+    restart: no
+    profiles:
+      - metrics
+    environment:
+      - GF_SERVER_HTTP_PORT=3333
+    ports:
+      - '3333:3333'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+
+volumes:
+  grafana-storage:
