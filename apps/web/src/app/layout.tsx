@@ -26,7 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <Providers>
-          <div className="mb-4 border-b border-yellow-300 bg-yellow-100 p-2 text-center text-xs md:text-sm">
+          <div className="mb-4 border-b border-yellow-300 bg-yellow-100 p-2 text-center text-xs text-black md:text-sm">
             Data maintenance is in progress. Some stats may be outdated or missing.
           </div>
           {children}

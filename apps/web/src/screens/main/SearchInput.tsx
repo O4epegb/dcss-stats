@@ -8,14 +8,12 @@ import { useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
-import { Loader } from '~/components/ui/Loader'
 import { Player } from '~/types'
 
 type SearchItem = Player
 
 export const SearchInput = ({ nickname }: { nickname: string }) => {
   const [query, setQuery] = useState('')
-  const [isNavigating, setIsNavigating] = useState(false)
 
   const router = useRouter()
   const [debouncedQuery, setDebouncedQuery] = useState('')
@@ -38,7 +36,6 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
   const items = data ?? []
 
   const goToPlayerPage = useCallback((slug: string) => {
-    setIsNavigating(true)
     router.push(`/players/${slug}`)
   }, [])
 
@@ -56,18 +53,11 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
 
   return (
     <div className="relative">
-      {isNavigating && (
-        <div className="absolute top-[50%] right-2 -translate-y-1/2">
-          <Loader />
-        </div>
-      )}
-
       <input
         placeholder={`Search player by nickname, e.g. "${nickname}"`}
         className="block h-10 w-full rounded-sm border border-gray-400 px-2"
         {...getInputProps({
           value: query,
-          disabled: isNavigating,
           onFocus(e) {
             e.target.select()
           },
