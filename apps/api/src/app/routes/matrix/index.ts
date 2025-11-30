@@ -4,6 +4,7 @@ import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
+import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 
 export const matrixRoute = (app: AppType) => {
@@ -37,12 +38,21 @@ export const matrixRoute = (app: AppType) => {
         const [gamesGrouped, winsGrouped] = await Promise.all([
           prisma.game.groupBy({
             by: groupByList,
-            where: { ...where, versionShort },
+            where: {
+              ...where,
+              versionShort: undefined,
+              versionInteger: versionShort ? getVersionIntegerFromString(versionShort) : undefined,
+            },
             _count: { _all: true },
           }),
           prisma.game.groupBy({
             by: groupByList,
-            where: { ...where, versionShort, isWin: true },
+            where: {
+              ...where,
+              versionShort: undefined,
+              versionInteger: versionShort ? getVersionIntegerFromString(versionShort) : undefined,
+              isWin: true,
+            },
             _count: { _all: true },
           }),
         ])

@@ -4,6 +4,7 @@ import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
+import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 import { isDefined } from '~/utils'
 
@@ -25,7 +26,7 @@ export const chartRoute = async (app: AppType) => {
     groupBy: Type.String(),
     aggregationType: Type.String(),
     aggregationField: Type.String(),
-    version: Type.Union(versions.map((version) => Type.Literal(version))),
+    version: Type.Enum(versions),
   })
   type QueryType = Static<typeof Query>
 
@@ -53,7 +54,9 @@ export const chartRoute = async (app: AppType) => {
             by: [groupBy as Prisma.GameScalarFieldEnum],
             where: {
               ...where,
-              versionShort: groupBy === 'versionShort' ? undefined : version,
+              versionShort: undefined,
+              versionInteger:
+                groupBy === 'versionShort' ? undefined : getVersionIntegerFromString(version),
             },
             ...{
               [`_${aggregationType}`]: {

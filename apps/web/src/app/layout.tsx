@@ -25,7 +25,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className="antialiased">
-        <Providers>{children}</Providers>
+        <Providers>
+          <div className="mb-4 border-b border-yellow-300 bg-yellow-100 p-2 text-center text-xs md:text-sm">
+            Data maintenance is in progress. Some stats may be outdated or missing.
+          </div>
+          {children}
+        </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
         {process.env.NODE_ENV === 'production' && (
           <Script

@@ -67,6 +67,7 @@ export interface Game {
   player?: Player
   version: string
   versionShort: string
+  versionInteger: number
   score: number
   xl: number
   race: string

@@ -11,6 +11,7 @@ import {
   getLocalMorguePath,
   getRemoteMorguePath,
 } from '~/parser/morgue/fetchMorgue'
+import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 import { GameWithLogfileAndServer } from '~/types'
 
@@ -52,7 +53,8 @@ export const suggestExperimentalRoute = (app: AppType) => {
           where: {
             ...where,
             isWin: true,
-            versionShort,
+            versionShort: undefined,
+            versionInteger: versionShort ? getVersionIntegerFromString(versionShort) : undefined,
             logfile: {
               server: {
                 isDormant: false,

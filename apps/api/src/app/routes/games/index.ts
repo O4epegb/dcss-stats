@@ -4,6 +4,7 @@ import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
+import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 
 export const gamesRoute = (app: AppType) => {
@@ -50,7 +51,7 @@ export const gamesRoute = (app: AppType) => {
       const where: Prisma.GameWhereInput = {
         id,
         playerId: player?.toLowerCase(),
-        versionShort: { in: version },
+        versionInteger: { in: version?.map((v) => getVersionIntegerFromString(v)) },
         isWin,
         raceAbbr: race,
         classAbbr: klass,

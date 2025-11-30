@@ -4,6 +4,17 @@ import { keys, pickBy, without } from 'lodash-es'
 const splitRegExp = /(?:[^:]|::)+/g
 const keyValueRegExp = /(?:[^=])+/g
 
+export const getVersionIntegerFromString = (versionShort: string) => {
+  const [major, minor] = versionShort.split('.').map(Number)
+  return (major || 0) * 1000 + (minor || 0)
+}
+
+export const getVersionStringFromInteger = (versionInteger: number) => {
+  const major = Math.floor(versionInteger / 1000)
+  const minor = versionInteger % 1000
+  return `${major}.${minor}`
+}
+
 export const parseRawGameFromLine = (line: string) => {
   const matched = Array.from(line.trim().match(splitRegExp) ?? [])
   return matched.reduce(

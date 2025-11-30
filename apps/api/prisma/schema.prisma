@@ -50,6 +50,7 @@ model Game {
   endAt           DateTime
   version         String
   versionShort    String
+  versionInteger  Int          @default(0)
   score           Int
   xl              Int
   race            String
@@ -99,6 +100,7 @@ model Game {
   @@index([startAt])
   @@index([endAt])
   @@index([versionShort])
+  @@index([versionInteger])
   @@index([normalizedClass])
   @@index([normalizedRace])
   @@index([god])
@@ -130,9 +132,9 @@ model Streak {
 model StreakGame {
   id       String @id
   streakId String
-  streak   Streak @relation(fields: [streakId], references: [id])
+  streak   Streak @relation(fields: [streakId], references: [id], onDelete: Cascade)
   gameId   String
-  game     Game   @relation(fields: [gameId], references: [id])
+  game     Game   @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([streakId, gameId])
   @@index([gameId])

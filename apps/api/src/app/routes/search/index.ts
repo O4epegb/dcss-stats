@@ -5,6 +5,7 @@ import { AppType } from '~/app/app'
 import { skills } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 import { getStaticData } from '~/app/getters/getStaticData'
+import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 import { UnpackedArray } from '~/types'
 import { isDefined } from '~/utils'
@@ -282,11 +283,18 @@ export const getFilterOptions = async () => {
     },
     {
       type: 'select',
-      dbField: 'versionShort',
+      dbField: 'versionInteger',
       queryName: 'Version',
       conditions: defaultConditions,
       values: versions,
       transformValue: (value: string) => value,
+      getValue: (item: FilterItem, condition: (typeof defaultConditions)[number]) => {
+        return {
+          versionInteger: {
+            [condition.toSql]: getVersionIntegerFromString(item.value),
+          },
+        }
+      },
     },
   ] as const
 

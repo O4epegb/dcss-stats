@@ -5,7 +5,12 @@ import { chunk, uniq } from 'lodash-es'
 import { hasher as createHasher } from 'node-object-hash'
 import { prisma } from '~/prisma'
 import { LogfileWithServer } from '~/types'
-import { ParsedGame, parseRawGameFromLine, getGameFromCandidate } from './utils'
+import {
+  ParsedGame,
+  parseRawGameFromLine,
+  getGameFromCandidate,
+  getVersionIntegerFromString,
+} from './utils'
 
 const hasher = createHasher()
 
@@ -70,12 +75,14 @@ export const processGames = async (file: LogfileWithServer, lines: string[]) => 
       data: chunk.map((rawGame) => {
         const raceAbbr = normalizeRaceAbbr(rawGame)
         const classAbbr = normalizeClassAbbr(rawGame)
+        const versionShort = rawGame.v.match(versionRegExp)![0]
 
         return {
           id: rawGame.id,
           isWin: rawGame.ktyp === 'winning',
           version: rawGame.v,
-          versionShort: rawGame.v.match(versionRegExp)![0],
+          versionShort,
+          versionInteger: getVersionIntegerFromString(versionShort),
           race: rawGame.race,
           class: rawGame.cls,
           normalizedRace: normalizeRace(rawGame),
