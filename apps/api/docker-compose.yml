@@ -53,7 +53,7 @@ services:
       - '-c'
       - 'bgwriter_lru_maxpages=200'
       - '-c'
-      - 'shared_buffers=1GB'
+      - 'shared_buffers=2GB'
       - '-c'
       - 'work_mem=32MB'
       - '-c'
