@@ -26,19 +26,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <Providers>
-          <div className="mb-4 border-b border-yellow-300 bg-yellow-100 p-2 text-center text-xs text-black md:text-sm">
+          {/* <div className="mb-4 border-b border-yellow-300 bg-yellow-100 p-2 text-center text-xs text-black md:text-sm">
             Data maintenance is in progress. Some stats may be outdated or missing.
-          </div>
+          </div> */}
           {children}
         </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
+        {process.env.NODE_ENV === 'production' && <SpeedInsights />}
         {process.env.NODE_ENV === 'production' && (
           <Script
             src="https://analytics.umami.is/script.js"
             data-website-id="ddb2a2da-618f-4c49-b230-c7b9b66ccd7c"
           />
         )}
-        <SpeedInsights />
       </body>
     </html>
   )
