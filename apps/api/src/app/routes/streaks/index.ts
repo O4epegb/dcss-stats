@@ -1,6 +1,7 @@
 import { StreakType } from '@prisma/client'
 import { CronJob } from 'cron'
 import dayjs from 'dayjs'
+import { uniq } from 'lodash-es'
 import PQueue from 'p-queue'
 import Type from 'typebox'
 import { AppType } from '~/app'
@@ -33,8 +34,26 @@ const streaksCronJob = CronJob.from({
       },
     })
 
-    for (const player of players) {
-      streakQueue.add(() => calculateStreaksForPlayer(player.id))
+    const streaksWithNoRelatedGames = await prisma.streak.findMany({
+      where: {
+        games: {
+          none: {},
+        },
+        length: {
+          gt: 0,
+        },
+      },
+      select: {
+        playerId: true,
+      },
+      take: 1000,
+    })
+
+    for (const playerId of uniq([
+      ...players.map((p) => p.id),
+      ...streaksWithNoRelatedGames.map((s) => s.playerId),
+    ])) {
+      streakQueue.add(() => calculateStreaksForPlayer(playerId))
     }
 
     streakQueue.once('idle', () => {
@@ -43,7 +62,7 @@ const streaksCronJob = CronJob.from({
   },
 })
 
-export const streaksRoute = (app: AppType) => {
+export const streaksRoute = async (app: AppType) => {
   if (!process.env.DCSS_SKIP_STREAKS_BACKFILL) {
     startBackFillQueue()
   }

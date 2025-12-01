@@ -94,13 +94,12 @@ model Game {
   logfile         Logfile      @relation(fields: [logfileId], references: [id])
   streakGames     StreakGame[]
 
-  @@index([playerId])
   @@index([playerId, startAt])
   @@index([playerId, endAt])
   @@index([startAt])
   @@index([endAt])
   @@index([versionShort])
-  @@index([versionInteger])
+  @@index([versionInteger, endAt])
   @@index([normalizedClass])
   @@index([normalizedRace])
   @@index([god])
