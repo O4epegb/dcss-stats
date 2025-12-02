@@ -1,7 +1,6 @@
-import { PrismaClient } from '@prisma/client'
+import '~/env'
+import { prisma } from '~/prisma'
 import { data } from './seedData'
-
-const prisma = new PrismaClient()
 
 async function main() {
   for (const server of data.servers) {

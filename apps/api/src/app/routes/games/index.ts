@@ -1,9 +1,9 @@
-import { Prisma } from '@prisma/client'
 import { castArray } from 'lodash-es'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
+import { Prisma } from '~/generated/prisma/client/client'
 import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 

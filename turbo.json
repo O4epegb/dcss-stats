@@ -15,6 +15,7 @@
     "lint": {},
     "format": {},
     "type-check": {},
+    "typegen": {},
     "dev": {
       "cache": false,
       "persistent": true

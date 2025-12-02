@@ -1,4 +1,4 @@
-import { Game, Logfile, Server } from '@prisma/client'
+import { Logfile, Server, Game } from '~/generated/prisma/client/client'
 
 export type LogfileWithServer = Logfile & { server: Server }
 

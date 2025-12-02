@@ -1,8 +1,8 @@
-import { Prisma } from '@prisma/client'
 import { uniq } from 'lodash-es'
 import { Type, Static } from 'typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
+import { Prisma } from '~/generated/prisma/client/client'
 
 import { prisma } from '~/prisma'
 

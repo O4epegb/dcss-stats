@@ -1,9 +1,9 @@
-import { Prisma } from '@prisma/client'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { cache, ttl } from '~/app/cache'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
+import { Prisma } from '~/generated/prisma/client/client'
 import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 

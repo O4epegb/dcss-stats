@@ -1,4 +1,3 @@
-import { StreakType } from '@prisma/client'
 import { CronJob } from 'cron'
 import dayjs from 'dayjs'
 import { uniq } from 'lodash-es'
@@ -6,6 +5,7 @@ import PQueue from 'p-queue'
 import Type from 'typebox'
 import { AppType } from '~/app'
 import { getStreaksByPlayer } from '~/app/getters/getStreaks'
+import { StreakType } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 import { logger } from '~/utils'
 

@@ -15,7 +15,7 @@
     "type-check": "turbo type-check",
     "start:api": "yarn workspace @dcss-stats/api start",
     "migrate": "yarn workspace @dcss-stats/api migrate",
-    "typegen": "yarn workspace @dcss-stats/web typegen",
+    "typegen": "turbo typegen",
     "dev:web": "turbo dev --filter=@dcss-stats/web",
     "dev:api": "turbo dev --filter=@dcss-stats/api"
   },

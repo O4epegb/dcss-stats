@@ -1,5 +1,5 @@
-import { Player } from '@prisma/client'
 import dayjs from 'dayjs'
+import { Player } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
 export const getAggregatedPlayerStats = async (player: Player) => {

@@ -1,5 +1,5 @@
-import { Game } from '@prisma/client'
 import { orderBy, reduce, groupBy, maxBy } from 'lodash-es'
+import { Game } from '~/generated/prisma/client/client'
 
 export const getMatrix = (games: Game[]) => {
   games = orderBy(games, (g) => g.startAt, 'asc')

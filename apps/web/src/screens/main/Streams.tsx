@@ -25,7 +25,7 @@ export const Streams = async () => {
   return (
     <div>
       <h2 className="text-xl font-semibold">Live streams:</h2>
-      <div className="flex gap-4 overflow-x-auto pt-2 pb-3 sm:grid sm:grid-cols-2 sm:gap-6 sm:pb-0 xl:grid-cols-3">
+      <div className="flex gap-4 overflow-x-auto pt-2 pb-3 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-x-visible sm:pb-0 xl:grid-cols-3">
         {streams.map((stream) => (
           <a
             key={stream.username}

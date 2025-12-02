@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client'
+import { Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
 export const getCombosData = async (args?: Omit<Prisma.GameFindManyArgs, 'select' | 'include'>) => {

@@ -1,5 +1,5 @@
-import { Player, Game, StreakType } from '@prisma/client'
 import { orderBy, first } from 'lodash-es'
+import { Player, Game, StreakType } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
 export const getStreaksByPlayer = async (player: { id: Player['id'] }) => {
