@@ -2,8 +2,13 @@
 .vscode
 node_modules
 **/node_modules
+.turbo
+forever-ignore
 
 build
 npm-debug
+
+apps/api/crawl
 apps/api/logfiles
+apps/api/morgues
 apps/web
