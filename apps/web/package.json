@@ -39,7 +39,7 @@
     "downshift": "^9.0.9",
     "framer-motion": "^12.5.0",
     "lodash-es": "^4.17.21",
-    "nanoid": "^5.1.5",
+    "nanoid": "^5.1.6",
     "next": "16.0.10",
     "next-themes": "^0.4.6",
     "nookies": "^2.5.2",

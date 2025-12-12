@@ -267,7 +267,7 @@ __metadata:
     framer-motion: "npm:^12.5.0"
     globals: "npm:^16.0.0"
     lodash-es: "npm:^4.17.21"
-    nanoid: "npm:^5.1.5"
+    nanoid: "npm:^5.1.6"
     next: "npm:16.0.10"
     next-themes: "npm:^0.4.6"
     nookies: "npm:^2.5.2"
@@ -8061,7 +8061,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nanoid@npm:5.1.5, nanoid@npm:^5.1.5":
+"nanoid@npm:5.1.5":
   version: 5.1.5
   resolution: "nanoid@npm:5.1.5"
   bin:
@@ -8085,6 +8085,15 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: 10/67235c39d1bc05851383dadde5cf77ae1c90c2a1d189e845c7f20f646f0488d875ad5f5226bbba072a88cebbb085a3f784a6673117daf785bdf614a852550362
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^5.1.6":
+  version: 5.1.6
+  resolution: "nanoid@npm:5.1.6"
+  bin:
+    nanoid: bin/nanoid.js
+  checksum: 10/4109dbcf596d7f297a9b42f459b8f01694a03ebbdd2f41408d963ad54e5ec7234cbe7b4acad137751f31add11bb4fb3415a3e688082516745812811f05570014
   languageName: node
   linkType: hard
 
