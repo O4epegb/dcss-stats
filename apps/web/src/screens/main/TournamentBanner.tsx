@@ -1,8 +1,10 @@
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { date } from '~/utils'
 
-const version = '0.33'
-const start = '2025-05-02T20:00:00.000Z'
-const end = '2025-05-18T20:00:00.000Z'
+const version = '0.34'
+const start = '2026-02-06T20:00:00.000Z'
+const end = '2026-02-18T20:00:00.000Z'
+const hasTournamentLinkAlready = false
 
 export const TournamentBanner = async () => {
   'use cache'
@@ -17,20 +19,11 @@ export const TournamentBanner = async () => {
   const isOngoing = now.isAfter(start) && now.isBefore(end)
   const isEnded = now.isAfter(end)
 
-  return (
-    <a
-      href={
-        isEnded
-          ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
-          : `https://crawl.develz.org/tournament/${version}/`
-      }
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 rounded-sm border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
-    >
+  const content = (
+    <>
       {isUpcoming && (
         <span suppressHydrationWarning>
-          The v{version} tournament starts at {date(start).format('LLLL')}
+          The v{version} tournament starts on {date(start).format('LLLL')}
         </span>
       )}
       {isOngoing && (
@@ -39,20 +32,22 @@ export const TournamentBanner = async () => {
         </span>
       )}
       {isEnded && <>🏆🏆🏆 DCSS {version} Tournament Results</>}
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="h-6 w-6 shrink-0"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-        />
-      </svg>
+      <ArrowTopRightOnSquareIcon className="h-6 w-6 shrink-0" />
+    </>
+  )
+
+  const wrapperClassNames =
+    'flex items-center justify-center gap-2 rounded-sm border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white'
+
+  const href = hasTournamentLinkAlready
+    ? isEnded
+      ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
+      : `https://crawl.develz.org/tournament/${version}/`
+    : 'https://crawl.develz.org/wordpress/0-34-trunk-update-and-tournament-announcement'
+
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={wrapperClassNames}>
+      {content}
     </a>
   )
 }
