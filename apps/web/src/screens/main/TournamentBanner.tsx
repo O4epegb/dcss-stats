@@ -1,13 +1,20 @@
+'use client'
+
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { date } from '~/utils'
+import { useState, useEffect } from 'react'
+import { cn, date } from '~/utils'
 
 const version = '0.34'
 const start = '2026-02-06T20:00:00.000Z'
 const end = '2026-02-18T20:00:00.000Z'
 const hasTournamentLinkAlready = false
 
-export const TournamentBanner = async () => {
-  'use cache'
+export const TournamentBanner = () => {
+  const [hydrated, setHydrated] = useState(false)
+
+  useEffect(() => {
+    setHydrated(true)
+  }, [])
 
   const now = date()
 
@@ -19,26 +26,6 @@ export const TournamentBanner = async () => {
   const isOngoing = now.isAfter(start) && now.isBefore(end)
   const isEnded = now.isAfter(end)
 
-  const content = (
-    <>
-      {isUpcoming && (
-        <span suppressHydrationWarning>
-          The v{version} tournament starts on {date(start).format('LLLL')}
-        </span>
-      )}
-      {isOngoing && (
-        <span suppressHydrationWarning>
-          The v{version} tournament will last until {date(end).format('LLLL')}
-        </span>
-      )}
-      {isEnded && <>🏆🏆🏆 DCSS {version} Tournament Results</>}
-      <ArrowTopRightOnSquareIcon className="h-6 w-6 shrink-0" />
-    </>
-  )
-
-  const wrapperClassNames =
-    'flex items-center justify-center gap-2 rounded-sm border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white'
-
   const href = hasTournamentLinkAlready
     ? isEnded
       ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
@@ -46,8 +33,30 @@ export const TournamentBanner = async () => {
     : 'https://crawl.develz.org/wordpress/0-34-trunk-update-and-tournament-announcement'
 
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={wrapperClassNames}>
-      {content}
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-center gap-2 rounded-sm border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
+    >
+      <span className={cn('flex items-center justify-center gap-2', !hydrated && 'opacity-0')}>
+        {isUpcoming && (
+          <span>
+            The v{version} tournament starts on{' '}
+            {(hydrated ? date(start) : date(start).utc()).format('LLLL')}
+            {!hydrated && ' (UTC)'}
+          </span>
+        )}
+        {isOngoing && (
+          <span>
+            The v{version} tournament will last until{' '}
+            {(hydrated ? date(end) : date(end).utc()).format('LLLL')}
+            {!hydrated && ' (UTC)'}
+          </span>
+        )}
+        {isEnded && <>🏆🏆🏆 DCSS {version} Tournament Results</>}
+        <ArrowTopRightOnSquareIcon className="h-6 w-6 shrink-0" />
+      </span>
     </a>
   )
 }
