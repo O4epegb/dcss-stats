@@ -57,7 +57,9 @@ export const MainPage = () => {
           <Streams />
         </Suspense>
 
-        <Stats />
+        <Suspense fallback={null}>
+          <Stats />
+        </Suspense>
 
         <Footer />
       </div>
