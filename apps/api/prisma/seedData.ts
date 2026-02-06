@@ -1,6 +1,6 @@
 import { range } from 'lodash-es'
 
-const trunkGameVersion = 34
+const trunkGameVersion = 35
 
 export const data = {
   races: [
