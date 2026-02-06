@@ -33,9 +33,9 @@ export const MainPage = () => {
             </Link>
             <Link className="group relative flex items-center justify-center" href="/streaks">
               <span className="group-hover:underline">Streaks</span>
-              <span className="absolute top-full rounded bg-amber-400 px-1 text-xs text-nowrap text-black">
+              {/* <span className="absolute top-full rounded bg-amber-400 px-1 text-xs text-nowrap text-black">
                 new
-              </span>
+              </span> */}
             </Link>
             <Link className="group flex items-center justify-center" href="/suggest">
               <span className="group-hover:underline">Combos</span>
