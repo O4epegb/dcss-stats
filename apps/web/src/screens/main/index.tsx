@@ -11,7 +11,7 @@ import { TournamentBanner } from './TournamentBanner'
 
 export const MainPage = () => {
   return (
-    <div className="container mx-auto flex min-h-screen flex-col items-center px-4 md:justify-center">
+    <div className="container mx-auto flex min-h-dvh flex-col items-center px-4">
       <div className="w-full max-w-5xl space-y-4 py-4">
         <header className="flex w-full flex-wrap items-center justify-between gap-1 gap-y-2 sm:flex-nowrap">
           <Logo />

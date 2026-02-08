@@ -29,7 +29,7 @@ export const TournamentBanner = () => {
   const href = hasTournamentLinkAlready
     ? isEnded
       ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
-      : `https://crawl.develz.org/tournament/${version}/`
+      : `https://crawl.develz.org/tournament/${version}/overview.html`
     : 'https://crawl.develz.org/wordpress/0-34-trunk-update-and-tournament-announcement'
 
   return (
