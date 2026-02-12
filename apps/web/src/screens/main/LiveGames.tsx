@@ -57,22 +57,15 @@ const getEyeImageForPlayer = (playerId: string) => {
   return eyesPngList[hash % eyesPngList.length]
 }
 
-export const LiveGames = async () => {
-  'use cache'
+const skeletonRows = Array.from({ length: 10 }, (_, i) => i)
 
-  cacheLife({
-    stale: 20,
-    revalidate: 30,
-    expire: 120,
-  })
-
-  const response: LiveGamesResponse = await fetchApi('/live-games').then((r) => r.json())
-  const { games } = response.data
-
-  if (games.length === 0) {
-    return null
-  }
-
+const LiveGamesSection = ({
+  games,
+  isSkeleton = false,
+}: {
+  games?: LiveGame[]
+  isSkeleton?: boolean
+}) => {
   return (
     <section className="space-y-2">
       <div className="flex items-end justify-between gap-3">
@@ -96,74 +89,135 @@ export const LiveGames = async () => {
             </tr>
           </thead>
           <tbody>
-            {games.map((game) => (
-              <tr key={game.id} className="border-t border-gray-200 dark:border-zinc-700">
-                <td className="px-2 py-1.5 whitespace-nowrap">
-                  <Link href={`/players/${game.username}`} className="font-medium hover:underline">
-                    {game.username}
-                  </Link>
-                </td>
-                <td className="px-2 py-1.5 whitespace-nowrap">
-                  <a
-                    href={game.watchUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group flex w-max items-center justify-start gap-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800"
-                    title={`Watch ${game.username}`}
-                    aria-label={`Watch ${game.username}`}
-                  >
-                    <span className="relative block h-5 w-5 shrink-0">
-                      <EyeIcon className="absolute inset-0 h-5 w-5 group-hover:hidden" />
-                      <img
-                        src={getEyeImageForPlayer(game.username)}
-                        alt="Watch"
-                        width={20}
-                        height={20}
-                        className="absolute inset-0 hidden h-5 w-5 object-contain group-hover:block"
-                      />
-                    </span>{' '}
-                    {game.spectator_count > 0 && `(${game.spectator_count})`}
-                  </a>
-                </td>
-                <td className="px-2 py-1.5 whitespace-nowrap">
-                  {formatNumber(game.totalWins)}/{formatNumber(game.totalGames)} (
-                  {formatWinrate(game.totalWins, game.totalGames)})
-                </td>
-                <td className="px-2 py-1.5 whitespace-nowrap">
-                  {game.char || '-'}
-                  {game.god ? (
-                    <>
-                      {' '}
-                      <span className="opacity-50">of</span> {game.god}
-                    </>
-                  ) : (
-                    ''
-                  )}
-                </td>
-                <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">{game.xl ?? '-'}</td>
-                <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">
-                  {game.turn ? formatNumber(game.turn) : '-'}
-                </td>
-                <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">
-                  {game.duration !== null ? formatDuration(game.duration) : '-'}
-                </td>
+            {isSkeleton
+              ? skeletonRows.map((row) => (
+                  <tr key={row} className="border-t border-gray-200 dark:border-zinc-700">
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-10 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-28 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-6 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="h-4 w-28 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                    <td className="h-[33px] px-2 py-1.5">
+                      <div className="ml-auto h-4 w-12 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    </td>
+                  </tr>
+                ))
+              : games?.map((game) => (
+                  <tr key={game.id} className="border-t border-gray-200 dark:border-zinc-700">
+                    <td className="px-2 py-1.5 whitespace-nowrap">
+                      <Link
+                        href={`/players/${game.username}`}
+                        className="font-medium hover:underline"
+                      >
+                        {game.username}
+                      </Link>
+                    </td>
+                    <td className="px-2 py-1.5 whitespace-nowrap">
+                      <a
+                        href={game.watchUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group flex w-max items-center justify-start gap-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800"
+                        title={`Watch ${game.username}`}
+                        aria-label={`Watch ${game.username}`}
+                      >
+                        <span className="relative block h-5 w-5 shrink-0">
+                          <EyeIcon className="absolute inset-0 h-5 w-5 group-hover:hidden" />
+                          <img
+                            src={getEyeImageForPlayer(game.username)}
+                            alt="Watch"
+                            width={20}
+                            height={20}
+                            className="absolute inset-0 hidden h-5 w-5 object-contain group-hover:block"
+                          />
+                        </span>{' '}
+                        {game.spectator_count > 0 && `(${game.spectator_count})`}
+                      </a>
+                    </td>
+                    <td className="px-2 py-1.5 whitespace-nowrap">
+                      {formatNumber(game.totalWins)}/{formatNumber(game.totalGames)} (
+                      {formatWinrate(game.totalWins, game.totalGames)})
+                    </td>
+                    <td className="px-2 py-1.5 whitespace-nowrap">
+                      {game.char || '-'}
+                      {game.god ? (
+                        <>
+                          {' '}
+                          <span className="opacity-50">of</span> {game.god}
+                        </>
+                      ) : (
+                        ''
+                      )}
+                    </td>
+                    <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">{game.xl ?? '-'}</td>
+                    <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">
+                      {game.turn ? formatNumber(game.turn) : '-'}
+                    </td>
+                    <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">
+                      {game.duration !== null ? formatDuration(game.duration) : '-'}
+                    </td>
 
-                <td className="px-2 py-1.5">
-                  <span className="line-clamp-1">{game.place || '-'}</span>
-                </td>
-                <td className="px-2 py-1.5">
-                  <span className="line-clamp-1">{game.milestone || '-'}</span>
-                </td>
-                <td className="text-2xs px-2 whitespace-nowrap text-gray-500 dark:text-zinc-400">
-                  <div className="flex flex-col items-end justify-center gap-0.5 leading-none">
-                    {game.server} <span>{getVersionFromGameId(game.game_id)}</span>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                    <td className="px-2 py-1.5">
+                      <span className="line-clamp-1">{game.place || '-'}</span>
+                    </td>
+                    <td className="px-2 py-1.5">
+                      <span className="line-clamp-1">{game.milestone || '-'}</span>
+                    </td>
+                    <td className="text-2xs px-2 whitespace-nowrap text-gray-500 dark:text-zinc-400">
+                      <div className="flex flex-col items-end justify-center gap-0.5 leading-none">
+                        {game.server} <span>{getVersionFromGameId(game.game_id)}</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
           </tbody>
         </table>
       </div>
     </section>
   )
+}
+
+export const LiveGamesSkeleton = () => {
+  return <LiveGamesSection isSkeleton />
+}
+
+export const LiveGames = async () => {
+  'use cache'
+
+  cacheLife({
+    stale: 20,
+    revalidate: 30,
+    expire: 120,
+  })
+
+  const response: LiveGamesResponse = await fetchApi('/live-games').then((r) => r.json())
+  const { games } = response.data
+
+  if (games.length === 0) {
+    return null
+  }
+
+  return <LiveGamesSection games={games} />
 }

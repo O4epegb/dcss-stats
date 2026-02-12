@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { Footer } from '~/components/Footer'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
-import { LiveGames } from './LiveGames'
+import { LiveGames, LiveGamesSkeleton } from './LiveGames'
 import { Search } from './Search'
 import { Stats } from './Stats'
 import { Streams } from './Streams'
@@ -58,7 +58,7 @@ export const MainPage = () => {
           <Streams />
         </Suspense>
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<LiveGamesSkeleton />}>
           <LiveGames />
         </Suspense>
 
