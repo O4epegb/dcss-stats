@@ -1,6 +1,8 @@
 import { range } from 'lodash-es'
 
-const trunkGameVersion = 35
+export const trunkGameVersion = 34
+
+const rangeToTrunk = (from: number) => range(from, trunkGameVersion + 1)
 
 export const data = {
   races: [
@@ -179,7 +181,7 @@ export const data = {
       baseUrl: 'https://archive.nemelex.cards',
       morgueUrl: 'https://archive.nemelex.cards/morgue',
       logfiles: [
-        ...range(11, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(11).map((version) => ({
           path: `/meta/crawl-0.${version}/logfile`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -198,7 +200,7 @@ export const data = {
       baseUrl: 'https://crawl.dcss.io',
       morgueUrl: 'https://crawl.dcss.io/crawl/morgue',
       logfiles: [
-        ...range(30, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(30).map((version) => ({
           path: `/crawl/meta/crawl-0.${version}/logfile`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -217,7 +219,7 @@ export const data = {
       baseUrl: 'https://crawl.xtahua.com',
       morgueUrl: 'https://crawl.xtahua.com/crawl/morgue',
       logfiles: [
-        ...range(14, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(14).map((version) => ({
           path: `/crawl/meta/0.${version}/logfile`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -236,7 +238,7 @@ export const data = {
       baseUrl: 'https://underhound.eu',
       morgueUrl: 'https://underhound.eu/crawl/morgue',
       logfiles: [
-        ...range(10, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(10).map((version) => ({
           path: `/crawl/meta/0.${version}/logfile`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -323,7 +325,7 @@ export const data = {
       baseUrl: 'https://cbro.berotato.org',
       morgueUrl: 'https://cbro.berotato.org/morgue',
       logfiles: [
-        ...range(24, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(24).map((version) => ({
           path: `/meta/0.${version}/logfile`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -362,7 +364,7 @@ export const data = {
       baseUrl: 'http://crawl.akrasiac.org',
       morgueUrl: 'http://crawl.akrasiac.org/rawdata',
       logfiles: [
-        ...range(4, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(4).map((version) => ({
           path: `/logfile${version.toString().padStart(2, '0')}`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -386,7 +388,7 @@ export const data = {
       baseUrl: 'http://lazy-life.ddo.jp/mirror',
       morgueUrl: 'http://lazy-life.ddo.jp:8080/morgue',
       logfiles: [
-        ...range(14, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(14).map((version) => ({
           path: `/meta/0.${version}/logfile`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,
@@ -405,7 +407,7 @@ export const data = {
       baseUrl: 'https://crawl.project357.org',
       morgueUrl: 'https://crawl.project357.org/morgue',
       logfiles: [
-        ...range(15, trunkGameVersion).map((version) => ({
+        ...rangeToTrunk(15).map((version) => ({
           path: `/dcss-logfiles-0.${version}`,
           version: `0.${version}`,
           morgueUrlPrefix: undefined,

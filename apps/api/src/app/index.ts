@@ -4,6 +4,7 @@ import { app } from './app'
 import { chartRoute } from './routes/charts'
 import { devRoute } from './routes/dev'
 import { gamesRoute } from './routes/games'
+import { liveGamesRoute } from './routes/live-games'
 import { logfilesRoute } from './routes/logfiles'
 import { mainRoute } from './routes/main'
 import { matrixRoute } from './routes/matrix'
@@ -45,6 +46,7 @@ for (const route of [
   gamesRoute,
   playersRoute,
   streamsRoute,
+  liveGamesRoute,
   supportersRoute,
   chartRoute,
   streaksRoute,
