@@ -260,7 +260,7 @@ export const liveGamesRoute = (
           ['desc', 'asc', 'desc', 'desc'],
         ).slice(0, 10)
 
-        const playerIds = uniq(games.map((game) => game.username))
+        const playerIds = uniq(games.map((game) => game.username.toLowerCase()))
 
         if (playerIds.length > 0) {
           const [gamesByPlayer, winsByPlayer] = await Promise.all([
