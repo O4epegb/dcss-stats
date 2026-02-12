@@ -299,8 +299,8 @@ export const liveGamesRoute = (
 
           games = games.map((game) => ({
             ...game,
-            totalWins: totalWinsByPlayer.get(game.username) ?? 0,
-            totalGames: totalGamesByPlayer.get(game.username) ?? 0,
+            totalWins: totalWinsByPlayer.get(game.username.toLowerCase()) ?? 0,
+            totalGames: totalGamesByPlayer.get(game.username.toLowerCase()) ?? 0,
           }))
         }
 
