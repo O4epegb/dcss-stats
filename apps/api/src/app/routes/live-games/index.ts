@@ -141,6 +141,8 @@ const fetchLobbyEntries = async (serverAbbr: string, url: string) =>
 
       if (ws.readyState !== WebSocket.CLOSED && ws.readyState !== WebSocket.CLOSING) {
         ws.close()
+      } else {
+        trackError(new Error(`live-games: ${serverAbbr} socket already closed before finish`))
       }
 
       resolve(entries)
@@ -150,7 +152,7 @@ const fetchLobbyEntries = async (serverAbbr: string, url: string) =>
       logger(`live-games: ${serverAbbr} timed out`)
       trackError(new Error(`live-games: ${serverAbbr} timed out`))
       finish()
-    }, 5_000)
+    }, 12_000)
 
     ws.addEventListener('message', (event: { data: unknown }) => {
       const payload = event.data
@@ -185,8 +187,8 @@ const fetchLobbyEntries = async (serverAbbr: string, url: string) =>
     })
 
     ws.addEventListener('error', (event) => {
-      logger(`live-games: ${serverAbbr} socket error ${String(event)}`)
-      trackError(new Error(`live-games: ${serverAbbr} socket error ${String(event)}`))
+      logger(`live-games: ${serverAbbr} socket error ${event.message}`)
+      trackError(new Error(`live-games: ${serverAbbr} socket error ${event.message}`))
       finish()
     })
   })

@@ -321,7 +321,7 @@ export const data = {
     {
       name: 'BeRotato-2',
       abbreviation: 'CBR2',
-      url: 'https://cbro.berotato.org',
+      url: 'https://cbro.berotato.org:8443',
       baseUrl: 'https://cbro.berotato.org',
       morgueUrl: 'https://cbro.berotato.org/morgue',
       logfiles: [
@@ -360,7 +360,7 @@ export const data = {
     {
       name: 'Akrasiac',
       abbreviation: 'CAO',
-      url: 'http://crawl.akrasiac.org',
+      url: 'https://crawl.akrasiac.org:8443',
       baseUrl: 'http://crawl.akrasiac.org',
       morgueUrl: 'http://crawl.akrasiac.org/rawdata',
       logfiles: [
