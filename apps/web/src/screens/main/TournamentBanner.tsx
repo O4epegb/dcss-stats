@@ -6,7 +6,7 @@ import { cn, date } from '~/utils'
 
 const version = '0.34'
 const start = '2026-02-06T20:00:00.000Z'
-const end = '2026-02-18T20:00:00.000Z'
+const end = '2026-02-22T20:00:00.000Z'
 const hasTournamentLinkAlready = true
 
 export const TournamentBanner = () => {
