@@ -32,10 +32,10 @@ type LiveGame = {
   watchUrl: string
 }
 
-type LiveGamesResponse = {
+export type LiveGamesResponse = {
   data: {
     updatedAt: string
-    allGamesTotal: number
+    total: number
     games: LiveGame[]
   }
 }
@@ -49,8 +49,8 @@ const formatWinrate = (wins: number, games: number) => {
 }
 
 const getVersionFromGameId = (gameId: string) => {
-  const [, version] = gameId.split('-', 2)
-  return version || '-'
+  const match = gameId.match(/(git|\d+\.\d+)/i)
+  return match?.[1] || gameId
 }
 
 const getEyeImageForPlayer = (playerId: string) => {
@@ -65,7 +65,7 @@ type LiveGamesTableProps = {
   isSkeleton?: boolean
 }
 
-const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProps) => {
+export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProps) => {
   return (
     <div className="overflow-x-auto rounded border border-gray-200 dark:border-zinc-700">
       <table className="min-w-full text-left text-xs sm:text-sm">
@@ -123,6 +123,7 @@ const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProps) => {
                 <tr key={game.id} className="border-t border-gray-200 dark:border-zinc-700">
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     <Link
+                      prefetch={false}
                       href={`/players/${game.username}`}
                       className="font-medium hover:underline"
                     >
@@ -193,11 +194,16 @@ const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProps) => {
   )
 }
 
-const LiveGamesSection = ({ children }: PropsWithChildren) => {
+const LiveGamesSection = ({ children, total }: PropsWithChildren<{ total?: number }>) => {
   return (
     <section className="space-y-2">
       <div className="flex items-end justify-between gap-3">
         <h2 className="text-xl font-semibold">Live games</h2>
+        {Boolean(total) && (
+          <Link href="/live-games" className="text-sm font-medium hover:underline">
+            Browse all ({total})
+          </Link>
+        )}
       </div>
       {children}
     </section>
@@ -221,15 +227,15 @@ export const LiveGames = async () => {
     expire: 120,
   })
 
-  const response: LiveGamesResponse = await fetchApi('/live-games').then((r) => r.json())
-  const { games } = response.data
+  const response: LiveGamesResponse = await fetchApi(`/live-games?limit=10`).then((r) => r.json())
+  const { games, total } = response.data
 
   if (games.length === 0) {
     return null
   }
 
   return (
-    <LiveGamesSection>
+    <LiveGamesSection total={total}>
       <LiveGamesTable games={games} />
     </LiveGamesSection>
   )

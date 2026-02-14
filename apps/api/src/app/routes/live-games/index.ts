@@ -203,6 +203,7 @@ export const liveGamesRoute = (
 ) => {
   const Querystring = Type.Object({
     server: Type.Optional(Type.String()),
+    limit: Type.Optional(Type.Number({ minimum: 1 })),
   })
 
   app.get<{
@@ -215,7 +216,7 @@ export const liveGamesRoute = (
       },
     },
     async (request) => {
-      const { server: serverFilter } = request.query
+      const { server: serverFilter, limit } = request.query
 
       const load = async () => {
         const servers = await prisma.server.findMany({
@@ -260,7 +261,7 @@ export const liveGamesRoute = (
           })),
           [(g) => Boolean(g.xl), (g) => g.idle_time, (g) => g.spectator_count, (g) => g.xl],
           ['desc', 'asc', 'desc', 'desc'],
-        ).slice(0, 10)
+        ).slice(0, limit ?? undefined)
 
         const playerIds = uniq(games.map((game) => game.username.toLowerCase()))
 
@@ -309,7 +310,7 @@ export const liveGamesRoute = (
         return {
           data: {
             updatedAt: new Date().toISOString(),
-            allGamesTotal: parsedGames.length,
+            total: parsedGames.length,
             games,
           },
         }
