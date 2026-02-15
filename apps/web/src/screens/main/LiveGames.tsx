@@ -30,6 +30,7 @@ type LiveGame = {
   totalWins: number
   totalGames: number
   watchUrl: string
+  idle_time?: number
 }
 
 export type LiveGamesResponse = {
@@ -48,7 +49,7 @@ const formatWinrate = (wins: number, games: number) => {
   return `${((wins / games) * 100).toFixed(1)}%`
 }
 
-const getVersionFromGameId = (gameId: string) => {
+export const getVersionFromGameId = (gameId: string) => {
   const match = gameId.match(/(git|\d+\.\d+)/i)
   return match?.[1] || gameId
 }
@@ -172,7 +173,11 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
                     {game.turn ? formatNumber(game.turn) : '-'}
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">
-                    {game.duration !== null ? formatDuration(game.duration) : '-'}
+                    {game.idle_time
+                      ? 'idle'
+                      : game.duration !== null
+                        ? formatDuration(game.duration)
+                        : '-'}
                   </td>
 
                   <td className="px-2 py-1.5">
