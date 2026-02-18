@@ -40,7 +40,7 @@
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
     "@scalar/fastify-api-reference": "^1.38.0",
-    "axios": "^1.12.2",
+    "axios": "^1.13.5",
     "cron": "^4.3.4",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
