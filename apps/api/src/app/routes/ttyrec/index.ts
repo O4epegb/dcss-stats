@@ -249,28 +249,41 @@ export const ttyrecRoute = (app: AppType) => {
             continue
           }
 
-          const linkMatch = rowHtml.match(
-            /<td\b[^>]*class="[^"]*link[^"]*"[^>]*>[\s\S]*?<a\b[^>]*href="([^"]+)"[^>]*>/i,
-          )
-          const sizeMatch = rowHtml.match(/<td\b[^>]*class="[^"]*size[^"]*"[^>]*>([\s\S]*?)<\/td>/i)
-          const fileDateMatch = rowHtml.match(
-            /<td\b[^>]*class="[^"]*date[^"]*"[^>]*>([\s\S]*?)<\/td>/i,
-          )
+          const stripHtml = (value: string) =>
+            value
+              .replace(/<[^>]+>/g, '')
+              .replace(/&nbsp;/g, ' ')
+              .trim()
+          const isSizeLike = (value: string) =>
+            /^\d+(?:\.\d+)?\s*(?:[KMGTPEZY]?i?B?|B)?$/i.test(value) || value === '-'
 
-          const href = linkMatch?.[1]
-          const size = sizeMatch?.[1]
-          const fileDate = fileDateMatch?.[1]
+          const cellMatches = [...rowHtml.matchAll(/<td\b[^>]*>([\s\S]*?)<\/td>/gi)]
+          const cellContents = cellMatches.map((cellMatch) => cellMatch[1] ?? '')
+          const hrefMatch = rowHtml.match(/<a\b[^>]*href="([^"]+)"[^>]*>/i)
 
-          if (!href || !size || !fileDate) {
+          const href = hrefMatch?.[1]
+
+          if (!href) {
             continue
           }
+
+          const linkCellIndex = cellContents.findIndex((cellContent) =>
+            /<a\b[^>]*href=/i.test(cellContent),
+          )
+          const metadataCells = cellContents
+            .map(stripHtml)
+            .filter((cellValue, index) => index !== linkCellIndex && cellValue.length > 0)
+
+          const size = metadataCells.find(isSizeLike) ?? metadataCells.at(-1) ?? '-'
+          const fileDate =
+            metadataCells.find((cellValue) => cellValue !== size) ?? metadataCells[0] ?? ''
 
           const dateTimeFromLink = decodeURIComponent(href).match(
             /(\d{4}-\d{2}-\d{2}\.\d{2}:\d{2}:\d{2})/,
           )
           const date = dateTimeFromLink
             ? dayjs.utc(dateTimeFromLink[1], 'YYYY-MM-DD.HH:mm:ss')
-            : null
+            : dayjs.utc(fileDate)
 
           if (!date || !date.isValid()) {
             continue
@@ -279,8 +292,8 @@ export const ttyrecRoute = (app: AppType) => {
           recordings.push({
             date: date.utc().toDate(),
             link: new URL(href, ttyrecsListUrl + '/').toString(),
-            size: size.replace(/<[^>]+>/g, '').trim(),
-            fileDate: fileDate.replace(/<[^>]+>/g, '').trim(),
+            size,
+            fileDate,
           })
         }
 

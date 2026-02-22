@@ -43,8 +43,6 @@ export default function RecordingsPage() {
   })
 
   const serversWithTtyrecFilter: Omit<FilterItemType, 'id'>[] = useMemo(() => {
-    return []
-
     return (staticData?.servers ?? [])
       .filter((server) => server.ttyrecUrl)
       .map((server) => ({
@@ -304,16 +302,7 @@ export default function RecordingsPage() {
                 </div>
               )}
 
-              {!searchLoading &&
-                !searchError &&
-                !!filterForSearch &&
-                potentialGames.length === 0 && (
-                  <div className="rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                    No games found for selected filters.
-                  </div>
-                )}
-
-              {!searchLoading && potentialGames.length === 0 && (
+              {!searchError && !searchLoading && potentialGames.length === 0 && (
                 <div className="rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                   No games to show. Try adjusting filters.
                 </div>
