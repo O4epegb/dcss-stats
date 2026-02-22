@@ -144,7 +144,7 @@ export default function RecordingsPage() {
         : null,
     ([url, params]) =>
       api
-        .get<{ data: { link: string; date: string }[] }>(url, {
+        .get<{ data: { link: string; date: string; size?: string }[] }>(url, {
           params,
         })
         .then((res) => res.data),
@@ -426,7 +426,14 @@ export default function RecordingsPage() {
                               void handlePlayRawTtyrec(rec)
                             }}
                           >
-                            <div className="font-medium">{formatRecordingDate(rec.date)}</div>
+                            <div className="font-medium">
+                              {formatRecordingDate(rec.date)}{' '}
+                              {rec.size ? (
+                                <span className="text-gray-500 dark:text-gray-400">
+                                  ({rec.size})
+                                </span>
+                              ) : null}
+                            </div>
                             <div className="truncate text-xs text-gray-500 dark:text-gray-400">
                               {rec.link}
                             </div>
