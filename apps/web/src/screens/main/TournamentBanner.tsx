@@ -8,6 +8,7 @@ const version = '0.34'
 const start = '2026-02-06T20:00:00.000Z'
 const end = '2026-02-22T20:00:00.000Z'
 const hasTournamentLinkAlready = true
+const hasResultsBlogPostAlready = false
 
 export const TournamentBanner = () => {
   const [hydrated, setHydrated] = useState(false)
@@ -28,7 +29,9 @@ export const TournamentBanner = () => {
 
   const href = hasTournamentLinkAlready
     ? isEnded
-      ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
+      ? hasResultsBlogPostAlready
+        ? `https://crawl.develz.org/wordpress/${version.replace('.', '-')}-tournament-results`
+        : `https://crawl.develz.org/tournament/${version}/all-players-ranks.html`
       : `https://crawl.develz.org/tournament/${version}/overview.html`
     : 'https://crawl.develz.org/wordpress/0-34-trunk-update-and-tournament-announcement'
 
