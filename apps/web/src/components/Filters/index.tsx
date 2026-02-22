@@ -31,7 +31,7 @@ import { operators } from './constants'
 // killer, gold, potions, scrolls, server, duration, date period filter?
 // send maximum filters from the backend
 
-export type Filter = {
+export type FilterItemType = {
   id: string
   option: string
   suboption: string | undefined
@@ -44,7 +44,7 @@ const maxFilters = 15
 
 type Data = Pick<StaticData, 'filterOptions'>
 
-export const filtersToQuery = (filters: Filter[]) => {
+export const filtersToQuery = (filters: FilterItemType[]) => {
   return filters.map(({ option, suboption, condition, value, operator }, index) => {
     return [option, suboption, condition, value, index === filters.length - 1 ? null : operator]
       .filter(notEmpty)
@@ -54,14 +54,14 @@ export const filtersToQuery = (filters: Filter[]) => {
 
 type Props = {
   title?: string
-  filters?: Filter[]
-  setFilters?: Dispatch<SetStateAction<Filter[]>>
+  filters?: FilterItemType[]
+  setFilters?: Dispatch<SetStateAction<FilterItemType[]>>
   excludeFilters?: string[]
   replaceQuery?: boolean
-  onInit?: (filters: Filter[]) => void
-  onFiltersChange?: (filters: Filter[]) => void
-  onSubmit?: (filters: Filter[]) => void
-  getDefaultFilters?: (filters: Filter[]) => Filter[]
+  onInit?: (filters: FilterItemType[]) => void
+  onFiltersChange?: (filters: FilterItemType[]) => void
+  onSubmit?: (filters: FilterItemType[]) => void
+  getDefaultFilters?: (filters: FilterItemType[]) => FilterItemType[]
   onDelete?: () => void
 } & Data
 
@@ -95,7 +95,7 @@ export const Filters = ({
     [filterOptions, String(excludeFilters)],
   )
 
-  const [_filters, _setFilters] = useState<Filter[]>(() => [])
+  const [_filters, _setFilters] = useState<FilterItemType[]>(() => [])
   const filters = propsFilters ?? _filters
   const setFilters = propsSetFilters ?? _setFilters
 
@@ -118,7 +118,7 @@ export const Filters = ({
       return
     }
 
-    let potentialFilters: Filter[] = []
+    let potentialFilters: FilterItemType[] = []
 
     if (replaceQuery) {
       const queryFilters = searchParams.getAll('filter').filter(notEmpty)
@@ -204,7 +204,7 @@ export const Filters = ({
 
         return acc
       },
-      [[]] as Array<Filter[]>,
+      [[]] as Array<FilterItemType[]>,
     )
     .filter((x) => x.length > 0)
 
@@ -373,6 +373,26 @@ export const Filters = ({
                               <div className="flex-1">
                                 <input
                                   type={option.type}
+                                  placeholder={option.placeholder}
+                                  className="w-full rounded-sm bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
+                                  value={filter.value}
+                                  onFocus={(e) => e.target.select()}
+                                  onChange={(e) => {
+                                    setFilters((state) =>
+                                      state.map((x) => {
+                                        return x !== filter
+                                          ? x
+                                          : { ...filter, value: e.target.value }
+                                      }),
+                                    )
+                                  }}
+                                />
+                              </div>
+                            )}
+                            {option.type === 'datetime' && (
+                              <div className="flex-1">
+                                <input
+                                  type="datetime-local"
                                   placeholder={option.placeholder}
                                   className="w-full rounded-sm bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
                                   value={filter.value}

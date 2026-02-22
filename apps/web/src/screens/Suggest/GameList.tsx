@@ -1,12 +1,12 @@
 import { omit, flatten, last, isError } from 'lodash-es'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
-import { Filter } from '~/components/Filters'
+import { FilterItemType } from '~/components/Filters'
 import { GameCard } from '~/components/GameCard'
 import { Loader } from '~/components/ui/Loader'
 import { Game } from '~/types'
 
-export const GameList = (props: { filter: null | Filter[] }) => {
+export const GameList = (props: { filter: null | FilterItemType[] }) => {
   const filter = props.filter?.map((item) => omit(item, 'id'))
 
   const { data, error, size, setSize } = useSWRInfinite(

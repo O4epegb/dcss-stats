@@ -4,7 +4,7 @@ import { last, flatten, first, omit, isError } from 'lodash-es'
 import { useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
-import { Filter, Filters } from '~/components/Filters'
+import { FilterItemType, Filters } from '~/components/Filters'
 import { GameCard } from '~/components/GameCard'
 import { Logo } from '~/components/Logo'
 import { Loader } from '~/components/ui/Loader'
@@ -13,7 +13,7 @@ import { Game, StaticData } from '~/types'
 import { formatNumber } from '~/utils'
 
 export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'>) => {
-  const [filterForSearch, setFilterForSearch] = useState<Filter[] | null>(() => null)
+  const [filterForSearch, setFilterForSearch] = useState<FilterItemType[] | null>(() => null)
 
   const { data, error, size, setSize } = useSWRInfinite(
     (pageIndex, previousPageData: { data: Game[]; count: number }) => {
@@ -26,7 +26,7 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
     ([url, { filter, after }]) =>
       api
         .get<{ data: Game[]; count: number }>(url, {
-          params: { filter: filter.map((x: Filter) => omit(x, 'id')), after },
+          params: { filter: filter.map((x: FilterItemType) => omit(x, 'id')), after },
         })
         .then((res) => res.data),
     {

@@ -42,11 +42,8 @@ export type LiveGamesResponse = {
 }
 
 const formatWinrate = (wins: number, games: number) => {
-  if (games === 0) {
-    return '0%'
-  }
-
-  return `${((wins / games) * 100).toFixed(1)}%`
+  const rate = games === 0 ? 0 : (wins / games) * 100
+  return `${rate.toFixed(1).padStart(4, ' ')}%`
 }
 
 export const getVersionFromGameId = (gameId: string) => {
@@ -153,9 +150,11 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
                       {game.spectator_count > 0 && `(${game.spectator_count})`}
                     </a>
                   </td>
-                  <td className="px-2 py-1.5 whitespace-nowrap">
-                    {formatNumber(game.totalWins)}/{formatNumber(game.totalGames)} (
-                    {formatWinrate(game.totalWins, game.totalGames)})
+                  <td className="px-2 py-1.5 whitespace-nowrap tabular-nums">
+                    <span className="font-mono">
+                      {formatWinrate(game.totalWins, game.totalGames)}
+                    </span>{' '}
+                    ({formatNumber(game.totalWins)}/{formatNumber(game.totalGames)})
                   </td>
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     {game.char || '-'}

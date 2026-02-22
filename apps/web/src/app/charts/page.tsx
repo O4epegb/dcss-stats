@@ -2,7 +2,7 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
-import type { Filter } from '~/components/Filters'
+import type { FilterItemType } from '~/components/Filters'
 import { operators } from '~/components/Filters/constants'
 import { defaultMetaTitle } from '~/constants'
 import { ChartsScreen } from '~/screens/Charts'
@@ -41,7 +41,7 @@ export default async function ChartsPage() {
               option: raceFilterOption.name,
               value: '',
               suboption: raceFilterOption.suboptions[0],
-            } as Filter)
+            } as FilterItemType)
           : null,
       ].filter((x) => x !== null),
     },

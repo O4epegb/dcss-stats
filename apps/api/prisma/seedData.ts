@@ -180,6 +180,7 @@ export const data = {
       url: 'https://crawl.nemelex.cards',
       baseUrl: 'https://archive.nemelex.cards',
       morgueUrl: 'https://archive.nemelex.cards/morgue',
+      ttyrecUrl: 'https://archive.nemelex.cards/ttyrec',
       logfiles: [
         ...rangeToTrunk(11).map((version) => ({
           path: `/meta/crawl-0.${version}/logfile`,
@@ -199,6 +200,7 @@ export const data = {
       url: 'https://crawl.dcss.io',
       baseUrl: 'https://crawl.dcss.io',
       morgueUrl: 'https://crawl.dcss.io/crawl/morgue',
+      ttyrecUrl: 'https://crawl.dcss.io/crawl/ttyrec',
       logfiles: [
         ...rangeToTrunk(30).map((version) => ({
           path: `/crawl/meta/crawl-0.${version}/logfile`,
@@ -218,6 +220,7 @@ export const data = {
       url: 'https://crawl.xtahua.com',
       baseUrl: 'https://crawl.xtahua.com',
       morgueUrl: 'https://crawl.xtahua.com/crawl/morgue',
+      ttyrecUrl: 'https://crawl.xtahua.com/crawl/ttyrec',
       logfiles: [
         ...rangeToTrunk(14).map((version) => ({
           path: `/crawl/meta/0.${version}/logfile`,
@@ -324,6 +327,7 @@ export const data = {
       url: 'https://cbro.berotato.org:8443',
       baseUrl: 'https://cbro.berotato.org',
       morgueUrl: 'https://cbro.berotato.org/morgue',
+      ttyrecUrl: 'https://cbro.berotato.org/ttyrec',
       logfiles: [
         ...rangeToTrunk(24).map((version) => ({
           path: `/meta/0.${version}/logfile`,

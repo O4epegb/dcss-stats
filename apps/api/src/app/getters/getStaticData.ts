@@ -4,7 +4,7 @@ import { draconians } from '~/app/constants'
 import { prisma } from '~/prisma'
 
 export const getStaticData = memoize(async () => {
-  const [races, classes, gods, versions] = await Promise.all([
+  const [races, classes, gods, versions, servers] = await Promise.all([
     prisma.race
       .findMany({
         orderBy: [{ trunk: 'desc' }, { name: 'asc' }],
@@ -47,7 +47,14 @@ export const getStaticData = memoize(async () => {
 
       return uniq(additional.concat(versions).concat(gitLogfileOnlyVersions))
     }),
+    prisma.server.findMany({
+      select: {
+        abbreviation: true,
+        url: true,
+        ttyrecUrl: true,
+      },
+    }),
   ])
 
-  return { races, classes, gods, versions }
+  return { races, classes, gods, versions, servers }
 })

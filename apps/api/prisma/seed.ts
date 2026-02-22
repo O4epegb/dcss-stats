@@ -10,6 +10,7 @@ async function main() {
       url: server.url,
       baseUrl: server.baseUrl,
       morgueUrl: server.morgueUrl,
+      ttyrecUrl: 'ttyrecUrl' in server ? server.ttyrecUrl : null,
       isDormant: 'isDormant' in server ? server.isDormant : false,
     }
     const s = await prisma.server.upsert({

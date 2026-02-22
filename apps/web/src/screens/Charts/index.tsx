@@ -20,7 +20,7 @@ import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
-import { Filter, Filters } from '~/components/Filters'
+import { FilterItemType, Filters } from '~/components/Filters'
 import { operators } from '~/components/Filters/constants'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
@@ -89,7 +89,7 @@ export const ChartsScreen = ({
   staticData: StaticData
   defaultDatasets: {
     id: string
-    filters: Filter[]
+    filters: FilterItemType[]
   }[]
 }) => {
   const { resolvedTheme } = useTheme()
@@ -113,7 +113,7 @@ export const ChartsScreen = ({
   const [datasets, setDatasets] = useState<
     Array<{
       id: string
-      filters: Filter[]
+      filters: FilterItemType[]
     }>
   >(() => defaultDatasets)
   const [paramsForSWR, setParamsForSWR] = useState<{

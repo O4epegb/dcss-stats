@@ -17,6 +17,7 @@ import { streamsRoute } from './routes/streams'
 import { suggestRoute } from './routes/suggest'
 import { supportersRoute } from './routes/supporters'
 import { topRoute } from './routes/top'
+import { ttyrecRoute } from './routes/ttyrec'
 import { initSwagger } from './swagger'
 
 export * from './app'
@@ -48,6 +49,7 @@ for (const route of [
   streamsRoute,
   liveGamesRoute,
   supportersRoute,
+  ttyrecRoute,
   chartRoute,
   streaksRoute,
   devRoute,

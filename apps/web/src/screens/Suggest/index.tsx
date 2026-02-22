@@ -18,7 +18,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
-import { Filter, Filters, filtersToQuery } from '~/components/Filters'
+import { FilterItemType, Filters, filtersToQuery } from '~/components/Filters'
 import { Matrix } from '~/components/Matrix'
 import { WinrateStats } from '~/components/WinrateStats'
 import { Loader } from '~/components/ui/Loader'
@@ -83,7 +83,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     key: 'total',
     direction: 'desc',
   }))
-  const [advancedFilter, setAdvancedFilter] = useState<Filter[] | null>(() => null)
+  const [advancedFilter, setAdvancedFilter] = useState<FilterItemType[] | null>(() => null)
   const [filter, setFilter] = useState<MainFilter>(() => ({
     race: FilterValue.Any,
     class: FilterValue.Any,
@@ -92,7 +92,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   }))
   const [filterForSearch, setFilterForSearch] = useState(() => ({
     ...filter,
-    advanced: [] as Filter[],
+    advanced: [] as FilterItemType[],
   }))
 
   const loadingMessages = [
@@ -199,7 +199,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
 
   const isSwrDisabled = !advancedFilter
 
-  const godFilterParam: Filter | null =
+  const godFilterParam: FilterItemType | null =
     filterForSearch.god !== FilterValue.Any
       ? {
           id: '',

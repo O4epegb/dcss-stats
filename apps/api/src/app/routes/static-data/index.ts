@@ -5,8 +5,7 @@ import { getFilterOptions } from '~/app/routes/search'
 
 export const staticDataRoute = (app: AppType) => {
   app.get('/api/static-data', async () => {
-    const { races, classes, gods, versions } = await getStaticData()
-
+    const { races, classes, gods, versions, servers } = await getStaticData()
     const filterOptions = await getFilterOptions()
 
     return {
@@ -15,6 +14,7 @@ export const staticDataRoute = (app: AppType) => {
       gods,
       versions,
       skills,
+      servers,
       filterOptions: filterOptions.map((option) => {
         return {
           name: option.queryName,

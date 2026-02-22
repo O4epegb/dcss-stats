@@ -128,6 +128,7 @@ export const processGames = async (file: LogfileWithServer, lines: string[]) => 
           gold: rawGame.gold !== null ? Number(rawGame.gold) : null,
           goldfound: rawGame.goldfound !== null ? Number(rawGame.goldfound) : null,
           goldspent: rawGame.goldspent !== null ? Number(rawGame.goldspent) : null,
+          serverAbbreviation: file.server.abbreviation,
         }
       }),
     })

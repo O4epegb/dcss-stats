@@ -41,3 +41,4 @@ yarn-error.log*
 .env.production.local
 
 forever-ignore
+AGENTS.MD

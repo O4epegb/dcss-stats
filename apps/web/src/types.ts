@@ -190,6 +190,11 @@ export type StaticData = {
   gods: God[]
   skills: Skill[]
   versions: string[]
+  servers: {
+    url: string
+    abbreviation: string
+    ttyrecUrl: string | null
+  }[]
   filterOptions: {
     name: string
     type: string

@@ -3,13 +3,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --animate-overlay-show: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-content-show: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
-
   --text-2xs: 0.625rem;
   --text-2xs--line-height: 1rem;
   --text-3xs: 0.5rem;
   --text-3xs--line-height: 1rem;
+
+  --animate-overlay-show: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-content-show: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
 
   @keyframes overlayShow {
     from {

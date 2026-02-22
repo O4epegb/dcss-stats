@@ -1,3 +1,4 @@
+import dayjs from 'dayjs'
 import { isEmpty } from 'lodash-es'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
@@ -121,8 +122,27 @@ const operators: Record<string, string> = {
   or: 'OR',
 }
 
+const parseDateFilterValue = (value: string) => {
+  const date = dayjs(value)
+
+  if (date.isValid()) {
+    return date.toDate()
+  }
+
+  if (/^\d+$/.test(value)) {
+    const timestamp = Number(value)
+    const timestampDate = dayjs(value.length === 10 ? timestamp * 1000 : timestamp)
+
+    if (timestampDate.isValid()) {
+      return timestampDate.toDate()
+    }
+  }
+
+  throw new Error('Invalid date filter value')
+}
+
 export const getFilterOptions = async () => {
-  const { races, classes, gods, versions } = await getStaticData()
+  const { races, classes, gods, versions, servers } = await getStaticData()
 
   const options = [
     {
@@ -280,6 +300,22 @@ export const getFilterOptions = async () => {
           },
         }
       },
+    },
+    {
+      type: 'datetime',
+      dbField: 'startAt',
+      queryName: 'StartAt',
+      conditions: numberConditions,
+      placeholder: 'Enter date or timestamp',
+      transformValue: (value: string) => parseDateFilterValue(value),
+    },
+    {
+      type: 'select',
+      dbField: 'serverAbbreviation',
+      queryName: 'Server',
+      conditions: defaultConditions,
+      values: servers.map((server) => server.abbreviation),
+      transformValue: (value: string) => value.toUpperCase(),
     },
     {
       type: 'select',
