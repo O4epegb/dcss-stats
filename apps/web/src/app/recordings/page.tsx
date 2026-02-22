@@ -45,11 +45,11 @@ export default function RecordingsPage() {
   const serversWithTtyrecFilter: Omit<FilterItemType, 'id'>[] = useMemo(() => {
     return (staticData?.servers ?? [])
       .filter((server) => server.ttyrecUrl)
-      .map((server) => ({
+      .map((server, index, array) => ({
         option: 'Server',
         condition: 'is',
         suboption: undefined,
-        operator: 'or',
+        operator: index === array.length - 1 ? 'and' : 'or',
         value: server.abbreviation,
       }))
   }, [staticData?.servers])
@@ -222,6 +222,8 @@ export default function RecordingsPage() {
     }
   }
 
+  const loadingSearchOrStaticData = searchLoading || staticDataLoading
+
   return (
     <main className="container mx-auto flex min-h-dvh flex-col items-center px-4">
       <div className="w-full max-w-5xl space-y-4 py-4">
@@ -289,7 +291,7 @@ export default function RecordingsPage() {
                 <h3 className="text-lg font-semibold">Pick a game to load recordings</h3>
               </div>
 
-              {searchLoading && (
+              {loadingSearchOrStaticData && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                   <Loader />
                   <span>Searching games…</span>
@@ -302,7 +304,7 @@ export default function RecordingsPage() {
                 </div>
               )}
 
-              {!searchError && !searchLoading && potentialGames.length === 0 && (
+              {!loadingSearchOrStaticData && !searchLoading && potentialGames.length === 0 && (
                 <div className="rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
                   No games to show. Try adjusting filters.
                 </div>
