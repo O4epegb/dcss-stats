@@ -49,7 +49,7 @@ export default function RecordingsPage() {
         option: 'Server',
         condition: 'is',
         suboption: undefined,
-        operator: 'and',
+        operator: 'or',
         value: server.abbreviation,
       }))
   }, [staticData?.servers])
@@ -60,7 +60,7 @@ export default function RecordingsPage() {
     error: searchError,
   } = useSWRImmutable(
     () => {
-      if (hasRequiredFilters) {
+      if (hasRequiredFilters || !staticData) {
         return null
       }
 
@@ -71,9 +71,9 @@ export default function RecordingsPage() {
         .get<{ data: Game[]; count: number }>(url, {
           params: filter
             ? {
-                filter: filter
-                  .map((x: FilterItemType | Omit<FilterItemType, 'id'>) => omit(x, 'id'))
-                  .concat(serversWithTtyrecFilter),
+                filter: filter.map((x: FilterItemType | Omit<FilterItemType, 'id'>) =>
+                  omit(x, 'id'),
+                ),
               }
             : undefined,
         })
