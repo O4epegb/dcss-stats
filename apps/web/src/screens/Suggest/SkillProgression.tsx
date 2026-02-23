@@ -97,10 +97,8 @@ export const SkillProgression = ({
 
         {data && data.length > 0 && (
           <Dialog>
-            <DialogTrigger asChild>
-              <button className="flex items-center gap-1 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700">
-                Show table view
-              </button>
+            <DialogTrigger className="flex items-center gap-1 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700">
+              Show table view
             </DialogTrigger>
             <DialogContent title="Skill level progression">
               <table className="text-xs">

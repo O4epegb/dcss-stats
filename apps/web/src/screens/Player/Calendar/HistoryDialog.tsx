@@ -12,8 +12,8 @@ import { DayData, HeatMapFlat } from './HeatMap'
 export const HistoryDialog = () => {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <button className="py-0.5 text-sm text-blue-400 hover:underline">Show full</button>
+      <DialogTrigger className="py-0.5 text-sm text-blue-400 hover:underline">
+        Show full
       </DialogTrigger>
       <DialogContent title="All time game history">
         <Content />
