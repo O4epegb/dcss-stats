@@ -207,61 +207,66 @@ const calculateStreaksForPlayer = async (playerId: string) => {
     `Calculating streaks for player ${playerId}, found ${streakData.streaksWithMetadata.length} streaks`,
   )
 
-  await prisma.$transaction(async (tx) => {
-    await tx.streakGame.deleteMany({
-      where: {
-        streak: {
-          playerId,
-        },
-      },
-    })
-
-    await tx.streak.deleteMany({
-      where: {
-        playerId,
-      },
-    })
-
-    if (streakData.streaksWithMetadata.length === 0) {
-      await tx.streak.create({
-        data: {
-          playerId,
-          startedAt: new Date(),
-          endedAt: new Date(),
-          length: 0,
-          isBroken: true,
-          type: StreakType.MIXED,
-        },
-      })
-    }
-
-    for (const streaksWithMetadata of streakData.streaksWithMetadata) {
-      const streakGames = streaksWithMetadata.games
-      const firstGame = streakGames[0]
-      const lastGame = streakGames[streakGames.length - 1]
-
-      if (!firstGame || !lastGame) {
-        throw new Error(`Streak has no games, should not happen, playerId: ${playerId}`)
-      }
-
-      await tx.streak.create({
-        data: {
-          playerId,
-          startedAt: firstGame.startAt,
-          endedAt: lastGame.isWin ? undefined : lastGame.endAt,
-          length: streakGames.filter((x) => x.isWin).length,
-          isBroken: !lastGame.isWin,
-          type: streaksWithMetadata.type,
-          games: {
-            createMany: {
-              data: streakGames.map((game) => ({
-                id: game.id,
-                gameId: game.id,
-              })),
-            },
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.streakGame.deleteMany({
+        where: {
+          streak: {
+            playerId,
           },
         },
       })
-    }
-  })
+
+      await tx.streak.deleteMany({
+        where: {
+          playerId,
+        },
+      })
+
+      if (streakData.streaksWithMetadata.length === 0) {
+        await tx.streak.create({
+          data: {
+            playerId,
+            startedAt: new Date(),
+            endedAt: new Date(),
+            length: 0,
+            isBroken: true,
+            type: StreakType.MIXED,
+          },
+        })
+      }
+
+      for (const streaksWithMetadata of streakData.streaksWithMetadata) {
+        const streakGames = streaksWithMetadata.games
+        const firstGame = streakGames[0]
+        const lastGame = streakGames[streakGames.length - 1]
+
+        if (!firstGame || !lastGame) {
+          throw new Error(`Streak has no games, should not happen, playerId: ${playerId}`)
+        }
+
+        await tx.streak.create({
+          data: {
+            playerId,
+            startedAt: firstGame.startAt,
+            endedAt: lastGame.isWin ? undefined : lastGame.endAt,
+            length: streakGames.filter((x) => x.isWin).length,
+            isBroken: !lastGame.isWin,
+            type: streaksWithMetadata.type,
+            games: {
+              createMany: {
+                data: streakGames.map((game) => ({
+                  id: game.id,
+                  gameId: game.id,
+                })),
+              },
+            },
+          },
+        })
+      }
+    },
+    {
+      timeout: 10_000,
+    },
+  )
 }
