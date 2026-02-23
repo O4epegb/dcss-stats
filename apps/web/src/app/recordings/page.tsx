@@ -71,6 +71,7 @@ export default function RecordingsPage() {
         .get<{ data: Game[]; count: number }>(url, {
           params: filter
             ? {
+                skipCount: true,
                 filter: filter.map((x: FilterItemType | Omit<FilterItemType, 'id'>) =>
                   omit(x, 'id'),
                 ),
@@ -105,6 +106,7 @@ export default function RecordingsPage() {
       api
         .get<{ data: Game[]; count: number }>(url, {
           params: {
+            skipCount: true,
             filter: [
               {
                 option: 'Player',

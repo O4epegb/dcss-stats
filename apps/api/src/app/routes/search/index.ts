@@ -39,6 +39,7 @@ export const searchRoute = (app: AppType) => {
     after: Type.Optional(Type.String()),
     orderBy: Type.Optional(Type.Union([Type.Literal('startAt'), Type.Literal('endAt')])),
     filter: filterQuerystringPart,
+    skipCount: Type.Optional(Type.Boolean()),
   })
 
   app.get(
@@ -49,12 +50,12 @@ export const searchRoute = (app: AppType) => {
       },
     },
     async (request) => {
-      const { filter = [], after, orderBy = 'endAt' } = request.query
+      const { filter = [], after, orderBy = 'endAt', skipCount = false } = request.query
 
       const where = await getWhereQueryFromFilter(filter)
 
       const [count, data] = await Promise.all([
-        after
+        after || skipCount
           ? 0
           : isEmpty(where.AND)
             ? prisma.$queryRaw<
