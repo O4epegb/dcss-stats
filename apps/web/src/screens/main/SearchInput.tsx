@@ -55,7 +55,7 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
     <div className="relative">
       <input
         placeholder={`Search player by nickname, e.g. "${nickname}"`}
-        className="block h-10 w-full rounded-sm border border-gray-400 px-2"
+        className="block h-10 w-full rounded-sm border border-gray-400 px-2 text-ellipsis"
         {...getInputProps({
           value: query,
           onFocus(e) {

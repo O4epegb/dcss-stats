@@ -40,7 +40,7 @@ export const TournamentBanner = () => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 rounded-sm border-4 border-violet-400 bg-[#282020] p-2 text-center text-lg text-white"
+      className="flex items-center justify-center gap-2 rounded-sm border-4 border-amber-400 bg-[#282020] p-2 text-center text-white md:text-lg"
     >
       <span className={cn('flex items-center justify-center gap-2', !hydrated && 'opacity-0')}>
         {isUpcoming && (
@@ -57,7 +57,12 @@ export const TournamentBanner = () => {
             {!hydrated && ' (UTC)'}
           </span>
         )}
-        {isEnded && <>🏆🏆🏆 DCSS {version} Tournament Results</>}
+        {isEnded && (
+          <>
+            <img src="/gozag0.png" alt="Gozag" className="size-7 shrink-0" />v{version} Tournament
+            Results
+          </>
+        )}
         <ArrowTopRightOnSquareIcon className="h-6 w-6 shrink-0" />
       </span>
     </a>

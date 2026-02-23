@@ -4,6 +4,7 @@ import { Footer } from '~/components/Footer'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
 import { LiveGames, LiveGamesSkeleton } from './LiveGames'
+import { MobileMenu } from './MobileMenu'
 import { Search } from './Search'
 import { Stats } from './Stats'
 import { Streams } from './Streams'
@@ -14,10 +15,14 @@ export const MainPage = () => {
   return (
     <div className="container mx-auto flex min-h-dvh flex-col items-center px-4">
       <div className="w-full max-w-5xl space-y-4 py-4">
-        <header className="flex w-full flex-wrap items-center justify-between gap-1 gap-y-2 sm:flex-nowrap">
+        <header className="flex w-full items-center justify-between gap-2">
           <Logo />
 
-          <div className="ml-auto flex flex-1 justify-end gap-2 text-xs sm:w-auto sm:gap-3 sm:text-sm md:gap-5 md:text-base">
+          <div className="ml-auto sm:hidden">
+            <MobileMenu />
+          </div>
+
+          <div className="ml-auto hidden flex-1 justify-end gap-2 text-xs sm:flex sm:w-auto sm:gap-3 sm:text-sm md:gap-5 md:text-base">
             <Link
               className="group relative flex flex-col items-center justify-center"
               href="/support"
