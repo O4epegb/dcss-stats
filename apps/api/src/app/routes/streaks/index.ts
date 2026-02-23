@@ -113,6 +113,13 @@ export const streaksRoute = async (app: AppType) => {
       monoCharStreaks,
       playersWithStreaks,
       playersWithoutStreaks,
+      cron: {
+        isActive: streaksCronJob.isActive,
+        isCallbackRunning: streaksCronJob.isCallbackRunning,
+        lastExecution: streaksCronJob.lastExecution,
+        cronTime: streaksCronJob.cronTime.source,
+        nextExecution: streaksCronJob.nextDates(5),
+      },
     }
   })
 
