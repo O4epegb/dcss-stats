@@ -24,6 +24,13 @@ export const MobileMenu = () => {
             <Menu.LinkItem closeOnClick render={<Link href="/support" />} className={itemClassName}>
               Support
             </Menu.LinkItem>
+            <Menu.LinkItem
+              closeOnClick
+              render={<Link href="/community" />}
+              className={itemClassName}
+            >
+              Community
+            </Menu.LinkItem>
             <Menu.LinkItem closeOnClick render={<Link href="/charts" />} className={itemClassName}>
               Charts
             </Menu.LinkItem>

@@ -18,13 +18,14 @@ export const MainPage = () => {
         <header className="flex w-full items-center justify-between gap-2">
           <Logo />
 
-          <div className="ml-auto sm:hidden">
+          <div className="ml-auto lg:hidden">
             <MobileMenu />
           </div>
 
-          <div className="ml-auto hidden flex-1 justify-end gap-2 text-xs sm:flex sm:w-auto sm:gap-3 sm:text-sm md:gap-5 md:text-base">
+          <div className="ml-auto hidden w-auto flex-1 justify-end gap-5 text-base lg:flex">
             <Link
               className="group relative flex flex-col items-center justify-center"
+              prefetch={false}
               href="/support"
             >
               <span className="flex items-center justify-center gap-1 group-hover:underline">
@@ -34,7 +35,11 @@ export const MainPage = () => {
                 <SupportGoalText />
               </Suspense>
             </Link>
-            <Link className="group relative flex items-center justify-center" href="/charts">
+            <Link
+              prefetch={false}
+              className="group relative flex items-center justify-center"
+              href="/charts"
+            >
               <span className="group-hover:underline">Charts</span>
             </Link>
             <Link className="group relative flex items-center justify-center" href="/streaks">
@@ -42,6 +47,13 @@ export const MainPage = () => {
               {/* <span className="absolute top-full rounded bg-amber-400 px-1 text-xs text-nowrap text-black">
                 new
               </span> */}
+            </Link>
+            <Link
+              prefetch={false}
+              className="group flex items-center justify-center"
+              href="/community"
+            >
+              <span className="group-hover:underline">Community</span>
             </Link>
             <Link className="group flex items-center justify-center" href="/suggest">
               <span className="group-hover:underline">Combos</span>

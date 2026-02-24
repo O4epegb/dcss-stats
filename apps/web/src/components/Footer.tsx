@@ -18,12 +18,16 @@ export const Footer = ({ className }: { className?: string }) => (
       </a>
     </div>
 
-    <div className="flex gap-4 md:justify-end">
+    <div className="grid grid-cols-2 gap-1 md:flex md:justify-end md:gap-4">
       <Link prefetch={false} href="/servers" className="hover:underline">
         Tracked servers
       </Link>
 
-      <Link href="/support" className="hover:underline">
+      <Link prefetch={false} href="/community" className="hover:underline">
+        Community links
+      </Link>
+
+      <Link prefetch={false} href="/support" className="hover:underline">
         Donate to support this app
       </Link>
 
