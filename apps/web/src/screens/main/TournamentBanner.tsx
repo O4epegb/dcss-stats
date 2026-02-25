@@ -8,7 +8,7 @@ const version = '0.34'
 const start = '2026-02-06T20:00:00.000Z'
 const end = '2026-02-22T20:00:00.000Z'
 const hasTournamentLinkAlready = true
-const hasResultsBlogPostAlready = false
+const hasResultsBlogPostAlready = true
 
 export const TournamentBanner = () => {
   const [hydrated, setHydrated] = useState(false)
