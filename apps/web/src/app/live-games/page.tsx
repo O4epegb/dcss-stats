@@ -51,7 +51,8 @@ const StatsList = ({ className, items }: { className?: string; items: GroupedSta
             key={label}
             className="rounded bg-gray-100 px-1 py-0.5 text-xs font-medium text-gray-700 dark:bg-zinc-800 dark:text-zinc-200"
           >
-            {label} ({formatNumber(count)})
+            {label}
+            {count > 1 ? ` (${formatNumber(count)})` : ''}
           </li>
         ))}
         <li className="flex items-center justify-center text-xs">{items.length} distinct</li>
