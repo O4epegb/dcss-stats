@@ -15,6 +15,34 @@ const streakQueue = new PQueue({
   throwOnTimeout: true,
 })
 
+const fixStreaksWithNoGames = async () => {
+  const streaksWithNoRelatedGames = await prisma.streak.findMany({
+    where: {
+      games: {
+        none: {},
+      },
+      length: {
+        gt: 0,
+      },
+    },
+    select: {
+      playerId: true,
+    },
+    take: 1000,
+  })
+
+  const playerIds = uniq(streaksWithNoRelatedGames.map((s) => s.playerId))
+  for (const playerId of playerIds) {
+    streakQueue.add(() => calculateStreaksForPlayer(playerId))
+  }
+
+  if (playerIds.length > 0) {
+    streakQueue.once('idle', () => {
+      fixStreaksWithNoGames()
+    })
+  }
+}
+
 const streaksCronJob = CronJob.from({
   cronTime: '0 3 * * *',
   onTick: async () => {
@@ -175,6 +203,20 @@ export const streaksRoute = async (app: AppType) => {
       }
     },
   )
+
+  app.get('/api/streaks/fix', async () => {
+    if (streakQueue.size > 0) {
+      return {
+        message: `Queue is not empty, cannot start fix, current size: ${streakQueue.size}`,
+      }
+    }
+
+    fixStreaksWithNoGames()
+
+    return {
+      message: 'Started fixing streaks with no related games',
+    }
+  })
 }
 
 const startBackFillQueue = async () => {
