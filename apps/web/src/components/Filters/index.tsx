@@ -18,7 +18,7 @@ import clsx from 'clsx'
 import { last, first } from 'lodash-es'
 import { useSearchParams } from 'next/navigation'
 import qs from 'qs'
-import { useState, useEffect, Dispatch, SetStateAction, useMemo } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction, useMemo, ReactNode } from 'react'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
 import { StaticData } from '~/types'
@@ -28,7 +28,7 @@ import { operators } from './constants'
 
 // Order by selector
 // Hotkey for submit
-// killer, gold, potions, scrolls, server, duration, date period filter?
+// gold, potions, scrolls, duration, date period filter?
 // send maximum filters from the backend
 
 export type FilterItemType = {
@@ -53,7 +53,7 @@ export const filtersToQuery = (filters: FilterItemType[]) => {
 }
 
 type Props = {
-  title?: string
+  title?: ReactNode
   filters?: FilterItemType[]
   setFilters?: Dispatch<SetStateAction<FilterItemType[]>>
   excludeFilters?: string[]

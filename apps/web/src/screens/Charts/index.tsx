@@ -508,7 +508,17 @@ export const ChartsScreen = ({
                   className="rounded border border-gray-700 bg-zinc-50 p-4 pl-8 dark:border-zinc-700 dark:bg-gray-800"
                 >
                   <Filters
-                    title={`Dataset ${index + 1}`}
+                    title={
+                      <div className="relative">
+                        <div
+                          className="absolute top-1/2 -left-6 -translate-y-1/2 rounded-full px-2 py-1"
+                          style={{
+                            backgroundColor: customColors[index % customColors.length],
+                          }}
+                        />
+                        Dataset {index + 1}
+                      </div>
+                    }
                     replaceQuery={false}
                     filterOptions={filterOptions}
                     excludeFilters={['Version']}
