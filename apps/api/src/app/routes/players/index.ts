@@ -310,4 +310,37 @@ export const playersRoute = (app: AppType) => {
       return data || reply.status(404).send('Not found')
     })
   })
+
+  app.get<{
+    Params: {
+      slug: string
+    }
+  }>('/api/players/:slug/titles', async (request, reply) => {
+    const { slug } = request.params
+
+    const player = await prisma.player.findUnique({
+      where: { id: slug.toLowerCase() },
+    })
+
+    if (!player) {
+      return reply.status(404).send('Not found')
+    }
+
+    const games = await prisma.game.findMany({
+      where: { playerId: player.id, isWin: true },
+      select: {
+        id: true,
+        normalizedClass: true,
+        normalizedRace: true,
+        char: true,
+        god: true,
+        uniqueRunes: true,
+        title: true,
+      },
+    })
+
+    return {
+      games,
+    }
+  })
 }

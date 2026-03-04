@@ -73,6 +73,7 @@ export interface Game {
   race: string
   class: string
   normalizedRace: string
+  normalizedClass: string
   raceAbbr: string
   classAbbr: string
   char: string
