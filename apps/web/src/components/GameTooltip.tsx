@@ -53,11 +53,11 @@ export const GameTooltip = ({ children, ...rest }: GameTooltipProps) => {
       />
       <Popover.Portal>
         <Popover.Positioner side="top" sideOffset={8} className="z-20 outline-none">
-          <Popover.Popup className="max-w-[calc(100vw-8px)] origin-(--transform-origin) bg-[canvas] shadow-lg shadow-gray-200 transition-[transform,scale,opacity] data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0 dark:shadow-none">
+          <Popover.Popup className="max-w-[calc(100vw-8px)] origin-(--transform-origin) shadow-lg transition-[transform,scale,opacity] data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0 dark:shadow-none">
             {game ? (
               <GameCard game={game} />
             ) : (
-              <div className="rounded border p-4">
+              <div className="rounded border bg-[canvas] p-4">
                 {error ? 'Failed to load game data' : isLoading ? 'Loading...' : 'Game not found'}
               </div>
             )}
