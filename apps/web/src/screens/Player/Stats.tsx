@@ -1,10 +1,8 @@
 import { filter } from 'lodash-es'
-import { ReactNode, FC } from 'react'
-import { GameCard } from '~/components/GameCard'
+import { ReactNode } from 'react'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Date } from '~/components/ui/Date'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { Game } from '~/types'
 import { pluralize, formatDuration, roundAndFormat, formatNumber } from '~/utils'
 import { usePlayerPageContext } from './context'
 import { Summary } from './utils'
@@ -113,11 +111,13 @@ export const Stats = ({ summary }: { summary: Summary }) => {
               ],
               [
                 'First game',
-                <StatsGameTooltip key="" game={firstGame}>
-                  {firstGame.char}
-                  {firstGame.god ? ` of ${firstGame.god}` : ''},{' '}
-                  <Date value={firstGame.endAt} format="DD MMM YYYY" />
-                </StatsGameTooltip>,
+                <GameTooltip key="" game={firstGame}>
+                  <span>
+                    {firstGame.char}
+                    {firstGame.god ? ` of ${firstGame.god}` : ''},{' '}
+                    <Date value={firstGame.endAt} format="DD MMM YYYY" />
+                  </span>
+                </GameTooltip>,
               ],
               [
                 'First win',
@@ -137,12 +137,14 @@ export const Stats = ({ summary }: { summary: Summary }) => {
               [
                 'Lowest XL win',
                 lowestXlWin ? (
-                  <StatsGameTooltip key="" game={lowestXlWin}>
-                    {`${lowestXlWin.char}${lowestXlWin.god ? ` of ${lowestXlWin.god}` : ''}, XL:${
-                      lowestXlWin.xl
-                    },`}{' '}
-                    <Date value={lowestXlWin.endAt} format="DD MMM YYYY" />
-                  </StatsGameTooltip>
+                  <GameTooltip key="" game={lowestXlWin}>
+                    <span>
+                      {`${lowestXlWin.char}${lowestXlWin.god ? ` of ${lowestXlWin.god}` : ''}, XL:${
+                        lowestXlWin.xl
+                      },`}{' '}
+                      <Date value={lowestXlWin.endAt} format="DD MMM YYYY" />
+                    </span>
+                  </GameTooltip>
                 ) : (
                   'n/a'
                 ),
@@ -174,11 +176,3 @@ export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] })
     })}
   </ul>
 )
-
-const StatsGameTooltip: FC<{ game: Game; children: ReactNode }> = ({ game, children }) => {
-  return (
-    <Tooltip interactive content={<GameCard shadow game={game} />}>
-      <span>{children}</span>
-    </Tooltip>
-  )
-}

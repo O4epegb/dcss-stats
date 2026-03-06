@@ -171,10 +171,12 @@ const viewGroupers: Record<BreakdownViewId, (game: TitleGame) => string> = {
 type BreakdownRow = {
   label: string
   games: number
+  gameIds: string[]
   uniqueTitles: number
   titles: {
     name: string
     count: number
+    gameIds: string[]
   }[]
 }
 
@@ -182,33 +184,45 @@ const aggregateRows = (
   games: TitleGame[],
   getLabel: (game: TitleGame) => string,
 ): BreakdownRow[] => {
-  const grouped = new Map<string, { games: number; titles: Map<string, number> }>()
+  const grouped = new Map<string, TitleGame[]>()
 
   for (const game of games) {
     const label = getLabel(game)
     const existing = grouped.get(label)
-
-    if (!existing) {
-      grouped.set(label, {
-        games: 1,
-        titles: new Map([[game.title, 1]]),
-      })
-      continue
+    if (existing) {
+      existing.push(game)
+    } else {
+      grouped.set(label, [game])
     }
-
-    existing.games += 1
-    existing.titles.set(game.title, (existing.titles.get(game.title) ?? 0) + 1)
   }
 
   return Array.from(grouped.entries())
-    .map(([label, values]) => ({
-      label,
-      games: values.games,
-      uniqueTitles: values.titles.size,
-      titles: Array.from(values.titles.entries())
-        .map(([name, count]) => ({ name, count }))
-        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
-    }))
+    .map(([label, groupedGames]) => {
+      const titles = new Map<string, TitleGame[]>()
+
+      for (const game of groupedGames) {
+        const existing = titles.get(game.title)
+        if (existing) {
+          existing.push(game)
+        } else {
+          titles.set(game.title, [game])
+        }
+      }
+
+      return {
+        label,
+        games: groupedGames.length,
+        gameIds: groupedGames.map((game) => game.id),
+        uniqueTitles: titles.size,
+        titles: Array.from(titles.entries())
+          .map(([name, titleGames]) => ({
+            name,
+            count: titleGames.length,
+            gameIds: titleGames.map((game) => game.id),
+          }))
+          .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
+      }
+    })
     .sort(
       (a, b) =>
         b.games - a.games || b.uniqueTitles - a.uniqueTitles || a.label.localeCompare(b.label),
@@ -298,10 +312,14 @@ const BreakdownTable = ({ view, rows }: { view: ViewId; rows: BreakdownRow[] }) 
                 <ul className="flex flex-wrap gap-1">
                   {row.titles.map((title) => (
                     <li key={title.name}>
-                      <div className="rounded bg-gray-600 px-1 py-0.5 text-white">
-                        {title.name}
-                        {title.count > 1 ? ` (${title.count})` : ''}
-                      </div>
+                      {title.gameIds[0] && (
+                        <GameTooltip id={title.gameIds[0]}>
+                          <div className="rounded bg-gray-600 px-1 py-0.5 text-white">
+                            {title.name}
+                            {title.count > 1 ? ` (${title.count})` : ''}
+                          </div>
+                        </GameTooltip>
+                      )}
                     </li>
                   ))}
                 </ul>
