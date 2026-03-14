@@ -29,7 +29,7 @@ export const data = {
     ['On', 'Oni'],
     ['Ba', 'Barachi'],
     ['Gn', 'Gnoll'],
-    ['An', 'Anemocentaur'],
+    ['GC', 'Gale Centaur'],
     ['Co', 'Coglin'],
     ['Re', 'Revenant'],
     ['Po', 'Poltergeist'],
