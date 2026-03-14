@@ -143,7 +143,7 @@ const createDateFromLogfileDate = (string: string) => {
   )
 }
 
-// TODO Add originalRace field and replace race with normalizedRace, same for class
+// Potential TODO: Add originalRace field and replace race with normalizedRace, same for class
 
 export const classMap: Record<string, string> = {
   'Arcane Marksman': 'Hexslinger',
@@ -161,6 +161,7 @@ export const raceMap: Record<string, string> = {
   Bultungin: 'Gnoll',
   Barachian: 'Barachi',
   Yak: 'Elf',
+  Anemocentaur: 'Gale Centaur',
 }
 
 const normalizeRace = (rawGame: ParsedGame) => {
@@ -175,6 +176,7 @@ export const raceAbbrMap: Record<string, string> = {
   OP: 'Op',
   Bu: 'Gn',
   Ke: 'Te',
+  An: 'GC',
 }
 
 const normalizeRaceAbbr = (rawGame: ParsedGame) => {
