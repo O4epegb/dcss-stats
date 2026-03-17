@@ -489,5 +489,65 @@ export const data = {
         },
       ],
     },
+    {
+      name: 'roguelikes.gg',
+      abbreviation: 'RGG',
+      url: 'https://dcss.roguelikes.gg',
+      baseUrl: 'https://dcss.roguelikes.gg',
+      morgueUrl: 'https://dcss.roguelikes.gg/morgue',
+      ttyrecUrl: 'https://dcss.roguelikes.gg/ttyrec',
+      logfiles: [
+        ...rangeToTrunk(30).map((version) => ({
+          path: `/meta/0.${version}/logfile`,
+          version: `0.${version}`,
+          morgueUrlPrefix: undefined,
+        })),
+        {
+          path: `/meta/git/logfile`,
+          version: 'git',
+          morgueUrlPrefix: undefined,
+        },
+      ],
+    },
+    {
+      name: 'roguelikes.gg (Canada)',
+      abbreviation: 'RCA',
+      url: 'https://dcss-ca.roguelikes.gg',
+      baseUrl: 'https://dcss-ca.roguelikes.gg',
+      morgueUrl: 'https://dcss-ca.roguelikes.gg/morgue',
+      ttyrecUrl: 'https://dcss-ca.roguelikes.gg/ttyrec',
+      logfiles: [
+        ...rangeToTrunk(30).map((version) => ({
+          path: `/meta/0.${version}/logfile`,
+          version: `0.${version}`,
+          morgueUrlPrefix: undefined,
+        })),
+        {
+          path: `/meta/git/logfile`,
+          version: 'git',
+          morgueUrlPrefix: undefined,
+        },
+      ],
+    },
+    {
+      name: 'roguelikes.gg (South America)',
+      abbreviation: 'RSA',
+      url: 'https://dcss-sa.roguelikes.gg',
+      baseUrl: 'https://dcss-sa.roguelikes.gg',
+      morgueUrl: 'https://dcss-sa.roguelikes.gg/morgue',
+      ttyrecUrl: 'https://dcss-sa.roguelikes.gg/ttyrec',
+      logfiles: [
+        ...rangeToTrunk(30).map((version) => ({
+          path: `/meta/0.${version}/logfile`,
+          version: `0.${version}`,
+          morgueUrlPrefix: undefined,
+        })),
+        {
+          path: `/meta/git/logfile`,
+          version: 'git',
+          morgueUrlPrefix: undefined,
+        },
+      ],
+    },
   ],
 } as const
