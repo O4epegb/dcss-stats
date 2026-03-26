@@ -1,0 +1,29 @@
+{
+  "name": "@dcss-stats/extractor",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./monsterCatalog": "./src/monsterCatalog.ts"
+  },
+  "scripts": {
+    "install-crawl": "tsx ./scripts/install-crawl.ts",
+    "apply-crawl-customizations": "tsx ./scripts/apply-crawl-customizations.ts",
+    "build-crawl": "tsx ./scripts/build-crawl.ts",
+    "extract-monsters": "tsx ./scripts/extract-monsters.ts",
+    "all": "yarn install-crawl && yarn apply-crawl-customizations && yarn build-crawl && yarn extract-monsters",
+    "type-check": "tsc --noEmit",
+    "lint": "oxlint",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "fs-extra": "^11.3.0",
+    "tsx": "^4.21.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.19.0",
+    "oxlint": "^1.51.0",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  }
+}

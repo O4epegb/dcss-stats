@@ -1,6 +1,17 @@
 name: 'dcss-api'
 
 services:
+  monster_catalog:
+    container_name: monster_catalog
+    restart: no
+    profiles:
+      - monsters
+    build:
+      context: ../../
+      dockerfile: ./apps/extractor/Dockerfile
+    volumes:
+      - monster-catalog-storage:/catalog
+
   postgres:
     container_name: postgres16
     restart: no
@@ -86,3 +97,4 @@ services:
 
 volumes:
   grafana-storage:
+  monster-catalog-storage:

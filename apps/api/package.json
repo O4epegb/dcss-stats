@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@bugsnag/js": "^8.6.0",
+    "@dcss-stats/extractor": "workspace:*",
     "@fastify/cors": "^11.1.0",
     "@fastify/otel": "^0.16.0",
     "@fastify/swagger": "^9.5.2",

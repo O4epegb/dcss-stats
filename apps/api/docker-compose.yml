@@ -1,11 +1,21 @@
 name: 'dcss-api'
 
 services:
+  crawl_data:
+    container_name: crawl_data
+    restart: no
+    build:
+      context: ../../
+      dockerfile: ./apps/extractor/Dockerfile
+    volumes:
+      - crawl-data-volume:/catalog
+
   app:
     restart: on-failure:3
     environment:
       - TWITCH_SECRET
       - BUYMEACOFFEE_TOKEN
+      - MONSTER_CATALOG_FILE_PATH=/catalog/monsters.json
     build:
       context: ../../
       dockerfile: ./apps/api/Dockerfile
@@ -17,6 +27,7 @@ services:
         condition: service_healthy
     volumes:
       - /app-volume:/usr/src/app/apps/api/logfiles
+      - crawl-data-volume:/catalog:ro
 
   postgres:
     container_name: postgres16
@@ -106,3 +117,4 @@ volumes:
   app-volume:
   postgres16-volume:
   grafana-storage:
+  crawl-data-volume:

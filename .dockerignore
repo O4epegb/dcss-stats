@@ -9,6 +9,7 @@ build
 npm-debug
 
 apps/api/crawl
+apps/extractor/crawl
 apps/api/logfiles
 apps/api/morgues
 apps/web

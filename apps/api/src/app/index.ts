@@ -8,6 +8,7 @@ import { liveGamesRoute } from './routes/live-games'
 import { logfilesRoute } from './routes/logfiles'
 import { mainRoute } from './routes/main'
 import { matrixRoute } from './routes/matrix'
+import { monstersRoute } from './routes/monsters'
 import { playersRoute } from './routes/players'
 import { searchRoute } from './routes/search'
 import { serversRoute } from './routes/servers'
@@ -37,6 +38,7 @@ app.register(cors, {
 for (const route of [
   initSwagger,
   mainRoute,
+  monstersRoute,
   topRoute,
   logfilesRoute,
   serversRoute,

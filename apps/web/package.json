@@ -20,10 +20,11 @@
     ]
   },
   "dependencies": {
-    "@base-ui/react": "^1.2.0",
+    "@base-ui/react": "^1.3.0",
     "@bprogress/next": "^3.2.12",
     "@bugsnag/js": "^8.6.0",
     "@bugsnag/plugin-react": "^8.6.0",
+    "@dcss-stats/extractor": "workspace:*",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/modifiers": "^7.0.0",
     "@dnd-kit/sortable": "^8.0.0",

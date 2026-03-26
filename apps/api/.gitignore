@@ -1,4 +1,5 @@
 /logfiles
 /morgues
 /crawl
+/.cache
 /src/generated

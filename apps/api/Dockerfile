@@ -9,6 +9,7 @@ WORKDIR /usr/src/app
 COPY .yarn ./.yarn
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY apps/api/package.json ./apps/api/
+COPY apps/extractor/package.json ./apps/extractor/
 
 RUN yarn install
 
