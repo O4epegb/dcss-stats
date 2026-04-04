@@ -149,6 +149,7 @@ export const classMap: Record<string, string> = {
   'Arcane Marksman': 'Hexslinger',
   Assassin: 'Brigand',
   Wizard: 'Hedge Wizard',
+  闘士: 'Gladiator',
 }
 
 const normalizeClass = (rawGame: ParsedGame) => {
@@ -162,6 +163,7 @@ export const raceMap: Record<string, string> = {
   Barachian: 'Barachi',
   Yak: 'Elf',
   Anemocentaur: 'Gale Centaur',
+  悪魔の血族: 'Demonspawn',
 }
 
 const normalizeRace = (rawGame: ParsedGame) => {
