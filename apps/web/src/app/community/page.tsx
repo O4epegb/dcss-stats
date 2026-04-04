@@ -3,7 +3,7 @@ import { XMLParser } from 'fast-xml-parser'
 import { Metadata } from 'next'
 import { cacheLife } from 'next/cache'
 import { sharedOGMetadata } from '~/app/shared-metadata'
-import { Logo } from '~/components/Logo'
+import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { defaultMetaTitle } from '~/constants'
 
 const title = `Community | ${defaultMetaTitle}`
@@ -189,12 +189,10 @@ const CommunityPage = async () => {
   const newsItems = await getNewsItems()
 
   return (
-    <div className="container mx-auto flex min-h-screen max-w-6xl flex-col space-y-4 py-4 pt-4">
-      <header className="px-4">
-        <Logo />
-      </header>
+    <div className="container mx-auto flex min-h-screen max-w-6xl flex-col space-y-8 p-4">
+      <HeaderWithMenu />
 
-      <div className="w-full max-w-6xl px-4 pb-4">
+      <div className="w-full max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-6">
             <div>

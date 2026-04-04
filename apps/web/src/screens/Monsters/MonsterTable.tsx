@@ -336,7 +336,7 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                           <dd>
                             {displayed.ac ?? '-'}
                             {displayed.ac_sim != null && displayed.ac_sim !== displayed.ac && (
-                              <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
+                              <span className="ml-1 text-gray-400 dark:text-zinc-500">
                                 ({displayed.ac_sim})
                               </span>
                             )}
@@ -347,7 +347,7 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                           <dd>
                             {displayed.ev ?? '-'}
                             {displayed.ev_sim != null && displayed.ev_sim !== displayed.ev && (
-                              <span className="ml-1 text-xs text-gray-400 dark:text-zinc-500">
+                              <span className="ml-1 text-gray-400 dark:text-zinc-500">
                                 ({displayed.ev_sim})
                               </span>
                             )}

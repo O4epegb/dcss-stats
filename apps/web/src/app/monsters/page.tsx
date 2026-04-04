@@ -4,8 +4,7 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
-import { Logo } from '~/components/Logo'
-import { ThemeSelector } from '~/components/ThemeSelector'
+import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { defaultMetaTitle } from '~/constants'
 import { MonsterTable } from '~/screens/Monsters/MonsterTable'
 
@@ -44,13 +43,10 @@ async function MonstersContent() {
 
 export default function MonstersPage() {
   return (
-    <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 py-4">
-      <header className="flex w-full max-w-7xl items-center gap-4">
-        <Logo />
-        <ThemeSelector className="ml-auto" />
-      </header>
+    <div className="container mx-auto flex min-h-screen w-full max-w-7xl flex-col items-center space-y-4 px-4 py-4">
+      <HeaderWithMenu />
 
-      <div className="w-full max-w-7xl space-y-4">
+      <div className="w-full space-y-4">
         <h2 className="text-xl font-semibold">Monster Catalog</h2>
 
         <Suspense fallback={<Skeleton />}>

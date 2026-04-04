@@ -1,4 +1,5 @@
 import { PropsWithChildren } from 'react'
+import { MobileMenu } from '~/components/HeaderWithMenu/MobileMenu'
 import { Logo } from '~/components/Logo'
 
 export const Layout = ({
@@ -10,8 +11,9 @@ export const Layout = ({
       <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-3">
         <div className="col-span-3 xl:col-span-1">
           <div className="mx-auto flex max-w-md flex-col gap-4 pt-4">
-            <header>
+            <header className="flex items-center justify-between">
               <Logo />
+              <MobileMenu />
             </header>
             <div className="w-full max-w-md rounded-sm bg-blue-100 px-2 py-1 text-xs text-black">
               <span className="font-semibold">TL;DR:</span> Choose the race, class or god you want

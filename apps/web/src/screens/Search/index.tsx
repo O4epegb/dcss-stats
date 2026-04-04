@@ -6,7 +6,7 @@ import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
 import { FilterItemType, Filters } from '~/components/Filters'
 import { GameCard } from '~/components/GameCard'
-import { Logo } from '~/components/Logo'
+import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { Loader } from '~/components/ui/Loader'
 import { HelpBubble } from '~/components/ui/Tooltip'
 import { Game, StaticData } from '~/types'
@@ -46,9 +46,8 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
 
   return (
     <div className="container mx-auto flex h-screen max-h-screen min-h-screen flex-col space-y-4 px-4 pt-4 pb-4">
-      <header className="flex items-center gap-4">
-        <Logo />
-      </header>
+      <HeaderWithMenu />
+
       <div className="grid min-h-0 flex-1 gap-4 sm:grid-cols-2">
         <div className="space-y-4">
           <Filters

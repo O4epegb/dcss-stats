@@ -22,8 +22,7 @@ import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { FilterItemType, Filters } from '~/components/Filters'
 import { operators } from '~/components/Filters/constants'
-import { Logo } from '~/components/Logo'
-import { ThemeSelector } from '~/components/ThemeSelector'
+import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
@@ -265,12 +264,8 @@ export const ChartsScreen = ({
 
   return (
     <div className="container mx-auto flex flex-col gap-4 p-4">
-      <header className="m-auto flex w-full items-center gap-4">
-        <Logo />
-        <div className="ml-auto">
-          <ThemeSelector />
-        </div>
-      </header>
+      <HeaderWithMenu />
+
       <div>
         <div
           className="relative m-auto w-full transition-all"

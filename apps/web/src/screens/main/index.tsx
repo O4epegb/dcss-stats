@@ -1,69 +1,17 @@
-import Link from 'next/link'
 import { Suspense } from 'react'
 import { Footer } from '~/components/Footer'
-import { Logo } from '~/components/Logo'
-import { ThemeSelector } from '~/components/ThemeSelector'
+import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { LiveGames, LiveGamesSkeleton } from './LiveGames'
-import { MobileMenu } from './MobileMenu'
 import { Search } from './Search'
 import { Stats } from './Stats'
 import { Streams } from './Streams'
-import { SupportGoalText } from './SupportGoalText'
 import { TournamentBanner } from './TournamentBanner'
 
 export const MainPage = () => {
   return (
     <div className="container mx-auto flex min-h-dvh flex-col items-center px-4">
       <div className="w-full max-w-5xl space-y-4 py-4">
-        <header className="flex w-full items-center justify-between gap-2">
-          <Logo />
-
-          <div className="ml-auto lg:hidden">
-            <MobileMenu />
-          </div>
-
-          <div className="ml-auto hidden w-auto flex-1 justify-end gap-5 text-base lg:flex">
-            <Link
-              className="group relative flex flex-col items-center justify-center"
-              prefetch={false}
-              href="/support"
-            >
-              <span className="flex items-center justify-center gap-1 group-hover:underline">
-                Support
-              </span>
-              <Suspense fallback={null}>
-                <SupportGoalText />
-              </Suspense>
-            </Link>
-            <Link
-              prefetch={false}
-              className="group relative flex items-center justify-center"
-              href="/charts"
-            >
-              <span className="group-hover:underline">Charts</span>
-            </Link>
-            <Link className="group relative flex items-center justify-center" href="/streaks">
-              <span className="group-hover:underline">Streaks</span>
-              {/* <span className="absolute top-full rounded bg-amber-400 px-1 text-xs text-nowrap text-black">
-                new
-              </span> */}
-            </Link>
-            <Link
-              prefetch={false}
-              className="group flex items-center justify-center"
-              href="/community"
-            >
-              <span className="group-hover:underline">Community</span>
-            </Link>
-            <Link className="group flex items-center justify-center" href="/suggest">
-              <span className="group-hover:underline">Combos</span>
-            </Link>
-            <Link className="group flex items-center justify-center" href="/search">
-              <span className="group-hover:underline">Search</span>{' '}
-            </Link>
-            <ThemeSelector />
-          </div>
-        </header>
+        <HeaderWithMenu showSupportGoal />
 
         <Search />
 

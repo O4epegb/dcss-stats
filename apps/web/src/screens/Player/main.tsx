@@ -1,7 +1,7 @@
 import { Footer } from '~/components/Footer'
+import { MobileMenu } from '~/components/HeaderWithMenu/MobileMenu'
 import { Logo } from '~/components/Logo'
 import { Matrix } from '~/components/Matrix'
-import { ThemeSelector } from '~/components/ThemeSelector'
 import { Badges } from './Badges'
 import { Calendar } from './Calendar'
 import { FavoriteButton } from './FavoriteButton'
@@ -23,7 +23,7 @@ export const Player = () => {
       <div className="min-w-0">
         <header className="flex items-center justify-between pt-4 pr-4 pb-2">
           <Logo />
-          <ThemeSelector />
+          <MobileMenu />
         </header>
         <div className="space-y-2">
           <section className="flex flex-wrap items-center gap-x-2 gap-y-1">

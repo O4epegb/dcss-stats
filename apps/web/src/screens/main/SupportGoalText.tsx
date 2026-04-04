@@ -1,12 +1,16 @@
+'use client'
+
+import useSWRImmutable from 'swr/immutable'
 import { fetchApi } from '~/api/server'
-import { SupportersCurrentResponse } from '~/types'
 
-export const SupportGoalText = async () => {
-  'use cache'
-
-  const data: SupportersCurrentResponse = await fetchApi('/supporters/current').then((r) =>
-    r.json(),
+export const SupportGoalText = () => {
+  const { data, error } = useSWRImmutable('/supporters/current', (url) =>
+    fetchApi(url).then((r) => r.json()),
   )
+
+  if (!data || error) {
+    return null
+  }
 
   return (
     <span className="text-2xs absolute top-full text-nowrap text-gray-400 sm:text-xs">

@@ -4,8 +4,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
-import { Logo } from '~/components/Logo'
-import { ThemeSelector } from '~/components/ThemeSelector'
+import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { defaultMetaTitle } from '~/constants'
 import { Streak } from '~/types'
 import { cn, date } from '~/utils'
@@ -32,13 +31,10 @@ type SearchParams = {
 
 const StreaksPage = ({ searchParams }: { searchParams: Promise<SearchParams> }) => {
   return (
-    <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 px-4 py-4 pt-4">
-      <header className="flex w-full max-w-lg items-center gap-4">
-        <Logo />
-        <ThemeSelector className="ml-auto" />
-      </header>
+    <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center space-y-8 p-4">
+      <HeaderWithMenu />
 
-      <div className="w-full max-w-lg space-y-2">
+      <div className="w-full max-w-5xl space-y-2">
         <h2 className="text-xl font-medium">Streaks overview</h2>
         <Suspense
           fallback={
