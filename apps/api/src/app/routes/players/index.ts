@@ -103,7 +103,7 @@ export const playersRoute = (app: AppType) => {
         findGamesIncludeServer({
           where: { playerId: player.id },
           take: LIMIT,
-          orderBy: { startAt: 'desc' },
+          orderBy: [{ startAt: 'desc' }, { id: 'desc' }],
         }),
         getAggregatedPlayerStats(player),
         findGamesIncludeServer({
