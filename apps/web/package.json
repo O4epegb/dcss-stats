@@ -39,7 +39,7 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
     "downshift": "^9.0.9",
-    "fast-xml-parser": "^5.3.8",
+    "fast-xml-parser": "^5.5.7",
     "framer-motion": "^12.5.0",
     "lodash-es": "^4.17.23",
     "nanoid": "^5.1.7",
