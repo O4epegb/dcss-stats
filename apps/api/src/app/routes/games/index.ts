@@ -70,7 +70,7 @@ export const gamesRoute = (app: AppType) => {
             take: LIMIT,
             skip: after ? 1 : undefined,
             cursor: after ? { id: after } : undefined,
-            orderBy: { [orderBy]: 'desc' },
+            orderBy: [{ [orderBy]: 'desc' }, { id: 'desc' }],
           },
           includePlayer,
         ),
