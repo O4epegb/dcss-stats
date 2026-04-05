@@ -133,7 +133,14 @@ export const playersRoute = (app: AppType) => {
             breakdown: 'CHAR',
             runeTier: { in: ['THREE_RUNES', 'FOUR_PLUS_RUNES'] },
           },
-          select: { breakdown: true, runeTier: true, rank: true, char: true, score: true },
+          select: {
+            breakdown: true,
+            runeTier: true,
+            rank: true,
+            char: true,
+            score: true,
+            points: true,
+          },
           orderBy: { score: 'desc' },
         }),
       ])

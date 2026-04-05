@@ -13,6 +13,7 @@ type HighscoreRow = {
   score: number
   runes: number
   rank: number
+  points: number
 }
 
 const partitionBy: Record<HighscoreBreakdown, string> = {
@@ -59,7 +60,8 @@ export const getHighscores = async () => {
             char,
             score,
             runes,
-            ROW_NUMBER() OVER (PARTITION BY ${partition} ORDER BY score DESC)::int AS rank
+            ROW_NUMBER() OVER (PARTITION BY ${partition} ORDER BY score DESC)::int AS rank,
+            GREATEST(0, 11 - ROW_NUMBER() OVER (PARTITION BY ${partition} ORDER BY score DESC))::int AS points
           FROM "Game"
           WHERE "isWin" = true
             AND "playerId" NOT IN (SELECT id FROM "Player" WHERE "isBot" = true)

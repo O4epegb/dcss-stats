@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { cn } from '~/utils'
+import { cn, formatNumber } from '~/utils'
 import { TooltipTable } from './TooltipTable'
 import { usePlayerPageContext } from './context'
 
@@ -88,7 +88,6 @@ export const Badges = () => {
       )}
       {highscores.rank != null &&
         (() => {
-          const points = highscores.data.reduce((sum, e) => sum + (11 - e.rank), 0)
           const remaining = highscores.total - highscores.data.length
 
           return (
@@ -96,12 +95,12 @@ export const Badges = () => {
               interactive
               content={
                 <div>
-                  <div>Highscore Leaderboard ({points} pts):</div>
+                  <div>Highscore Leaderboard ({highscores.points} pts):</div>
                   <ul className="mt-2 list-disc pl-4">
                     {highscores.data.map((entry, i) => (
                       <li key={i}>
                         #{entry.rank} {entry.char} ({runeTierLabels[entry.runeTier]}) —{' '}
-                        {entry.score.toLocaleString()} (+{11 - entry.rank} pts)
+                        {formatNumber(entry.score)} (+{entry.points} pts)
                       </li>
                     ))}
                   </ul>

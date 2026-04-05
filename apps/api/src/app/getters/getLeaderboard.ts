@@ -19,7 +19,7 @@ export const getLeaderboard = async (): Promise<LeaderboardEntry[]> => {
         Array<{ playerId: string; playerName: string; points: number; entryCount: number }>
       >`
         SELECT h."playerId", p.name as "playerName", 
-               SUM(11 - h.rank)::int as points, 
+               SUM(h.points)::int as points, 
                COUNT(*)::int as "entryCount"
         FROM "Highscore" h
         JOIN "Player" p ON p.id = h."playerId"

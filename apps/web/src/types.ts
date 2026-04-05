@@ -41,8 +41,10 @@ export interface PlayerInfoResponse {
       rank: number
       char: string
       score: number
+      points: number
     }>
     total: number
+    points: number
     rank: number | null
   }
 }

@@ -169,6 +169,7 @@ model Highscore {
   score           Int
   runes           Int
   rank            Int
+  points          Int
 
   @@id([gameId, breakdown, runeTier])
   @@index([breakdown, runeTier, score(sort: Desc)])

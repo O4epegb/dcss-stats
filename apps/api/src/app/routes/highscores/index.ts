@@ -45,6 +45,7 @@ const recalcHighscores = async () => {
                 score: row.score,
                 runes: row.runes,
                 rank: row.rank,
+                points: row.points,
               })),
             })
           }
