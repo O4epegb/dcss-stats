@@ -45,7 +45,7 @@
     "cron": "^4.3.4",
     "dayjs": "^1.11.13",
     "dotenv": "^16.4.7",
-    "fastify": "^5.8.1",
+    "fastify": "^5.8.3",
     "fs-extra": "^11.3.0",
     "lodash-es": "^4.17.23",
     "node-object-hash": "^3.1.1",
