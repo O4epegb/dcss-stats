@@ -225,11 +225,7 @@ export const LiveGamesSkeleton = () => {
 export const LiveGames = async () => {
   'use cache'
 
-  cacheLife({
-    stale: 20,
-    revalidate: 30,
-    expire: 120,
-  })
+  cacheLife('seconds')
 
   const response: LiveGamesResponse = await fetchApi(`/live-games?limit=10`).then((r) => r.json())
   const { games, total } = response.data
