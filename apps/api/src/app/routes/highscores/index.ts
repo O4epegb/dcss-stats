@@ -30,9 +30,11 @@ const recalcHighscores = async () => {
             where: { breakdown, runeTier },
           })
 
-          if (rows.length > 0) {
+          const batchSize = 10000
+          for (let i = 0; i < rows.length; i += batchSize) {
+            const batch = rows.slice(i, i + batchSize)
             await tx.highscore.createMany({
-              data: rows.map((row) => ({
+              data: batch.map((row) => ({
                 gameId: row.gameId,
                 playerId: row.playerId,
                 breakdown,
@@ -47,7 +49,7 @@ const recalcHighscores = async () => {
             })
           }
         },
-        { timeout: 60_000 },
+        { timeout: 300_000 },
       )
     }
 
