@@ -227,6 +227,7 @@ export const playersRoute = (app: AppType) => {
         highscores: {
           data: highscoreEntries.slice(0, 10),
           total: highscoreEntries.length,
+          points: highscoreEntries.reduce((sum, e) => sum + e.points, 0),
           rank: null as number | null,
         },
       }
