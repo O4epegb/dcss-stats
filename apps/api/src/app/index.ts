@@ -4,6 +4,7 @@ import { app } from './app'
 import { chartRoute } from './routes/charts'
 import { devRoute } from './routes/dev'
 import { gamesRoute } from './routes/games'
+import { highscoresRoute } from './routes/highscores'
 import { liveGamesRoute } from './routes/live-games'
 import { logfilesRoute } from './routes/logfiles'
 import { mainRoute } from './routes/main'
@@ -53,6 +54,7 @@ for (const route of [
   supportersRoute,
   ttyrecRoute,
   chartRoute,
+  highscoresRoute,
   streaksRoute,
   devRoute,
 ] as const) {

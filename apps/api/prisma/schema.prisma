@@ -41,7 +41,8 @@ model Player {
   name    String   @unique
   game    Game[]
   isBot   Boolean  @default(false)
-  streaks Streak[]
+  streaks    Streak[]
+  highscores Highscore[]
 }
 
 model Game {
@@ -95,6 +96,7 @@ model Game {
   logfile            Logfile      @relation(fields: [logfileId], references: [id])
   serverAbbreviation String?
   streakGames        StreakGame[]
+  highscores         Highscore[]
 
   @@index([playerId, startAt])
   @@index([playerId, endAt])
@@ -140,6 +142,37 @@ model StreakGame {
 
   @@unique([streakId, gameId])
   @@index([gameId])
+}
+
+enum HighscoreBreakdown {
+  CLASS
+  RACE
+  CHAR
+}
+
+enum HighscoreRuneTier {
+  ALL
+  THREE_RUNES
+  FOUR_PLUS_RUNES
+}
+
+model Highscore {
+  gameId          String
+  game            Game                 @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  playerId        String
+  player          Player               @relation(fields: [playerId], references: [id])
+  breakdown       HighscoreBreakdown
+  runeTier        HighscoreRuneTier
+  normalizedClass String
+  normalizedRace  String
+  char            String
+  score           Int
+  runes           Int
+  rank            Int
+
+  @@id([gameId, breakdown, runeTier])
+  @@index([breakdown, runeTier, score(sort: Desc)])
+  @@index([playerId])
 }
 
 model InvalidGame {

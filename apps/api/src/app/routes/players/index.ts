@@ -1,9 +1,10 @@
 import { first, groupBy, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { cache, ttl } from '~/app/cache'
+import { legacyCache, ttl } from '~/app/cache'
 import { draconians, LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 import { getAggregatedPlayerStats } from '~/app/getters/getAggregatedPlayerStats'
+import { getLeaderboard } from '~/app/getters/getLeaderboard'
 import { getMatrix } from '~/app/getters/getMatrix'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { getStreaksByPlayer } from '~/app/getters/getStreaks'
@@ -40,7 +41,7 @@ export const playersRoute = (app: AppType) => {
   }>('/api/players/:slug', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = request.url.toLowerCase()
-    const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
+    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     if (request.query.clearData !== undefined) {
       getStaticData.cache.clear?.()
@@ -89,6 +90,7 @@ export const playersRoute = (app: AppType) => {
         lowestXlWins,
         streaks,
         top100Streaks,
+        highscoreEntries,
       ] = await Promise.all([
         getStaticData(),
         prisma.game.findMany({
@@ -123,6 +125,16 @@ export const playersRoute = (app: AppType) => {
             length: true,
             type: true,
           },
+        }),
+        prisma.highscore.findMany({
+          where: {
+            playerId: player.id,
+            rank: { lte: 10 },
+            breakdown: 'CHAR',
+            runeTier: { in: ['THREE_RUNES', 'FOUR_PLUS_RUNES'] },
+          },
+          select: { breakdown: true, runeTier: true, rank: true, char: true, score: true },
+          orderBy: { score: 'desc' },
         }),
       ])
 
@@ -160,7 +172,7 @@ export const playersRoute = (app: AppType) => {
         )
         .filter(isDefined)
 
-      return {
+      const result = {
         player,
         stats,
         streaks: {
@@ -205,17 +217,32 @@ export const playersRoute = (app: AppType) => {
             }
           }),
         },
+        highscores: {
+          data: highscoreEntries.slice(0, 10),
+          total: highscoreEntries.length,
+          rank: null as number | null,
+        },
       }
+
+      if (highscoreEntries.length > 0) {
+        const leaderboard = await getLeaderboard()
+        const playerEntry = leaderboard.find((e) => e.playerId === player.id)
+        if (playerEntry) {
+          result.highscores.rank = playerEntry.rank
+        }
+      }
+
+      return result
     }
 
     const getData = request.query.type === 'minimal' ? getDataMinimal : getDataFull
     const ttl = 1000 * 60 * (request.query.type === 'minimal' ? 60 * 12 : 5)
 
     if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
     }
 
-    return cache.get(cacheKey)?.promise.then((data: unknown) => {
+    return legacyCache.get(cacheKey)?.promise.then((data: unknown) => {
       return data || reply.status(404).send('Not found')
     })
   })
@@ -231,7 +258,7 @@ export const playersRoute = (app: AppType) => {
     const { slug } = request.params
     const cacheKey = request.url.toLowerCase()
 
-    const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
+    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const player = await prisma.player.findFirst({
@@ -253,10 +280,10 @@ export const playersRoute = (app: AppType) => {
     }
 
     if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
     }
 
-    return cache.get(cacheKey)?.promise.then((data: ReturnType<typeof getData>) => {
+    return legacyCache.get(cacheKey)?.promise.then((data: ReturnType<typeof getData>) => {
       return data || reply.status(404).send('Not found')
     })
   })
@@ -272,7 +299,7 @@ export const playersRoute = (app: AppType) => {
   }>('/api/players/:slug/calendar', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = request.url.toLowerCase()
-    const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
+    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const player = await prisma.player.findUnique({
@@ -303,10 +330,10 @@ export const playersRoute = (app: AppType) => {
     }
 
     if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
     }
 
-    return cache.get(cacheKey)?.promise.then((data: unknown) => {
+    return legacyCache.get(cacheKey)?.promise.then((data: unknown) => {
       return data || reply.status(404).send('Not found')
     })
   })

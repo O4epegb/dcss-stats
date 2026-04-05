@@ -1,6 +1,6 @@
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
-import { cache, ttl } from '~/app/cache'
+import { legacyCache, ttl } from '~/app/cache'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
 import { Prisma } from '~/generated/prisma/client/client'
@@ -29,7 +29,7 @@ export const matrixRoute = (app: AppType) => {
       const versionShort = versions.find((v) => v === version) ?? versions[0]
 
       const cacheKey = request.url.toLowerCase()
-      const cached = request.query.noCache ? false : cache.get(cacheKey)
+      const cached = request.query.noCache ? false : legacyCache.get(cacheKey)
 
       const getData = async () => {
         const groupByList: Prisma.GameScalarFieldEnum[] = ['char', 'god']
@@ -85,10 +85,10 @@ export const matrixRoute = (app: AppType) => {
       }
 
       if (!cached || Date.now() - cached.ttl > ttl) {
-        cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+        legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
       }
 
-      return cache.get(cacheKey)?.promise
+      return legacyCache.get(cacheKey)?.promise
     },
   )
 }

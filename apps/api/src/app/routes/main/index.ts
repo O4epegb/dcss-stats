@@ -1,5 +1,5 @@
 import { AppType } from '~/app/app'
-import { cache, ttl } from '~/app/cache'
+import { legacyCache, ttl } from '~/app/cache'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 
 const LIMIT = 10
@@ -11,7 +11,7 @@ export const mainRoute = (app: AppType) => {
     }
   }>('/api/main', async (request) => {
     const cacheKey = request.routeOptions.url ?? request.url
-    const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
+    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const top = await getTopGamesStats()
@@ -24,10 +24,10 @@ export const mainRoute = (app: AppType) => {
     }
 
     if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
     }
 
-    return cache.get(cacheKey)?.promise
+    return legacyCache.get(cacheKey)?.promise
   })
 }
 

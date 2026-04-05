@@ -2,7 +2,7 @@
  * Legacy route-level cache. Kept for the current implementation until the new
  * cache helpers below are reviewed and adopted in each route.
  */
-export const cache = new Map<string, { promise: Promise<any>; ttl: number }>()
+export const legacyCache = new Map<string, { promise: Promise<any>; ttl: number }>()
 export const ttl = 1000 * 60 * 5
 
 export type CacheKey = string

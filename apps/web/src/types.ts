@@ -34,6 +34,17 @@ export interface PlayerInfoResponse {
       gamesToFirstWin: number
     }>
   }
+  highscores: {
+    data: Array<{
+      breakdown: HighscoreBreakdown
+      runeTier: HighscoreRuneTier
+      rank: number
+      char: string
+      score: number
+    }>
+    total: number
+    rank: number | null
+  }
 }
 
 export type GamesToFirstWin = {
@@ -251,4 +262,42 @@ export type Streak = {
       isWin: boolean
     }
   }[]
+}
+
+export type HighscoreBreakdown = 'CLASS' | 'RACE' | 'CHAR'
+export type HighscoreRuneTier = 'ALL' | 'THREE_RUNES' | 'FOUR_PLUS_RUNES'
+
+export type Highscore = {
+  gameId: string
+  playerId: string
+  breakdown: HighscoreBreakdown
+  runeTier: HighscoreRuneTier
+  normalizedClass: string
+  normalizedRace: string
+  char: string
+  score: number
+  runes: number
+  rank: number
+  player: Player
+  game: Game
+}
+
+export type HighscoresResponse = {
+  data: Highscore[]
+  total: number
+  skip: number
+  take: number
+}
+
+export type HighscoresLeaderboardResponse = {
+  data: {
+    playerId: string
+    playerName: string
+    points: number
+    entryCount: number
+    rank: number
+  }[]
+  total: number
+  skip: number
+  take: number
 }

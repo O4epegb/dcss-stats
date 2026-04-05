@@ -1,7 +1,7 @@
 import { uniq } from 'lodash-es'
 import { Type, Static } from 'typebox'
 import { AppType } from '~/app/app'
-import { cache, ttl } from '~/app/cache'
+import { legacyCache, ttl } from '~/app/cache'
 import { Prisma } from '~/generated/prisma/client/client'
 
 import { prisma } from '~/prisma'
@@ -19,7 +19,7 @@ export const topRoute = (app: AppType) => {
     Querystring: Static<typeof Querystring>
   }>('/api/top', { schema: { querystring: Querystring } }, async (request) => {
     const cacheKey = request.url.toLowerCase()
-    const cached = request.query.noCache === undefined ? cache.get(cacheKey) : false
+    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const top = await getTopStats({
@@ -36,10 +36,10 @@ export const topRoute = (app: AppType) => {
     }
 
     if (!cached || Date.now() - cached.ttl > ttl) {
-      cache.set(cacheKey, { promise: getData(), ttl: Date.now() })
+      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
     }
 
-    return cache.get(cacheKey)?.promise
+    return legacyCache.get(cacheKey)?.promise
   })
 }
 
