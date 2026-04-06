@@ -2,7 +2,7 @@ import { HighscoreBreakdown, HighscoreRuneTier } from '~/generated/prisma/client
 import { prisma } from '~/prisma'
 import { logger } from '~/utils'
 
-const LIMIT = 100
+const LIMIT = 10
 
 type HighscoreRow = {
   gameId: string

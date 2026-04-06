@@ -95,10 +95,10 @@ const HighscoresListCached = async ({ searchParams }: { searchParams: SearchPara
   const paginationQuery = (pageNum: number) => ({
     pathname: '/highscores' as const,
     query: {
-      ...(searchParams.breakdown ? { breakdown: searchParams.breakdown } : {}),
-      ...(searchParams.runeTier ? { runeTier: searchParams.runeTier } : {}),
-      ...(searchParams.player ? { player: searchParams.player } : {}),
-      ...(pageNum > 1 ? { page: pageNum } : {}),
+      breakdown: searchParams.breakdown,
+      runeTier: searchParams.runeTier,
+      player: searchParams.player,
+      page: pageNum > 1 ? String(pageNum) : undefined,
     },
   })
 
@@ -114,7 +114,9 @@ const HighscoresListCached = async ({ searchParams }: { searchParams: SearchPara
                 href={{
                   pathname: '/highscores',
                   query: {
-                    ...(r.value ? { runeTier: r.value } : {}),
+                    breakdown: searchParams.breakdown,
+                    runeTier: r.value,
+                    player: searchParams.player,
                   },
                 }}
                 className={cn(
@@ -138,14 +140,14 @@ const HighscoresListCached = async ({ searchParams }: { searchParams: SearchPara
         )}
 
         {data.length > 0 && (
-          <div className="space-y-0.5">
+          <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
             {data.map((entry, index) => {
               const game = entry.game
 
               return (
                 <div
                   key={`${entry.gameId}-${entry.breakdown}-${entry.runeTier}`}
-                  className="flex gap-3 rounded-sm border border-gray-200 bg-white px-3 py-2 text-sm text-black dark:border-gray-300 dark:bg-zinc-900 dark:text-white"
+                  className="flex gap-3 bg-white py-2 text-sm text-black dark:bg-zinc-900 dark:text-white"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="font-medium">

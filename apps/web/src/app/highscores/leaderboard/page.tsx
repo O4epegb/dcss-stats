@@ -38,7 +38,7 @@ const LeaderboardPage = ({ searchParams }: { searchParams: Promise<SearchParams>
             href="/highscores"
             className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           >
-            View Highscores →
+            Highscores →
           </Link>
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -91,8 +91,8 @@ const LeaderboardListCached = async ({ searchParams }: { searchParams: SearchPar
   const paginationQuery = (pageNum: number) => ({
     pathname: '/highscores/leaderboard' as const,
     query: {
-      ...(search ? { search } : {}),
-      ...(pageNum > 1 ? { page: pageNum } : {}),
+      search: searchParams.search,
+      page: pageNum > 1 ? String(pageNum) : undefined,
     },
   })
 
@@ -115,11 +115,11 @@ const LeaderboardListCached = async ({ searchParams }: { searchParams: SearchPar
       )}
 
       {data.length > 0 && (
-        <div className="space-y-0.5">
+        <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
           {data.map((entry) => (
             <div
               key={entry.playerId}
-              className="flex items-center gap-3 rounded-sm border border-gray-200 bg-white px-3 py-1 text-sm text-black dark:border-gray-300 dark:bg-zinc-900 dark:text-white"
+              className="flex items-center gap-3 bg-white py-1 text-sm text-black dark:bg-zinc-900 dark:text-white"
             >
               <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
                 #{entry.rank}
