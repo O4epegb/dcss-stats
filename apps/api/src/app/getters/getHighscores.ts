@@ -1,4 +1,8 @@
-import { HighscoreBreakdown, HighscoreRuneTier } from '~/generated/prisma/client/client'
+import {
+  HighscoreBreakdown,
+  HighscoreKind,
+  HighscoreRuneTier,
+} from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 import { logger } from '~/utils'
 
@@ -11,6 +15,8 @@ type HighscoreRow = {
   normalizedRace: string
   char: string
   score: number
+  turns: number
+  duration: number
   runes: number
   rank: number
   points: number
@@ -22,17 +28,33 @@ const partitionBy: Record<HighscoreBreakdown, string> = {
   CHAR: '"char"',
 }
 
-const runeFilter: Record<HighscoreRuneTier, string> = {
-  ALL: '',
-  THREE_RUNES: 'AND "runes" = 3',
-  FOUR_PLUS_RUNES: 'AND "runes" >= 4',
+const runeFilterByKind: Record<HighscoreKind, Record<string, string>> = {
+  HIGHSCORE: {
+    TIER_1: 'AND "runes" = 3',
+    TIER_2: 'AND "runes" >= 4',
+  },
+  TURN_COUNT: {
+    TIER_1: 'AND "runes" BETWEEN 3 AND 14',
+    TIER_2: 'AND "runes" = 15',
+  },
+  DURATION: {
+    TIER_1: 'AND "runes" BETWEEN 3 AND 14',
+    TIER_2: 'AND "runes" = 15',
+  },
 }
 
-export const getHighscores = async () => {
+const orderBy: Record<HighscoreKind, string> = {
+  HIGHSCORE: 'ORDER BY score DESC',
+  TURN_COUNT: 'ORDER BY turns ASC',
+  DURATION: 'ORDER BY duration ASC',
+}
+
+export const getHighscores = async (kind: HighscoreKind = 'HIGHSCORE') => {
   const breakdowns = Object.values(HighscoreBreakdown)
   const runeTiers = Object.values(HighscoreRuneTier)
 
   const results: Array<{
+    kind: HighscoreKind
     breakdown: HighscoreBreakdown
     runeTier: HighscoreRuneTier
     rows: HighscoreRow[]
@@ -40,8 +62,9 @@ export const getHighscores = async () => {
 
   for (const breakdown of breakdowns) {
     for (const runeTier of runeTiers) {
-      const filter = runeFilter[runeTier]
+      const filter = runeFilterByKind[kind][runeTier] ?? ''
       const partition = partitionBy[breakdown]
+      const order = orderBy[kind]
 
       const rows = await prisma.$queryRawUnsafe<HighscoreRow[]>(`
         SELECT * FROM (
@@ -52,9 +75,11 @@ export const getHighscores = async () => {
             "normalizedRace",
             char,
             score,
+            turns,
+            duration,
             runes,
-            ROW_NUMBER() OVER (PARTITION BY ${partition} ORDER BY score DESC)::int AS rank,
-            GREATEST(0, 11 - ROW_NUMBER() OVER (PARTITION BY ${partition} ORDER BY score DESC))::int AS points
+            ROW_NUMBER() OVER (PARTITION BY ${partition} ${order})::int AS rank,
+            GREATEST(0, 11 - ROW_NUMBER() OVER (PARTITION BY ${partition} ${order}))::int AS points
           FROM "Game"
           WHERE "isWin" = true
             AND "playerId" NOT IN (SELECT id FROM "Player" WHERE "isBot" = true)
@@ -63,9 +88,9 @@ export const getHighscores = async () => {
         WHERE rank <= ${LIMIT}
       `)
 
-      results.push({ breakdown, runeTier, rows })
+      results.push({ kind, breakdown, runeTier, rows })
 
-      logger(`Highscores: ${breakdown}/${runeTier} — ${rows.length} entries`)
+      logger(`Highscores [${kind}]: ${breakdown}/${runeTier} — ${rows.length} entries`)
     }
   }
 

@@ -152,8 +152,14 @@ enum HighscoreBreakdown {
 
 enum HighscoreRuneTier {
   ALL
-  THREE_RUNES
-  FOUR_PLUS_RUNES
+  TIER_1
+  TIER_2
+}
+
+enum HighscoreKind {
+  HIGHSCORE
+  TURN_COUNT
+  DURATION
 }
 
 model Highscore {
@@ -161,18 +167,23 @@ model Highscore {
   game            Game               @relation(fields: [gameId], references: [id], onDelete: Cascade)
   playerId        String
   player          Player             @relation(fields: [playerId], references: [id])
+  kind            HighscoreKind
   breakdown       HighscoreBreakdown
   runeTier        HighscoreRuneTier
   normalizedClass String
   normalizedRace  String
   char            String
   score           Int
+  turns           Int
+  duration        Int
   runes           Int
   rank            Int
   points          Int
 
-  @@id([gameId, breakdown, runeTier])
-  @@index([breakdown, runeTier, score(sort: Desc)])
+  @@id([gameId, kind, breakdown, runeTier])
+  @@index([kind, breakdown, runeTier, score(sort: Desc)])
+  @@index([kind, breakdown, runeTier, turns(sort: Asc)])
+  @@index([kind, breakdown, runeTier, duration(sort: Asc)])
   @@index([playerId])
 }
 

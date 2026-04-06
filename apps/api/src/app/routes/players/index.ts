@@ -1,4 +1,4 @@
-import { first, groupBy, transform } from 'lodash-es'
+import { first, groupBy, orderBy, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { legacyCache, ttl } from '~/app/cache'
 import { draconians, LIMIT } from '~/app/constants'
@@ -90,7 +90,7 @@ export const playersRoute = (app: AppType) => {
         lowestXlWins,
         streaks,
         top100Streaks,
-        highscoreEntries,
+        allHighscoreEntries,
       ] = await Promise.all([
         getStaticData(),
         prisma.game.findMany({
@@ -129,21 +129,29 @@ export const playersRoute = (app: AppType) => {
         prisma.highscore.findMany({
           where: {
             playerId: player.id,
+            kind: { in: ['HIGHSCORE', 'TURN_COUNT', 'DURATION'] },
             rank: { lte: 10 },
             breakdown: 'CHAR',
-            runeTier: { in: ['THREE_RUNES', 'FOUR_PLUS_RUNES'] },
+            runeTier: { in: ['TIER_1', 'TIER_2'] },
           },
           select: {
+            kind: true,
             breakdown: true,
             runeTier: true,
             rank: true,
             char: true,
             score: true,
+            turns: true,
+            duration: true,
             points: true,
           },
-          orderBy: { score: 'desc' },
         }),
       ])
+
+      const entriesByKind = groupBy(allHighscoreEntries, (e) => e.kind)
+      const highscoreEntries = orderBy(entriesByKind['HIGHSCORE'] || [], 'points', 'desc')
+      const turncountEntries = orderBy(entriesByKind['TURN_COUNT'] || [], 'points', 'desc')
+      const durationEntries = orderBy(entriesByKind['DURATION'] || [], 'points', 'desc')
 
       const wins = games.filter((x) => x.isWin)
       const firstWin = wins[0]
@@ -225,18 +233,55 @@ export const playersRoute = (app: AppType) => {
           }),
         },
         highscores: {
-          data: highscoreEntries.slice(0, 10),
-          total: highscoreEntries.length,
-          points: highscoreEntries.reduce((sum, e) => sum + e.points, 0),
-          rank: null as number | null,
+          score: {
+            data: highscoreEntries.slice(0, 10),
+            total: highscoreEntries.length,
+            points: highscoreEntries.reduce((sum, e) => sum + e.points, 0),
+            rank: null as number | null,
+          },
+          turncount: {
+            data: turncountEntries.slice(0, 10),
+            total: turncountEntries.length,
+            points: turncountEntries.reduce((sum, e) => sum + e.points, 0),
+            rank: null as number | null,
+          },
+          duration: {
+            data: durationEntries.slice(0, 10),
+            total: durationEntries.length,
+            points: durationEntries.reduce((sum, e) => sum + e.points, 0),
+            rank: null as number | null,
+          },
         },
       }
 
-      if (highscoreEntries.length > 0) {
-        const leaderboard = await getLeaderboard()
-        const playerEntry = leaderboard.find((e) => e.playerId === player.id)
-        if (playerEntry) {
-          result.highscores.rank = playerEntry.rank
+      if (
+        highscoreEntries.length > 0 ||
+        turncountEntries.length > 0 ||
+        durationEntries.length > 0
+      ) {
+        const [highscoreLeaderboard, turncountLeaderboard, durationLeaderboard] = await Promise.all(
+          [getLeaderboard('HIGHSCORE'), getLeaderboard('TURN_COUNT'), getLeaderboard('DURATION')],
+        )
+
+        if (highscoreEntries.length > 0) {
+          const playerEntry = highscoreLeaderboard.find((e) => e.playerId === player.id)
+          if (playerEntry) {
+            result.highscores.score.rank = playerEntry.rank
+          }
+        }
+
+        if (turncountEntries.length > 0) {
+          const playerEntry = turncountLeaderboard.find((e) => e.playerId === player.id)
+          if (playerEntry) {
+            result.highscores.turncount.rank = playerEntry.rank
+          }
+        }
+
+        if (durationEntries.length > 0) {
+          const playerEntry = durationLeaderboard.find((e) => e.playerId === player.id)
+          if (playerEntry) {
+            result.highscores.duration.rank = playerEntry.rank
+          }
         }
       }
 

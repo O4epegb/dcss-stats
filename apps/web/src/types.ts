@@ -35,17 +35,51 @@ export interface PlayerInfoResponse {
     }>
   }
   highscores: {
-    data: Array<{
-      breakdown: HighscoreBreakdown
-      runeTier: HighscoreRuneTier
-      rank: number
-      char: string
-      score: number
+    score: {
+      data: Array<{
+        breakdown: HighscoreBreakdown
+        runeTier: HighscoreRuneTier
+        rank: number
+        char: string
+        score: number
+        turns: number
+        duration: number
+        points: number
+      }>
+      total: number
       points: number
-    }>
-    total: number
-    points: number
-    rank: number | null
+      rank: number | null
+    }
+    turncount: {
+      data: Array<{
+        breakdown: HighscoreBreakdown
+        runeTier: HighscoreRuneTier
+        rank: number
+        char: string
+        score: number
+        turns: number
+        duration: number
+        points: number
+      }>
+      total: number
+      points: number
+      rank: number | null
+    }
+    duration: {
+      data: Array<{
+        breakdown: HighscoreBreakdown
+        runeTier: HighscoreRuneTier
+        rank: number
+        char: string
+        score: number
+        turns: number
+        duration: number
+        points: number
+      }>
+      total: number
+      points: number
+      rank: number | null
+    }
   }
 }
 
@@ -267,17 +301,21 @@ export type Streak = {
 }
 
 export type HighscoreBreakdown = 'CLASS' | 'RACE' | 'CHAR'
-export type HighscoreRuneTier = 'ALL' | 'THREE_RUNES' | 'FOUR_PLUS_RUNES'
+export type HighscoreRuneTier = 'ALL' | 'TIER_1' | 'TIER_2'
+export type HighscoreKind = 'HIGHSCORE' | 'TURN_COUNT' | 'DURATION'
 
 export type Highscore = {
   gameId: string
   playerId: string
+  kind: HighscoreKind
   breakdown: HighscoreBreakdown
   runeTier: HighscoreRuneTier
   normalizedClass: string
   normalizedRace: string
   char: string
   score: number
+  turns: number
+  duration: number
   runes: number
   rank: number
   player: Player
@@ -297,6 +335,21 @@ export type HighscoresLeaderboardResponse = {
     playerName: string
     points: number
     entryCount: number
+    rank: number
+  }[]
+  total: number
+  skip: number
+  take: number
+}
+
+export type CombinedLeaderboardResponse = {
+  data: {
+    playerId: string
+    playerName: string
+    highscorePoints: number
+    turncountPoints: number
+    durationPoints: number
+    totalPoints: number
     rank: number
   }[]
   total: number

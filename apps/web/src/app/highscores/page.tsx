@@ -24,11 +24,29 @@ type SearchParams = {
   [key: string]: string | string[] | undefined
 }
 
-const runeTiers = [
-  { value: undefined, label: 'All runes' },
-  { value: 'THREE_RUNES', label: '3 Runes' },
-  { value: 'FOUR_PLUS_RUNES', label: '4+ Runes' },
+const kinds = [
+  { value: 'HIGHSCORE' as const, label: 'Score' },
+  { value: 'TURN_COUNT' as const, label: 'Turncount' },
+  { value: 'DURATION' as const, label: 'Speedrun' },
 ]
+
+const runeTiersByKind: Record<string, { value?: string; label: string }[]> = {
+  HIGHSCORE: [
+    { value: undefined, label: 'All runes' },
+    { value: 'TIER_1', label: '3 Runes' },
+    { value: 'TIER_2', label: '4+ Runes' },
+  ],
+  TURN_COUNT: [
+    { value: undefined, label: 'All runes' },
+    { value: 'TIER_1', label: '3-14 Runes' },
+    { value: 'TIER_2', label: '15 Runes' },
+  ],
+  DURATION: [
+    { value: undefined, label: 'All runes' },
+    { value: 'TIER_1', label: '3-14 Runes' },
+    { value: 'TIER_2', label: '15 Runes' },
+  ],
+}
 
 const PER_PAGE = 100
 
@@ -76,8 +94,10 @@ const HighscoresList = async ({ searchParams }: { searchParams: Promise<SearchPa
 const HighscoresListCached = async ({ searchParams }: { searchParams: SearchParams }) => {
   const page = Number(searchParams.page) || 1
   const skip = (page - 1) * PER_PAGE
+  const kind = (searchParams.kind as string) ?? 'HIGHSCORE'
 
   const fetchParams = new URLSearchParams()
+  fetchParams.append('kind', kind)
   fetchParams.append('breakdown', String(searchParams.breakdown ?? 'CHAR'))
   fetchParams.append('runeTier', String(searchParams.runeTier ?? 'ALL'))
   if (searchParams.player) {
@@ -95,6 +115,7 @@ const HighscoresListCached = async ({ searchParams }: { searchParams: SearchPara
   const paginationQuery = (pageNum: number) => ({
     pathname: '/highscores' as const,
     query: {
+      kind: searchParams.kind,
       breakdown: searchParams.breakdown,
       runeTier: searchParams.runeTier,
       player: searchParams.player,
@@ -105,15 +126,42 @@ const HighscoresListCached = async ({ searchParams }: { searchParams: SearchPara
   return (
     <>
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex gap-1">
-            {runeTiers.map((r) => (
+            {kinds.map((k) => (
+              <Link
+                key={k.value}
+                prefetch={false}
+                href={{
+                  pathname: '/highscores',
+                  query: {
+                    kind: k.value,
+                    breakdown: searchParams.breakdown,
+                    runeTier: searchParams.runeTier,
+                    player: searchParams.player,
+                  },
+                }}
+                className={cn(
+                  'rounded px-2 py-0.5 text-sm',
+                  kind === k.value
+                    ? 'bg-gray-200 font-medium dark:bg-gray-700'
+                    : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                )}
+              >
+                {k.label}
+              </Link>
+            ))}
+          </div>
+          <span className="text-gray-300 dark:text-gray-600">|</span>
+          <div className="flex gap-1">
+            {(runeTiersByKind[kind] ?? runeTiersByKind.HIGHSCORE).map((r) => (
               <Link
                 key={r.label}
                 prefetch={false}
                 href={{
                   pathname: '/highscores',
                   query: {
+                    kind: searchParams.kind,
                     breakdown: searchParams.breakdown,
                     runeTier: r.value,
                     player: searchParams.player,
@@ -203,7 +251,13 @@ const HighscoresListCached = async ({ searchParams }: { searchParams: SearchPara
                     </div>
                   </div>
                   <div className="flex shrink-0 flex-col items-end justify-between">
-                    <span className="font-mono font-medium">{formatNumber(entry.score)}</span>
+                    <span className="font-mono font-medium">
+                      {kind === 'DURATION'
+                        ? formatDuration(entry.duration)
+                        : kind === 'TURN_COUNT'
+                          ? `${formatNumber(entry.turns)} turns`
+                          : formatNumber(entry.score)}
+                    </span>
                     {game.server && (
                       <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                         <a
