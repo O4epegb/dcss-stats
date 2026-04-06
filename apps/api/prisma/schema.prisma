@@ -37,10 +37,10 @@ model Logfile {
 }
 
 model Player {
-  id      String   @id
-  name    String   @unique
-  game    Game[]
-  isBot   Boolean  @default(false)
+  id         String      @id
+  name       String      @unique
+  game       Game[]
+  isBot      Boolean     @default(false)
   streaks    Streak[]
   highscores Highscore[]
 }
@@ -58,7 +58,7 @@ model Game {
   race               String
   class              String
   normalizedRace     String
-  normalizedClass    String?
+  normalizedClass    String
   raceAbbr           String
   classAbbr          String
   char               String
@@ -158,9 +158,9 @@ enum HighscoreRuneTier {
 
 model Highscore {
   gameId          String
-  game            Game                 @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  game            Game               @relation(fields: [gameId], references: [id], onDelete: Cascade)
   playerId        String
-  player          Player               @relation(fields: [playerId], references: [id])
+  player          Player             @relation(fields: [playerId], references: [id])
   breakdown       HighscoreBreakdown
   runeTier        HighscoreRuneTier
   normalizedClass String

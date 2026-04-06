@@ -28,12 +28,6 @@ const runeFilter: Record<HighscoreRuneTier, string> = {
   FOUR_PLUS_RUNES: 'AND "runes" >= 4',
 }
 
-const nullFilter: Record<HighscoreBreakdown, string> = {
-  CLASS: 'AND "normalizedClass" IS NOT NULL',
-  RACE: '',
-  CHAR: '',
-}
-
 export const getHighscores = async () => {
   const breakdowns = Object.values(HighscoreBreakdown)
   const runeTiers = Object.values(HighscoreRuneTier)
@@ -48,7 +42,6 @@ export const getHighscores = async () => {
     for (const runeTier of runeTiers) {
       const filter = runeFilter[runeTier]
       const partition = partitionBy[breakdown]
-      const nulls = nullFilter[breakdown]
 
       const rows = await prisma.$queryRawUnsafe<HighscoreRow[]>(`
         SELECT * FROM (
@@ -66,7 +59,6 @@ export const getHighscores = async () => {
           WHERE "isWin" = true
             AND "playerId" NOT IN (SELECT id FROM "Player" WHERE "isBot" = true)
             ${filter}
-            ${nulls}
         ) ranked
         WHERE rank <= ${LIMIT}
       `)
