@@ -4,7 +4,7 @@ import { Autocomplete } from '@base-ui/react/autocomplete'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { escapeRegExp, orderBy, startsWith } from 'lodash-es'
 import { useRouter } from 'next/navigation'
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Player } from '~/types'
@@ -19,7 +19,7 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
 
   useDebouncedEffect(() => setDebouncedQuery(query), [query], 400)
 
-  const { data, isLoading } = useSWRImmutable(
+  const { data } = useSWRImmutable(
     ['/players', debouncedQuery],
     ([url, query]) => {
       return !query
@@ -31,33 +31,20 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
     },
     { keepPreviousData: true },
   )
-  const showLoader = !data && isLoading
+  const showLoader = !data
   const items = data ?? []
 
   const goToPlayerPage = useCallback((slug: string) => {
     router.push(`/players/${slug}`)
   }, [])
 
-  const highlightedRef = useRef<SearchItem | null>(null)
-
   return (
     <Autocomplete.Root
       items={items}
-      filteredItems={items}
-      filter={null}
       mode="none"
       autoHighlight={false}
       itemToStringValue={(item: SearchItem) => item.name}
       openOnInputClick={false}
-      onValueChange={(value) => {
-        const selected = items.find((item) => item.name === value)
-        if (selected) {
-          goToPlayerPage(selected.name)
-        }
-      }}
-      onItemHighlighted={(item) => {
-        highlightedRef.current = item ?? null
-      }}
     >
       <Autocomplete.InputGroup className="flex">
         <Autocomplete.Input
@@ -69,12 +56,6 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
           }}
           onFocus={(e) => {
             e.currentTarget.select()
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !highlightedRef.current && query) {
-              e.preventDefault()
-              goToPlayerPage(query)
-            }
           }}
         />
         <button
@@ -92,10 +73,10 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
 
       <Autocomplete.Portal>
         <Autocomplete.Positioner sideOffset={4} className="z-20">
-          <Autocomplete.Popup className="w-[var(--anchor-width)] rounded-md border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+          <Autocomplete.Popup className="w-(--anchor-width) rounded-md border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
             {showLoader && (
               <Autocomplete.Status className="px-3 py-2 text-sm text-gray-500 dark:text-zinc-400">
-                Loading...
+                {query ? 'Loading...' : 'Type to search'}
               </Autocomplete.Status>
             )}
             {!showLoader && items.length === 0 && debouncedQuery && (
@@ -103,17 +84,22 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
                 Nothing found
               </Autocomplete.Empty>
             )}
-            <Autocomplete.List className="max-h-64 overflow-y-auto p-1">
-              {(item: SearchItem) => (
-                <Autocomplete.Item
-                  key={item.name}
-                  value={item}
-                  className="cursor-default rounded-sm px-3 py-1.5 text-sm data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-zinc-700"
-                >
-                  <Highlighted text={item.name} query={debouncedQuery} />
-                </Autocomplete.Item>
-              )}
-            </Autocomplete.List>
+            {items.length > 0 && (
+              <Autocomplete.List className="max-h-64 overflow-y-auto p-1">
+                {(item: SearchItem) => (
+                  <Autocomplete.Item
+                    key={item.name}
+                    value={item}
+                    className="cursor-default rounded-sm px-3 py-1.5 text-sm data-highlighted:bg-gray-100 dark:data-highlighted:bg-zinc-700"
+                    onClick={() => {
+                      goToPlayerPage(item.name)
+                    }}
+                  >
+                    <Highlighted text={item.name} query={debouncedQuery} />
+                  </Autocomplete.Item>
+                )}
+              </Autocomplete.List>
+            )}
           </Autocomplete.Popup>
         </Autocomplete.Positioner>
       </Autocomplete.Portal>
