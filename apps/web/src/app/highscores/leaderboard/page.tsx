@@ -37,17 +37,17 @@ const runeTiersByKind: Record<string, { value?: string; label: string }[]> = {
     { value: 'TIER_2', label: 'Tier 2 runes' },
   ],
   HIGHSCORE: [
-    { value: undefined, label: 'All runes' },
+    { value: undefined, label: 'Combined runes' },
     { value: 'TIER_1', label: '3 Runes' },
     { value: 'TIER_2', label: '4+ Runes' },
   ],
   TURN_COUNT: [
-    { value: undefined, label: 'All runes' },
+    { value: undefined, label: 'Combined runes' },
     { value: 'TIER_1', label: '3-14 Runes' },
     { value: 'TIER_2', label: '15 Runes' },
   ],
   DURATION: [
-    { value: undefined, label: 'All runes' },
+    { value: undefined, label: 'Combined runes' },
     { value: 'TIER_1', label: '3-14 Runes' },
     { value: 'TIER_2', label: '15 Runes' },
   ],
@@ -73,10 +73,12 @@ const LeaderboardPage = ({ searchParams }: { searchParams: Promise<SearchParams>
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400">
           Each character and rune tier has its own ranking. Place top 10 to earn points: 1st = 10
-          pts, 2nd = 9 pts, down to 10th = 1 pt. Your total is the sum across all placements.
+          pts, 2nd = 9 pts, down to 10th = 1 pt. Your total is the sum across all placements. E.g.
+          ranking #1 on MiBe (3 runes) and #3 on GrFi (4+ runes) earns 10 + 8 = 18 points.
           <br />
           <span className="text-gray-400 dark:text-gray-500">
-            E.g. ranking #1 on MiBe (3 runes) and #3 on GrFi (4+ runes) earns 10 + 8 = 18 points.
+            Tier 1 runes - 3 runes for score, 3-14 runes for turncount and duration. Tier 2 runes -
+            4+ runes for score, 15 runes for turncount and duration.
           </span>
         </p>
         <Suspense
