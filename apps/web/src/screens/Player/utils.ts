@@ -69,6 +69,7 @@ export const getSummary = (data: PlayerInfoResponse) => {
     allTrunkCombos.has(combo),
   )
   const combosCompleted = [...allTrunkCombos]
+    .filter((combo) => !allUnavailableCombos[combo])
     .map((combo) => {
       return matrix[combo]?.wins > 0 ? combo : null
     })
