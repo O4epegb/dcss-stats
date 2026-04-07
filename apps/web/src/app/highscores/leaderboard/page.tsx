@@ -32,9 +32,9 @@ const kinds = [
 
 const runeTiersByKind: Record<string, { value?: string; label: string }[]> = {
   combined: [
-    { value: undefined, label: 'All runes' },
-    { value: 'TIER_1', label: '3 Runes' },
-    { value: 'TIER_2', label: '4+ Runes' },
+    { value: undefined, label: 'Combined runes' },
+    { value: 'TIER_1', label: 'Tier 1 runes' },
+    { value: 'TIER_2', label: 'Tier 2 runes' },
   ],
   HIGHSCORE: [
     { value: undefined, label: 'All runes' },
