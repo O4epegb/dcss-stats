@@ -1,8 +1,18 @@
 import { cacheLife } from 'next/cache'
 import { memo, Suspense } from 'react'
 import { fetchApi } from '~/api/server'
-import { Game } from '~/types'
+import { Game, HighscoresResponse } from '~/types'
 import { Table } from './Table'
+
+const take = 10
+
+async function fetchHighscores(params: Record<string, string>): Promise<Game[]> {
+  const fetchParams = new URLSearchParams({ ...params, take: String(take) })
+  const res: HighscoresResponse = await fetchApi('/highscores?' + fetchParams.toString()).then(
+    (r) => r.json(),
+  )
+  return res.data.map((entry) => entry.game)
+}
 
 export const HighscoreTables = () => {
   return (
@@ -22,26 +32,21 @@ export const RestTables = memo(async () => {
 
   cacheLife('days')
 
-  const res = await fetchApi('/main?highscores=true')
-  const {
-    data: {
-      gamesByTC,
-      gamesByDuration,
-      gamesByScore,
-      gamesByTC15Runes,
-      gamesByDuration15Runes,
-      gamesByScore3Runes,
-    },
-  }: {
-    data: {
-      gamesByTC: Array<Game>
-      gamesByDuration: Array<Game>
-      gamesByScore: Array<Game>
-      gamesByTC15Runes: Array<Game>
-      gamesByDuration15Runes: Array<Game>
-      gamesByScore3Runes: Array<Game>
-    }
-  } = await res.json()
+  const [
+    gamesByTC,
+    gamesByDuration,
+    gamesByScore,
+    gamesByTC15Runes,
+    gamesByDuration15Runes,
+    gamesByScore3Runes,
+  ] = await Promise.all([
+    fetchHighscores({ kind: 'TURN_COUNT', runeTier: 'ALL', breakdown: 'CHAR' }),
+    fetchHighscores({ kind: 'DURATION', runeTier: 'ALL', breakdown: 'CHAR' }),
+    fetchHighscores({ kind: 'HIGHSCORE', runeTier: 'ALL', breakdown: 'CHAR' }),
+    fetchHighscores({ kind: 'TURN_COUNT', runeTier: 'TIER_2', breakdown: 'CHAR' }),
+    fetchHighscores({ kind: 'DURATION', runeTier: 'TIER_2', breakdown: 'CHAR' }),
+    fetchHighscores({ kind: 'HIGHSCORE', runeTier: 'TIER_1', breakdown: 'CHAR' }),
+  ])
 
   return (
     <>
@@ -66,7 +71,7 @@ export const RestTables = memo(async () => {
 const RecentWinsTable = memo(async () => {
   'use cache'
 
-  const res = await fetchApi('/main?recentWins=true')
+  const res = await fetchApi('/main')
   const {
     data: { gamesByEndAt },
   }: {

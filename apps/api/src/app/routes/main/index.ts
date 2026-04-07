@@ -14,7 +14,11 @@ export const mainRoute = (app: AppType) => {
     const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
-      const top = await getTopGamesStats()
+      const top = await findGamesIncludeServer({
+        where: { isWin: true, player: { isBot: false } },
+        orderBy: { endAt: 'desc' },
+        take: LIMIT,
+      })
 
       return {
         data: {
@@ -29,62 +33,4 @@ export const mainRoute = (app: AppType) => {
 
     return legacyCache.get(cacheKey)?.promise
   })
-}
-
-export const getTopGamesStats = async () => {
-  const [
-    gamesByEndAt,
-    gamesByTC,
-    gamesByDuration,
-    gamesByScore,
-    gamesByTC15Runes,
-    gamesByDuration15Runes,
-    gamesByScore3Runes,
-  ] = await Promise.all([
-    findGamesIncludeServer({
-      where: { isWin: true, player: { isBot: false } },
-      orderBy: { endAt: 'desc' },
-      take: LIMIT,
-    }),
-    findGamesIncludeServer({
-      where: { isWin: true, player: { isBot: false } },
-      orderBy: { turns: 'asc' },
-      take: LIMIT,
-    }),
-    findGamesIncludeServer({
-      where: { isWin: true, player: { isBot: false } },
-      orderBy: { duration: 'asc' },
-      take: LIMIT,
-    }),
-    findGamesIncludeServer({
-      where: { isWin: true, player: { isBot: false } },
-      orderBy: { score: 'desc' },
-      take: LIMIT,
-    }),
-    findGamesIncludeServer({
-      where: { isWin: true, runes: 15, player: { isBot: false } },
-      orderBy: { turns: 'asc' },
-      take: LIMIT,
-    }),
-    findGamesIncludeServer({
-      where: { isWin: true, runes: 15, player: { isBot: false } },
-      orderBy: { duration: 'asc' },
-      take: LIMIT,
-    }),
-    findGamesIncludeServer({
-      where: { isWin: true, runes: 3, player: { isBot: false } },
-      orderBy: { score: 'desc' },
-      take: LIMIT,
-    }),
-  ])
-
-  return {
-    gamesByEndAt,
-    gamesByTC,
-    gamesByDuration,
-    gamesByScore,
-    gamesByTC15Runes,
-    gamesByDuration15Runes,
-    gamesByScore3Runes,
-  }
 }
