@@ -1,11 +1,10 @@
 'use client'
 
+import { Autocomplete } from '@base-ui/react/autocomplete'
 import { useDebouncedEffect } from '@react-hookz/web'
-import clsx from 'clsx'
-import { useCombobox } from 'downshift'
 import { escapeRegExp, orderBy, startsWith } from 'lodash-es'
 import { useRouter } from 'next/navigation'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Player } from '~/types'
@@ -39,81 +38,86 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
     router.push(`/players/${slug}`)
   }, [])
 
-  const { isOpen, highlightedIndex, getInputProps, getMenuProps, getItemProps } = useCombobox({
-    id: 'MainSearch',
-    items,
-    inputValue: query,
-    onSelectedItemChange: (e) => {
-      if (e.selectedItem) {
-        setQuery(e.selectedItem.name)
-        goToPlayerPage(e.selectedItem.name)
-      }
-    },
-  })
+  const highlightedRef = useRef<SearchItem | null>(null)
 
   return (
-    <div className="relative">
-      <input
-        placeholder={`Search player by nickname, e.g. "${nickname}"`}
-        className="block h-10 w-full rounded-sm border border-gray-400 px-2 text-ellipsis"
-        {...getInputProps({
-          value: query,
-          onFocus(e) {
-            e.target.select()
-          },
-          onKeyDown: (e) => {
-            if (e.key === 'Enter' && highlightedIndex === -1 && query) {
-              ;(e.nativeEvent as any).preventDownshiftDefault = true
+    <Autocomplete.Root
+      items={items}
+      filteredItems={items}
+      filter={null}
+      mode="none"
+      autoHighlight={false}
+      itemToStringValue={(item: SearchItem) => item.name}
+      openOnInputClick={false}
+      onValueChange={(value) => {
+        const selected = items.find((item) => item.name === value)
+        if (selected) {
+          goToPlayerPage(selected.name)
+        }
+      }}
+      onItemHighlighted={(item) => {
+        highlightedRef.current = item ?? null
+      }}
+    >
+      <Autocomplete.InputGroup className="flex">
+        <Autocomplete.Input
+          placeholder={`Search player by nickname, e.g. "${nickname}"`}
+          className="block h-10 w-full rounded-l-sm border border-gray-400 px-2 text-ellipsis"
+          value={query}
+          onChange={(e) => {
+            setQuery(e.currentTarget.value.trim())
+          }}
+          onFocus={(e) => {
+            e.currentTarget.select()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !highlightedRef.current && query) {
+              e.preventDefault()
               goToPlayerPage(query)
             }
-          },
-          onChange: (e) => {
-            setQuery(e.currentTarget.value.trim())
-          },
-        })}
-      />
+          }}
+        />
+        <button
+          type="button"
+          className="h-10 w-10 shrink-0 rounded-r-sm border border-l-0 border-gray-400 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+          style={{
+            backgroundImage: 'url("/i-identify.png")',
+            backgroundSize: '32px',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: '-5px -4px',
+          }}
+          onClick={() => query && goToPlayerPage(query)}
+        ></button>
+      </Autocomplete.InputGroup>
 
-      <div
-        className={clsx(
-          'absolute top-full left-0 z-20 mt-2 w-full overflow-hidden rounded-sm shadow-sm',
-          isOpen ? 'block' : 'hidden',
-        )}
-      >
-        <ul {...getMenuProps()} className="max-h-64 overflow-y-auto bg-white py-2 dark:bg-zinc-800">
-          {isOpen && (
-            <>
-              {showLoader ? (
-                <li className="flex justify-center">Loading...</li>
-              ) : (
-                <>
-                  {items.length === 0 && (
-                    <li className="flex justify-center">
-                      {debouncedQuery ? 'Nothing found' : 'Specify your request'}
-                    </li>
-                  )}
-                  {items.map((item, index) => {
-                    const active = items[highlightedIndex] === item
-
-                    return (
-                      <li
-                        key={index}
-                        className={clsx('px-2', active && 'bg-gray-100 dark:bg-zinc-700')}
-                        {...getItemProps({
-                          item,
-                          index,
-                        })}
-                      >
-                        <Highlighted text={item.name} query={debouncedQuery} />
-                      </li>
-                    )
-                  })}
-                </>
+      <Autocomplete.Portal>
+        <Autocomplete.Positioner sideOffset={4} className="z-20">
+          <Autocomplete.Popup className="w-[var(--anchor-width)] rounded-md border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+            {showLoader && (
+              <Autocomplete.Status className="px-3 py-2 text-sm text-gray-500 dark:text-zinc-400">
+                Loading...
+              </Autocomplete.Status>
+            )}
+            {!showLoader && items.length === 0 && debouncedQuery && (
+              <Autocomplete.Empty className="px-3 py-2 text-sm text-gray-500 dark:text-zinc-400">
+                Nothing found
+              </Autocomplete.Empty>
+            )}
+            <Autocomplete.List className="max-h-64 overflow-y-auto p-1">
+              {(item: SearchItem) => (
+                <Autocomplete.Item
+                  key={item.name}
+                  value={item}
+                  className="cursor-default rounded-sm px-3 py-1.5 text-sm data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-zinc-700"
+                >
+                  <Highlighted text={item.name} query={debouncedQuery} />
+                </Autocomplete.Item>
               )}
-            </>
-          )}
-        </ul>
-      </div>
-    </div>
+            </Autocomplete.List>
+          </Autocomplete.Popup>
+        </Autocomplete.Positioner>
+      </Autocomplete.Portal>
+    </Autocomplete.Root>
   )
 }
 
