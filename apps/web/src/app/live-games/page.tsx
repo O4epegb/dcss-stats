@@ -75,6 +75,7 @@ export default async function LiveGamesPage() {
   const response: LiveGamesResponse = await fetchApi(`/live-games`).then((r) => r.json())
   const { games } = response.data
   const gamesByVersion = groupAndSort(games.map((game) => getVersionFromGameId(game.game_id)))
+  const gamesByServer = groupAndSort(games.map((game) => game.server))
   const gamesByGod = groupAndSort(
     games.filter((game) => game.xl).map((game) => game.god?.trim() || 'No god'),
   )
@@ -86,6 +87,9 @@ export default async function LiveGamesPage() {
   )
   const gamesByClass = groupAndSort(
     games.filter((game) => game.char).map((game) => game.char?.slice(2) || 'Unknown'),
+  )
+  const gamesByPlace = groupAndSort(
+    games.filter((game) => game.place).map((game) => game.place || 'Unknown'),
   )
   const gamesByXlMap = games.reduce<Map<number, number>>((acc, game) => {
     const xl = game.xl
@@ -116,13 +120,17 @@ export default async function LiveGamesPage() {
 
         <div className="grid gap-2">
           <h2 className="font-semibold">{games.length} live games</h2>
-          <StatsList className="border-none" items={gamesByVersion} />
+          <div className="space-y-0.5">
+            <StatsList className="border-none" items={gamesByVersion} />
+            <StatsList className="border-none" items={gamesByServer} />
+          </div>
           <details className="min-w-0 space-y-1">
             <summary>More stats</summary>
             <StatsList items={gamesByGod} />
             <StatsList items={gamesByRace} />
             <StatsList items={gamesByClass} />
             <StatsList items={gamesByChar} />
+            <StatsList items={gamesByPlace} />
             <section className="min-w-0 space-y-2 rounded border-gray-200 dark:border-zinc-700">
               <div className="flex h-37 items-end gap-1 overflow-x-auto">
                 {gamesByXl.map(({ xl, count }) => {
