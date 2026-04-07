@@ -14,7 +14,7 @@ export const mainRoute = (app: AppType) => {
     const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
-      const top = await findGamesIncludeServer({
+      const gamesByEndAt = await findGamesIncludeServer({
         where: { isWin: true, player: { isBot: false } },
         orderBy: { endAt: 'desc' },
         take: LIMIT,
@@ -22,7 +22,7 @@ export const mainRoute = (app: AppType) => {
 
       return {
         data: {
-          ...top,
+          gamesByEndAt,
         },
       }
     }
