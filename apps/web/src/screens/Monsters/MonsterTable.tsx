@@ -505,7 +505,7 @@ function TileImage({
       loading="lazy"
       width={size}
       height={size}
-      className={cn('rounded object-contain', className)}
+      className={cn('pixelated rounded object-contain', className)}
       onError={() => setFailed(true)}
     />
   )

@@ -3,6 +3,7 @@
 import { Autocomplete } from '@base-ui/react/autocomplete'
 import { useDebouncedEffect } from '@react-hookz/web'
 import { escapeRegExp, orderBy, startsWith } from 'lodash-es'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState, useCallback } from 'react'
 import useSWRImmutable from 'swr/immutable'
@@ -60,15 +61,17 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
         />
         <button
           type="button"
-          className="h-10 w-10 shrink-0 rounded-r-sm border border-l-0 border-gray-400 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600"
-          style={{
-            backgroundImage: 'url("/i-identify.png")',
-            backgroundSize: '32px',
-            backgroundRepeat: 'no-repeat',
-            backgroundPosition: '-5px -4px',
-          }}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-r-sm border border-l-0 border-gray-400 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600"
           onClick={() => query && goToPlayerPage(query)}
-        ></button>
+        >
+          <Image
+            src="/i-identify.png"
+            alt="Search"
+            width={32}
+            height={32}
+            className="pixelated pointer-events-none relative -top-[7px] -left-2"
+          />
+        </button>
       </Autocomplete.InputGroup>
 
       <Autocomplete.Portal>

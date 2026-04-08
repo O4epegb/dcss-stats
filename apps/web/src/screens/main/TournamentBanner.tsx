@@ -59,8 +59,8 @@ export const TournamentBanner = () => {
         )}
         {isEnded && (
           <>
-            <img src="/gozag0.png" alt="Gozag" className="size-7 shrink-0" />v{version} Tournament
-            Results
+            <img src="/gozag0.png" alt="Gozag" className="pixelated size-7 shrink-0" />v{version}{' '}
+            Tournament Results
           </>
         )}
         <ArrowTopRightOnSquareIcon className="h-6 w-6 shrink-0" />

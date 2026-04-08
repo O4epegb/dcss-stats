@@ -144,7 +144,7 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
                           alt="Watch"
                           width={20}
                           height={20}
-                          className="absolute inset-0 hidden h-5 w-5 object-contain group-hover:block"
+                          className="pixelated absolute inset-0 hidden h-5 w-5 object-contain group-hover:block"
                         />
                       </span>{' '}
                       {game.spectator_count > 0 && `(${game.spectator_count})`}

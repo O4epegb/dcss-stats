@@ -10,7 +10,7 @@ export const Logo = () => {
         width="128"
         height="128"
         src="/logo.png"
-        className="size-8"
+        className="pixelated size-8"
         quality={100}
       />
       <h1 className="text-center text-2xl whitespace-nowrap sm:text-4xl">DCSS Stats</h1>
