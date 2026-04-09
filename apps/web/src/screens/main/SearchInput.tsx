@@ -5,7 +5,7 @@ import { useDebouncedEffect } from '@react-hookz/web'
 import { escapeRegExp, orderBy, startsWith } from 'lodash-es'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { Player } from '~/types'
@@ -39,24 +39,33 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
     router.push(`/players/${slug}`)
   }, [])
 
+  const highlightedRef = useRef<SearchItem | null>(null)
+
   return (
     <Autocomplete.Root
-      items={items}
       mode="none"
       autoHighlight={false}
-      itemToStringValue={(item: SearchItem) => item.name}
       openOnInputClick={false}
+      items={items}
+      value={query}
+      itemToStringValue={(item: SearchItem) => item.name}
+      onValueChange={setQuery}
+      onItemHighlighted={(item) => {
+        highlightedRef.current = item ?? null
+      }}
     >
       <Autocomplete.InputGroup className="flex">
         <Autocomplete.Input
           placeholder={`Search player by nickname, e.g. "${nickname}"`}
           className="block h-10 w-full rounded-l-sm border border-gray-400 px-2 text-ellipsis"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.currentTarget.value.trim())
-          }}
           onFocus={(e) => {
             e.currentTarget.select()
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !highlightedRef.current && query) {
+              e.preventDefault()
+              goToPlayerPage(query)
+            }
           }}
         />
         <button
