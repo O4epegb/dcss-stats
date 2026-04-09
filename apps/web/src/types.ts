@@ -356,3 +356,20 @@ export type CombinedLeaderboardResponse = {
   skip: number
   take: number
 }
+
+export type HighscoresRecordsResponse = {
+  data: {
+    playerId: string
+    playerName: string
+    records: number
+    rank: number
+    combos: {
+      char: string
+      runeTier: HighscoreRuneTier
+      value: number
+    }[]
+  }[]
+  total: number
+  skip: number
+  take: number
+}

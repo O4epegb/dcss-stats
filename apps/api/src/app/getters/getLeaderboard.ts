@@ -1,5 +1,6 @@
+import { groupBy, orderBy } from 'lodash-es'
 import { createCache } from '~/app/cache'
-import { HighscoreKind, Prisma } from '~/generated/prisma/client/client'
+import { HighscoreKind, HighscoreRuneTier, Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
 export type LeaderboardEntry = {
@@ -20,11 +21,23 @@ export type CombinedLeaderboardEntry = {
   rank: number
 }
 
+export type RecordsEntry = {
+  playerId: string
+  playerName: string
+  records: number
+  rank: number
+  combos: Array<{
+    char: string
+    runeTier: HighscoreRuneTier
+    value: number
+  }>
+}
+
 const cache = createCache({ revalidate: 300 })
 
 export const getLeaderboard = async (
   kind: HighscoreKind = 'HIGHSCORE',
-  runeTier?: string,
+  runeTier?: HighscoreRuneTier,
 ): Promise<LeaderboardEntry[]> => {
   return cache.get({
     key: `leaderboard:${kind}:${runeTier ?? 'ALL'}`,
@@ -52,7 +65,7 @@ export const getLeaderboard = async (
 }
 
 export const getCombinedLeaderboard = async (
-  runeTier?: string,
+  runeTier?: HighscoreRuneTier,
 ): Promise<CombinedLeaderboardEntry[]> => {
   return cache.get({
     key: `leaderboard:combined:${runeTier ?? 'ALL'}`,
@@ -124,6 +137,58 @@ export const getCombinedLeaderboard = async (
         .sort((a, b) => b.totalPoints - a.totalPoints)
 
       return sorted.map((entry, index) => ({ ...entry, rank: index + 1 }))
+    },
+  })
+}
+
+const recordsCache = createCache({ revalidate: 300 })
+
+export const getTopRecords = async (
+  kind: HighscoreKind = 'HIGHSCORE',
+  runeTier?: HighscoreRuneTier,
+): Promise<RecordsEntry[]> => {
+  return recordsCache.get({
+    key: `records:${kind}:${runeTier ?? 'ALL'}`,
+    loader: async () => {
+      const entries = await prisma.highscore.findMany({
+        where: {
+          kind,
+          breakdown: 'CHAR',
+          rank: 1,
+          runeTier: runeTier ?? { in: ['TIER_1', 'TIER_2'] },
+        },
+        select: {
+          playerId: true,
+          player: { select: { name: true } },
+          char: true,
+          runeTier: true,
+          score: true,
+          turns: true,
+          duration: true,
+        },
+      })
+
+      const grouped = groupBy(entries, (e) => e.playerId)
+
+      return orderBy(
+        Object.entries(grouped).map(([playerId, group]) => ({
+          playerId,
+          playerName: group[0].player.name,
+          records: group.length,
+          rank: 0,
+          combos: orderBy(
+            group.map((e) => ({
+              char: e.char,
+              runeTier: e.runeTier,
+              value: kind === 'DURATION' ? e.duration : kind === 'TURN_COUNT' ? e.turns : e.score,
+            })),
+            ['value'],
+            [kind === 'DURATION' || kind === 'TURN_COUNT' ? 'asc' : 'desc'],
+          ),
+        })),
+        ['records'],
+        ['desc'],
+      ).map((entry, index) => ({ ...entry, rank: index + 1 }))
     },
   })
 }

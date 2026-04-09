@@ -4,10 +4,10 @@ import Link from 'next/link'
 import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
 import { defaultMetaTitle } from '~/constants'
-import { CombinedLeaderboardResponse, HighscoresLeaderboardResponse } from '~/types'
-import { cn, formatNumber } from '~/utils'
+import { HighscoresRecordsResponse } from '~/types'
+import { cn, formatDuration, formatNumber } from '~/utils'
 
-const title = `Highscores Leaderboard | ${defaultMetaTitle}`
+const title = `Most High Scores | ${defaultMetaTitle}`
 
 export const metadata: Metadata = {
   title,
@@ -22,18 +22,12 @@ type SearchParams = {
 }
 
 const kinds = [
-  { value: 'combined', label: 'Combined' },
   { value: 'HIGHSCORE' as const, label: 'Score' },
   { value: 'TURN_COUNT' as const, label: 'Turncount' },
   { value: 'DURATION' as const, label: 'Speedrun' },
 ]
 
 const runeTiersByKind: Record<string, { value?: string; label: string }[]> = {
-  combined: [
-    { value: undefined, label: 'Combined runes' },
-    { value: 'TIER_1', label: 'Tier 1 runes' },
-    { value: 'TIER_2', label: 'Tier 2 runes' },
-  ],
   HIGHSCORE: [
     { value: undefined, label: 'Combined runes' },
     { value: 'TIER_1', label: '3 Runes' },
@@ -51,9 +45,31 @@ const runeTiersByKind: Record<string, { value?: string; label: string }[]> = {
   ],
 }
 
-const PER_PAGE = 100
+const runeTierDisplayLabels: Record<string, string> = {
+  TIER_1: '3 rune',
+  TIER_2: '4+ rune',
+}
 
-export default async function LeaderboardPage({
+const multiRuneTierDisplayLabels: Record<string, string> = {
+  TIER_1: '3-14 rune',
+  TIER_2: '15 rune',
+}
+
+const kindDisplayLabels: Record<string, Record<string, string>> = {
+  HIGHSCORE: runeTierDisplayLabels,
+  TURN_COUNT: multiRuneTierDisplayLabels,
+  DURATION: multiRuneTierDisplayLabels,
+}
+
+function formatValue(kind: string | undefined, value: number) {
+  if (kind === 'DURATION') return formatDuration(value)
+  if (kind === 'TURN_COUNT') return formatNumber(value) + ' turns'
+  return formatNumber(value)
+}
+
+const PER_PAGE = 25
+
+export default async function RecordsPage({
   searchParams,
 }: {
   searchParams: Promise<SearchParams>
@@ -62,7 +78,7 @@ export default async function LeaderboardPage({
   const page = Number(params.page) || 1
   const skip = (page - 1) * PER_PAGE
   const search = params.search ? String(params.search) : ''
-  const kind = (params.kind as string) ?? 'combined'
+  const kind = (params.kind as string) ?? 'HIGHSCORE'
   const runeTier = params.runeTier as string | undefined
 
   const fetchParams = new URLSearchParams()
@@ -76,14 +92,14 @@ export default async function LeaderboardPage({
     fetchParams.append('search', search)
   }
 
-  const response = await fetchApi('/highscores/leaderboard?' + fetchParams.toString()).then((r) =>
-    r.json(),
-  )
+  const response: HighscoresRecordsResponse = await fetchApi(
+    '/highscores/records?' + fetchParams.toString(),
+  ).then((r) => r.json())
 
   const totalPages = Math.ceil(response.total / PER_PAGE)
 
   const paginationQuery = (pageNum: number) => ({
-    pathname: '/highscores/leaderboard' as const,
+    pathname: '/highscores/first' as const,
     query: {
       kind: params.kind,
       runeTier: params.runeTier,
@@ -97,14 +113,7 @@ export default async function LeaderboardPage({
   return (
     <div className="space-y-3">
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        Each character and rune tier has its own ranking. Place top 10 to earn points: 1st = 10 pts,
-        2nd = 9 pts, down to 10th = 1 pt. Your total is the sum across all placements. E.g. ranking
-        #1 on MiBe (3 runes) and #3 on GrFi (4+ runes) earns 10 + 8 = 18 points.
-        <br />
-        <span className="text-gray-400 dark:text-gray-500">
-          Tier 1 runes - 3 runes for score, 3-14 runes for turncount and duration. Tier 2 runes - 4+
-          runes for score, 15 runes for turncount and duration.
-        </span>
+        Players ranked by number of #1 placements on any character and rune tier.
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex gap-1">
@@ -113,16 +122,16 @@ export default async function LeaderboardPage({
               key={k.label}
               prefetch={false}
               href={{
-                pathname: '/highscores/leaderboard',
+                pathname: '/highscores/first',
                 query: {
                   kind: k.value,
-                  runeTier: k.value ? params.runeTier : undefined,
+                  runeTier: params.runeTier,
                   search: params.search,
                 },
               }}
               className={cn(
                 'rounded px-2 py-0.5 text-sm',
-                kind === k.value || (k.value === undefined && !kind)
+                kind === k.value
                   ? 'bg-gray-200 font-medium dark:bg-gray-700'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-800',
               )}
@@ -140,7 +149,7 @@ export default async function LeaderboardPage({
                   key={r.label}
                   prefetch={false}
                   href={{
-                    pathname: '/highscores/leaderboard',
+                    pathname: '/highscores/first',
                     query: {
                       kind: params.kind,
                       runeTier: r.value,
@@ -161,7 +170,7 @@ export default async function LeaderboardPage({
           </>
         )}
       </div>
-      <form action="/highscores/leaderboard" method="get">
+      <form action="/highscores/first" method="get">
         <input type="hidden" name="kind" value={kind} />
         {runeTier && <input type="hidden" name="runeTier" value={runeTier} />}
         <input
@@ -173,10 +182,56 @@ export default async function LeaderboardPage({
         />
       </form>
 
-      {kind === 'combined' ? (
-        <CombinedList data={response.data} />
+      {response.data.length === 0 ? (
+        <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+          No players found.
+        </div>
       ) : (
-        <SingleKindList data={response.data} kind={kind} />
+        <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
+          {response.data.map((entry) => (
+            <div
+              key={entry.playerId}
+              className="bg-white py-2 text-sm text-black dark:bg-zinc-900 dark:text-white"
+            >
+              <div className="flex items-center gap-3">
+                <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
+                  #{entry.rank}
+                </span>
+                <Link
+                  prefetch={false}
+                  href={`/players/${entry.playerName}`}
+                  className="font-medium hover:underline"
+                >
+                  {entry.playerName}
+                </Link>
+                <div className="ml-auto font-mono font-bold">{entry.records}</div>
+              </div>
+              {entry.combos.length > 0 && (
+                <div className="mt-1 ml-11 flex flex-wrap gap-1">
+                  {entry.combos.map((combo, i) => {
+                    const tierLabels = kindDisplayLabels[kind] ?? kindDisplayLabels.HIGHSCORE
+                    const tierLabel = combo.runeTier
+                      ? (tierLabels[combo.runeTier] ?? combo.runeTier)
+                      : ''
+
+                    return (
+                      <span
+                        key={`${combo.char}-${combo.runeTier}-${i}`}
+                        className="text-2xs rounded bg-gray-100 px-1.5 py-0.5 font-mono font-medium md:text-xs dark:bg-zinc-800"
+                        title={tierLabel ? `${combo.char} (${tierLabel})` : combo.char}
+                      >
+                        {combo.char}
+                        <span className="ml-1 text-gray-500 dark:text-gray-400">
+                          {formatValue(kind, combo.value)}
+                        </span>
+                      </span>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
       )}
 
       {totalPages > 1 && (
@@ -222,112 +277,6 @@ export default async function LeaderboardPage({
           )}
         </div>
       )}
-    </div>
-  )
-}
-
-const SingleKindList = ({
-  data,
-  kind,
-}: {
-  data: HighscoresLeaderboardResponse['data']
-  kind: string
-}) => {
-  if (data.length === 0) {
-    return (
-      <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        No players found.
-      </div>
-    )
-  }
-
-  return (
-    <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
-      {data.map((entry) => (
-        <div
-          key={entry.playerId}
-          className="flex items-center gap-3 bg-white py-1 text-sm text-black dark:bg-zinc-900 dark:text-white"
-        >
-          <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
-            #{entry.rank}
-          </span>
-          <Link
-            prefetch={false}
-            href={`/players/${entry.playerName}`}
-            className="font-medium hover:underline"
-          >
-            {entry.playerName}
-          </Link>
-          <div className="ml-auto flex shrink-0 flex-col items-end">
-            <span className="font-mono font-medium">
-              {formatNumber(entry.points)}{' '}
-              <span className="text-gray-500 dark:text-gray-400">pts</span>
-            </span>
-            <Link
-              prefetch={false}
-              href={{ pathname: '/highscores', query: { player: entry.playerName, kind } }}
-              className="text-xs text-gray-500 hover:text-gray-700 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
-            >
-              {entry.entryCount} {entry.entryCount === 1 ? 'entry' : 'entries'}
-            </Link>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-const CombinedList = ({ data }: { data: CombinedLeaderboardResponse['data'] }) => {
-  if (data.length === 0) {
-    return (
-      <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        No players found.
-      </div>
-    )
-  }
-
-  return (
-    <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
-      {data.map((entry) => (
-        <div
-          key={entry.playerId}
-          className="flex items-center gap-3 bg-white py-1 text-sm text-black dark:bg-zinc-900 dark:text-white"
-        >
-          <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
-            #{entry.rank}
-          </span>
-          <Link
-            prefetch={false}
-            href={`/players/${entry.playerName}`}
-            className="font-medium hover:underline"
-          >
-            {entry.playerName}
-          </Link>
-          <div className="ml-auto flex shrink-0 items-center gap-4">
-            <div className="flex shrink-0 flex-col gap-x-4 md:flex-row md:items-center">
-              {entry.highscorePoints > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  <span className="text-teal-500">{entry.highscorePoints}</span> score
-                </span>
-              )}
-              {entry.turncountPoints > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  <span className="text-cyan-500">{entry.turncountPoints}</span> turns
-                </span>
-              )}
-              {entry.durationPoints > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  <span className="text-violet-500">{entry.durationPoints}</span> speed
-                </span>
-              )}
-            </div>
-            <span className="font-mono font-medium">
-              {formatNumber(entry.totalPoints)}{' '}
-              <span className="text-gray-500 dark:text-gray-400">pts</span>
-            </span>
-          </div>
-        </div>
-      ))}
     </div>
   )
 }

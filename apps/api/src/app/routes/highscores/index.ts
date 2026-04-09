@@ -3,7 +3,7 @@ import Type from 'typebox'
 import { AppType } from '~/app'
 import { createCache, type CacheManager } from '~/app/cache'
 import { getHighscores } from '~/app/getters/getHighscores'
-import { getCombinedLeaderboard, getLeaderboard } from '~/app/getters/getLeaderboard'
+import { getCombinedLeaderboard, getLeaderboard, getTopRecords } from '~/app/getters/getLeaderboard'
 import {
   HighscoreBreakdown,
   HighscoreKind,
@@ -217,7 +217,7 @@ export const highscoresRoute = (
 
   const LeaderboardQuerystring = Type.Object({
     kind: Type.Optional(Type.String()),
-    runeTier: Type.Optional(Type.String()),
+    runeTier: Type.Optional(Type.Enum(HighscoreRuneTier)),
     search: Type.Optional(Type.String()),
     skip: Type.Number({ default: 0 }),
     take: Type.Number({ default: 25 }),
@@ -250,6 +250,41 @@ export const highscoresRoute = (
       }
 
       const allEntries = await getLeaderboard(kind as HighscoreKind, runeTier)
+      const filtered = search
+        ? allEntries.filter((e) => e.playerName.toLowerCase().includes(search))
+        : allEntries
+
+      return {
+        data: filtered.slice(skip, skip + take),
+        total: filtered.length,
+        skip,
+        take,
+      }
+    },
+  )
+
+  const RecordsQuerystring = Type.Object({
+    kind: Type.Optional(Type.Enum(HighscoreKind)),
+    runeTier: Type.Optional(Type.Enum(HighscoreRuneTier)),
+    search: Type.Optional(Type.String()),
+    skip: Type.Number({ default: 0 }),
+    take: Type.Number({ default: 25 }),
+  })
+
+  app.get(
+    '/api/highscores/records',
+    {
+      schema: {
+        querystring: RecordsQuerystring,
+      },
+    },
+    async (request) => {
+      const kind = request.query.kind ?? 'HIGHSCORE'
+      const { skip, take, runeTier } = request.query
+      const search = request.query.search?.toLowerCase()
+
+      const allEntries = await getTopRecords(kind, runeTier)
+
       const filtered = search
         ? allEntries.filter((e) => e.playerName.toLowerCase().includes(search))
         : allEntries
