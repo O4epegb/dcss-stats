@@ -176,6 +176,26 @@ export const data = {
   ],
   servers: [
     {
+      name: 'crawl.roguelikes.gg',
+      abbreviation: 'CRG',
+      url: 'https://crawl.roguelikes.gg',
+      baseUrl: 'https://crawl.roguelikes.gg',
+      morgueUrl: 'https://crawl.roguelikes.gg/morgue',
+      ttyrecUrl: 'https://crawl.roguelikes.gg/ttyrec',
+      logfiles: [
+        ...rangeToTrunk(30).map((version) => ({
+          path: `/meta/0.${version}/logfile`,
+          version: `0.${version}`,
+          morgueUrlPrefix: undefined,
+        })),
+        {
+          path: `/meta/git/logfile`,
+          version: 'git',
+          morgueUrlPrefix: undefined,
+        },
+      ],
+    },
+    {
       name: 'crawl-br.roguelikes.gg',
       abbreviation: 'CBRG',
       url: 'https://crawl-br.roguelikes.gg',
