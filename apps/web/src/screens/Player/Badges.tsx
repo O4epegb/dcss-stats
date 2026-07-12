@@ -15,7 +15,7 @@ export const Badges = () => {
   const topStreak = streaks.inTop100[0]
 
   return (
-    <div className="contents text-sm">
+    <section className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm empty:hidden">
       {isGreater ? (
         <Tooltip content={<div>Has won with all races and all classes</div>}>
           <div className="rounded bg-amber-300 px-1 py-0.5 text-black ring-2 ring-amber-600 ring-inset">
@@ -110,6 +110,6 @@ export const Badges = () => {
         runeTierLabels={MULTI_RUNE_LABELS}
         valueLabel={(e) => formatDuration(e.duration)}
       />
-    </div>
+    </section>
   )
 }

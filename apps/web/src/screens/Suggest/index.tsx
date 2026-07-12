@@ -866,7 +866,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                       </tbody>
                     </table>
                     {dataToShow.length === 0 && (
-                      <div className="flex min-h-[300px] items-center justify-center">
+                      <div className="flex min-h-75 items-center justify-center">
                         No matching data found
                       </div>
                     )}

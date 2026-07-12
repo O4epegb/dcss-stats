@@ -31,8 +31,8 @@ export const Player = () => {
             <h2 className="text-3xl font-bold">{player.name}</h2>
             <FavoriteButton />
             <ServerFilter />
-            <Badges />
           </section>
+          <Badges />
           <Winrates />
           <ProgressBadges />
           <Stats summary={summary} />

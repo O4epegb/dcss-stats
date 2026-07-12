@@ -137,7 +137,7 @@ export const HeatMapFlat = ({
   return (
     <div
       className={cn(
-        'relative grid auto-cols-[16px] grid-flow-col grid-rows-[repeat(7,16px)] items-start justify-start gap-0.5 pt-5',
+        'relative grid auto-cols-4 grid-flow-col grid-rows-[repeat(7,16px)] items-start justify-start gap-0.5 pt-5',
         invisible && 'opacity-0',
       )}
     >

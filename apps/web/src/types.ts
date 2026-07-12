@@ -42,52 +42,31 @@ export interface PlayerInfoResponse {
     }>
   }
   highscores: {
-    score: {
-      data: Array<{
-        breakdown: HighscoreBreakdown
-        runeTier: HighscoreRuneTier
-        rank: number
-        char: string
-        score: number
-        turns: number
-        duration: number
-        points: number
-      }>
-      total: number
-      points: number
-      rank: number | null
-    }
-    turncount: {
-      data: Array<{
-        breakdown: HighscoreBreakdown
-        runeTier: HighscoreRuneTier
-        rank: number
-        char: string
-        score: number
-        turns: number
-        duration: number
-        points: number
-      }>
-      total: number
-      points: number
-      rank: number | null
-    }
-    duration: {
-      data: Array<{
-        breakdown: HighscoreBreakdown
-        runeTier: HighscoreRuneTier
-        rank: number
-        char: string
-        score: number
-        turns: number
-        duration: number
-        points: number
-      }>
-      total: number
-      points: number
-      rank: number | null
-    }
+    score: PlayerLeaderboard
+    turncount: PlayerLeaderboard
+    duration: PlayerLeaderboard
   }
+}
+
+export type PlayerLeaderboardEntry = {
+  breakdown: HighscoreBreakdown
+  runeTier: HighscoreRuneTier
+  rank: number
+  char: string
+  score: number
+  turns: number
+  duration: number
+  points: number
+}
+
+export type PlayerLeaderboard = {
+  tiers: Array<{
+    runeTier: HighscoreRuneTier
+    entries: PlayerLeaderboardEntry[]
+    total: number
+  }>
+  points: number
+  rank: number | null
 }
 
 export type GamesToFirstWin = {

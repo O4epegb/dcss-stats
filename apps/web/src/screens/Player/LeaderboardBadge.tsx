@@ -1,36 +1,18 @@
 import Link from 'next/link'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { HighscoreBreakdown, HighscoreKind, HighscoreRuneTier } from '~/types'
+import { HighscoreKind, PlayerLeaderboard, PlayerLeaderboardEntry } from '~/types'
 import { cn } from '~/utils'
-
-type Entry = {
-  breakdown: HighscoreBreakdown
-  runeTier: HighscoreRuneTier
-  rank: number
-  char: string
-  score: number
-  turns: number
-  duration: number
-  points: number
-}
-
-type LeaderboardData = {
-  data: Entry[]
-  total: number
-  points: number
-  rank: number | null
-}
 
 type ColorKey = 'teal' | 'cyan' | 'violet'
 
 interface LeaderboardBadgeProps {
   label: string
-  data: LeaderboardData
+  data: PlayerLeaderboard
   playerId: string
   kind: HighscoreKind
   color: ColorKey
   runeTierLabels: Record<string, string>
-  valueLabel: (entry: Entry) => string
+  valueLabel: (entry: PlayerLeaderboardEntry) => string
   pointsDescription?: string
 }
 
@@ -83,7 +65,7 @@ export const LeaderboardBadge = ({
 }: LeaderboardBadgeProps) => {
   if (data.rank == null) return null
 
-  const remaining = data.total - data.data.length
+  const remaining = data.tiers.reduce((sum, tier) => sum + tier.total - tier.entries.length, 0)
 
   return (
     <Tooltip
@@ -93,14 +75,18 @@ export const LeaderboardBadge = ({
           <div>
             {label} Leaderboard ({data.points} pts):
           </div>
-          <ul className="mt-2 list-disc pl-4">
-            {data.data.map((entry, i) => (
-              <li key={i}>
-                #{entry.rank} {entry.char} ({runeTierLabels[entry.runeTier]}) — {valueLabel(entry)}{' '}
-                (+{entry.points} pts)
-              </li>
-            ))}
-          </ul>
+          {data.tiers.map((tier) => (
+            <div key={tier.runeTier} className="mt-2">
+              <div className="font-medium">{runeTierLabels[tier.runeTier]}:</div>
+              <ul className="mt-1 list-disc pl-4">
+                {tier.entries.map((entry, i) => (
+                  <li key={i}>
+                    #{entry.rank} {entry.char} — {valueLabel(entry)} (+{entry.points} pts)
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
           {remaining > 0 && (
             <div className="mt-1 text-right">
               <Link

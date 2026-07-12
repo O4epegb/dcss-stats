@@ -167,9 +167,33 @@ export const playersRoute = (app: AppType) => {
       ])
 
       const entriesByKind = groupBy(allHighscoreEntries, (e) => e.kind)
-      const highscoreEntries = orderBy(entriesByKind['HIGHSCORE'] || [], 'points', 'desc')
-      const turncountEntries = orderBy(entriesByKind['TURN_COUNT'] || [], 'points', 'desc')
-      const durationEntries = orderBy(entriesByKind['DURATION'] || [], 'points', 'desc')
+      const highscoreEntries = entriesByKind['HIGHSCORE'] || []
+      const turncountEntries = entriesByKind['TURN_COUNT'] || []
+      const durationEntries = entriesByKind['DURATION'] || []
+
+      const toLeaderboard = (
+        entries: typeof allHighscoreEntries,
+        sortBy: 'score' | 'turns' | 'duration',
+        direction: 'asc' | 'desc',
+      ) => ({
+        points: entries.reduce((sum, e) => sum + e.points, 0),
+        rank: null as number | null,
+        tiers: (['TIER_1', 'TIER_2'] as const)
+          .map((runeTier) => {
+            const tierEntries = orderBy(
+              entries.filter((e) => e.runeTier === runeTier),
+              ['rank', sortBy],
+              ['asc', direction],
+            )
+
+            return {
+              runeTier,
+              entries: tierEntries.slice(0, 10),
+              total: tierEntries.length,
+            }
+          })
+          .filter((tier) => tier.total > 0),
+      })
 
       const wins = games.filter((x) => x.isWin)
       const firstWin = wins[0]
@@ -263,24 +287,9 @@ export const playersRoute = (app: AppType) => {
           }),
         },
         highscores: {
-          score: {
-            data: highscoreEntries.slice(0, 10),
-            total: highscoreEntries.length,
-            points: highscoreEntries.reduce((sum, e) => sum + e.points, 0),
-            rank: null as number | null,
-          },
-          turncount: {
-            data: turncountEntries.slice(0, 10),
-            total: turncountEntries.length,
-            points: turncountEntries.reduce((sum, e) => sum + e.points, 0),
-            rank: null as number | null,
-          },
-          duration: {
-            data: durationEntries.slice(0, 10),
-            total: durationEntries.length,
-            points: durationEntries.reduce((sum, e) => sum + e.points, 0),
-            rank: null as number | null,
-          },
+          score: toLeaderboard(highscoreEntries, 'score', 'desc'),
+          turncount: toLeaderboard(turncountEntries, 'turns', 'asc'),
+          duration: toLeaderboard(durationEntries, 'duration', 'asc'),
         },
       }
 
