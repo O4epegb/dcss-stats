@@ -1,5 +1,5 @@
 import { CronJob } from 'cron'
-import Type from 'typebox'
+import { Type } from 'typebox'
 import { AppType } from '~/app'
 import { createCache, type CacheManager } from '~/app/cache'
 import { getHighscores } from '~/app/getters/getHighscores'

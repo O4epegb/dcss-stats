@@ -15,15 +15,15 @@ import {
   useFloating,
   useFocus,
   useHover,
-  useInteractions,
-  useRole,
-  useMergeRefs,
   UseHoverProps,
+  useInteractions,
+  useMergeRefs,
+  useRole,
 } from '@floating-ui/react'
 import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web'
 import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ReactNode, useRef, useState, cloneElement, FC, type JSX } from 'react'
+import { cloneElement, FC, ReactNode, useRef, useState, type JSX } from 'react'
 import { XOR } from '~/types'
 import { cn } from '~/utils'
 

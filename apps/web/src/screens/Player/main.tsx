@@ -4,6 +4,7 @@ import { Logo } from '~/components/Logo'
 import { Matrix } from '~/components/Matrix'
 import { Badges } from './Badges'
 import { Calendar } from './Calendar'
+import { usePlayerPageContext } from './context'
 import { FavoriteButton } from './FavoriteButton'
 import { Games } from './Games'
 import { ProgressBadges } from './ProgressBadges'
@@ -11,7 +12,6 @@ import { Stats } from './Stats'
 import { Streaks } from './Streaks'
 import { Titles } from './Titles'
 import { Winrates } from './Winrates'
-import { usePlayerPageContext } from './context'
 
 export const Player = () => {
   const { player, summary, isOptionEnabled, toggleOption } = usePlayerPageContext()

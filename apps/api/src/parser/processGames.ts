@@ -6,10 +6,10 @@ import { hasher as createHasher } from 'node-object-hash'
 import { prisma } from '~/prisma'
 import { LogfileWithServer } from '~/types'
 import {
-  ParsedGame,
-  parseRawGameFromLine,
   getGameFromCandidate,
   getVersionIntegerFromString,
+  ParsedGame,
+  parseRawGameFromLine,
 } from './utils'
 
 const hasher = createHasher()
@@ -40,7 +40,7 @@ export const processGames = async (file: LogfileWithServer, lines: string[]) => 
     await prisma.invalidGame.createMany({
       data: invalidGames.map((g) => ({
         // Null byte replacement hack
-        logLine: g.logLine.replace(/\0/g, ''),
+        logLine: g.logLine.replaceAll('\0', ''),
         logfileId: file.id,
         missing: g.missing.join(', '),
       })),

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { TooltipTable } from './TooltipTable'
 import { usePlayerPageContext } from './context'
+import { TooltipTable } from './TooltipTable'
 
 export const ProgressBadges = () => {
   const { gods, tiamat, summary } = usePlayerPageContext()

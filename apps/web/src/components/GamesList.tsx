@@ -1,7 +1,7 @@
 import { useFirstMountState } from '@react-hookz/web'
 import clsx from 'clsx'
 import { last, throttle } from 'lodash-es'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '~/api'
 import { Game } from '~/types'
 import { GameCard } from './GameCard'

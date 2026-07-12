@@ -2,9 +2,9 @@ import { useMediaQuery } from '@react-hookz/web'
 import clsx from 'clsx'
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { Summary, allUnavailableCombos } from '~/screens/Player/utils'
+import { allUnavailableCombos, Summary } from '~/screens/Player/utils'
 import { CharStat } from '~/types'
-import { pluralize, formatNumber, notEmpty } from '~/utils'
+import { formatNumber, notEmpty, pluralize } from '~/utils'
 
 export const Matrix = ({
   stats,

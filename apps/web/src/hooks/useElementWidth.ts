@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 export function useElementWidth<T extends HTMLElement>() {
   const ref = useRef<T | null>(null)

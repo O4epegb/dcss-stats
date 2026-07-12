@@ -5,7 +5,7 @@ import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { ThemeSelector } from '~/components/ThemeSelector'
 import { defaultMetaTitle } from '~/constants'
-import { LiveGamesResponse, LiveGamesTable, getVersionFromGameId } from '~/screens/main/LiveGames'
+import { getVersionFromGameId, LiveGamesResponse, LiveGamesTable } from '~/screens/main/LiveGames'
 import { cn, formatNumber } from '~/utils'
 
 const title = `Live games | ${defaultMetaTitle}`

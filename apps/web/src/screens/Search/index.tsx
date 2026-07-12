@@ -1,6 +1,6 @@
 'use client'
 
-import { last, flatten, first, omit, isError } from 'lodash-es'
+import { first, flatten, isError, last, omit } from 'lodash-es'
 import { useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'

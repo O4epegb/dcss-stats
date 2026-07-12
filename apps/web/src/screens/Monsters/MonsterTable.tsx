@@ -2,7 +2,7 @@
 
 import { Drawer } from '@base-ui/react/drawer'
 import type { MonsterData } from '@dcss-stats/extractor/monsterCatalog'
-import { ChevronUpIcon, ChevronDownIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useLocalStorageValue, useMediaQuery } from '@react-hookz/web'
 import { orderBy } from 'lodash-es'
 import { useMemo, useState } from 'react'

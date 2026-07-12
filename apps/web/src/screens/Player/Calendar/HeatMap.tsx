@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import { range } from 'lodash-es'
 import { Fragment, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { cn, pluralize, formatNumber } from '~/utils'
+import { cn, formatNumber, pluralize } from '~/utils'
 
 export type DayData = {
   date: dayjs.Dayjs

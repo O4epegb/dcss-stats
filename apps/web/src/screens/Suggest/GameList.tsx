@@ -1,4 +1,4 @@
-import { omit, flatten, last, isError } from 'lodash-es'
+import { flatten, isError, last, omit } from 'lodash-es'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
 import { FilterItemType } from '~/components/Filters'

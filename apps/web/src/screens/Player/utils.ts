@@ -1,4 +1,4 @@
-import { keys, orderBy, reduce, uniqBy, keyBy } from 'lodash-es'
+import { keyBy, keys, orderBy, reduce, uniqBy } from 'lodash-es'
 import {
   CharStat,
   Class,

@@ -3,15 +3,15 @@
 import { useLocalStorageValue } from '@react-hookz/web'
 import clsx from 'clsx'
 import {
+  capitalize,
   every,
+  flow,
   groupBy,
   map,
-  omit,
-  pickBy,
   noop,
-  capitalize,
-  flow,
+  omit,
   orderBy,
+  pickBy,
   sample,
 } from 'lodash-es'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -20,10 +20,10 @@ import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { FilterItemType, Filters, filtersToQuery } from '~/components/Filters'
 import { Matrix } from '~/components/Matrix'
-import { WinrateStats } from '~/components/WinrateStats'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble } from '~/components/ui/Tooltip'
+import { WinrateStats } from '~/components/WinrateStats'
 import { getStatsFromMatrix } from '~/screens/Player/utils'
 import { MatrixRecordType, StaticData } from '~/types'
 import { cn, formatNumber, notEmpty, stringifyQuery } from '~/utils'

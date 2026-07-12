@@ -1,5 +1,5 @@
 import { WinrateStats } from '~/components/WinrateStats'
-import { pluralize, formatNumber } from '~/utils'
+import { formatNumber, pluralize } from '~/utils'
 import { usePlayerPageContext } from './context'
 
 export const Winrates = () => {

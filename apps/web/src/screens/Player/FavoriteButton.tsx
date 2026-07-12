@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
 import { trackEvent } from '~/utils'
 import { usePlayerPageContext } from './context'

@@ -1,8 +1,8 @@
 import { Tooltip } from '~/components/ui/Tooltip'
-import { cn, formatNumber, formatDuration } from '~/utils'
+import { cn, formatDuration, formatNumber } from '~/utils'
+import { usePlayerPageContext } from './context'
 import { LeaderboardBadge } from './LeaderboardBadge'
 import { TooltipTable } from './TooltipTable'
-import { usePlayerPageContext } from './context'
 
 const HIGHSCORE_LABELS = { TIER_1: '3 Rune', TIER_2: '4+ Rune' }
 const MULTI_RUNE_LABELS = { TIER_1: '3-14 Rune', TIER_2: '15 Rune' }

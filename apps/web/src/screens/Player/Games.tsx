@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { range, orderBy, some } from 'lodash-es'
+import { orderBy, range, some } from 'lodash-es'
 import { useMemo, useState } from 'react'
 import { GamesList } from '~/components/GamesList'
 import { Select } from '~/components/ui/Select'

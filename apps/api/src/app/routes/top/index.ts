@@ -1,9 +1,8 @@
 import { uniq } from 'lodash-es'
-import { Type, Static } from 'typebox'
+import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { legacyCache, ttl } from '~/app/cache'
 import { Prisma } from '~/generated/prisma/client/client'
-
 import { prisma } from '~/prisma'
 
 const LIMIT = 10

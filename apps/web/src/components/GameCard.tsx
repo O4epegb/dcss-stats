@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { first, without } from 'lodash-es'
 import { forwardRef, memo } from 'react'
 import { Game } from '~/types'
-import { pluralize, date, formatNumber, getMorgueUrl } from '~/utils'
+import { date, formatNumber, getMorgueUrl, pluralize } from '~/utils'
 
 type Props = {
   game: Game

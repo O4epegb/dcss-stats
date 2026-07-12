@@ -2,19 +2,20 @@
 
 import { ClipboardDocumentCheckIcon, ClipboardDocumentIcon } from '@heroicons/react/24/outline'
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
   BarElement,
-  Title,
-  Tooltip as ChartJSTooltip,
-  Legend,
-  ChartOptions,
+  CategoryScale,
   ChartData,
+  Chart as ChartJS,
+  Tooltip as ChartJSTooltip,
+  ChartOptions,
+  ChartType,
   Colors,
+  Legend,
+  LinearScale,
   Plugin,
+  Title,
 } from 'chart.js'
-import { omit, isError, some, last, sampleSize } from 'lodash-es'
+import { isError, last, omit, sampleSize, some } from 'lodash-es'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { Bar } from 'react-chartjs-2'
@@ -44,6 +45,14 @@ const customColors = [
 //   'rgba(43, 130, 29, 0.75)',
 //   'rgba(0, 94, 170, 0.75)',
 // ]
+
+declare module 'chart.js' {
+  interface PluginOptionsByType<TType extends ChartType> {
+    customCanvasBackgroundColor?: {
+      color?: string
+    }
+  }
+}
 
 const CustomCanvasBackgroundColor: Plugin<
   'bar',
@@ -234,10 +243,8 @@ export const ChartsScreen = ({
         text: `${data?.aggregationType}(${data?.aggregationField}) by ${data?.groupBy}`,
         color: chartTextColor,
       },
-      ...{
-        customCanvasBackgroundColor: {
-          color: canvasBackgroundColor,
-        },
+      customCanvasBackgroundColor: {
+        color: canvasBackgroundColor,
       },
     },
     color: chartTextColor,

@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { defaultMetaTitle, defaultMetaDescription } from '~/constants'
+import { defaultMetaDescription, defaultMetaTitle } from '~/constants'
 
 export const sharedOGMetadata: Metadata['openGraph'] = {
   title: defaultMetaTitle,

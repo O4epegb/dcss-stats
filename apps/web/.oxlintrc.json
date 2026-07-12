@@ -1,0 +1,40 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "unicorn", "import"],
+  "jsPlugins": ["eslint-plugin-no-relative-import-paths"],
+  "categories": {
+    "correctness": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "19.2.4"
+    }
+  },
+  "env": {
+    "builtin": true,
+    "es2026": true,
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": ["**/out/*", "**/.*", "next-env.d.ts"],
+  "rules": {
+    "react-hooks/exhaustive-deps": "off",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [{ "name": "lodash", "message": "Please use lodash-es instead." }],
+        "patterns": ["lodash-es/*"]
+      }
+    ],
+    "no-console": "warn",
+    "object-shorthand": ["error", "always"],
+    "import/newline-after-import": ["warn", { "count": 1 }],
+    "react/jsx-curly-brace-presence": "warn",
+    "no-relative-import-paths/no-relative-import-paths": [
+      "warn",
+      { "allowSameFolder": true, "rootDir": "src", "prefix": "~" }
+    ]
+  }
+}

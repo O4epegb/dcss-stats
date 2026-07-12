@@ -14,7 +14,6 @@ import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { Loader } from '~/components/ui/Loader'
 import { Game, StaticData } from '~/types'
 import { cn } from '~/utils'
-
 import 'asciinema-player/dist/bundle/asciinema-player.css'
 
 export default function RecordingsPage() {

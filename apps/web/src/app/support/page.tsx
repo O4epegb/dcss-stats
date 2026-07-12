@@ -4,7 +4,7 @@ import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
 import { defaultMetaTitle } from '~/constants'
-import { SupportersCurrentResponse, SupportersListResponse, Donation } from '~/types'
+import { Donation, SupportersCurrentResponse, SupportersListResponse } from '~/types'
 import { cn } from '~/utils'
 import { BitcoinBlock } from './BitcoinBlock'
 

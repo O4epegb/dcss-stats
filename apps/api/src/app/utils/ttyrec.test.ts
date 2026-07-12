@@ -1,4 +1,4 @@
-import { describe, expect, test, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 import { cleanTerminalText, decodeTtyrecFromUrl, parseTimestampBinary, parseTtyrec } from './ttyrec'
 
 const { axiosGetMock } = vi.hoisted(() => ({

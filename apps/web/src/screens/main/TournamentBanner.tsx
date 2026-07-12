@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { cn, date } from '~/utils'
 
 const version = '0.34'

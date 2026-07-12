@@ -1,4 +1,4 @@
-import { uniq, groupBy, filter, orderBy } from 'lodash-es'
+import { filter, groupBy, orderBy, uniq } from 'lodash-es'
 import { AppType } from '~/app/app'
 import { getMatrix } from '~/app/getters/getMatrix'
 import { getStaticData } from '~/app/getters/getStaticData'

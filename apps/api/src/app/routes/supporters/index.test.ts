@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import fastify from 'fastify'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-
 import type { AppType } from '~/app/app'
 import { createCache } from '~/app/cache'
 

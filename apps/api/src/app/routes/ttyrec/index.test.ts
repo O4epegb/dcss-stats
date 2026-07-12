@@ -1,6 +1,5 @@
 import fastify from 'fastify'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
-
 import type { AppType } from '~/app/app'
 
 const {

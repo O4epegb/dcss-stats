@@ -1,8 +1,8 @@
 import {
-  DndContext,
   closestCenter,
-  PointerSensor,
+  DndContext,
   KeyboardSensor,
+  PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core'
@@ -10,21 +10,21 @@ import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
 import {
   arrayMove,
   SortableContext,
-  verticalListSortingStrategy,
   sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { useUpdateEffect } from '@react-hookz/web'
 import clsx from 'clsx'
-import { last, first } from 'lodash-es'
+import { first, last } from 'lodash-es'
 import { useSearchParams } from 'next/navigation'
 import qs from 'qs'
-import { useState, useEffect, Dispatch, SetStateAction, useMemo, ReactNode } from 'react'
+import { Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useState } from 'react'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
 import { StaticData } from '~/types'
 import { notEmpty, stringifyQuery } from '~/utils'
-import { SortableItem } from './SortableItem'
 import { operators } from './constants'
+import { SortableItem } from './SortableItem'
 
 // Order by selector
 // Hotkey for submit

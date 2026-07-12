@@ -1,13 +1,13 @@
 import clsx from 'clsx'
-import { last, first, orderBy } from 'lodash-es'
+import { first, last, orderBy } from 'lodash-es'
 import { useState } from 'react'
 import { api } from '~/api'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Loader } from '~/components/ui/Loader'
 import { Game } from '~/types'
-import { pluralize, date, formatNumber } from '~/utils'
-import { List } from './Stats'
+import { date, formatNumber, pluralize } from '~/utils'
 import { usePlayerPageContext } from './context'
+import { List } from './Stats'
 
 type StreakGame = Pick<Game, 'id' | 'isWin' | 'endAt' | 'char'>
 type StreakGroups = Array<StreakGame[]>

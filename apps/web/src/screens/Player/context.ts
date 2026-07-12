@@ -1,5 +1,5 @@
-import { setCookie, destroyCookie } from 'nookies'
-import { useState, useContext, createContext, useMemo } from 'react'
+import { destroyCookie, setCookie } from 'nookies'
+import { createContext, useContext, useMemo, useState } from 'react'
 import { PlayerInfoResponse } from '~/types'
 import { trackEvent } from '~/utils'
 import { cookiesStoreDefault, getSummary } from './utils'

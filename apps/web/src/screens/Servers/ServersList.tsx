@@ -1,7 +1,7 @@
 import { orderBy } from 'lodash-es'
 import { fetchApi } from '~/api/server'
 import { Logfile, Server } from '~/types'
-import { pluralize, date, formatNumber } from '~/utils'
+import { date, formatNumber, pluralize } from '~/utils'
 
 export const ServersList = async () => {
   'use cache'

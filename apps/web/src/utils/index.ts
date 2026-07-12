@@ -1,4 +1,4 @@
-import { type ClassValue, clsx } from 'clsx'
+import { clsx, type ClassValue } from 'clsx'
 import dayjs from 'dayjs'
 import durationPlugin from 'dayjs/plugin/duration'
 import localizedFormat from 'dayjs/plugin/localizedFormat'

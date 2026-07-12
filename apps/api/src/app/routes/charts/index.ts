@@ -49,6 +49,11 @@ export const chartRoute = async (app: AppType) => {
           }
 
           const where = await getWhereQueryFromFilter(dataset.filters)
+          const aggregation = {
+            [`_${aggregationType}`]: {
+              [aggregationField]: true,
+            },
+          }
 
           return prisma.game.groupBy({
             by: [groupBy as Prisma.GameScalarFieldEnum],
@@ -58,11 +63,7 @@ export const chartRoute = async (app: AppType) => {
               versionInteger:
                 groupBy === 'versionShort' ? undefined : getVersionIntegerFromString(version),
             },
-            ...{
-              [`_${aggregationType}`]: {
-                [aggregationField]: true,
-              },
-            },
+            ...aggregation,
           })
         }),
       )

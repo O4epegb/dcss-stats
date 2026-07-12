@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Date } from '~/components/ui/Date'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { pluralize, formatDuration, roundAndFormat, formatNumber } from '~/utils'
+import { formatDuration, formatNumber, pluralize, roundAndFormat } from '~/utils'
 import { usePlayerPageContext } from './context'
 import { Summary } from './utils'
 
