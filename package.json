@@ -30,7 +30,7 @@
       "prettier --write --ignore-unknown"
     ]
   },
-  "packageManager": "yarn@4.13.0",
+  "packageManager": "yarn@4.17.1",
   "engines": {
     "node": ">=22"
   }
