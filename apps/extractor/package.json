@@ -21,9 +21,9 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.19.0",
-    "oxlint": "^1.51.0",
-    "prettier": "^3.8.1",
+    "@types/node": "^22.20.0",
+    "oxlint": "^1.72.0",
+    "prettier": "^3.9.4",
     "typescript": "^5.9.3"
   }
 }

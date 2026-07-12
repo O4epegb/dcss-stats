@@ -4,10 +4,7 @@ declare module 'asciinema-player' {
   export type Marker = number | [number, string]
 
   export type SeekLocation =
-    | number
-    | `${number}%`
-    | { marker: number }
-    | { marker: 'prev' | 'next' }
+    number | `${number}%` | { marker: number } | { marker: 'prev' | 'next' }
 
   export type PlayerEventMap = {
     play: undefined
