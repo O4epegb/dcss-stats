@@ -67,9 +67,11 @@ const TitlesDialogContent = ({
   titles: { name: string; count: number }[]
 }) => {
   const [view, setView] = useState<ViewId>('titles')
+  const { filterParams } = usePlayerPageContext()
 
-  const { data } = useSWRImmutable(wasOpened ? `/players/${player.name}/titles` : null, (url) =>
-    api.get<{ games: TitleGame[] }>(url).then((res) => res.data),
+  const { data } = useSWRImmutable(
+    wasOpened ? [`/players/${player.name}/titles`, filterParams] : null,
+    ([url, params]) => api.get<{ games: TitleGame[] }>(url, { params }).then((res) => res.data),
   )
 
   const rowsByView = useMemo(() => {

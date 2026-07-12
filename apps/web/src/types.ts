@@ -5,6 +5,13 @@ export type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U,
 export interface PlayerInfoResponse {
   player: Player
   lastGames: Game[]
+  filter: {
+    servers: string[] | null
+  }
+  servers: Array<{
+    abbreviation: string
+    games: number
+  }>
   stats: Stats
   races: Race[]
   classes: Class[]

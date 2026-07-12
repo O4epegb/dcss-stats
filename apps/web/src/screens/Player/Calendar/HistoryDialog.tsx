@@ -23,20 +23,20 @@ export const HistoryDialog = () => {
 }
 
 const Content = () => {
-  const { player, firstGame } = usePlayerPageContext()
+  const { player, firstGame, filterParams } = usePlayerPageContext()
 
   const {
     data: calendarData,
     isLoading,
     error,
-  } = useSWRImmutable([`/players/${player.id}/calendar`], ([url]) =>
+  } = useSWRImmutable([`/players/${player.id}/calendar`, filterParams], ([url, params]) =>
     api
       .get<{
         games: {
           endAt: string
           isWin: boolean
         }[]
-      }>(url)
+      }>(url, { params })
       .then((res) => groupBy(res.data.games, (game) => date(game.endAt).format('YYYY-MM-DD'))),
   )
 

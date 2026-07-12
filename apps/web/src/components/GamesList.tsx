@@ -16,6 +16,7 @@ export const GamesList = (props: {
   class?: string
   god?: string
   version?: string[]
+  server?: string[]
   runes?: number[]
   includePlayer?: boolean
   isCompactView?: boolean
@@ -31,6 +32,7 @@ export const GamesList = (props: {
     god,
     isWin,
     version,
+    server,
     runes,
     includePlayer,
     isCompactView,
@@ -60,6 +62,7 @@ export const GamesList = (props: {
           class: klass,
           god,
           version,
+          server,
           runes,
           orderBy,
         },
@@ -100,7 +103,7 @@ export const GamesList = (props: {
     }
 
     loadData()
-  }, [race, klass, god, isWin, String(version), runes])
+  }, [race, klass, god, isWin, String(version), String(server), runes])
 
   return (
     <div className="relative">

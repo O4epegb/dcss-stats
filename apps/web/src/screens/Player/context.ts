@@ -25,6 +25,9 @@ export const useContextStateValue = (
     () => ({
       ...data,
       summary,
+      filterParams: {
+        servers: data.filter.servers?.join(','),
+      },
       isOptionEnabled(key: keyof typeof cookiesStoreDefault) {
         return cookieState[key]
       },

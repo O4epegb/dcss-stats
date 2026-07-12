@@ -10,14 +10,17 @@ import { cookiesStoreDefault } from '~/screens/Player/utils'
 import { PlayerInfoResponse } from '~/types'
 import { formatNumber } from '~/utils'
 
-async function getPlayerData(slug: string) {
-  const response = await fetchApi(`/players/${slug}`)
+const serversQuery = (servers?: string) =>
+  servers ? `?servers=${encodeURIComponent(servers)}` : ''
+
+async function getPlayerData(slug: string, servers?: string) {
+  const response = await fetchApi(`/players/${slug}${serversQuery(servers)}`)
 
   if (response.ok) {
     const data: PlayerInfoResponse = await response.json()
 
     if (data.player.name !== slug) {
-      redirect(`/players/${data.player.name}`)
+      redirect(`/players/${data.player.name}${serversQuery(servers)}`)
     }
 
     return data
@@ -40,7 +43,8 @@ async function getCookieStoreData() {
 }
 
 export default async function Page(props: PageProps<'/players/[slug]'>) {
-  const { slug } = await props.params
+  const [{ slug }, searchParams] = await Promise.all([props.params, props.searchParams])
+  const servers = typeof searchParams.servers === 'string' ? searchParams.servers : undefined
 
   return (
     <Suspense
@@ -51,24 +55,23 @@ export default async function Page(props: PageProps<'/players/[slug]'>) {
         </div>
       }
     >
-      <PageContent slug={slug} />
+      <PageContent slug={slug} servers={servers} />
     </Suspense>
   )
 }
 
-async function PageContent({ slug }: { slug: string }) {
+async function PageContent({ slug, servers }: { slug: string; servers?: string }) {
   const cookiesStoreData = await getCookieStoreData()
-  const data = await getPlayerData(slug)
+  const data = await getPlayerData(slug, servers)
 
   return <PlayerPage {...data} cookiesStore={cookiesStoreData} />
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps<'/players/[slug]'>): Promise<Metadata> {
-  const { slug } = await params
+export async function generateMetadata(props: PageProps<'/players/[slug]'>): Promise<Metadata> {
+  const [{ slug }, searchParams] = await Promise.all([props.params, props.searchParams])
+  const servers = typeof searchParams.servers === 'string' ? searchParams.servers : undefined
 
-  const response = await fetchApi(`/players/${slug}`)
+  const response = await fetchApi(`/players/${slug}${serversQuery(servers)}`)
 
   if (response.ok) {
     const data: PlayerInfoResponse = await response.json()
@@ -79,8 +82,9 @@ export async function generateMetadata({
       maximumFractionDigits: 2,
     })
 
+    const filterSuffix = data.filter.servers ? ` on ${data.filter.servers.join(', ')}` : ''
     const title = `${data.player.name} | ${defaultMetaTitle}`
-    const description = `${data.player.name} stats - ${wins}W ${games}G ${winrate}% WR | ${defaultMetaDescription}`
+    const description = `${data.player.name} stats${filterSuffix} - ${wins}W ${games}G ${winrate}% WR | ${defaultMetaDescription}`
 
     return {
       title,

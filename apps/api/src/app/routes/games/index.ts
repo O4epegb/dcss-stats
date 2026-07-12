@@ -18,6 +18,7 @@ export const gamesRoute = (app: AppType) => {
     god: Type.Optional(Type.String()),
     title: Type.Optional(Type.String()),
     version: Type.Optional(Type.Array(Type.String())),
+    server: Type.Optional(Type.Array(Type.String())),
     includePlayer: Type.Optional(Type.Boolean()),
     runes: Type.Optional(Type.Union([Type.Array(Type.Number()), Type.Number()])),
     orderBy: Type.Optional(Type.Union([Type.Literal('startAt'), Type.Literal('endAt')])),
@@ -43,6 +44,7 @@ export const gamesRoute = (app: AppType) => {
         god,
         title,
         version,
+        server,
         runes,
         includePlayer,
         orderBy = 'startAt',
@@ -58,6 +60,7 @@ export const gamesRoute = (app: AppType) => {
         god,
         title,
         runes: runes && { in: castArray(runes) },
+        serverAbbreviation: server && { in: server.map((s) => s.toUpperCase()) },
       }
 
       const [count, data] = await Promise.all([

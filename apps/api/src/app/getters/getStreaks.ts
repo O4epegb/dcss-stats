@@ -1,18 +1,21 @@
 import { first, orderBy } from 'lodash-es'
-import { Game, Player, StreakType } from '~/generated/prisma/client/client'
+import { Game, Player, Prisma, StreakType } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
-export const getStreaksByPlayer = async (player: { id: Player['id'] }) => {
+export const getStreaksByPlayer = async (
+  player: { id: Player['id'] },
+  sqlCondition: Prisma.Sql = Prisma.empty,
+) => {
   type SimpleGame = Pick<Game, 'id' | 'isWin' | 'char' | 'endAt' | 'startAt'>
 
   const streakGames = await prisma.$queryRaw<SimpleGame[]>`
     SELECT id, "isWin", char, "endAt", "startAt" FROM
-        (SELECT * 
+        (SELECT *
           , LAG("isWin") OVER (ORDER BY "startAt") AS lag
           , LAG("isWin", 2) OVER (ORDER BY "startAt") AS lag2
           , LEAD("isWin") OVER (ORDER BY "startAt") AS lead
         FROM "Game"
-        WHERE "playerId" = ${player.id}) AS foo
+        WHERE "playerId" = ${player.id} ${sqlCondition}) AS foo
     WHERE ("isWin" = TRUE AND (lag = TRUE OR lead = TRUE)) OR ("isWin" = FALSE AND lag = TRUE AND lag2 = TRUE)
     `
 

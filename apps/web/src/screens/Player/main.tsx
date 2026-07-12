@@ -8,6 +8,7 @@ import { usePlayerPageContext } from './context'
 import { FavoriteButton } from './FavoriteButton'
 import { Games } from './Games'
 import { ProgressBadges } from './ProgressBadges'
+import { ServerFilter } from './ServerFilter'
 import { Stats } from './Stats'
 import { Streaks } from './Streaks'
 import { Titles } from './Titles'
@@ -29,6 +30,7 @@ export const Player = () => {
           <section className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <h2 className="text-3xl font-bold">{player.name}</h2>
             <FavoriteButton />
+            <ServerFilter />
             <Badges />
           </section>
           <Winrates />

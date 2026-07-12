@@ -8,6 +8,8 @@ import { getLeaderboard } from '~/app/getters/getLeaderboard'
 import { getMatrix } from '~/app/getters/getMatrix'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { getStreaksByPlayer } from '~/app/getters/getStreaks'
+import { getPlayerFilter, PlayerFilterQuerystring } from '~/app/routes/players/filter'
+import { Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 import { isDefined } from '~/utils'
 
@@ -33,7 +35,7 @@ export const playersRoute = (app: AppType) => {
     Params: {
       slug: string
     }
-    Querystring: {
+    Querystring: PlayerFilterQuerystring & {
       type?: 'minimal'
       noCache?: string
       clearData?: string
@@ -81,9 +83,16 @@ export const playersRoute = (app: AppType) => {
         return null
       }
 
+      const filter = await getPlayerFilter(request.query)
+      const gamesWhere: Prisma.GameWhereInput = {
+        playerId: player.id,
+        ...filter.gamesWhere,
+      }
+
       const [
         { races, classes, gods },
         games,
+        gamesPerServer,
         firstGames,
         lastGames,
         stats,
@@ -94,58 +103,67 @@ export const playersRoute = (app: AppType) => {
       ] = await Promise.all([
         getStaticData(),
         prisma.game.findMany({
-          where: { playerId: player.id },
+          where: gamesWhere,
           orderBy: { startAt: 'asc' },
         }),
-        findGamesIncludeServer({
+        prisma.game.groupBy({
+          by: ['serverAbbreviation'],
           where: { playerId: player.id },
+          _count: { _all: true },
+        }),
+        findGamesIncludeServer({
+          where: gamesWhere,
           take: 1,
           orderBy: { startAt: 'asc' },
         }),
         findGamesIncludeServer({
-          where: { playerId: player.id },
+          where: gamesWhere,
           take: LIMIT,
           orderBy: [{ startAt: 'desc' }, { id: 'desc' }],
         }),
-        getAggregatedPlayerStats(player),
+        getAggregatedPlayerStats(player, filter.gamesWhere),
         findGamesIncludeServer({
-          where: { playerId: player.id, isWin: true },
+          where: { ...gamesWhere, isWin: true },
           take: 1,
           orderBy: [{ xl: 'asc' }, { endAt: 'asc' }],
         }),
-        getStreaksByPlayer(player),
-        prisma.streak.findMany({
-          take: 100,
-          orderBy: {
-            length: 'desc',
-          },
-          select: {
-            playerId: true,
-            isBroken: true,
-            length: true,
-            type: true,
-          },
-        }),
-        prisma.highscore.findMany({
-          where: {
-            playerId: player.id,
-            kind: { in: ['HIGHSCORE', 'TURN_COUNT', 'DURATION'] },
-            rank: { lte: 10 },
-            breakdown: 'CHAR',
-            runeTier: { in: ['TIER_1', 'TIER_2'] },
-          },
-          select: {
-            kind: true,
-            breakdown: true,
-            runeTier: true,
-            rank: true,
-            char: true,
-            score: true,
-            turns: true,
-            duration: true,
-            points: true,
-          },
-        }),
+        getStreaksByPlayer(player, filter.sqlCondition),
+        filter.isActive
+          ? []
+          : prisma.streak.findMany({
+              take: 100,
+              orderBy: {
+                length: 'desc',
+              },
+              select: {
+                playerId: true,
+                isBroken: true,
+                length: true,
+                type: true,
+              },
+            }),
+        filter.isActive
+          ? []
+          : prisma.highscore.findMany({
+              where: {
+                playerId: player.id,
+                kind: { in: ['HIGHSCORE', 'TURN_COUNT', 'DURATION'] },
+                rank: { lte: 10 },
+                breakdown: 'CHAR',
+                runeTier: { in: ['TIER_1', 'TIER_2'] },
+              },
+              select: {
+                kind: true,
+                breakdown: true,
+                runeTier: true,
+                rank: true,
+                char: true,
+                score: true,
+                turns: true,
+                duration: true,
+                points: true,
+              },
+            }),
       ])
 
       const entriesByKind = groupBy(allHighscoreEntries, (e) => e.kind)
@@ -189,6 +207,18 @@ export const playersRoute = (app: AppType) => {
 
       const result = {
         player,
+        filter: filter.applied,
+        servers: orderBy(
+          gamesPerServer
+            .map((item) =>
+              item.serverAbbreviation
+                ? { abbreviation: item.serverAbbreviation, games: item._count._all }
+                : null,
+            )
+            .filter(isDefined),
+          (server) => server.games,
+          'desc',
+        ),
         stats,
         streaks: {
           total: streaks.total,
@@ -304,7 +334,7 @@ export const playersRoute = (app: AppType) => {
     Params: {
       slug: string
     }
-    Querystring: {
+    Querystring: PlayerFilterQuerystring & {
       noCache?: string
     }
   }>('/api/players/:slug/streaks', async (request, reply) => {
@@ -322,7 +352,8 @@ export const playersRoute = (app: AppType) => {
         return null
       }
 
-      const streaks = await getStreaksByPlayer(player)
+      const filter = await getPlayerFilter(request.query)
+      const streaks = await getStreaksByPlayer(player, filter.sqlCondition)
 
       return {
         average: streaks.average,
@@ -345,7 +376,7 @@ export const playersRoute = (app: AppType) => {
     Params: {
       slug: string
     }
-    Querystring: {
+    Querystring: PlayerFilterQuerystring & {
       from?: string
       noCache?: string
     }
@@ -363,11 +394,14 @@ export const playersRoute = (app: AppType) => {
         return null
       }
 
+      const filter = await getPlayerFilter(request.query)
+
       const [games] = await Promise.all([
         prisma.game.findMany({
           where: {
             playerId: player.id,
             endAt: { gte: request.query.from },
+            ...filter.gamesWhere,
           },
           orderBy: { endAt: 'asc' },
           select: {
@@ -395,6 +429,7 @@ export const playersRoute = (app: AppType) => {
     Params: {
       slug: string
     }
+    Querystring: PlayerFilterQuerystring
   }>('/api/players/:slug/titles', async (request, reply) => {
     const { slug } = request.params
 
@@ -406,8 +441,14 @@ export const playersRoute = (app: AppType) => {
       return reply.status(404).send('Not found')
     }
 
+    const filter = await getPlayerFilter(request.query)
+
     const games = await prisma.game.findMany({
-      where: { playerId: player.id, isWin: true },
+      where: {
+        playerId: player.id,
+        isWin: true,
+        ...filter.gamesWhere,
+      },
       select: {
         id: true,
         normalizedClass: true,

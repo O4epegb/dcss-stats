@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { first, last, orderBy } from 'lodash-es'
 import { useState } from 'react'
+import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Loader } from '~/components/ui/Loader'
@@ -13,10 +14,20 @@ type StreakGame = Pick<Game, 'id' | 'isWin' | 'endAt' | 'char'>
 type StreakGroups = Array<StreakGame[]>
 
 export const Streaks = () => {
-  const { streaks, player } = usePlayerPageContext()
-  const [streakGroups, setStreakGroups] = useState<StreakGroups>([])
+  const { streaks, player, filterParams } = usePlayerPageContext()
   const [isVisible, setIsVisible] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+
+  const {
+    data: streakGroups,
+    isLoading,
+    error,
+  } = useSWRImmutable(
+    isVisible ? [`/players/${player.id}/streaks`, filterParams] : null,
+    ([url, params]) =>
+      api
+        .get<{ streaks: { streaks: StreakGroups } }>(url, { params })
+        .then((res) => res.data.streaks.streaks),
+  )
 
   return (
     <section className="space-y-1">
@@ -55,37 +66,15 @@ export const Streaks = () => {
           <button
             disabled={isLoading}
             className="ml-auto py-0.5 text-sm text-blue-400 hover:underline"
-            onClick={() => {
-              if (streakGroups.length > 0) {
-                setIsVisible((state) => !state)
-
-                return
-              }
-
-              setIsLoading(true)
-
-              api
-                .get<{ streaks: { streaks: StreakGroups } }>(`/players/${player.id}/streaks`)
-                .then((res) => {
-                  setStreakGroups(res.data.streaks.streaks)
-                  setIsVisible(true)
-                })
-                .catch((e) => {
-                  alert('Error while loading streaks')
-
-                  throw e
-                })
-                .finally(() => {
-                  setIsLoading(false)
-                })
-            }}
+            onClick={() => setIsVisible((state) => !state)}
           >
             {isVisible ? 'Hide' : 'Show'} streaks
           </button>
         </div>
       )}
       {isLoading && <Loader />}
-      {isVisible && (
+      {error && <div className="text-sm text-red-600">Error fetching data</div>}
+      {isVisible && streakGroups && (
         <div className="space-y-2">
           {orderBy(
             streakGroups,

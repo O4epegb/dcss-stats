@@ -30,6 +30,7 @@ export const Games = () => {
     stats,
     player,
     gods,
+    filter: pageFilter,
     toggleOption,
     isOptionEnabled,
     summary: { allActualClasses, allActualRaces },
@@ -184,6 +185,7 @@ export const Games = () => {
         class={filter.class === Filter.All ? undefined : filter.class}
         god={filter.god === Filter.All ? undefined : filter.god}
         runes={runeOptions.find((x) => x.name === filter.runes)?.value}
+        server={pageFilter.servers ?? undefined}
         onChange={(newGames, count) => setData({ games: newGames, total: count })}
       />
     </section>

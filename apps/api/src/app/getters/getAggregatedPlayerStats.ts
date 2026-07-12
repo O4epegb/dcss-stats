@@ -1,11 +1,19 @@
 import dayjs from 'dayjs'
-import { Player } from '~/generated/prisma/client/client'
+import { Player, Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
-export const getAggregatedPlayerStats = async (player: Player) => {
+export const getAggregatedPlayerStats = async (
+  player: Player,
+  gamesWhere?: Prisma.GameWhereInput,
+) => {
+  const baseWhere: Prisma.GameWhereInput = {
+    playerId: player.id,
+    ...gamesWhere,
+  }
+
   const [won, lost, all, last30Days] = await Promise.all([
     prisma.game.aggregate({
-      where: { playerId: player.id, isWin: true },
+      where: { ...baseWhere, isWin: true },
       _avg: { uniqueRunes: true, duration: true, turns: true },
       _sum: { uniqueRunes: true, gems: true },
       _min: { duration: true, turns: true },
@@ -13,12 +21,12 @@ export const getAggregatedPlayerStats = async (player: Player) => {
       _count: { _all: true },
     }),
     prisma.game.aggregate({
-      where: { playerId: player.id, isWin: false },
+      where: { ...baseWhere, isWin: false },
       _avg: { uniqueRunes: true },
       _sum: { uniqueRunes: true, gems: true },
     }),
     prisma.game.aggregate({
-      where: { playerId: player.id },
+      where: baseWhere,
       _avg: { score: true, duration: true, turns: true },
       _max: { score: true },
       _sum: { score: true, duration: true },
@@ -26,7 +34,7 @@ export const getAggregatedPlayerStats = async (player: Player) => {
     }),
     prisma.game.findMany({
       where: {
-        playerId: player.id,
+        ...baseWhere,
         startAt: { gte: dayjs().subtract(30, 'days').startOf('day').toDate() },
       },
     }),

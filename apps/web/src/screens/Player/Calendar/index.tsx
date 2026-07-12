@@ -12,7 +12,7 @@ import { cellAndGap, DayData, HeatMap, monthGap } from './HeatMap'
 import { HistoryDialog } from './HistoryDialog'
 
 export const Calendar = () => {
-  const { player } = usePlayerPageContext()
+  const { player, filterParams } = usePlayerPageContext()
   const [ref, wrapperWidth] = useElementWidth<HTMLDivElement>()
 
   const days = useMemo(() => {
@@ -49,6 +49,7 @@ export const Calendar = () => {
           `/players/${player.id}/calendar`,
           {
             from: fromDate,
+            ...filterParams,
           },
         ]
       : null,
