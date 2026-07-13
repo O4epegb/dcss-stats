@@ -38,7 +38,25 @@ async function MonstersContent() {
     throw res
   }
 
-  return <MonsterTable monsters={catalog.monsters} />
+  return (
+    <div className="space-y-3">
+      {catalog.crawlVersion && catalog.crawlCommit && (
+        <div className="text-xs text-gray-500 dark:text-zinc-400">
+          Based on crawl {catalog.crawlVersion} (
+          <a
+            href={`https://github.com/crawl/crawl/tree/${catalog.crawlCommit}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-gray-700 dark:hover:text-zinc-200"
+          >
+            {catalog.crawlCommit.slice(0, 10)}
+          </a>
+          )
+        </div>
+      )}
+      <MonsterTable monsters={catalog.monsters} crawlCommit={catalog.crawlCommit} />
+    </div>
+  )
 }
 
 export default function MonstersPage() {

@@ -5,15 +5,33 @@ import type { MonsterData } from '@dcss-stats/extractor/monsterCatalog'
 import { ChevronDownIcon, ChevronUpIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useLocalStorageValue, useMediaQuery } from '@react-hookz/web'
 import { orderBy } from 'lodash-es'
+import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { cn, pluralize } from '~/utils'
 
-const TILE_BASE_URL =
-  'https://raw.githubusercontent.com/crawl/crawl/9261420e9b7a3246420c534c70f4b09402a670ab/crawl-ref/source/rltiles'
-
-function getTileUrl(tilePath?: string): string | null {
+function getTileUrl(tilePath: string | undefined, crawlCommit: string | undefined): string | null {
   if (!tilePath) return null
-  return `${TILE_BASE_URL}/${tilePath}`
+  return `https://raw.githubusercontent.com/crawl/crawl/${crawlCommit ?? 'master'}/crawl-ref/source/rltiles/${tilePath}`
+}
+
+// Crawl's 16 terminal colours (see colour.cc), tuned for legibility on the dark glyph tile
+const GLYPH_COLOURS: Record<string, string> = {
+  black: '#555555',
+  blue: '#4162e0',
+  green: '#00aa00',
+  cyan: '#00aaaa',
+  red: '#d43d3d',
+  magenta: '#b839b8',
+  brown: '#aa5500',
+  lightgrey: '#aaaaaa',
+  darkgrey: '#777777',
+  lightblue: '#5555ff',
+  lightgreen: '#55ff55',
+  lightcyan: '#55ffff',
+  lightred: '#ff5555',
+  lightmagenta: '#ff55ff',
+  yellow: '#ffff55',
+  white: '#ffffff',
 }
 
 function numValue(v: unknown): number | null {
@@ -23,6 +41,55 @@ function numValue(v: unknown): number | null {
     return m ? Number(m[0]) : null
   }
   return null
+}
+
+function formatLocations(locations: MonsterData['locations']): string[] {
+  if (!locations || locations.length === 0) return []
+
+  // A monster can have several table entries per branch; merge them into one range
+  const merged = new Map<
+    string,
+    { abbrev: string; min: number; max: number; depth: number; habitat?: string }
+  >()
+  for (const loc of locations) {
+    const key = `${loc.branchAbbrev}|${loc.habitat ?? ''}`
+    const cur = merged.get(key)
+    if (cur) {
+      cur.min = Math.min(cur.min, loc.minDepth)
+      cur.max = Math.max(cur.max, loc.maxDepth)
+    } else {
+      merged.set(key, {
+        abbrev: loc.branchAbbrev,
+        min: loc.minDepth,
+        max: loc.maxDepth,
+        depth: loc.branchDepth,
+        habitat: loc.habitat,
+      })
+    }
+  }
+
+  return [...merged.values()].map((l) => {
+    let label = l.abbrev
+    if (!(l.min === 1 && l.max === l.depth)) {
+      label += l.min === l.max ? `:${l.min}` : `:${l.min}–${l.max}`
+    }
+    if (l.habitat) label += ` (${l.habitat})`
+    return label
+  })
+}
+
+function formatSpells(spells: MonsterData['spells']): string[] {
+  // freq is a relative weight crawl uses to pick which spell to cast;
+  // show it as each spell's share of casts
+  const totalFreq = spells.reduce((sum, s) => sum + (s.freq ?? 0), 0)
+
+  return spells.map((s) => {
+    let str = s.name
+    if (s.damage) str += ` (${s.damage})`
+    if (s.range) str += ` [${s.range}]`
+    if (s.freq && totalFreq > 0) str += ` · ${Math.round((s.freq / totalFreq) * 100)}%`
+    return str
+  })
 }
 
 function formatSpeed(speed: MonsterData['speed']): string {
@@ -42,7 +109,13 @@ function formatSpeed(speed: MonsterData['speed']): string {
   return `${speed.base} (${parts.join('; ')})`
 }
 
-export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
+export function MonsterTable({
+  monsters,
+  crawlCommit,
+}: {
+  monsters: MonsterData[]
+  crawlCommit?: string
+}) {
   const [search, setSearch] = useState('')
   const [sortKey, setSortKey] = useState<string>('name')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
@@ -123,7 +196,25 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
           </button>
         </div>
 
-        <div className="overflow-x-auto">
+        {filtered.length === 0 && (
+          <div className="flex flex-col items-center gap-3 py-12 text-center">
+            <Image
+              width={32}
+              height={32}
+              src="/unseen_horror.png"
+              alt=""
+              className="pixelated size-12"
+            />
+            <div>
+              <p className="text-sm font-medium">No monsters found</p>
+              <p className="mt-1 text-xs text-gray-500 italic dark:text-zinc-400">
+                You sense the presence of something unfriendly..
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className={cn('overflow-x-auto', filtered.length === 0 && 'hidden')}>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-200 text-left text-xs font-medium text-gray-500 dark:border-zinc-700 dark:text-zinc-400">
@@ -198,12 +289,14 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                       {showTiles.value ? (
                         <TileImage
                           tilePath={monster.tile_path}
+                          crawlCommit={crawlCommit}
                           symbol={monster.symbol}
+                          colour={monster.colour}
                           size={32}
                           className="h-8 w-8"
                         />
                       ) : (
-                        <SymbolGlyph symbol={monster.symbol} size={32} />
+                        <SymbolGlyph symbol={monster.symbol} colour={monster.colour} size={32} />
                       )}
                       <span className="absolute -right-0.5 -bottom-0.5 rounded-sm bg-gray-200 px-0.5 text-[9px] leading-3 font-medium text-gray-600 md:hidden dark:bg-zinc-600 dark:text-zinc-300">
                         {monster.symbol}
@@ -295,12 +388,18 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                       {showTiles.value ? (
                         <TileImage
                           tilePath={displayed.tile_path}
+                          crawlCommit={crawlCommit}
                           symbol={displayed.symbol}
+                          colour={displayed.colour}
                           size={64}
                           className="h-16 w-16"
                         />
                       ) : (
-                        <SymbolGlyph symbol={displayed.symbol} size={64} />
+                        <SymbolGlyph
+                          symbol={displayed.symbol}
+                          colour={displayed.colour}
+                          size={64}
+                        />
                       )}
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate pr-8 text-base font-semibold">{displayed.name}</h3>
@@ -317,6 +416,8 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                         {displayed.description.split('\n\n')[0]}
                       </p>
                     )}
+
+                    <InfoSection title="Found in" items={formatLocations(displayed.locations)} />
 
                     <div className="rounded border border-gray-200 p-3 dark:border-zinc-700">
                       <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">
@@ -372,9 +473,9 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                         <div className="flex justify-between">
                           <dt className="text-gray-500 dark:text-zinc-400">Willpower</dt>
                           <dd>
-                            {displayed.willpower >= 5000
+                            {displayed.willpower_invuln
                               ? '∞'
-                              : displayed.willpower > 0
+                              : displayed.willpower
                                 ? displayed.willpower
                                 : '-'}
                           </dd>
@@ -457,18 +558,17 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
                             Spells
                           </div>
                           <div className="mt-1">
-                            <TagList
-                              items={displayed.spells.map((s) => {
-                                let str = s.name
-                                if (s.damage) str += ` (${s.damage})`
-                                if (s.range) str += ` [${s.range}]`
-                                return str
-                              })}
-                            />
+                            <TagList items={formatSpells(displayed.spells)} />
                           </div>
                         </div>
                       )}
                     </div>
+
+                    {displayed.quote && (
+                      <blockquote className="border-l-2 border-gray-200 pl-2 text-xs leading-relaxed whitespace-pre-line text-gray-500 italic dark:border-zinc-700 dark:text-zinc-500">
+                        {displayed.quote.split('\n\n')[0]}
+                      </blockquote>
+                    )}
                   </div>
                 )}
               </Drawer.Content>
@@ -482,20 +582,24 @@ export function MonsterTable({ monsters }: { monsters: MonsterData[] }) {
 
 function TileImage({
   tilePath,
+  crawlCommit,
   symbol,
+  colour,
   size,
   className,
 }: {
   tilePath?: string
+  crawlCommit?: string
   symbol: string
+  colour?: string
   size: number
   className?: string
 }) {
   const [failed, setFailed] = useState(false)
-  const src = getTileUrl(tilePath)
+  const src = getTileUrl(tilePath, crawlCommit)
 
   if (!src || failed) {
-    return <SymbolGlyph symbol={symbol} size={size} className={className} />
+    return <SymbolGlyph symbol={symbol} colour={colour} size={size} className={className} />
   }
 
   return (
@@ -513,20 +617,28 @@ function TileImage({
 
 function SymbolGlyph({
   symbol,
+  colour,
   size,
   className,
 }: {
   symbol: string
+  colour?: string
   size: number
   className?: string
 }) {
   return (
     <div
       className={cn(
-        'flex items-center justify-center rounded bg-gray-100 dark:bg-zinc-800',
+        'flex items-center justify-center rounded font-mono',
+        colour ? 'bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-800',
         className,
       )}
-      style={{ width: size, height: size, fontSize: size * 0.6 }}
+      style={{
+        width: size,
+        height: size,
+        fontSize: size * 0.6,
+        color: colour ? GLYPH_COLOURS[colour] : undefined,
+      }}
     >
       {symbol}
     </div>

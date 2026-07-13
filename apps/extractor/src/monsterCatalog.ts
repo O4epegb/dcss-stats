@@ -21,6 +21,7 @@ export interface MonsterData {
   id: number
   name: string
   symbol: string
+  colour?: string
   tile?: string
   tile_path?: string
   speed?: {
@@ -60,6 +61,7 @@ export interface MonsterData {
     name: string
     level: number
     mana: number
+    freq?: number
     range?: number
     damage?: string
     antimagic?: boolean
@@ -73,26 +75,37 @@ export interface MonsterData {
   defenses?: string[]
   species: string
   genus: string
-  willpower: number
+  willpower?: number
+  willpower_invuln?: boolean
   spell_hd: number
   shapeshifter: boolean
+  unique?: boolean
   shape: string
   holiness: string
   habitat: string
   shout: string
   uses: string
   resist_levels: Record<string, number>
+  locations?: Array<{
+    branch: string
+    branchAbbrev: string
+    minDepth: number
+    maxDepth: number
+    branchDepth: number
+    rarity: number
+    distribution: string
+    habitat?: 'water' | 'lava'
+  }>
   description?: string
+  quote?: string
   unfinished?: boolean
-}
-
-interface MonsterListResponse {
-  monsters: string[]
 }
 
 export interface MonsterCatalog {
   monsters: MonsterData[]
   generatedAt: string
+  crawlVersion?: string
+  crawlCommit?: string
   listedCount: number
   processedCount: number
   failedCount: number
@@ -107,47 +120,48 @@ export async function buildMonsterCatalog(): Promise<MonsterCatalog> {
 
   console.log('Extracting monster catalog from Crawl...')
 
-  const [monsterTilePaths, monsterNames] = await Promise.all([
+  const [monsterTilePaths, crawlVersion, crawlCommit] = await Promise.all([
     loadMonsterTilePaths(),
-    listMonsterNames(),
+    getCrawlVersion(),
+    getCrawlCommit(),
   ])
 
-  console.log(`Found ${monsterNames.length} monsters in Crawl.`)
+  console.log('Exporting all monsters from Crawl...')
+
+  const lines = (await runMonsterExport(['--all'])).split('\n').filter(Boolean)
 
   const monsters: MonsterData[] = []
   let failedCount = 0
 
-  for (const monsterName of monsterNames) {
-    console.log(`Processing ${monsterName}...`)
+  for (const line of lines) {
+    const monsterJson = JSON.parse(line) as MonsterData & { error?: string }
 
-    try {
-      const output = await runMonsterExport([monsterName])
-      const monsterJson = JSON.parse(output) as MonsterData
-
-      if (monsterJson.tile) {
-        const tilePath =
-          monsterTilePaths.get(monsterJson.tile) ??
-          monsterTilePaths.get(monsterJson.tile.replace(/_\d+$/, ''))
-
-        if (tilePath) {
-          monsterJson.tile_path = tilePath
-        }
-      }
-
-      monsterJson.id = monsters.length
-      monsters.push(monsterJson)
-
-      console.log(`Processed ${monsterName} successfully.`)
-    } catch (error) {
+    if (monsterJson.error) {
       failedCount++
-      console.warn(`Failed to process ${monsterName}:`, error)
+      console.warn(`Failed to process ${monsterJson.name}: ${monsterJson.error}`)
+      continue
     }
+
+    if (monsterJson.tile) {
+      const tilePath =
+        monsterTilePaths.get(monsterJson.tile) ??
+        monsterTilePaths.get(monsterJson.tile.replace(/_\d+$/, ''))
+
+      if (tilePath) {
+        monsterJson.tile_path = tilePath
+      }
+    }
+
+    monsterJson.id = monsters.length
+    monsters.push(monsterJson)
   }
 
   const catalog: MonsterCatalog = {
     monsters,
     generatedAt: new Date().toISOString(),
-    listedCount: monsterNames.length,
+    crawlVersion,
+    crawlCommit,
+    listedCount: lines.length,
     processedCount: monsters.length,
     failedCount,
   }
@@ -190,9 +204,16 @@ async function loadMonsterTilePaths(): Promise<Map<string, string>> {
   return tilePaths
 }
 
-async function listMonsterNames(): Promise<string[]> {
-  const output = await runMonsterExport(['--list'])
-  return (JSON.parse(output.trim()) as MonsterListResponse).monsters
+async function getCrawlVersion(): Promise<string> {
+  const output = await runMonsterExport(['--version'])
+  return (JSON.parse(output) as { version: string }).version
+}
+
+async function getCrawlCommit(): Promise<string> {
+  const result = await execFileAsync('git', ['-C', CRAWL_DIR, 'rev-parse', 'HEAD'], {
+    encoding: 'utf-8',
+  })
+  return result.stdout.trim()
 }
 
 async function runMonsterExport(args: string[]): Promise<string> {

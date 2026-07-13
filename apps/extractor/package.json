@@ -10,7 +10,8 @@
     "apply-crawl-customizations": "tsx ./scripts/apply-crawl-customizations.ts",
     "build-crawl": "tsx ./scripts/build-crawl.ts",
     "extract-monsters": "tsx ./scripts/extract-monsters.ts",
-    "all": "yarn install-crawl && yarn apply-crawl-customizations && yarn build-crawl && yarn extract-monsters",
+    "copy-catalog-to-api": "tsx ./scripts/copy-catalog-to-api.ts",
+    "all": "yarn install-crawl && yarn apply-crawl-customizations && yarn build-crawl && yarn extract-monsters && yarn copy-catalog-to-api",
     "type-check": "tsc --noEmit",
     "lint": "oxlint",
     "format": "prettier --write ."

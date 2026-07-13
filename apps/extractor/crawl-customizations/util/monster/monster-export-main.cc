@@ -7,8 +7,10 @@
 
 #include "fake-main.hpp"
 
+#include "branch.h"   // branches
+#include "colour.h"   // colour_to_str, element_colour
 #include "coordit.h"
-#include "database.h"  // databaseSystemInit
+#include "database.h"  // databaseSystemInit, getQuoteString
 #include "describe.h" // get_size_adj
 #include "initfile.h" // SysEnv
 #include "fight.h"    // spines_damage
@@ -17,6 +19,8 @@
 #include "los.h"
 #include "message.h"
 #include "mon-explode.h" // ball_lightning_damage
+#include "mon-pick.h"
+#include "mon-pick-data.h" // spawn population tables, same include as crawl's mon-pick.cc
 #include "mon-project.h"
 #include "spl-damage.h"
 #include "spl-summoning.h" // mons_ball_lighting_hd
@@ -26,6 +30,7 @@
 #include "tile-flags.h"
 #include "tilepick.h"
 #include "version.h"
+#include "viewchar.h"
 
 #include "rltiles/tiledef-player.h"
 
@@ -90,6 +95,14 @@ static string attack_flavour_name(const attack_flavour flavour)
   case AF_DRAG:          return "drag";
   case AF_SWARM:         return "swarm";
   case AF_TRICKSTER:     return "trickster";
+  case AF_REACH_STING:   return "poison";
+  case AF_REACH_CLEAVE_UGLY: return "ugly";
+  case AF_FLOOD:         return "flood";
+  case AF_DOOM:          return "doom";
+  case AF_SLIMIFY:       return "slimify";
+  case AF_DIM:           return "dim";
+  case AF_CONTAM_WATER:  return "contam_water";
+  case AF_BURSTSHROOM:   return "burstshroom";
   default:               return "unknown";
   }
 }
@@ -154,9 +167,81 @@ static const char *uses_str(mon_itemuse_type u)
   }
 }
 
-static string monster_size(const monster &mon)
+static string strip_formatting_tags(string text)
 {
-  return get_size_adj(mon.body_size());
+  while (true)
+  {
+    auto pos = text.find('<');
+    if (pos == string::npos) break;
+    auto end = text.find('>', pos);
+    if (end == string::npos) break;
+    text.erase(pos, end - pos + 1);
+  }
+  while (!text.empty() && (text.back() == '\n' || text.back() == ' '))
+    text.pop_back();
+  return text;
+}
+
+static const char *distrib_str(distrib_type d)
+{
+  switch (d)
+  {
+  case FLAT: return "flat";
+  case SEMI: return "semi";
+  case PEAK: return "peak";
+  case RISE: return "rise";
+  case FALL: return "fall";
+  default:   return "unknown";
+  }
+}
+
+// Water/lava tables fall back to a shared placeholder list for most branches;
+// those entries are terrain filler, not meaningful spawn info.
+static bool is_generic_pop(const vector<pop_entry> &pop, const vector<pop_entry> &generic)
+{
+  if (pop.size() != generic.size())
+    return false;
+  for (size_t i = 0; i < pop.size(); ++i)
+  {
+    if (pop[i].minr != generic[i].minr || pop[i].maxr != generic[i].maxr
+        || pop[i].rarity != generic[i].rarity
+        || pop[i].distrib != generic[i].distrib
+        || pop[i].value != generic[i].value)
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+static void add_location_entries(cJSON *arr, const vector<pop_entry> &pop,
+                                 branch_type branch, monster_type mt,
+                                 const char *water_or_lava)
+{
+  for (const pop_entry &e : pop)
+  {
+    if (e.value != mt)
+      continue;
+
+    // Depths in the tables extend past branch bounds to shape out-of-depth
+    // spawns; clamp to the branch's real levels for display.
+    const int min_depth = max(1, e.minr);
+    const int max_depth = min(branches[branch].numlevels, e.maxr);
+    if (max_depth < min_depth)
+      continue;
+
+    cJSON *loc = cJSON_CreateObject();
+    cJSON_AddStringToObject(loc, "branch", branches[branch].shortname);
+    cJSON_AddStringToObject(loc, "branchAbbrev", branches[branch].abbrevname);
+    cJSON_AddNumberToObject(loc, "minDepth", min_depth);
+    cJSON_AddNumberToObject(loc, "maxDepth", max_depth);
+    cJSON_AddNumberToObject(loc, "branchDepth", branches[branch].numlevels);
+    cJSON_AddNumberToObject(loc, "rarity", e.rarity);
+    cJSON_AddStringToObject(loc, "distribution", distrib_str(e.distrib));
+    if (water_or_lava)
+      cJSON_AddStringToObject(loc, "habitat", water_or_lava);
+    cJSON_AddItemToArray(arr, loc);
+  }
 }
 
 static cJSON *cJSON_AddResistLevels(cJSON *parent, const char *name, resists_t r)
@@ -388,6 +473,7 @@ struct SpellInfo
   string name;
   int level;
   int mana;
+  int freq;
   int range;
   string damage;
   bool antimagic;
@@ -396,12 +482,14 @@ struct SpellInfo
   bool critical;
 };
 
-static SpellInfo make_spell_info(monster *mp, const string &name, spell_type sp, mon_spell_slot_flags flags)
+static SpellInfo make_spell_info(monster *mp, const string &name, spell_type sp,
+                                 int freq, mon_spell_slot_flags flags)
 {
   return {
     name,
     spell_difficulty(sp),
     spell_mana(sp),
+    freq,
     spell_has_variable_range(sp) ? 0 : spell_range(sp),
     mons_human_readable_spell_damage_string(mp, sp),
     (bool)(flags & MON_SPELL_ANTIMAGIC_MASK),
@@ -413,8 +501,6 @@ static SpellInfo make_spell_info(monster *mp, const string &name, spell_type sp,
 
 static void record_spell_set(monster *mp, map<string, SpellInfo> &spell_map)
 {
-  set<string> seen;
-
   for (const auto &slot : mp->spells)
   {
     if (spell_is_soh_breath(slot.spell))
@@ -423,16 +509,16 @@ static void record_spell_set(monster *mp, map<string, SpellInfo> &spell_map)
       ASSERT(breaths);
       for (unsigned int k = 0; k < mp->number; ++k)
       {
-        string name = make_stringf("head %d: ", k + 1) + spell_title((*breaths)[k]);
-        if (seen.insert(name).second)
-          spell_map[name] = make_spell_info(mp, name, (*breaths)[k], slot.flags);
+        const string name = make_stringf("head %d: ", k + 1) + spell_title((*breaths)[k]);
+        if (!spell_map.count(name))
+          spell_map[name] = make_spell_info(mp, name, (*breaths)[k], slot.freq, slot.flags);
       }
       continue;
     }
 
-    string name = spell_title(slot.spell);
-    if (seen.insert(name).second)
-      spell_map[name] = make_spell_info(mp, name, slot.spell, slot.flags);
+    const string name = spell_title(slot.spell);
+    if (!spell_map.count(name))
+      spell_map[name] = make_spell_info(mp, name, slot.spell, slot.freq, slot.flags);
   }
 }
 
@@ -447,13 +533,26 @@ static inline void set_min_max(int num, int &min, int &max)
 static string monster_symbol(const monster &mon)
 {
   const monsterentry *me = mon.find_monsterentry();
-  return me ? string(1, me->basechar) : "";
+  return me ? stringize_glyph(me->basechar) : "";
+}
+
+static string monster_colour_name(const monster &mon)
+{
+  monster_info info(&mon, MILEV_NAME);
+  int col = info.colour() & 0x007f;
+  if (col >= ETC_FIRE)
+    col = element_colour(col, coord_def(), true);
+  return colour_to_str(col);
 }
 
 static string monster_tile_name(const monster &mon)
 {
   monster_info info(&mon, MILEV_NAME);
-  const tileidx_t tile = tileidx_monster(info) & TILE_FLAG_MASK;
+  const tileidx_t tile = tileidx_monster(info).tile();
+  // Some monsters (e.g. dancing weapons) use item tiles, which have no
+  // player-tile name; tile_player_name would assert on them.
+  if (tile < TILE_MAIN_MAX || tile >= TILEP_PLAYER_MAX)
+    return "";
   return tile_player_name(tile);
 }
 
@@ -486,6 +585,52 @@ static void rebind_mspec(string *requested_name,
   }
 }
 
+static bool is_exportable_monster(int i)
+{
+  if (i == MONS_PROGRAM_BUG || i == MONS_PLAYER || i == MONS_PLAYER_GHOST || i == MONS_PLAYER_ILLUSION || invalid_monster_type(static_cast<monster_type>(i)))
+    return false;
+
+  const monsterentry *me = get_monster_data(static_cast<monster_type>(i));
+  return me && me->mc != MONS_0;
+}
+
+// Remove a monster's inventory from the item array; monster::reset() alone
+// would orphan the items and eventually exhaust the array.
+static void destroy_monster_inventory(monster &mon)
+{
+  for (int obj : mon.inv)
+    if (obj != NON_ITEM)
+    {
+      set_unique_item_status(env.item[obj], UNIQ_NOT_EXISTS);
+      destroy_item(obj);
+    }
+}
+
+// Free every placed test monster and its inventory, so repeated exports in
+// one process (--all) don't exhaust the monster and item arrays.
+static void reset_test_monsters()
+{
+  for (int i = 0; i < MAX_MONSTERS; ++i)
+  {
+    monster &m = env.mons[i];
+    if (m.type == MONS_NO_MONSTER)
+      continue;
+
+    destroy_monster_inventory(m);
+    m.reset();
+  }
+}
+
+static void print_json(cJSON *root)
+{
+  char *json = cJSON_PrintUnformatted(root);
+  printf("%s\n", json);
+  free(json);
+  cJSON_Delete(root);
+}
+
+static cJSON *export_monster_json(string target, string &error);
+
 int main(int argc, char *argv[])
 {
   crawl_state.test = true;
@@ -493,10 +638,7 @@ int main(int argc, char *argv[])
   {
     cJSON *root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "error", "Usage: @? <monster name>");
-    char *json = cJSON_PrintUnformatted(root);
-    printf("%s\n", json);
-    free(json);
-    cJSON_Delete(root);
+    print_json(root);
     return 0;
   }
 
@@ -504,10 +646,7 @@ int main(int argc, char *argv[])
   {
     cJSON *root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "version", Version::Long);
-    char *json = cJSON_PrintUnformatted(root);
-    printf("%s\n", json);
-    free(json);
-    cJSON_Delete(root);
+    print_json(root);
     return 0;
   }
   else if (!strcmp(argv[1], "-list") || !strcmp(argv[1], "--list"))
@@ -519,26 +658,40 @@ int main(int argc, char *argv[])
 
     for (int i = 0; i < NUM_MONSTERS; ++i)
     {
-      if (i == MONS_PROGRAM_BUG || i == MONS_PLAYER || i == MONS_PLAYER_GHOST || i == MONS_PLAYER_ILLUSION || invalid_monster_type(static_cast<monster_type>(i)))
-        continue;
-
-      const monsterentry *me = get_monster_data(static_cast<monster_type>(i));
-      if (!me || me->mc == MONS_0)
+      if (!is_exportable_monster(i))
         continue;
 
       cJSON_AddItemToArray(arr, cJSON_CreateString(mons_type_name(static_cast<monster_type>(i), DESC_PLAIN).c_str()));
     }
 
-    char *json = cJSON_PrintUnformatted(root);
-    printf("%s\n", json);
-    free(json);
-    cJSON_Delete(root);
+    print_json(root);
     return 0;
   }
 
   initialize_crawl();
 
-  mons_list mons;
+  // Batch mode: export every monster as one JSON object per line (NDJSON)
+  if (!strcmp(argv[1], "-all") || !strcmp(argv[1], "--all"))
+  {
+    for (int i = 0; i < NUM_MONSTERS; ++i)
+    {
+      if (!is_exportable_monster(i))
+        continue;
+
+      const string name = mons_type_name(static_cast<monster_type>(i), DESC_PLAIN);
+      string error;
+      cJSON *root = export_monster_json(name, error);
+      if (!root)
+      {
+        root = cJSON_CreateObject();
+        cJSON_AddStringToObject(root, "name", name.c_str());
+        cJSON_AddStringToObject(root, "error", error.c_str());
+      }
+      print_json(root);
+    }
+    return 0;
+  }
+
   string target = argv[1];
 
   if (argc > 2)
@@ -550,16 +703,31 @@ int main(int argc, char *argv[])
 
   trim_string(target);
 
+  string error;
+  cJSON *root = export_monster_json(target, error);
+  if (!root)
+  {
+    root = cJSON_CreateObject();
+    cJSON_AddStringToObject(root, "error", error.c_str());
+    print_json(root);
+    return 1;
+  }
+
+  print_json(root);
+  return 0;
+}
+
+static cJSON *export_monster_json(string target, string &error)
+{
+  reset_test_monsters();
+
+  mons_list mons;
+
   string err = mons.add_mons(target, false);
   if (!err.empty())
   {
-    cJSON *root = cJSON_CreateObject();
-    cJSON_AddStringToObject(root, "error", err.c_str());
-    char *json = cJSON_PrintUnformatted(root);
-    printf("%s\n", json);
-    free(json);
-    cJSON_Delete(root);
-    return 1;
+    error = err;
+    return nullptr;
   }
 
   mons_spec spec = mons.get_monster(0);
@@ -567,14 +735,8 @@ int main(int argc, char *argv[])
 
   if (spec_type < 0 || spec_type >= NUM_MONSTERS || spec_type == MONS_PLAYER_GHOST)
   {
-    cJSON *root = cJSON_CreateObject();
-    string msg = "invalid monster type: \"" + target + "\"";
-    cJSON_AddStringToObject(root, "error", msg.c_str());
-    char *json = cJSON_PrintUnformatted(root);
-    printf("%s\n", json);
-    free(json);
-    cJSON_Delete(root);
-    return 1;
+    error = "invalid monster type: \"" + target + "\"";
+    return nullptr;
   }
 
   if (mons_is_unique(spec_type))
@@ -583,14 +745,8 @@ int main(int argc, char *argv[])
   int index = _mi_create_monster(spec);
   if (index < 0 || index >= MAX_MONSTERS)
   {
-    cJSON *root = cJSON_CreateObject();
-    string msg = "Failed to create test monster for " + target;
-    cJSON_AddStringToObject(root, "error", msg.c_str());
-    char *json = cJSON_PrintUnformatted(root);
-    printf("%s\n", json);
-    free(json);
-    cJSON_Delete(root);
-    return 1;
+    error = "Failed to create test monster for " + target;
+    return nullptr;
   }
 
   const int ntrials = 200;
@@ -612,9 +768,7 @@ int main(int argc, char *argv[])
 
     record_spell_set(mp, spell_map);
 
-    for (int obj : mp->inv)
-      if (obj != NON_ITEM)
-        set_unique_item_status(env.item[obj], UNIQ_NOT_EXISTS);
+    destroy_monster_inventory(*mp);
     mp->reset();
     you.unique_creatures.set(spec_type, false);
 
@@ -623,14 +777,8 @@ int main(int argc, char *argv[])
     index = _mi_create_monster(spec);
     if (index == -1)
     {
-      cJSON *root = cJSON_CreateObject();
-      string msg = "Unexpected failure generating monster for " + target;
-      cJSON_AddStringToObject(root, "error", msg.c_str());
-      char *json = cJSON_PrintUnformatted(root);
-      printf("%s\n", json);
-      free(json);
-      cJSON_Delete(root);
-      return 1;
+      error = "Unexpected failure generating monster for " + target;
+      return nullptr;
     }
   }
   exp /= ntrials;
@@ -649,305 +797,303 @@ int main(int argc, char *argv[])
   const monster_type draconian_base =
       mons_is_draconian(mon.type) ? draconian_subspecies(mon) : MONS_NO_MONSTER;
 
-  if (me)
+  if (!me)
   {
-    const bool changing_name =
-        mon.has_hydra_multi_attack() || mon.type == MONS_PANDEMONIUM_LORD || shapeshifter || mon.type == MONS_DANCING_WEAPON;
-
-    const int ac_base = me->AC;
-    const int ev_base = me->ev;
-
-    record_spell_set(&mon, spell_map);
-
-    cJSON *root = cJSON_CreateObject();
-
-    cJSON_AddStringToObject(root, "name", (changing_name ? me->name : mon.name(DESC_PLAIN, true)).c_str());
-    cJSON_AddStringToObject(root, "symbol", symbol.c_str());
-    cJSON_AddStringToObject(root, "tile", monster_tile_name(mon).c_str());
-
-    if (mons_class_flag(mon.type, M_UNFINISHED))
-      cJSON_AddTrueToObject(root, "unfinished");
-
-    cJSON_AddSpeed(root, "speed", mon, me->speed);
-    cJSON_AddNumberToObject(root, "hd", mon.get_experience_level());
-
-    if (hp_min < hp_max)
-    {
-      char hp_buf[64];
-      snprintf(hp_buf, sizeof(hp_buf), "%d-%d", hp_min, hp_max);
-      cJSON_AddStringToObject(root, "hp", hp_buf);
-    }
-    else
-    {
-      char hp_buf[32];
-      snprintf(hp_buf, sizeof(hp_buf), "%d", hp_min);
-      cJSON_AddStringToObject(root, "hp", hp_buf);
-    }
-
-    cJSON_AddNumberToObject(root, "ac", ac_base);
-    cJSON_AddNumberToObject(root, "ev", ev_base);
-    if (ac_sim != ac_base || ev_sim != ev_base)
-    {
-      cJSON_AddNumberToObject(root, "ac_sim", ac_sim);
-      cJSON_AddNumberToObject(root, "ev_sim", ev_sim);
-    }
-
-    // Defenses
-    cJSON *defenses = cJSON_CreateArray();
-    if (mon.is_spiny())
-      cJSON_AddItemToArray(defenses, cJSON_CreateString((string("spiny ") + dice_def_string(spines_damage(mon.type))).c_str()));
-    if (mons_species(mons_base_type(mon)) == MONS_MINOTAUR)
-      cJSON_AddItemToArray(defenses, cJSON_CreateString("headbutt: d20-1"));
-    if (cJSON_GetArraySize(defenses) > 0)
-      cJSON_AddItemToObject(root, "defenses", defenses);
-    else
-      cJSON_Delete(defenses);
-
-    // Attacks
-    cJSON *attacks = cJSON_CreateArray();
-    mon.wield_melee_weapon();
-    for (int x = 0; x < 4; x++)
-    {
-      int attack_num = x;
-      if (mon.has_hydra_multi_attack())
-        attack_num = x == 0 ? x : x + mon.number - 1;
-      mon_attack_def attk = mons_attack_spec(mon, attack_num);
-      if (attk.type)
-      {
-        cJSON *atk = cJSON_CreateObject();
-
-        short int dam = attk.damage;
-        if (mon.berserk_or_frenzied() || mon.has_ench(ENCH_MIGHT))
-          dam = dam * 3 / 2;
-        if (mon.has_ench(ENCH_WEAK))
-          dam = dam * 2 / 3;
-
-        cJSON *dmg = cJSON_AddObjectToObject(atk, "damage");
-        cJSON_AddNumberToObject(dmg, "num", 1);
-        cJSON_AddNumberToObject(dmg, "size", dam);
-
-        cJSON_AddStringToObject(atk, "type", mon_attack_name_short(attk.type).c_str());
-
-        if (attk.flavour != AF_PLAIN)
-        {
-          cJSON_AddStringToObject(atk, "flavour", attack_flavour_name(attk.flavour).c_str());
-
-          int extra = flavour_damage(attk.flavour, mon.get_hit_dice(), false);
-          if (extra == 0)
-          {
-            switch (attk.flavour)
-            {
-            case AF_POISON:          extra = mon.get_hit_dice() * 4;       break;
-            case AF_POISON_STRONG:   extra = mon.get_hit_dice() * 13 / 2;  break;
-            case AF_POISON_PARALYSE: extra = mon.get_hit_dice() * 5 / 2;   break;
-            case AF_MINIPARA:        extra = mon.get_hit_dice() * 2;       break;
-            default: break;
-            }
-          }
-          if (extra > 0)
-            cJSON_AddNumberToObject(atk, "extra_damage", extra);
-        }
-
-        if (attk.type == AT_CONSTRICT)
-          cJSON_AddTrueToObject(atk, "constrict");
-        if (attk.type == AT_CLAW && mon.has_claws() >= 3)
-          cJSON_AddTrueToObject(atk, "claw");
-        if (_monster_has_reachcleave(mon))
-        {
-          cJSON_AddTrueToObject(atk, "cleave");
-          cJSON_AddTrueToObject(atk, "reach");
-        }
-        else if (flavour_has_reach(attk.flavour))
-          cJSON_AddTrueToObject(atk, "reach");
-
-        if (x == 0 && mon.has_hydra_multi_attack())
-          cJSON_AddTrueToObject(atk, "per_head");
-
-        cJSON_AddItemToArray(attacks, atk);
-      }
-    }
-    cJSON_AddItemToObject(root, "attacks", attacks);
-
-    // Flags
-    cJSON *flags = cJSON_CreateArray();
-
-    // Holiness flags (canonical names from crawl)
-    for (const auto bit : mon_holy_type::range())
-      if (me->holiness & bit)
-        cJSON_AddItemToArray(flags, cJSON_CreateString(holiness_name(bit)));
-
-    switch (me->gmon_use)
-    {
-    case MONUSE_WEAPONS_ARMOUR:
-      cJSON_AddItemToArray(flags, cJSON_CreateString("weapons"));
-    case MONUSE_STARTING_EQUIPMENT:
-      cJSON_AddItemToArray(flags, cJSON_CreateString("items"));
-    case MONUSE_OPEN_DOORS:
-      cJSON_AddItemToArray(flags, cJSON_CreateString("doors"));
-    default:
-      break;
-    }
-
-    add_string_if(flags, mons_class_flag(mon.type, M_EAT_DOORS), "eats doors");
-    add_string_if(flags, mons_class_flag(mon.type, M_CRASH_DOORS), "breaks doors");
-    add_string_if(flags, mons_wields_two_weapons(mon), "two-weapon");
-    add_string_if(flags, mon.is_fighter(), "fighter");
-    add_string_if(flags, mon.is_archer() && !mons_class_flag(mon.type, M_PREFER_RANGED), "archer");
-    add_string_if(flags, mon.is_archer() && mons_class_flag(mon.type, M_PREFER_RANGED), "master archer");
-    add_string_if(flags, mon.is_priest(), "priest");
-    add_string_if(flags, me->habitat == HT_AMPHIBIOUS, "amphibious");
-    add_string_if(flags, mon.evil(), "evil");
-    add_string_if(flags, mon.is_actual_spellcaster(), "spellcaster");
-    add_string_if(flags, mons_class_flag(mon.type, M_COLD_BLOOD), "cold-blooded");
-    add_string_if(flags, mons_class_sees_invis(mon.type, draconian_base), "see invisible");
-    add_string_if(flags, mons_class_flag(mon.type, M_FLIES), "fly");
-    add_string_if(flags, mons_class_flag(mon.type, M_FAST_REGEN), "regen");
-    add_string_if(flags, mon.is_unbreathing(), "unbreathing");
-    add_string_if(flags, mon.is_insubstantial(), "insubstantial");
-    add_string_if(flags, mon.is_amorphous(), "amorphous");
-    add_string_if(flags, mons_class_flag(mon.type, M_WARDED), "warded");
-
-    cJSON_AddItemToObject(root, "flags", flags);
-
-    // Resistances
-    cJSON *resistances = cJSON_CreateArray();
-    const resists_t res(shapeshifter ? me->resists : get_mons_resists(mon));
-
-    if (mons_invuln_will(mon))
-      cJSON_AddItemToArray(resistances, cJSON_CreateString("will(invuln)"));
-    else
-    {
-      int wl = mons_class_willpower(mon.type, draconian_base);
-      if (wl > 0)
-      {
-        char buf[64];
-        snprintf(buf, sizeof(buf), "will(%d)", wl);
-        cJSON_AddItemToArray(resistances, cJSON_CreateString(buf));
-      }
-    }
-
-    add_resist_string(resistances, get_resist(res, MR_RES_FIRE), "fire");
-    add_resist_string(resistances, get_resist(res, MR_RES_DAMNATION), "damnation");
-    add_resist_string(resistances, get_resist(res, MR_RES_COLD), "cold");
-    add_resist_string(resistances, get_resist(res, MR_RES_ELEC), "elec");
-    add_resist_string(resistances, get_resist(res, MR_RES_POISON), "poison");
-    add_resist_string(resistances, get_resist(res, MR_RES_CORR), "corr");
-    add_resist_string(resistances, get_resist(res, MR_RES_STEAM), "steam");
-    add_string_if(resistances, mons_class_flag(mon.type, M_UNBLINDABLE), "blind");
-    add_string_if(resistances, mon.res_water_drowning(), "drown");
-    add_string_if(resistances, mon.res_miasma(), "miasma");
-    add_resist_string(resistances, mon.res_negative_energy(true), "neg");
-    add_resist_string(resistances, mon.res_holy_energy(), "holy");
-    add_resist_string(resistances, mon.res_foul_flame(), "foul_flame");
-    add_string_if(resistances, mon.res_torment(), "torm");
-    add_string_if(resistances, mon.res_polar_vortex(), "vortex");
-    add_string_if(resistances, mon.res_sticky_flame(), "napalm");
-
-    cJSON_AddItemToObject(root, "resistances", resistances);
-
-    // Vulnerabilities
-    cJSON *vulns = cJSON_CreateArray();
-    add_string_if(vulns, get_resist(res, MR_RES_FIRE) < 0, "fire");
-    add_string_if(vulns, get_resist(res, MR_RES_COLD) < 0, "cold");
-    add_string_if(vulns, get_resist(res, MR_RES_ELEC) < 0, "elec");
-    add_string_if(vulns, mon.how_chaotic() > 0, "silver");
-
-    if (cJSON_GetArraySize(vulns) > 0)
-      cJSON_AddItemToObject(root, "vulnerabilities", vulns);
-    else
-      cJSON_Delete(vulns);
-
-    cJSON_AddBoolToObject(root, "corpse", me->leaves_corpse);
-    cJSON_AddNumberToObject(root, "xp", exp);
-
-    // Spells
-    cJSON *spells = cJSON_CreateArray();
-    {
-      if (shapeshifter || mon.type == MONS_PANDEMONIUM_LORD || mon.type == MONS_ORC_APOSTLE)
-      {
-        cJSON *sp = cJSON_CreateObject();
-        cJSON_AddStringToObject(sp, "name", "(random)");
-        cJSON_AddNumberToObject(sp, "level", 0);
-        cJSON_AddNumberToObject(sp, "mana", 0);
-        cJSON_AddItemToArray(spells, sp);
-      }
-      else
-      {
-        for (auto &it : spell_map)
-        {
-          cJSON *sp = cJSON_CreateObject();
-          cJSON_AddStringToObject(sp, "name", it.second.name.c_str());
-          cJSON_AddNumberToObject(sp, "level", it.second.level);
-          cJSON_AddNumberToObject(sp, "mana", it.second.mana);
-          if (it.second.range > 0)
-            cJSON_AddNumberToObject(sp, "range", it.second.range);
-          if (!it.second.damage.empty())
-            cJSON_AddStringToObject(sp, "damage", it.second.damage.c_str());
-          if (it.second.antimagic)
-            cJSON_AddTrueToObject(sp, "antimagic");
-          if (it.second.silence)
-            cJSON_AddTrueToObject(sp, "silence");
-          if (it.second.breath)
-            cJSON_AddTrueToObject(sp, "breath");
-          if (it.second.critical)
-            cJSON_AddTrueToObject(sp, "critical");
-          cJSON_AddItemToArray(spells, sp);
-        }
-      }
-    }
-    cJSON_AddItemToObject(root, "spells", spells);
-
-    cJSON_AddStringToObject(root, "size", monster_size(mon).c_str());
-    string intel = lowercase_string(intelligence_description(mons_intel(mon)));
-    cJSON_AddStringToObject(root, "intelligence", intel.c_str());
-
-    cJSON_AddStringToObject(root, "species", mons_type_name(me->species, DESC_PLAIN).c_str());
-    cJSON_AddStringToObject(root, "genus", mons_type_name(me->genus, DESC_PLAIN).c_str());
-    cJSON_AddNumberToObject(root, "spell_hd", mon.spell_hd());
-    cJSON_AddBoolToObject(root, "shapeshifter", shapeshifter);
-
-    if (mons_invuln_will(mon))
-      cJSON_AddNumberToObject(root, "willpower", 5000);
-    else
-      cJSON_AddNumberToObject(root, "willpower", mons_class_willpower(mon.type, draconian_base));
-
-    cJSON_AddStringToObject(root, "shape", get_mon_shape_str(me->shape).c_str());
-    cJSON_AddStringToObject(root, "holiness", holiness_description(me->holiness).c_str());
-    cJSON_AddStringToObject(root, "habitat", habitat_str(me->habitat));
-    cJSON_AddStringToObject(root, "shout", shout_type_str(me->shouts));
-    cJSON_AddStringToObject(root, "uses", uses_str(me->gmon_use));
-    cJSON_AddResistLevels(root, "resist_levels", me->resists);
-
-    // Description
-    {
-      string desc = getLongDescription(string(me->name));
-      while (true)
-      {
-        auto pos = desc.find('<');
-        if (pos == string::npos) break;
-        auto end = desc.find('>', pos);
-        if (end == string::npos) break;
-        desc.erase(pos, end - pos + 1);
-      }
-      while (!desc.empty() && (desc.back() == '\n' || desc.back() == ' '))
-        desc.pop_back();
-      cJSON_AddStringToObject(root, "description", desc.c_str());
-    }
-
-    char *json_str = cJSON_PrintUnformatted(root);
-    printf("%s\n", json_str);
-    free(json_str);
-    cJSON_Delete(root);
-
-    return 0;
+    error = "Failed to find monster entry for " + target;
+    return nullptr;
   }
 
+  const bool changing_name =
+      mon.has_hydra_multi_attack() || mon.type == MONS_PANDEMONIUM_LORD || shapeshifter || mon.type == MONS_DANCING_WEAPON || mon.type == MONS_ORC_APOSTLE;
+
+  const int ac_base = me->AC;
+  const int ev_base = me->ev;
+
+  record_spell_set(&mon, spell_map);
+
   cJSON *root = cJSON_CreateObject();
-  string msg = "Failed to find monster entry for " + target;
-  cJSON_AddStringToObject(root, "error", msg.c_str());
-  char *json = cJSON_PrintUnformatted(root);
-  printf("%s\n", json);
-  free(json);
-  cJSON_Delete(root);
-  return 1;
+
+  cJSON_AddStringToObject(root, "name", (changing_name ? me->name : mon.name(DESC_PLAIN, true)).c_str());
+  cJSON_AddStringToObject(root, "symbol", symbol.c_str());
+  cJSON_AddStringToObject(root, "colour", monster_colour_name(mon).c_str());
+  cJSON_AddStringToObject(root, "tile", monster_tile_name(mon).c_str());
+
+  if (mons_class_flag(mon.type, M_UNFINISHED))
+    cJSON_AddTrueToObject(root, "unfinished");
+
+  cJSON_AddSpeed(root, "speed", mon, me->speed);
+  cJSON_AddNumberToObject(root, "hd", mon.get_experience_level());
+
+  const string hp = hp_min < hp_max ? make_stringf("%d-%d", hp_min, hp_max)
+                                    : make_stringf("%d", hp_min);
+  cJSON_AddStringToObject(root, "hp", hp.c_str());
+
+  cJSON_AddNumberToObject(root, "ac", ac_base);
+  cJSON_AddNumberToObject(root, "ev", ev_base);
+  if (ac_sim != ac_base || ev_sim != ev_base)
+  {
+    cJSON_AddNumberToObject(root, "ac_sim", ac_sim);
+    cJSON_AddNumberToObject(root, "ev_sim", ev_sim);
+  }
+
+  // Defenses
+  cJSON *defenses = cJSON_CreateArray();
+  if (mon.is_spiny())
+    cJSON_AddItemToArray(defenses, cJSON_CreateString((string("spiny ") + dice_def_string(spines_damage(mon.type))).c_str()));
+  if (mons_species(mons_base_type(mon)) == MONS_MINOTAUR)
+    cJSON_AddItemToArray(defenses, cJSON_CreateString("headbutt: d20-1"));
+  if (cJSON_GetArraySize(defenses) > 0)
+    cJSON_AddItemToObject(root, "defenses", defenses);
+  else
+    cJSON_Delete(defenses);
+
+  // Attacks
+  cJSON *attacks = cJSON_CreateArray();
+  mon.wield_melee_weapon();
+  for (int x = 0; x < 4; x++)
+  {
+    int attack_num = x;
+    if (mon.has_hydra_multi_attack())
+      attack_num = x == 0 ? x : x + mon.number - 1;
+    mon_attack_def attk = mons_attack_spec(mon, attack_num);
+    if (attk.type)
+    {
+      cJSON *atk = cJSON_CreateObject();
+
+      short int dam = attk.damage;
+      if (mon.berserk_or_frenzied() || mon.has_ench(ENCH_MIGHT))
+        dam = dam * 3 / 2;
+      if (mon.has_ench(ENCH_WEAK))
+        dam = dam * 2 / 3;
+
+      cJSON *dmg = cJSON_AddObjectToObject(atk, "damage");
+      cJSON_AddNumberToObject(dmg, "num", 1);
+      cJSON_AddNumberToObject(dmg, "size", dam);
+
+      cJSON_AddStringToObject(atk, "type", mon_attack_name_short(attk.type).c_str());
+
+      if (attk.flavour != AF_PLAIN)
+      {
+        cJSON_AddStringToObject(atk, "flavour", attack_flavour_name(attk.flavour).c_str());
+
+        int extra = flavour_damage(attk.flavour, mon.get_hit_dice(), false);
+        if (extra == 0)
+        {
+          switch (attk.flavour)
+          {
+          case AF_POISON:          extra = mon.get_hit_dice() * 4;       break;
+          case AF_POISON_STRONG:   extra = mon.get_hit_dice() * 13 / 2;  break;
+          case AF_POISON_PARALYSE: extra = mon.get_hit_dice() * 5 / 2;   break;
+          case AF_MINIPARA:        extra = mon.get_hit_dice() * 2;       break;
+          default: break;
+          }
+        }
+        if (extra > 0)
+          cJSON_AddNumberToObject(atk, "extra_damage", extra);
+      }
+
+      if (attk.type == AT_CONSTRICT)
+        cJSON_AddTrueToObject(atk, "constrict");
+      if (attk.type == AT_CLAW && mon.has_claws() >= 3)
+        cJSON_AddTrueToObject(atk, "claw");
+      if (_monster_has_reachcleave(mon))
+      {
+        cJSON_AddTrueToObject(atk, "cleave");
+        cJSON_AddTrueToObject(atk, "reach");
+      }
+      else if (flavour_has_reach(attk.flavour))
+        cJSON_AddTrueToObject(atk, "reach");
+
+      if (x == 0 && mon.has_hydra_multi_attack())
+        cJSON_AddTrueToObject(atk, "per_head");
+
+      cJSON_AddItemToArray(attacks, atk);
+    }
+  }
+  cJSON_AddItemToObject(root, "attacks", attacks);
+
+  // Flags
+  cJSON *flags = cJSON_CreateArray();
+
+  // Holiness flags (canonical names from crawl)
+  for (const auto bit : mon_holy_type::range())
+    if (me->holiness & bit)
+      cJSON_AddItemToArray(flags, cJSON_CreateString(holiness_name(bit)));
+
+  switch (me->gmon_use)
+  {
+  case MONUSE_WEAPONS_ARMOUR:
+    cJSON_AddItemToArray(flags, cJSON_CreateString("weapons"));
+  case MONUSE_STARTING_EQUIPMENT:
+    cJSON_AddItemToArray(flags, cJSON_CreateString("items"));
+  case MONUSE_OPEN_DOORS:
+    cJSON_AddItemToArray(flags, cJSON_CreateString("doors"));
+  default:
+    break;
+  }
+
+  add_string_if(flags, mons_class_flag(mon.type, M_EAT_DOORS), "eats doors");
+  add_string_if(flags, mons_class_flag(mon.type, M_CRASH_DOORS), "breaks doors");
+  add_string_if(flags, mons_wields_two_weapons(mon), "two-weapon");
+  add_string_if(flags, mon.is_fighter(), "fighter");
+  add_string_if(flags, mon.is_archer() && !mons_class_flag(mon.type, M_PREFER_RANGED), "archer");
+  add_string_if(flags, mon.is_archer() && mons_class_flag(mon.type, M_PREFER_RANGED), "master archer");
+  add_string_if(flags, mon.is_priest(), "priest");
+  add_string_if(flags, me->habitat == HT_AMPHIBIOUS, "amphibious");
+  add_string_if(flags, mon.evil(), "evil");
+  add_string_if(flags, mon.is_actual_spellcaster(), "spellcaster");
+  add_string_if(flags, mons_class_flag(mon.type, M_COLD_BLOOD), "cold-blooded");
+  add_string_if(flags, mons_class_sees_invis(mon.type, draconian_base), "see invisible");
+  add_string_if(flags, mons_class_flag(mon.type, M_FLIES), "fly");
+  add_string_if(flags, mons_class_flag(mon.type, M_FAST_REGEN), "regen");
+  add_string_if(flags, mon.is_unbreathing(), "unbreathing");
+  add_string_if(flags, mon.is_insubstantial(), "insubstantial");
+  add_string_if(flags, mon.is_amorphous(), "amorphous");
+  add_string_if(flags, mons_class_flag(mon.type, M_WARDED), "warded");
+
+  cJSON_AddItemToObject(root, "flags", flags);
+
+  // Resistances
+  cJSON *resistances = cJSON_CreateArray();
+  const resists_t res(shapeshifter ? me->resists : get_mons_resists(mon));
+
+  if (mons_invuln_will(mon))
+    cJSON_AddItemToArray(resistances, cJSON_CreateString("will(invuln)"));
+  else
+  {
+    const int wl = mons_class_willpower(mon.type, draconian_base);
+    if (wl > 0)
+    {
+      cJSON_AddItemToArray(resistances,
+                           cJSON_CreateString(make_stringf("will(%d)", wl).c_str()));
+    }
+  }
+
+  add_resist_string(resistances, get_resist(res, MR_RES_FIRE), "fire");
+  add_resist_string(resistances, get_resist(res, MR_RES_DAMNATION), "damnation");
+  add_resist_string(resistances, get_resist(res, MR_RES_COLD), "cold");
+  add_resist_string(resistances, get_resist(res, MR_RES_ELEC), "elec");
+  add_resist_string(resistances, get_resist(res, MR_RES_POISON), "poison");
+  add_resist_string(resistances, get_resist(res, MR_RES_CORR), "corr");
+  add_resist_string(resistances, get_resist(res, MR_RES_STEAM), "steam");
+  add_string_if(resistances, mons_class_flag(mon.type, M_UNBLINDABLE), "blind");
+  add_string_if(resistances, mon.res_water_drowning(), "drown");
+  add_string_if(resistances, mon.res_miasma(), "miasma");
+  add_resist_string(resistances, mon.res_negative_energy(true), "neg");
+  add_resist_string(resistances, mon.res_holy_energy(), "holy");
+  add_resist_string(resistances, mon.res_foul_flame(), "foul_flame");
+  add_string_if(resistances, mon.res_torment(), "torm");
+  add_string_if(resistances, mon.res_polar_vortex(), "vortex");
+  add_string_if(resistances, mon.res_sticky_flame(), "napalm");
+
+  cJSON_AddItemToObject(root, "resistances", resistances);
+
+  // Vulnerabilities
+  cJSON *vulns = cJSON_CreateArray();
+  add_string_if(vulns, get_resist(res, MR_RES_FIRE) < 0, "fire");
+  add_string_if(vulns, get_resist(res, MR_RES_COLD) < 0, "cold");
+  add_string_if(vulns, get_resist(res, MR_RES_ELEC) < 0, "elec");
+  add_string_if(vulns, mon.how_chaotic() > 0, "silver");
+
+  if (cJSON_GetArraySize(vulns) > 0)
+    cJSON_AddItemToObject(root, "vulnerabilities", vulns);
+  else
+    cJSON_Delete(vulns);
+
+  cJSON_AddBoolToObject(root, "corpse", me->leaves_corpse);
+  cJSON_AddNumberToObject(root, "xp", exp);
+
+  // Spells
+  cJSON *spells = cJSON_CreateArray();
+  {
+    if (shapeshifter || mon.type == MONS_PANDEMONIUM_LORD || mon.type == MONS_ORC_APOSTLE)
+    {
+      cJSON *sp = cJSON_CreateObject();
+      cJSON_AddStringToObject(sp, "name", "(random)");
+      cJSON_AddNumberToObject(sp, "level", 0);
+      cJSON_AddNumberToObject(sp, "mana", 0);
+      cJSON_AddItemToArray(spells, sp);
+    }
+    else
+    {
+      for (auto &it : spell_map)
+      {
+        cJSON *sp = cJSON_CreateObject();
+        cJSON_AddStringToObject(sp, "name", it.second.name.c_str());
+        cJSON_AddNumberToObject(sp, "level", it.second.level);
+        cJSON_AddNumberToObject(sp, "mana", it.second.mana);
+        if (it.second.freq > 0)
+          cJSON_AddNumberToObject(sp, "freq", it.second.freq);
+        if (it.second.range > 0)
+          cJSON_AddNumberToObject(sp, "range", it.second.range);
+        if (!it.second.damage.empty())
+          cJSON_AddStringToObject(sp, "damage", it.second.damage.c_str());
+        if (it.second.antimagic)
+          cJSON_AddTrueToObject(sp, "antimagic");
+        if (it.second.silence)
+          cJSON_AddTrueToObject(sp, "silence");
+        if (it.second.breath)
+          cJSON_AddTrueToObject(sp, "breath");
+        if (it.second.critical)
+          cJSON_AddTrueToObject(sp, "critical");
+        cJSON_AddItemToArray(spells, sp);
+      }
+    }
+  }
+  cJSON_AddItemToObject(root, "spells", spells);
+
+  cJSON_AddStringToObject(root, "size", get_size_adj(mon.body_size()));
+  string intel = lowercase_string(intelligence_description(mons_intel(mon)));
+  cJSON_AddStringToObject(root, "intelligence", intel.c_str());
+
+  cJSON_AddStringToObject(root, "species", mons_type_name(me->species, DESC_PLAIN).c_str());
+  cJSON_AddStringToObject(root, "genus", mons_type_name(me->genus, DESC_PLAIN).c_str());
+  cJSON_AddNumberToObject(root, "spell_hd", mon.spell_hd());
+  cJSON_AddBoolToObject(root, "shapeshifter", shapeshifter);
+  cJSON_AddBoolToObject(root, "unique", mons_is_unique(spec_type));
+
+  if (mons_invuln_will(mon))
+    cJSON_AddTrueToObject(root, "willpower_invuln");
+  else
+    cJSON_AddNumberToObject(root, "willpower", mons_class_willpower(mon.type, draconian_base));
+
+  cJSON_AddStringToObject(root, "shape", get_mon_shape_str(me->shape).c_str());
+  cJSON_AddStringToObject(root, "holiness", holiness_description(me->holiness).c_str());
+  cJSON_AddStringToObject(root, "habitat", habitat_str(me->habitat));
+  cJSON_AddStringToObject(root, "shout", shout_type_str(me->shouts));
+  cJSON_AddStringToObject(root, "uses", uses_str(me->gmon_use));
+  cJSON_AddResistLevels(root, "resist_levels", me->resists);
+
+  // Spawn locations
+  {
+    static const vector<pop_entry> generic_water_pop = GENERIC_WATER_POP;
+    static const vector<pop_entry> generic_lava_pop = GENERIC_LAVA_POP;
+
+    cJSON *locations = cJSON_CreateArray();
+    for (int b = 0; b < NUM_BRANCHES; ++b)
+    {
+      const branch_type branch = static_cast<branch_type>(b);
+      if (branch_is_unfinished(branch))
+        continue;
+      add_location_entries(locations, population[b], branch, spec_type, nullptr);
+      if (!is_generic_pop(population_water[b], generic_water_pop))
+        add_location_entries(locations, population_water[b], branch, spec_type, "water");
+      if (!is_generic_pop(population_lava[b], generic_lava_pop))
+        add_location_entries(locations, population_lava[b], branch, spec_type, "lava");
+    }
+    if (cJSON_GetArraySize(locations) > 0)
+      cJSON_AddItemToObject(root, "locations", locations);
+    else
+      cJSON_Delete(locations);
+  }
+
+  // Description and quote
+  cJSON_AddStringToObject(root, "description",
+                          strip_formatting_tags(getLongDescription(string(me->name))).c_str());
+
+  const string quote = strip_formatting_tags(getQuoteString(string(me->name)));
+  if (!quote.empty())
+    cJSON_AddStringToObject(root, "quote", quote.c_str());
+
+  return root;
 }
