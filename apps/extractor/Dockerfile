@@ -61,6 +61,6 @@ RUN yarn extract-monsters
 
 FROM busybox:1.36 AS runtime
 
-COPY --from=builder /usr/src/app/apps/extractor/.cache/monsters.json /catalog/monsters.json
+COPY --from=builder /usr/src/app/apps/extractor/.cache/monsters.json /seed/monsters.json
 
-CMD ["sh", "-lc", "echo 'Monster catalog published to /catalog/monsters.json'"]
+CMD ["sh", "-ec", "test -s /seed/monsters.json; cp /seed/monsters.json /catalog/monsters.json.tmp; mv /catalog/monsters.json.tmp /catalog/monsters.json"]

@@ -23,6 +23,9 @@ services:
       - '1444:1444'
       - '5555:5555'
     depends_on:
+      crawl_data:
+        condition: service_completed_successfully
+        restart: true
       postgres:
         condition: service_healthy
     volumes:
