@@ -8,6 +8,7 @@
 #include "fake-main.hpp"
 
 #include "branch.h"   // branches
+#include "clua.h"     // clua.init_libraries
 #include "colour.h"   // colour_to_str, element_colour
 #include "coordit.h"
 #include "database.h"  // databaseSystemInit, getQuoteString
@@ -318,6 +319,9 @@ static void initialize_crawl()
   init_show_table();
   SysEnv.crawl_dir = ".";
   databaseSystemInit();
+  // Some database descriptions embed lua that queries the player ("you");
+  // register the bindings so those evaluate instead of erroring.
+  clua.init_libraries();
 
   dgn_reset_level();
   for (rectangle_iterator ri(0); ri; ++ri)
@@ -587,11 +591,14 @@ static void rebind_mspec(string *requested_name,
 
 static bool is_exportable_monster(int i)
 {
-  if (i == MONS_PROGRAM_BUG || i == MONS_PLAYER || i == MONS_PLAYER_GHOST || i == MONS_PLAYER_ILLUSION || invalid_monster_type(static_cast<monster_type>(i)))
+  const monster_type mt = static_cast<monster_type>(i);
+  if (mt == MONS_PROGRAM_BUG || mt == MONS_PLAYER || mt == MONS_PLAYER_GHOST || mt == MONS_PLAYER_ILLUSION || invalid_monster_type(mt))
     return false;
 
-  const monsterentry *me = get_monster_data(static_cast<monster_type>(i));
-  return me && me->mc != MONS_0;
+  // M_CANT_SPAWN marks non-monsters: "removed X" tombstones, genus dummies
+  // ("spider", "dragon"), and UI placeholders ("sensed monster").
+  const monsterentry *me = get_monster_data(mt);
+  return me && me->mc != MONS_0 && !mons_class_flag(mt, M_CANT_SPAWN);
 }
 
 // Remove a monster's inventory from the item array; monster::reset() alone
@@ -629,7 +636,8 @@ static void print_json(cJSON *root)
   cJSON_Delete(root);
 }
 
-static cJSON *export_monster_json(string target, string &error);
+static cJSON *export_monster_json(mons_spec spec, string target, string &error);
+static cJSON *export_monster_json(const string &target, string &error);
 
 int main(int argc, char *argv[])
 {
@@ -678,9 +686,13 @@ int main(int argc, char *argv[])
       if (!is_exportable_monster(i))
         continue;
 
-      const string name = mons_type_name(static_cast<monster_type>(i), DESC_PLAIN);
+      // Build the spec from the enum directly: display names don't always
+      // round-trip through the name parser ("the Royal Jelly"), and the four
+      // Serpents of Hell all share one name.
+      const monster_type mt = static_cast<monster_type>(i);
+      const string name = mons_type_name(mt, DESC_PLAIN);
       string error;
-      cJSON *root = export_monster_json(name, error);
+      cJSON *root = export_monster_json(mons_spec(mt), name, error);
       if (!root)
       {
         root = cJSON_CreateObject();
@@ -717,20 +729,24 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-static cJSON *export_monster_json(string target, string &error)
+static cJSON *export_monster_json(const string &target, string &error)
 {
-  reset_test_monsters();
-
   mons_list mons;
 
-  string err = mons.add_mons(target, false);
+  const string err = mons.add_mons(target, false);
   if (!err.empty())
   {
     error = err;
     return nullptr;
   }
 
-  mons_spec spec = mons.get_monster(0);
+  return export_monster_json(mons.get_monster(0), target, error);
+}
+
+static cJSON *export_monster_json(mons_spec spec, string target, string &error)
+{
+  reset_test_monsters();
+
   monster_type spec_type = static_cast<monster_type>(spec.type);
 
   if (spec_type < 0 || spec_type >= NUM_MONSTERS || spec_type == MONS_PLAYER_GHOST)
@@ -741,6 +757,10 @@ static cJSON *export_monster_json(string target, string &error)
 
   if (mons_is_unique(spec_type))
     you.unique_creatures.set(spec_type, false);
+
+  // The plasmodia live inside walls; give them one to be placed in.
+  env.grid(MONSTER_PLACE) =
+      (mons_class_habitat(spec_type) & HT_WALLS_ONLY) ? DNGN_ROCK_WALL : DNGN_FLOOR;
 
   int index = _mi_create_monster(spec);
   if (index < 0 || index >= MAX_MONSTERS)
@@ -813,7 +833,19 @@ static cJSON *export_monster_json(string target, string &error)
 
   cJSON *root = cJSON_CreateObject();
 
-  cJSON_AddStringToObject(root, "name", (changing_name ? me->name : mon.name(DESC_PLAIN, true)).c_str());
+  string name = changing_name ? me->name : mon.name(DESC_PLAIN, true);
+  string db_name = me->name;
+  if (mons_species(spec_type) == MONS_SERPENT_OF_HELL)
+  {
+    // Four distinct monsters share the name "the Serpent of Hell": qualify
+    // the name the way crawl's lookup screen does, and use crawl's database
+    // key for the description and quote (see get_monster_db_desc).
+    const string flavour = serpent_of_hell_flavour(spec_type);
+    name += " (" + uppercase_first(flavour) + ")";
+    db_name += " " + flavour;
+  }
+
+  cJSON_AddStringToObject(root, "name", name.c_str());
   cJSON_AddStringToObject(root, "symbol", symbol.c_str());
   cJSON_AddStringToObject(root, "colour", monster_colour_name(mon).c_str());
   cJSON_AddStringToObject(root, "tile", monster_tile_name(mon).c_str());
@@ -1089,9 +1121,9 @@ static cJSON *export_monster_json(string target, string &error)
 
   // Description and quote
   cJSON_AddStringToObject(root, "description",
-                          strip_formatting_tags(getLongDescription(string(me->name))).c_str());
+                          strip_formatting_tags(getLongDescription(db_name)).c_str());
 
-  const string quote = strip_formatting_tags(getQuoteString(string(me->name)));
+  const string quote = strip_formatting_tags(getQuoteString(db_name));
   if (!quote.empty())
     cJSON_AddStringToObject(root, "quote", quote.c_str());
 
