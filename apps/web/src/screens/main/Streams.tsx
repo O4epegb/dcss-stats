@@ -1,7 +1,7 @@
 import { cacheLife } from 'next/cache'
 import { fetchApi } from '~/api/server'
 import { Stream } from '~/types'
-import { pluralize } from '~/utils'
+import { cn, pluralize } from '~/utils'
 
 export const Streams = async () => {
   'use cache'
@@ -24,23 +24,36 @@ export const Streams = async () => {
       <div className="flex gap-4 overflow-x-auto pt-2 pb-3 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-x-visible sm:pb-0 xl:grid-cols-3">
         {streams.map((stream) => (
           <a
-            key={stream.username}
+            key={stream.id}
             className="flex w-48 min-w-48 shrink-0 flex-col gap-1 sm:w-full sm:min-w-0"
             target="_blank"
             rel="noreferrer"
-            href={`https://www.twitch.tv/${stream.login}`}
+            href={stream.url}
           >
             <img
               width={320}
               height={180}
               alt={`${stream.username} stream thumbnail`}
               src={stream.thumbnail.replace('{width}', '640').replace('{height}', '360')}
-              className="w-full transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-[-5px_5px_#772ce8,-4px_4px_#772ce8,-3px_3px_#772ce8,-2px_2px_#772ce8,-1px_1px_#772ce8] sm:min-h-0"
+              className={cn(
+                'aspect-video w-full object-cover transition-all hover:translate-x-1 hover:-translate-y-1',
+                stream.platform === 'twitch'
+                  ? 'hover:shadow-[-5px_5px_var(--color-brand-twitch),-4px_4px_var(--color-brand-twitch),-3px_3px_var(--color-brand-twitch),-2px_2px_var(--color-brand-twitch),-1px_1px_var(--color-brand-twitch)]'
+                  : 'hover:shadow-[-5px_5px_var(--color-brand-youtube),-4px_4px_var(--color-brand-youtube),-3px_3px_var(--color-brand-youtube),-2px_2px_var(--color-brand-youtube),-1px_1px_var(--color-brand-youtube)]',
+              )}
             />
             <div className="flex justify-between gap-2 whitespace-nowrap">
-              <span className="overflow-hidden font-semibold text-ellipsis">{stream.username}</span>{' '}
-              <span>
-                {stream.viewers} {pluralize('viewer', stream.viewers)}
+              <span className="min-w-0 overflow-hidden font-semibold text-ellipsis">
+                {stream.username}
+                <span className="text-muted-foreground text-sm font-extralight">
+                  {' '}
+                  · {stream.platform === 'youtube' ? 'YouTube' : 'Twitch'}
+                </span>
+              </span>
+              <span className="shrink-0">
+                {stream.viewers === null
+                  ? 'Viewers hidden'
+                  : `${stream.viewers} ${pluralize('viewer', stream.viewers)}`}
               </span>
             </div>
           </a>

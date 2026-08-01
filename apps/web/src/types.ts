@@ -240,10 +240,12 @@ export type StaticData = {
 }
 
 export type Stream = {
+  id: string
+  platform: 'twitch' | 'youtube'
   username: string
-  login: string
-  viewers: number
+  viewers: number | null
   thumbnail: string
+  url: string
 }
 
 export type SupportersCurrentResponse = {

@@ -14,6 +14,7 @@ services:
     restart: on-failure:3
     environment:
       - TWITCH_SECRET
+      - YOUTUBE_API_KEY
       - BUYMEACOFFEE_TOKEN
       - MONSTER_CATALOG_FILE_PATH=/catalog/monsters.json
     build:
