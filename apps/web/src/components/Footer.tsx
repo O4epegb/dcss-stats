@@ -4,7 +4,10 @@ import { cn } from '~/utils'
 
 export const Footer = ({ className }: { className?: string }) => (
   <footer
-    className={cn('grid justify-between gap-1 text-xs text-gray-400 md:grid-cols-2', className)}
+    className={cn(
+      'text-muted-foreground grid justify-between gap-1 text-xs md:grid-cols-2',
+      className,
+    )}
   >
     <div>
       Player and game statistics for{' '}
@@ -43,7 +46,7 @@ export const Footer = ({ className }: { className?: string }) => (
     </div>
 
     <div>
-      Made by <span className="font-semibold text-gray-500">totalnoob</span>, DM on{' '}
+      Made by <span className="text-muted-foreground font-semibold">totalnoob</span>, DM on{' '}
       <a
         href="https://discord.gg/pKCNTunFeW"
         target="_blank"

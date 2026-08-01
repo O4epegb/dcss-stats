@@ -96,12 +96,12 @@ export default async function LeaderboardPage({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-muted-foreground text-sm">
         Each character and rune tier has its own ranking. Place top 10 to earn points: 1st = 10 pts,
         2nd = 9 pts, down to 10th = 1 pt. Your total is the sum across all placements. E.g. ranking
         #1 on MiBe (3 runes) and #3 on GrFi (4+ runes) earns 10 + 8 = 18 points.
         <br />
-        <span className="text-gray-400 dark:text-gray-500">
+        <span className="text-muted-foreground">
           Tier 1 runes - 3 runes for score, 3-14 runes for turncount and duration. Tier 2 runes - 4+
           runes for score, 15 runes for turncount and duration.
         </span>
@@ -123,8 +123,8 @@ export default async function LeaderboardPage({
               className={cn(
                 'rounded px-2 py-0.5 text-sm',
                 kind === k.value || (k.value === undefined && !kind)
-                  ? 'bg-gray-200 font-medium dark:bg-gray-700'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                  ? 'bg-surface-active font-medium'
+                  : 'hover:bg-surface-hover',
               )}
             >
               {k.label}
@@ -133,7 +133,7 @@ export default async function LeaderboardPage({
         </div>
         {runeTiers.length > 0 && (
           <>
-            <span className="text-gray-300 dark:text-gray-600">|</span>
+            <span className="text-border-strong">|</span>
             <div className="flex gap-1">
               {runeTiers.map((r) => (
                 <Link
@@ -150,8 +150,8 @@ export default async function LeaderboardPage({
                   className={cn(
                     'rounded px-2 py-0.5 text-sm',
                     params.runeTier === r.value || (!params.runeTier && !r.value)
-                      ? 'bg-gray-200 font-medium dark:bg-gray-700'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                      ? 'bg-surface-active font-medium'
+                      : 'hover:bg-surface-hover',
                   )}
                 >
                   {r.label}
@@ -169,7 +169,7 @@ export default async function LeaderboardPage({
           name="search"
           defaultValue={search}
           placeholder="Search player..."
-          className="w-full rounded-sm border border-gray-200 bg-white px-3 py-1.5 text-sm text-black placeholder-gray-400 dark:border-gray-300 dark:bg-zinc-900 dark:text-white dark:placeholder-gray-500"
+          className="border-border bg-surface text-foreground placeholder:text-muted-foreground w-full rounded-sm border px-3 py-1.5 text-sm"
         />
       </form>
 
@@ -185,7 +185,7 @@ export default async function LeaderboardPage({
             <Link
               prefetch={false}
               href={paginationQuery(1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               <ChevronDoubleLeftIcon className="h-4 w-4" />
             </Link>
@@ -194,19 +194,19 @@ export default async function LeaderboardPage({
             <Link
               prefetch={false}
               href={paginationQuery(page - 1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               ← Prev
             </Link>
           )}
-          <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-muted-foreground px-2 text-sm">
             {page} / {totalPages}
           </span>
           {page < totalPages && (
             <Link
               prefetch={false}
               href={paginationQuery(page + 1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               Next →
             </Link>
@@ -215,7 +215,7 @@ export default async function LeaderboardPage({
             <Link
               prefetch={false}
               href={paginationQuery(totalPages)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               <ChevronDoubleRightIcon className="h-4 w-4" />
             </Link>
@@ -234,21 +234,17 @@ const SingleKindList = ({
   kind: string
 }) => {
   if (data.length === 0) {
-    return (
-      <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        No players found.
-      </div>
-    )
+    return <div className="text-muted-foreground py-4 text-center text-sm">No players found.</div>
   }
 
   return (
-    <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
+    <div className="divide-border divide-y overflow-hidden rounded-sm">
       {data.map((entry) => (
         <div
           key={entry.playerId}
-          className="flex items-center gap-3 bg-white py-1 text-sm text-black dark:bg-zinc-900 dark:text-white"
+          className="bg-surface text-foreground flex items-center gap-3 py-1 text-sm"
         >
-          <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
+          <span className="text-muted-foreground w-8 shrink-0 text-right font-mono">
             #{entry.rank}
           </span>
           <Link
@@ -260,13 +256,12 @@ const SingleKindList = ({
           </Link>
           <div className="ml-auto flex shrink-0 flex-col items-end">
             <span className="font-mono font-medium">
-              {formatNumber(entry.points)}{' '}
-              <span className="text-gray-500 dark:text-gray-400">pts</span>
+              {formatNumber(entry.points)} <span className="text-muted-foreground">pts</span>
             </span>
             <Link
               prefetch={false}
               href={{ pathname: '/highscores', query: { player: entry.playerName, kind } }}
-              className="text-xs text-gray-500 hover:text-gray-700 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-muted-foreground hover:text-foreground text-xs hover:underline"
             >
               {entry.entryCount} {entry.entryCount === 1 ? 'entry' : 'entries'}
             </Link>
@@ -279,21 +274,17 @@ const SingleKindList = ({
 
 const CombinedList = ({ data }: { data: CombinedLeaderboardResponse['data'] }) => {
   if (data.length === 0) {
-    return (
-      <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-        No players found.
-      </div>
-    )
+    return <div className="text-muted-foreground py-4 text-center text-sm">No players found.</div>
   }
 
   return (
-    <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
+    <div className="divide-border divide-y overflow-hidden rounded-sm">
       {data.map((entry) => (
         <div
           key={entry.playerId}
-          className="flex items-center gap-3 bg-white py-1 text-sm text-black dark:bg-zinc-900 dark:text-white"
+          className="bg-surface text-foreground flex items-center gap-3 py-1 text-sm"
         >
-          <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
+          <span className="text-muted-foreground w-8 shrink-0 text-right font-mono">
             #{entry.rank}
           </span>
           <Link
@@ -306,24 +297,23 @@ const CombinedList = ({ data }: { data: CombinedLeaderboardResponse['data'] }) =
           <div className="ml-auto flex shrink-0 items-center gap-4">
             <div className="flex shrink-0 flex-col gap-x-4 md:flex-row md:items-center">
               {entry.highscorePoints > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  <span className="text-teal-500">{entry.highscorePoints}</span> score
+                <span className="text-muted-foreground text-xs">
+                  <span className="text-leaderboard-score">{entry.highscorePoints}</span> score
                 </span>
               )}
               {entry.turncountPoints > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  <span className="text-cyan-500">{entry.turncountPoints}</span> turns
+                <span className="text-muted-foreground text-xs">
+                  <span className="text-leaderboard-turncount">{entry.turncountPoints}</span> turns
                 </span>
               )}
               {entry.durationPoints > 0 && (
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  <span className="text-violet-500">{entry.durationPoints}</span> speed
+                <span className="text-muted-foreground text-xs">
+                  <span className="text-leaderboard-duration">{entry.durationPoints}</span> speed
                 </span>
               )}
             </div>
             <span className="font-mono font-medium">
-              {formatNumber(entry.totalPoints)}{' '}
-              <span className="text-gray-500 dark:text-gray-400">pts</span>
+              {formatNumber(entry.totalPoints)} <span className="text-muted-foreground">pts</span>
             </span>
           </div>
         </div>

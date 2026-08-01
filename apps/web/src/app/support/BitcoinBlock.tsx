@@ -11,7 +11,7 @@ export const BitcoinBlock = ({ wallet }: { wallet: string }) => {
   return (
     <div className="flex w-full items-center justify-center gap-4">
       <div
-        className="block rounded-full border border-[#f7931a] px-6 py-3 font-medium text-[#f7931a]"
+        className="border-brand-bitcoin text-brand-bitcoin block rounded-full border px-6 py-3 font-medium"
         style={{
           wordBreak: 'break-all',
         }}
@@ -20,7 +20,7 @@ export const BitcoinBlock = ({ wallet }: { wallet: string }) => {
         {wallet}
       </div>
       <button
-        className="block shrink-0 rounded-full bg-[#f7931a] p-3 font-medium text-white transition-all"
+        className="bg-brand-bitcoin text-on-dark block shrink-0 rounded-full p-3 font-medium transition-all"
         onClick={async () => {
           await navigator.clipboard.writeText(wallet ?? '')
           setIsCopied(true)

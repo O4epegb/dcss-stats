@@ -12,9 +12,7 @@ import { DayData, HeatMapFlat } from './HeatMap'
 export const HistoryDialog = () => {
   return (
     <Dialog>
-      <DialogTrigger className="py-0.5 text-sm text-blue-400 hover:underline">
-        Show full
-      </DialogTrigger>
+      <DialogTrigger className="text-link py-0.5 text-sm hover:underline">Show full</DialogTrigger>
       <DialogContent title="All time game history">
         <Content />
       </DialogContent>
@@ -98,7 +96,7 @@ const Content = () => {
     <>
       <div className="flex items-center gap-2">
         {isLoading && <Loader />}
-        {error && <div className="text-sm text-red-600">Error fetching data</div>}
+        {error && <div className="text-danger text-sm">Error fetching data</div>}
       </div>
 
       <div className="space-y-4">

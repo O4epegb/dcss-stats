@@ -1,7 +1,6 @@
 'use client'
 
 import { useLocalStorageValue } from '@react-hookz/web'
-import clsx from 'clsx'
 import {
   capitalize,
   every,
@@ -499,7 +498,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   }, [matrixData?.matrix])
 
   const matrixComponent = matrixError ? (
-    <div className="flex items-center justify-center p-8 text-red-600">
+    <div className="text-danger flex items-center justify-center p-8">
       Error fetching matrix data
     </div>
   ) : (
@@ -510,7 +509,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       allActualRaces={statsData.allActualRaces}
     >
       {(!advancedFilter || matrixIsValidating || matrixIsLoading) && (
-        <div className="absolute inset-0 z-1 flex animate-pulse flex-col items-center justify-center gap-4 bg-white/80 pt-20 dark:bg-zinc-800/80">
+        <div className="bg-surface-muted/80 absolute inset-0 z-1 flex animate-pulse flex-col items-center justify-center gap-4 pt-20">
           {currentLoadingMessage}
           <Loader />
         </div>
@@ -539,12 +538,12 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
 
       <div className="flex w-full max-w-lg items-center gap-2">
         <button
-          className="-ml-2 flex items-center gap-1 rounded-sm px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-zinc-700"
+          className="hover:bg-surface-hover -ml-2 flex items-center gap-1 rounded-sm px-2 py-1 text-sm"
           onClick={() => setShowAdvancedFilters((x) => !x)}
         >
           {showAdvancedFilters ? 'Hide' : 'Show'} advanced filters{' '}
           {advancedFilter && advancedFilter.length > 0 && (
-            <div className="rounded-full bg-gray-800 px-2 text-xs text-white">
+            <div className="bg-primary text-primary-foreground rounded-full px-2 text-xs">
               {advancedFilter.length}
             </div>
           )}
@@ -562,7 +561,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
         </Select>
       </div>
 
-      <div className={clsx('w-full max-w-lg space-y-4', !showAdvancedFilters && 'hidden')}>
+      <div className={cn('w-full max-w-lg space-y-4', !showAdvancedFilters && 'hidden')}>
         <hr />
         <Filters
           filterOptions={filterOptions}
@@ -578,8 +577,8 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       <div className="flex w-full max-w-lg items-center justify-center gap-2">
         <button
           type="button"
-          className={clsx(
-            'flex items-center gap-x-2 rounded-sm border bg-gray-800 px-4 py-2 text-white transition-colors',
+          className={cn(
+            'bg-primary text-primary-foreground flex items-center gap-x-2 rounded-sm border px-4 py-2 transition-colors',
           )}
           onClick={() => {
             setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
@@ -646,7 +645,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                         !isHidden && (
                           <label
                             key={key}
-                            className={clsx('flex cursor-pointer items-center gap-1 select-none')}
+                            className="flex cursor-pointer items-center gap-1 select-none"
                           >
                             <input
                               type="radio"
@@ -705,25 +704,24 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                   />
                   Show only games with wins
                 </label>
-                <div className="group flex rounded-lg bg-gray-100 p-0.5 transition-colors hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600">
+                <div className="group bg-surface-emphasis hover:bg-surface-active flex rounded-lg p-0.5 transition-colors">
                   {(['stats', 'games'] as const).map((item) => (
                     <button
                       key={item}
-                      className="flex rounded-md focus:outline-hidden focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100"
+                      className="focus-visible:ring-accent focus-visible:ring-offset-surface-emphasis flex rounded-md focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2"
                       onClick={() => setView(item)}
                     >
                       <span
-                        className={clsx(
+                        className={cn(
                           'rounded-md p-1.5 text-sm font-medium lg:pr-2.5 lg:pl-2.5',
-                          view === item &&
-                            'ring-opacity-5 bg-white shadow-xs ring-1 ring-black dark:bg-zinc-500',
+                          view === item && 'bg-surface ring-border shadow-xs ring-1',
                         )}
                       >
                         <span
-                          className={clsx(
+                          className={cn(
                             view === item
-                              ? 'text-gray-900 dark:text-white'
-                              : 'text-gray-600 group-hover:text-gray-900 dark:text-gray-300 dark:group-hover:text-white',
+                              ? 'text-foreground'
+                              : 'text-muted-foreground group-hover:text-foreground',
                           )}
                         >
                           {capitalize(item)}
@@ -754,7 +752,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                               <button>
                                 <svg
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className={clsx(
+                                  className={cn(
                                     'h-5 w-5 transition-transform',
                                     sorting.direction === 'asc' ? 'rotate-180' : '',
                                   )}
@@ -774,7 +772,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                               isVisible && (
                                 <th
                                   key={title}
-                                  className={clsx(type === 'numeric' ? 'text-right' : 'text-left')}
+                                  className={type === 'numeric' ? 'text-right' : 'text-left'}
                                 >
                                   <div
                                     className="inline-flex cursor-pointer items-center whitespace-nowrap select-none"
@@ -808,7 +806,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                               return (
                                 <th
                                   key={title}
-                                  className={clsx(
+                                  className={cn(
                                     'p-px',
                                     type === 'numeric' ? 'text-right' : 'text-left',
                                   )}
@@ -836,7 +834,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
                           return (
                             <tr
                               key={index}
-                              className="odd:bg-gray-50 even:bg-white hover:bg-amber-100 odd:dark:bg-zinc-800 even:dark:bg-zinc-900 dark:hover:bg-amber-700"
+                              className="odd:bg-surface-muted even:bg-surface hover:bg-surface-hover"
                             >
                               {columns[0][3] && (
                                 <td className="overflow-hidden text-ellipsis">{item.race?.name}</td>

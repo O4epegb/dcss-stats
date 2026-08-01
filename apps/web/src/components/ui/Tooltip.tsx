@@ -21,7 +21,6 @@ import {
   useRole,
 } from '@floating-ui/react'
 import { useIsomorphicLayoutEffect, useUpdateEffect } from '@react-hookz/web'
-import clsx from 'clsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import { cloneElement, FC, ReactNode, useRef, useState, type JSX } from 'react'
 import { XOR } from '~/types'
@@ -36,7 +35,7 @@ export const HelpBubble: FC<{
     <Tooltip interactive={interactive} content={content}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className={cn('h-5 w-5 text-gray-400', className)}
+        className={cn('text-muted-foreground h-5 w-5', className)}
         viewBox="0 0 20 20"
         fill="currentColor"
       >
@@ -50,12 +49,12 @@ export const HelpBubble: FC<{
   )
 }
 
-const sides: Record<string, string> = {
-  top: 'bottom',
-  right: 'left',
-  bottom: 'top',
-  left: 'right',
-}
+const arrowStyles = {
+  top: { offsetSide: 'bottom', borderClassName: 'border-r border-b' },
+  right: { offsetSide: 'left', borderClassName: 'border-b border-l' },
+  bottom: { offsetSide: 'top', borderClassName: 'border-t border-l' },
+  left: { offsetSide: 'right', borderClassName: 'border-t border-r' },
+} as const
 
 type Props = {
   content: ReactNode
@@ -156,6 +155,8 @@ export const Tooltip = ({
   )
 
   const { x: arrowX, y: arrowY } = middlewareData.arrow ?? {}
+  const arrowSide = finalPlacement.split('-')[0] as keyof typeof arrowStyles
+  const arrowStyle = arrowStyles[arrowSide]
 
   return (
     <>
@@ -170,9 +171,9 @@ export const Tooltip = ({
               transition={{ duration: 0.15 }}
               {...getFloatingProps({
                 ref: refs.setFloating,
-                className: clsx(
+                className: cn(
                   !unstyled &&
-                    'max-w-[calc(100vw-8px)] text-white rounded-sm bg-slate-800 px-2 py-1.5 text-sm dark:bg-zinc-100 dark:text-black',
+                    'max-w-[calc(100vw-8px)] rounded-sm border border-tooltip-border bg-tooltip px-2 py-1.5 font-interface text-sm text-tooltip-foreground',
                   className,
                 ),
                 style: {
@@ -187,13 +188,16 @@ export const Tooltip = ({
               {!unstyled && (
                 <div
                   ref={arrowRef}
-                  className="pointer-events-none absolute h-2 w-2 rotate-45 bg-slate-800 dark:bg-zinc-100"
+                  className={cn(
+                    'border-tooltip-border bg-tooltip pointer-events-none absolute h-2 w-2 rotate-45',
+                    arrowStyle.borderClassName,
+                  )}
                   style={{
                     left: arrowX != null ? `${arrowX}px` : '',
                     top: arrowY != null ? `${arrowY}px` : '',
                     right: '',
                     bottom: '',
-                    [sides[finalPlacement.split('-')[0]] ?? '']: '-4px',
+                    [arrowStyle.offsetSide]: '-5px',
                   }}
                 />
               )}

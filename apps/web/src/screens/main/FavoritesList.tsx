@@ -16,7 +16,7 @@ export const FavoritesList = () => {
       title="Your favorites"
       placeholder={
         favorites && favorites.length === 0 ? (
-          <div className="text-gray-400">
+          <div className="text-muted-foreground">
             Nobody added yet
             <div className="mt-1">
               Use <span className="font-medium">star</span> icon on player page next to their name

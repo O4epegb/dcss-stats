@@ -18,7 +18,7 @@ export const Badges = () => {
     <section className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm empty:hidden">
       {isGreater ? (
         <Tooltip content={<div>Has won with all races and all classes</div>}>
-          <div className="rounded bg-amber-300 px-1 py-0.5 text-black ring-2 ring-amber-600 ring-inset">
+          <div className="badge-achievement-major rounded px-1 py-0.5 ring-2 ring-inset">
             Greater Player
           </div>
         </Tooltip>
@@ -26,19 +26,19 @@ export const Badges = () => {
         <>
           {isGreat && (
             <Tooltip content="Has won with all races">
-              <div className="rounded bg-amber-300 px-1 py-0.5 text-black">Great Player</div>
+              <div className="badge-achievement rounded px-1 py-0.5">Great Player</div>
             </Tooltip>
           )}
           {isGrand && (
             <Tooltip content="Has won with all classes">
-              <div className="rounded bg-amber-300 px-1 py-0.5 text-black">Grand Player</div>
+              <div className="badge-achievement rounded px-1 py-0.5">Grand Player</div>
             </Tooltip>
           )}
         </>
       )}
       {isPolytheist && (
         <Tooltip interactive content={<TooltipTable title="Has won with all gods:" data={gods} />}>
-          <div className="rounded bg-sky-300 px-1 py-0.5 text-black">Polytheist</div>
+          <div className="badge-polytheist rounded px-1 py-0.5">Polytheist</div>
         </Tooltip>
       )}
       {isTiamat && (
@@ -48,7 +48,7 @@ export const Badges = () => {
             <TooltipTable title="Has won with every Draconian color:" data={tiamat.detailed} />
           }
         >
-          <div className="rounded bg-purple-300 px-1 py-0.5 text-black">Tiamat</div>
+          <div className="badge-tiamat rounded px-1 py-0.5">Tiamat</div>
         </Tooltip>
       )}
       {streaks.inTop100.length > 0 && (
@@ -69,14 +69,14 @@ export const Badges = () => {
           }
         >
           <div
-            className={cn('rounded px-1 py-0.5 text-black ring-2 ring-inset', {
-              'bg-amber-300 ring-orange-600': topStreak?.rank === 1,
-              'bg-slate-300 ring-slate-500': topStreak?.rank === 2,
-              'bg-amber-600 text-white ring-amber-800': topStreak?.rank === 3,
-              'bg-emerald-400 ring-emerald-600': topStreak?.rank > 3 && topStreak?.rank <= 10,
-              'bg-emerald-300 ring-emerald-500': topStreak?.rank > 10 && topStreak?.rank <= 25,
-              'bg-emerald-200 ring-emerald-400': topStreak?.rank > 25 && topStreak?.rank <= 50,
-              'bg-emerald-100 ring-emerald-300': topStreak?.rank > 50,
+            className={cn('rounded px-1 py-0.5 ring-2 ring-inset', {
+              'rank-first': topStreak?.rank === 1,
+              'rank-second': topStreak?.rank === 2,
+              'rank-third': topStreak?.rank === 3,
+              'rank-elite-10': topStreak?.rank > 3 && topStreak?.rank <= 10,
+              'rank-elite-25': topStreak?.rank > 10 && topStreak?.rank <= 25,
+              'rank-elite-50': topStreak?.rank > 25 && topStreak?.rank <= 50,
+              'rank-elite-100': topStreak?.rank > 50,
             })}
           >
             Top {topStreak?.rank} Streak
@@ -88,7 +88,7 @@ export const Badges = () => {
         data={highscores.score}
         playerId={player.id}
         kind="HIGHSCORE"
-        color="teal"
+        category="score"
         runeTierLabels={HIGHSCORE_LABELS}
         valueLabel={(e) => formatNumber(e.score)}
       />
@@ -97,7 +97,7 @@ export const Badges = () => {
         data={highscores.turncount}
         playerId={player.id}
         kind="TURN_COUNT"
-        color="cyan"
+        category="turncount"
         runeTierLabels={MULTI_RUNE_LABELS}
         valueLabel={(e) => formatNumber(e.turns) + ' turns'}
       />
@@ -106,7 +106,7 @@ export const Badges = () => {
         data={highscores.duration}
         playerId={player.id}
         kind="DURATION"
-        color="violet"
+        category="duration"
         runeTierLabels={MULTI_RUNE_LABELS}
         valueLabel={(e) => formatDuration(e.duration)}
       />

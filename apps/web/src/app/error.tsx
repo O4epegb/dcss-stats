@@ -32,7 +32,7 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center p-4 text-center font-mono">
-      <h1 className="mb-4 flex items-center justify-center gap-4 text-6xl text-red-500">
+      <h1 className="text-danger mb-4 flex items-center justify-center gap-4 text-6xl">
         <Image
           width={32}
           height={32}
@@ -50,13 +50,11 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
         />
       </h1>
       <p className="mb-2 text-xl">* A terrible malfunction echoes through the Dungeon *</p>
-      <p className="mb-8 text-base text-gray-600 italic dark:text-gray-400">
-        Pain shoots through your body!
-      </p>
+      <p className="text-muted-foreground mb-8 text-base italic">Pain shoots through your body!</p>
       <div className="flex w-full flex-col items-center justify-center gap-4">
         <button
           type="button"
-          className="cursor-pointer rounded px-4 py-2 text-lg text-blue-600 transition-colors hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+          className="text-link hover:text-link-hover cursor-pointer rounded px-4 py-2 text-lg transition-colors"
           onClick={reset}
         >
           {orbImage} Attempt to Escape {orbImage}
@@ -64,7 +62,7 @@ const ErrorPage = ({ error, reset }: { error: Error; reset: () => void }) => {
         <Link
           href="/"
           prefetch={false}
-          className="text-lg text-blue-600 transition-colors hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+          className="text-link hover:text-link-hover text-lg transition-colors"
         >
           {teleportImage} Teleport to the Dungeon Entrance {teleportImage}
         </Link>

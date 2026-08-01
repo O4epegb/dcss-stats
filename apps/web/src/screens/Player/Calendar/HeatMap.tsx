@@ -17,6 +17,14 @@ const cellGap = 2
 export const monthGap = 8
 export const cellAndGap = cellSize + cellGap
 
+const getWinRateBackgroundClasses = (winRate: number) => ({
+  'bg-activity-loss': winRate === 0,
+  'bg-activity-win-1': winRate > 0,
+  'bg-activity-win-2': winRate >= 0.1,
+  'bg-activity-win-3': winRate >= 0.25,
+  'bg-activity-win-4': winRate >= 0.5,
+})
+
 export const HeatMap = ({
   monthesWithDays,
   maxGames,
@@ -89,22 +97,21 @@ export const HeatMap = ({
                     >
                       <div
                         className={cn('flex items-center justify-center rounded-sm', cellSizeCss, {
-                          'border border-zinc-300 dark:border-zinc-400': day.games < maxGames * 0.9,
+                          'border-border-strong border': day.games < maxGames * 0.9,
                         })}
                       >
                         {day.games > 0 && (
                           <div
-                            className={cn('rounded-sm', {
-                              'size-[30%]': day.games > 0,
-                              'size-[50%]': day.games >= maxGames * 0.2,
-                              'size-[70%]': day.games >= maxGames * 0.55,
-                              'size-full': day.games >= maxGames * 0.9,
-                              'bg-amber-300': day.winrate === 0,
-                              'bg-emerald-300': day.winrate > 0,
-                              'bg-emerald-400': day.winrate >= 0.1,
-                              'bg-emerald-500': day.winrate >= 0.25,
-                              'bg-emerald-600': day.winrate >= 0.5,
-                            })}
+                            className={cn(
+                              'rounded-sm',
+                              {
+                                'size-[30%]': day.games > 0,
+                                'size-[50%]': day.games >= maxGames * 0.2,
+                                'size-[70%]': day.games >= maxGames * 0.55,
+                                'size-full': day.games >= maxGames * 0.9,
+                              },
+                              getWinRateBackgroundClasses(day.winrate),
+                            )}
                           />
                         )}
                       </div>
@@ -196,8 +203,7 @@ export const HeatMapFlat = ({
                 )}
                 <div
                   className={cn('flex size-full items-center justify-center rounded-sm', {
-                    'border border-zinc-300 dark:border-zinc-600':
-                      day.games < maxGamesPerDay * 0.75,
+                    'border-border-strong border': day.games < maxGamesPerDay * 0.75,
                   })}
                   onMouseEnter={(e) => {
                     setTooltipData({
@@ -209,17 +215,16 @@ export const HeatMapFlat = ({
                 >
                   {day.games > 0 && (
                     <div
-                      className={cn('rounded-sm', {
-                        'size-[30%]': day.games > 0,
-                        'size-[50%]': day.games >= maxGamesPerDay * 0.25,
-                        'size-[75%]': day.games >= maxGamesPerDay * 0.5,
-                        'size-full': day.games >= maxGamesPerDay * 0.75,
-                        'bg-amber-300': day.winrate === 0,
-                        'bg-emerald-300': day.winrate > 0,
-                        'bg-emerald-400': day.winrate >= 0.1,
-                        'bg-emerald-500': day.winrate >= 0.25,
-                        'bg-emerald-600': day.winrate >= 0.5,
-                      })}
+                      className={cn(
+                        'rounded-sm',
+                        {
+                          'size-[30%]': day.games > 0,
+                          'size-[50%]': day.games >= maxGamesPerDay * 0.25,
+                          'size-[75%]': day.games >= maxGamesPerDay * 0.5,
+                          'size-full': day.games >= maxGamesPerDay * 0.75,
+                        },
+                        getWinRateBackgroundClasses(day.winrate),
+                      )}
                     />
                   )}
                 </div>

@@ -3,54 +3,36 @@ import { Tooltip } from '~/components/ui/Tooltip'
 import { HighscoreKind, PlayerLeaderboard, PlayerLeaderboardEntry } from '~/types'
 import { cn } from '~/utils'
 
-type ColorKey = 'teal' | 'cyan' | 'violet'
+type LeaderboardCategory = 'score' | 'turncount' | 'duration'
 
 interface LeaderboardBadgeProps {
   label: string
   data: PlayerLeaderboard
   playerId: string
   kind: HighscoreKind
-  color: ColorKey
+  category: LeaderboardCategory
   runeTierLabels: Record<string, string>
   valueLabel: (entry: PlayerLeaderboardEntry) => string
   pointsDescription?: string
 }
 
-const colorMap: Record<ColorKey, Record<string, string>> = {
-  teal: {
-    '4': 'bg-teal-400 ring-teal-600',
-    '10': 'bg-teal-300 ring-teal-500',
-    '25': 'bg-teal-200 ring-teal-400',
-    '100': 'bg-teal-100 ring-teal-300',
-    default: 'bg-teal-100 ring-0',
-  },
-  cyan: {
-    '4': 'bg-cyan-400 ring-cyan-600',
-    '10': 'bg-cyan-300 ring-cyan-500',
-    '25': 'bg-cyan-200 ring-cyan-400',
-    '100': 'bg-cyan-100 ring-cyan-300',
-    default: 'bg-cyan-100 ring-0',
-  },
-  violet: {
-    '4': 'bg-violet-400 ring-violet-600',
-    '10': 'bg-violet-300 ring-violet-500',
-    '25': 'bg-violet-200 ring-violet-400',
-    '100': 'bg-violet-100 ring-violet-300',
-    default: 'bg-violet-100 ring-0',
-  },
+const categoryClassNames: Record<LeaderboardCategory, string> = {
+  score: 'leaderboard-score',
+  turncount: 'leaderboard-turncount',
+  duration: 'leaderboard-duration',
 }
 
-function getRankColor(rank: number, color: ColorKey) {
-  if (rank === 1) return 'bg-amber-300 ring-orange-600'
-  if (rank === 2) return 'bg-slate-300 ring-slate-500'
-  if (rank === 3) return 'bg-amber-600 text-white ring-amber-800'
+function getRankClassName(rank: number, category: LeaderboardCategory) {
+  if (rank === 1) return 'rank-first'
+  if (rank === 2) return 'rank-second'
+  if (rank === 3) return 'rank-third'
 
-  const colors = colorMap[color]
-  if (rank <= 4) return colors['4']
-  if (rank <= 10) return colors['10']
-  if (rank <= 25) return colors['25']
-  if (rank <= 100) return colors['100']
-  return colors.default
+  const categoryClassName = categoryClassNames[category]
+  if (rank <= 4) return cn(categoryClassName, 'leaderboard-rank-4')
+  if (rank <= 10) return cn(categoryClassName, 'leaderboard-rank-10')
+  if (rank <= 25) return cn(categoryClassName, 'leaderboard-rank-25')
+  if (rank <= 100) return cn(categoryClassName, 'leaderboard-rank-100')
+  return cn(categoryClassName, 'leaderboard-rank-default ring-0')
 }
 
 export const LeaderboardBadge = ({
@@ -58,7 +40,7 @@ export const LeaderboardBadge = ({
   data,
   playerId,
   kind,
-  color,
+  category,
   runeTierLabels,
   valueLabel,
   pointsDescription,
@@ -101,14 +83,16 @@ export const LeaderboardBadge = ({
               </Link>
             </div>
           )}
-          {pointsDescription && <div className="mt-1 text-gray-400">{pointsDescription}</div>}
+          {pointsDescription && (
+            <div className="text-muted-foreground mt-1">{pointsDescription}</div>
+          )}
         </div>
       }
     >
       <div
         className={cn(
-          'rounded px-1 py-0.5 text-black ring-2 ring-inset',
-          getRankColor(data.rank, color),
+          'rounded px-1 py-0.5 ring-2 ring-inset',
+          getRankClassName(data.rank, category),
         )}
       >
         Top {data.rank} {label}

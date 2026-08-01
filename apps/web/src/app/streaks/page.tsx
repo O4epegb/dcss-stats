@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
@@ -35,15 +34,12 @@ const StreaksPage = ({ searchParams }: { searchParams: Promise<SearchParams> }) 
       <HeaderWithMenu />
 
       <div className="w-full max-w-5xl space-y-2">
-        <h2 className="text-xl font-medium">Streaks overview</h2>
+        <h2 className="text-page-heading text-xl font-medium">Streaks overview</h2>
         <Suspense
           fallback={
             <div className="space-y-2">
               {[...Array(10)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-40 w-full animate-pulse rounded-sm bg-gray-200 dark:bg-gray-700"
-                />
+                <div key={i} className="bg-surface-active h-40 w-full animate-pulse rounded-sm" />
               ))}
             </div>
           }
@@ -150,7 +146,7 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
           </div>
         </div>
         {data.length === 0 && (
-          <div className="flex flex-col items-center gap-2 text-center text-gray-500 dark:text-gray-400">
+          <div className="text-muted-foreground flex flex-col items-center gap-2 text-center">
             <span className="text-xl">¯\_(ツ)_/¯</span>
             <div>No streaks found with the specified filters.</div>
           </div>
@@ -158,17 +154,15 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
         {data.map((streak, index) => (
           <div
             key={streak.id}
-            className={clsx(
-              'flex flex-col gap-2 rounded-sm border border-gray-200 bg-white p-3 text-sm text-black dark:border-gray-300 dark:bg-zinc-900 dark:text-white',
-              !streak.isBroken && 'border-l-2 border-l-emerald-500 dark:border-l-emerald-400',
+            className={cn(
+              'border-border bg-surface text-foreground flex flex-col gap-2 rounded-sm border p-3 text-sm',
+              !streak.isBroken && 'border-l-success border-l-2',
             )}
           >
             <div className="flex items-start justify-between gap-1">
               <div className="flex flex-wrap items-center gap-1 md:gap-2">
                 <div>
-                  <span className="font-mono leading-none text-gray-500 dark:text-gray-400">
-                    {index + 1}.
-                  </span>
+                  <span className="text-muted-foreground font-mono leading-none">{index + 1}.</span>
                   <Link
                     prefetch={false}
                     href={`/players/${streak.player.name}`}
@@ -177,14 +171,14 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
                     {streak.player.name}
                   </Link>
                 </div>
-                <span className="text-xs whitespace-nowrap text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground text-xs whitespace-nowrap">
                   {date(streak.startedAt).format('LL')}
                   {streak.endedAt ? (
                     ` - ${date(streak.endedAt).format('LL')}`
                   ) : (
                     <>
                       {' '}
-                      - <span className="text-emerald-600 dark:text-emerald-400">Ongoing</span>
+                      - <span className="text-success">Ongoing</span>
                     </>
                   )}
                 </span>
@@ -193,10 +187,8 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
                 {streak.type !== 'MIXED' && (
                   <span
                     className={cn('rounded px-1.5 py-0.5 text-xs font-medium', {
-                      'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200':
-                        streak.type === 'UNIQUE',
-                      'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200':
-                        streak.type === 'MONO',
+                      'bg-warning-surface text-warning-foreground': streak.type === 'UNIQUE',
+                      'bg-special-surface text-special-foreground': streak.type === 'MONO',
                     })}
                   >
                     {streak.type.slice(0, 1).toUpperCase() + streak.type.slice(1).toLowerCase()}
@@ -213,8 +205,8 @@ const StreaksListCached = async ({ searchParams }: { searchParams: SearchParams 
                   className={cn(
                     'text-2xs rounded px-1.5 py-0.5 font-mono font-medium md:text-xs',
                     game.isWin
-                      ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-50'
-                      : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+                      ? 'bg-success-surface text-success-foreground'
+                      : 'bg-danger-surface text-danger-foreground',
                   )}
                   title={game.char}
                 >

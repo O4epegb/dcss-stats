@@ -39,9 +39,7 @@ export const List = ({
             {item.count && (
               <span className="ml-auto tabular-nums">
                 {item.secondaryCount && (
-                  <span className="mr-1 text-xs text-gray-400 dark:text-gray-500">
-                    {item.secondaryCount}
-                  </span>
+                  <span className="text-muted-foreground mr-1 text-xs">{item.secondaryCount}</span>
                 )}
                 {item.count}
               </span>

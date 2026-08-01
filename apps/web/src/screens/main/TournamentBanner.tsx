@@ -40,7 +40,7 @@ export const TournamentBanner = () => {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 rounded-sm border-4 border-amber-400 bg-[#282020] p-2 text-center text-white md:text-lg"
+      className="border-tournament-border bg-tournament-background text-on-dark flex items-center justify-center gap-2 rounded-sm border-4 p-2 text-center md:text-lg"
     >
       <span className={cn('flex items-center justify-center gap-2', !hydrated && 'opacity-0')}>
         {isUpcoming && (

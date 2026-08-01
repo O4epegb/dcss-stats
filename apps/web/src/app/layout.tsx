@@ -2,10 +2,21 @@ import '~/styles/globals.css'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Metadata } from 'next'
+import localFont from 'next/font/local'
 import Script from 'next/script'
 import { defaultMetaDescription, defaultMetaTitle } from '~/constants'
 import { Providers } from './providers'
 import { sharedOGMetadata } from './shared-metadata'
+
+const crawlFont = localFont({
+  src: './fonts/DejaVuSansMono.woff2',
+  variable: '--font-crawl',
+  weight: '400',
+  style: 'normal',
+  display: 'swap',
+  preload: false,
+  adjustFontFallback: false,
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://dcss-stats.com'),
@@ -20,13 +31,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning lang="en">
+    <html className={crawlFont.variable} suppressHydrationWarning lang="en">
       <head>
         <meta name="format-detection" content="telephone=no" />
       </head>
       <body className="antialiased">
         <Providers>
-          {/* <div className="mb-4 border-b border-yellow-300 bg-yellow-100 p-2 text-center text-xs text-black md:text-sm">
+          {/* <div className="border-warning bg-warning-surface text-warning-foreground mb-4 border-b p-2 text-center text-xs md:text-sm">
             Data maintenance is in progress. Some stats may be outdated or missing.
           </div> */}
           {children}

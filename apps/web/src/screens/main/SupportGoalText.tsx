@@ -13,7 +13,7 @@ export const SupportGoalText = () => {
   }
 
   return (
-    <span className="text-2xs absolute top-full text-nowrap text-gray-400 sm:text-xs">
+    <span className="text-2xs text-muted-foreground absolute top-full text-nowrap sm:text-xs">
       {data.total >= data.goal ? (
         <>Goal: done! (${data.total})</>
       ) : (

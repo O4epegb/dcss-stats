@@ -1,7 +1,6 @@
-import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
-import { trackEvent } from '~/utils'
+import { cn, trackEvent } from '~/utils'
 import { usePlayerPageContext } from './context'
 import { addToFavorite, getFavorites, removeFromFavorite } from './utils'
 
@@ -16,9 +15,9 @@ export const FavoriteButton = () => {
   return (
     <Tooltip content={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
       <button
-        className={clsx(
-          'flex h-6 w-6 items-center justify-center rounded-sm transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700',
-          isFavorite ? 'text-amber-400' : 'text-gray-300',
+        className={cn(
+          'hover:bg-surface-hover flex h-6 w-6 items-center justify-center rounded-sm transition-colors',
+          isFavorite ? 'text-warning' : 'text-muted-foreground',
         )}
         onClick={() => {
           const newIsFavorite = !isFavorite

@@ -13,10 +13,7 @@ export default function HighscoresLayout({ children }: { children: React.ReactNo
           fallback={
             <div className="space-y-2">
               {[...Array(20)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-10 w-full animate-pulse rounded-sm bg-gray-200 dark:bg-gray-700"
-                />
+                <div key={i} className="bg-surface-active h-10 w-full animate-pulse rounded-sm" />
               ))}
             </div>
           }

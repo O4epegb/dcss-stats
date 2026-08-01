@@ -68,8 +68,7 @@ export const Stats = async () => {
         <div className="space-y-1">
           <div className="flex justify-between gap-1">
             <h3 className="text-xl font-semibold">
-              Top Players{' '}
-              <span className="font-normal text-gray-600 dark:text-gray-400">(Last month)</span>
+              Top Players <span className="text-muted-foreground font-normal">(Last month)</span>
             </h3>
           </div>
           <TopList showFavorites top={topVeryRecentRes.data} />
@@ -78,8 +77,7 @@ export const Stats = async () => {
         <div className="space-y-1">
           <div className="flex justify-between gap-1">
             <h3 className="text-xl font-semibold">
-              Top Players{' '}
-              <span className="font-normal text-gray-600 dark:text-gray-400">(Last year)</span>
+              Top Players <span className="text-muted-foreground font-normal">(Last year)</span>
             </h3>
           </div>
           <TopList top={topRecentRes.data} />
@@ -88,15 +86,14 @@ export const Stats = async () => {
         <div className="space-y-1">
           <div className="flex justify-between gap-1">
             <h3 className="text-xl font-semibold">
-              Top Players{' '}
-              <span className="font-normal text-gray-600 dark:text-gray-400">(All Time)</span>
+              Top Players <span className="text-muted-foreground font-normal">(All Time)</span>
             </h3>
           </div>
           <TopList top={topRes.data}>
             <List
               title="By win rate, %"
               afterTitle={
-                <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-muted-foreground ml-auto text-right text-xs">
                   (min. {topWithManyGamesRes.data.minGamesThresholdForWinrate} games)
                 </span>
               }
@@ -177,7 +174,7 @@ const PopularList = ({
                 (value) => Boolean(value),
               ),
             }}
-            className="-mx-1 flex justify-between rounded-sm px-1 hover:bg-amber-100 dark:hover:bg-zinc-700"
+            className="hover:bg-surface-hover -mx-1 flex justify-between rounded-sm px-1"
           >
             <div>
               {x.race?.abbr}
@@ -205,7 +202,7 @@ const TopList = ({
         <List
           title="By win rate, %"
           afterTitle={
-            <span className="ml-auto text-right text-xs text-gray-400 dark:text-gray-500">
+            <span className="text-muted-foreground ml-auto text-right text-xs">
               (min. {top.minGamesThresholdForWinrate} games)
             </span>
           }

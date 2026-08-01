@@ -27,7 +27,7 @@ const Page404 = () => {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center p-4 text-center font-mono">
-      <h1 className="mb-4 flex items-center justify-center gap-4 text-6xl text-red-500">
+      <h1 className="text-danger mb-4 flex items-center justify-center gap-4 text-6xl">
         <Image
           width={32}
           height={32}
@@ -45,13 +45,13 @@ const Page404 = () => {
         />
       </h1>
       <p className="mb-2 text-xl">* The page you were looking for has vanished into the Abyss *</p>
-      <p className="mb-8 text-base text-gray-600 italic dark:text-gray-400">
+      <p className="text-muted-foreground mb-8 text-base italic">
         You feel a terrible presence watching...
       </p>
       <Link
         href="/"
         prefetch={false}
-        className="text-lg text-blue-600 transition-colors hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+        className="text-link hover:text-link-hover text-lg transition-colors"
       >
         {abyssImage} Return to the Dungeon {abyssImage}
       </Link>

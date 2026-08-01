@@ -65,9 +65,9 @@ type LiveGamesTableProps = {
 
 export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProps) => {
   return (
-    <div className="overflow-x-auto rounded border border-gray-200 dark:border-zinc-700">
+    <div className="border-border overflow-x-auto rounded border">
       <table className="min-w-full text-left text-xs sm:text-sm">
-        <thead className="bg-gray-50 text-gray-700 dark:bg-zinc-800 dark:text-zinc-300">
+        <thead className="bg-surface-muted text-muted-foreground">
           <tr>
             <th className="px-2 py-1.5 font-semibold">Player</th>
             <th className="px-2 py-1.5 font-semibold">Watch</th>
@@ -84,41 +84,41 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
         <tbody>
           {isSkeleton
             ? skeletonRows.map((row) => (
-                <tr key={row} className="border-t border-gray-200 dark:border-zinc-700">
+                <tr key={row} className="border-border border-t">
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-20 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-10 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-10 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-24 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-24 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-28 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-28 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-6 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-6 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-16 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-16 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-16 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-20 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-20 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="h-4 w-28 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active h-4 w-28 animate-pulse rounded" />
                   </td>
                   <td className="h-[33px] px-2 py-1.5">
-                    <div className="ml-auto h-4 w-12 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+                    <div className="bg-surface-active ml-auto h-4 w-12 animate-pulse rounded" />
                   </td>
                 </tr>
               ))
             : games?.map((game) => (
-                <tr key={game.id} className="border-t border-gray-200 dark:border-zinc-700">
+                <tr key={game.id} className="border-border border-t">
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     <Link
                       prefetch={false}
@@ -133,7 +133,7 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
                       href={game.watchUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="group flex w-max items-center justify-start gap-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-800"
+                      className="group hover:bg-surface-hover flex w-max items-center justify-start gap-1 rounded"
                       title={`Watch ${game.username}`}
                       aria-label={`Watch ${game.username}`}
                     >
@@ -185,7 +185,7 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
                   <td className="px-2 py-1.5">
                     <span className="line-clamp-1">{game.milestone || '-'}</span>
                   </td>
-                  <td className="text-2xs px-2 whitespace-nowrap text-gray-500 dark:text-zinc-400">
+                  <td className="text-2xs text-muted-foreground px-2 whitespace-nowrap">
                     <div className="flex flex-col items-end justify-center gap-0.5 leading-none">
                       {game.server} <span>{getVersionFromGameId(game.game_id)}</span>
                     </div>

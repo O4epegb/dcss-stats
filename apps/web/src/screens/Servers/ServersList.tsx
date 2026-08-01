@@ -55,7 +55,7 @@ export const ServersList = async () => {
                     return (
                       <li
                         key={file.path}
-                        className="flex justify-between px-1 hover:bg-gray-100 dark:hover:bg-zinc-700"
+                        className="hover:bg-surface-hover flex justify-between px-1"
                         title={
                           file.lastFetched && `Last fetched: ${date(file.lastFetched).format()}`
                         }

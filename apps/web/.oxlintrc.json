@@ -1,13 +1,17 @@
 {
   "$schema": "../../node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "react", "unicorn", "import"],
-  "jsPlugins": ["eslint-plugin-no-relative-import-paths"],
+  "jsPlugins": ["eslint-plugin-no-relative-import-paths", "eslint-plugin-better-tailwindcss"],
   "categories": {
     "correctness": "error"
   },
   "settings": {
     "react": {
       "version": "19.2.4"
+    },
+    "better-tailwindcss": {
+      "cwd": ".",
+      "entryPoint": "src/styles/globals.css"
     }
   },
   "env": {
@@ -32,6 +36,24 @@
     "object-shorthand": ["error", "always"],
     "import/newline-after-import": ["warn", { "count": 1 }],
     "react/jsx-curly-brace-presence": "warn",
+    "better-tailwindcss/no-restricted-classes": [
+      "error",
+      {
+        "variables": [
+          [".*", [{ "match": "strings" }, { "match": "objectKeys" }, { "match": "objectValues" }]]
+        ],
+        "restrict": [
+          {
+            "pattern": "^(?:[^\\s:]+:)*!?[a-z][a-z0-9-]*-(?:(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950)|black|white)(?:/[0-9]{1,3})?!?$",
+            "message": "Use a semantic color token instead of raw Tailwind class '$0'."
+          },
+          {
+            "pattern": "^(?:[^\\s:]+:)*!?[a-z][a-z0-9-]*-\\[(?:#|rgba?\\(|hsla?\\(|oklch\\(|oklab\\(|lab\\(|lch\\(|color\\().+\\]!?$",
+            "message": "Use a semantic color token instead of arbitrary color class '$0'."
+          }
+        ]
+      }
+    ],
     "no-relative-import-paths/no-relative-import-paths": [
       "warn",
       { "allowSameFolder": true, "rootDir": "src", "prefix": "~" }

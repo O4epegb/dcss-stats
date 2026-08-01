@@ -1,7 +1,6 @@
 'use client'
 
 import { type PlayerInstance } from 'asciinema-player'
-import clsx from 'clsx'
 import { omit } from 'lodash-es'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMemo, useRef, useState } from 'react'
@@ -229,11 +228,11 @@ export default function RecordingsPage() {
       <HeaderWithMenu />
 
       <div className="flex flex-wrap items-center justify-between gap-1">
-        <h2 className="text-xl font-semibold">Game recordings</h2>
+        <h2 className="text-page-heading text-xl font-semibold">Game recordings</h2>
         {game && (
           <button
             type="button"
-            className="rounded-sm border border-gray-300 px-2 py-1 text-sm hover:bg-gray-100 dark:border-zinc-700 dark:hover:bg-zinc-800"
+            className="border-border hover:bg-surface-hover rounded-sm border px-2 py-1 text-sm"
             onClick={() => {
               router.replace(pathname)
 
@@ -244,7 +243,7 @@ export default function RecordingsPage() {
           </button>
         )}
         {staticData?.servers && (
-          <div className="w-full text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-muted-foreground w-full text-sm">
             Supported servers:{' '}
             {staticData.servers
               .filter((server) => server.ttyrecUrl)
@@ -258,14 +257,14 @@ export default function RecordingsPage() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-4">
             {staticDataLoading ? (
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Loader />
                 <span>Loading filters…</span>
               </div>
             ) : (
               <>
                 {staticDataError && (
-                  <div className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-900/20 dark:text-red-100">
+                  <div className="border-danger-border bg-danger-surface text-danger-foreground rounded-sm border p-3 text-sm">
                     Could not load filters.
                   </div>
                 )}
@@ -288,20 +287,20 @@ export default function RecordingsPage() {
             </div>
 
             {loadingSearchOrStaticData && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Loader />
                 <span>Searching games…</span>
               </div>
             )}
 
             {searchError && (
-              <div className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-900/20 dark:text-red-100">
+              <div className="border-danger-border bg-danger-surface text-danger-foreground rounded-sm border p-3 text-sm">
                 Could not search games.
               </div>
             )}
 
             {!loadingSearchOrStaticData && !searchLoading && potentialGames.length === 0 && (
-              <div className="rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+              <div className="border-border bg-surface-muted text-muted-foreground rounded-sm border p-3 text-sm">
                 No games to show. Try adjusting filters.
               </div>
             )}
@@ -313,7 +312,7 @@ export default function RecordingsPage() {
                     key={candidateGame.id}
                     role="button"
                     tabIndex={0}
-                    className="cursor-pointer rounded-sm transition-colors hover:bg-gray-100/60 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none dark:hover:bg-zinc-800/60"
+                    className="hover:bg-surface-hover/60 focus-visible:ring-focus-ring cursor-pointer rounded-sm transition-colors focus-visible:ring-2 focus-visible:outline-none"
                     onClick={(event) => {
                       if ((event.target as HTMLElement).closest('a,button')) {
                         return
@@ -340,20 +339,20 @@ export default function RecordingsPage() {
       )}
 
       {gameLoading && (
-        <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+        <div className="text-muted-foreground flex items-center gap-2 text-sm">
           <Loader />
           <span>Loading game details…</span>
         </div>
       )}
 
       {gameError && (
-        <div className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-900/20 dark:text-red-100">
+        <div className="border-danger-border bg-danger-surface text-danger-foreground rounded-sm border p-3 text-sm">
           Could not load game details.
         </div>
       )}
 
       {!gameLoading && hasRequiredFilters && !game && !gameError && (
-        <div className="rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+        <div className="border-border bg-surface-muted text-muted-foreground rounded-sm border p-3 text-sm">
           No game found for the provided parameters.
         </div>
       )}
@@ -367,7 +366,7 @@ export default function RecordingsPage() {
       {game && (
         <>
           {recordingLoading ? (
-            <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="text-muted-foreground flex items-center gap-2 text-sm">
               <Loader />
               <span>Loading recordings...</span>
             </div>
@@ -377,24 +376,22 @@ export default function RecordingsPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-lg font-semibold">Potential recordings</h3>
                   {!recordingLoading && potentialRecordings.length > 0 && (
-                    <span className="text-lg text-gray-500 dark:text-gray-400">
+                    <span className="text-muted-foreground text-lg">
                       {potentialRecordings.length} found
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Select ttyrec file to play it
-                </p>
+                <p className="text-muted-foreground text-sm">Select ttyrec file to play it</p>
               </div>
 
               {recordingsError && (
-                <div className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-900/20 dark:text-red-100">
+                <div className="border-danger-border bg-danger-surface text-danger-foreground rounded-sm border p-3 text-sm">
                   Could not load recordings for this game.
                 </div>
               )}
 
               {!recordingLoading && !recordingsError && potentialRecordings.length === 0 && (
-                <div className="rounded-sm border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                <div className="border-border bg-surface-muted text-muted-foreground rounded-sm border p-3 text-sm">
                   No recording candidates were found.
                 </div>
               )}
@@ -410,13 +407,13 @@ export default function RecordingsPage() {
                           key={rec.link}
                           type="button"
                           disabled={isPlayerBusy}
-                          className={clsx(
+                          className={cn(
                             'w-full rounded-sm border px-3 py-2 text-left text-sm transition-colors',
                             isSelected
-                              ? 'border-emerald-400 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-900/20'
-                              : 'border-gray-200 bg-gray-50 hover:border-gray-300 hover:bg-gray-100 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-zinc-600 dark:hover:bg-zinc-700/70',
+                              ? 'border-success-border bg-success-surface'
+                              : 'border-border bg-surface-muted hover:border-border-strong hover:bg-surface-hover',
                             isPlayerBusy &&
-                              'cursor-not-allowed opacity-60 hover:border-gray-200 hover:bg-gray-50 dark:hover:border-zinc-700 dark:hover:bg-zinc-800',
+                              'hover:border-border hover:bg-surface-muted cursor-not-allowed opacity-60',
                           )}
                           onClick={() => {
                             void handlePlayRawTtyrec(rec)
@@ -425,33 +422,31 @@ export default function RecordingsPage() {
                           <div className="font-medium">
                             {formatRecordingDate(rec.date)}{' '}
                             {rec.size ? (
-                              <span className="text-gray-500 dark:text-gray-400">({rec.size})</span>
+                              <span className="text-muted-foreground">({rec.size})</span>
                             ) : null}
                           </div>
-                          <div className="truncate text-xs text-gray-500 dark:text-gray-400">
-                            {rec.link}
-                          </div>
+                          <div className="text-muted-foreground truncate text-xs">{rec.link}</div>
                         </button>
                       )
                     })}
                   </div>
 
                   {isPlayerBusy && (
-                    <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-muted-foreground flex items-center gap-2 text-xs">
                       <Loader />
                       Loading selected recording…
                     </div>
                   )}
 
                   {playerError && (
-                    <div className="rounded-sm border border-red-200 bg-red-50 p-3 text-sm text-red-900 dark:border-red-900 dark:bg-red-900/20 dark:text-red-100">
+                    <div className="border-danger-border bg-danger-surface text-danger-foreground rounded-sm border p-3 text-sm">
                       {playerError}
                     </div>
                   )}
 
                   <div
                     className={cn(
-                      'rounded-sm border border-gray-300 p-2 dark:border-zinc-700',
+                      'border-border rounded-sm border p-2',
                       !selectedRecording && 'hidden',
                     )}
                   >

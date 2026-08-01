@@ -1,5 +1,4 @@
 import { useFirstMountState } from '@react-hookz/web'
-import clsx from 'clsx'
 import { last, throttle } from 'lodash-es'
 import { useEffect, useState } from 'react'
 import { api } from '~/api'
@@ -109,13 +108,13 @@ export const GamesList = (props: {
     <div className="relative">
       {showUp && (
         <button
-          className="sticky top-0 w-full bg-white/80 py-4 dark:bg-black/50"
+          className="bg-background/80 sticky top-0 w-full py-4"
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         >
           Return to top
         </button>
       )}
-      <ul className={clsx(isCompactView ? 'divide-y' : 'space-y-2')}>
+      <ul className={isCompactView ? 'divide-border divide-y' : 'space-y-2'}>
         {!isLoading && games.length === 0 && (
           <li className="py-8 text-center">No games found ¯\_(ツ)_/¯</li>
         )}

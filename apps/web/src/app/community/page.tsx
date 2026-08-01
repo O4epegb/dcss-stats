@@ -196,10 +196,10 @@ const CommunityPage = async () => {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-semibold lg:text-left">
+              <h2 className="text-page-heading text-2xl font-semibold lg:text-left">
                 Dungeon Crawl Stone Soup Community
               </h2>
-              <p className="text-zinc-500 lg:text-left dark:text-zinc-400">
+              <p className="text-muted-foreground lg:text-left">
                 Useful links for official and community resources.
               </p>
             </div>
@@ -209,7 +209,7 @@ const CommunityPage = async () => {
                 <section key={section.title || index}>
                   {section.title && <h3 className="text-lg font-semibold">{section.title}</h3>}
 
-                  <ul className="divide-y divide-zinc-200 dark:divide-zinc-800">
+                  <ul className="divide-border divide-y">
                     {section.links.map((link) => (
                       <li key={link.href} className="py-2">
                         <a
@@ -220,9 +220,7 @@ const CommunityPage = async () => {
                         >
                           <div>
                             <div className="font-medium group-hover:underline">{link.label}</div>
-                            <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                              {link.description}
-                            </div>
+                            <div className="text-muted-foreground text-sm">{link.description}</div>
                           </div>
                           <ArrowTopRightOnSquareIcon className="mt-0.5 size-5 shrink-0" />
                         </a>
@@ -238,7 +236,7 @@ const CommunityPage = async () => {
             <h3 className="text-lg font-semibold">Latest official news</h3>
 
             {newsItems.length > 0 ? (
-              <ul className="divide-y divide-zinc-200 text-sm dark:divide-zinc-800">
+              <ul className="divide-border divide-y text-sm">
                 {newsItems.map((item) => (
                   <li key={item.link} className="py-2">
                     <a
@@ -250,15 +248,13 @@ const CommunityPage = async () => {
                       {item.title}
                     </a>
                     {item.pubDate && (
-                      <div className="text-xs text-zinc-500 dark:text-zinc-400">{item.pubDate}</div>
+                      <div className="text-muted-foreground text-xs">{item.pubDate}</div>
                     )}
                   </li>
                 ))}
               </ul>
             ) : (
-              <div className="text-sm text-zinc-500 dark:text-zinc-400">
-                News feed is unavailable.
-              </div>
+              <div className="text-muted-foreground text-sm">News feed is unavailable.</div>
             )}
 
             <a

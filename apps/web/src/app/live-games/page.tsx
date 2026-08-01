@@ -42,14 +42,12 @@ const groupAndSort = (labels: string[]): GroupedStatsItem[] => {
 
 const StatsList = ({ className, items }: { className?: string; items: GroupedStatsItem[] }) => {
   return (
-    <section
-      className={cn('space-y-2 border-b border-gray-200 pb-1 dark:border-zinc-700', className)}
-    >
+    <section className={cn('border-border space-y-2 border-b pb-1', className)}>
       <ul className="flex flex-wrap gap-1">
         {items.map(({ label, count }) => (
           <li
             key={label}
-            className="rounded bg-gray-100 px-1 py-0.5 text-xs font-medium text-gray-700 dark:bg-zinc-800 dark:text-zinc-200"
+            className="bg-surface-muted text-foreground rounded px-1 py-0.5 text-xs font-medium"
           >
             {label}
             {count > 1 ? ` (${formatNumber(count)})` : ''}
@@ -119,7 +117,7 @@ export default async function LiveGamesPage() {
         </header>
 
         <div className="grid gap-2">
-          <h2 className="font-semibold">{games.length} live games</h2>
+          <h2 className="text-page-heading font-semibold">{games.length} live games</h2>
           <div className="space-y-0.5">
             <StatsList className="border-none" items={gamesByVersion} />
             <StatsList className="border-none" items={gamesByServer} />
@@ -131,7 +129,7 @@ export default async function LiveGamesPage() {
             <StatsList items={gamesByClass} />
             <StatsList items={gamesByChar} />
             <StatsList items={gamesByPlace} />
-            <section className="min-w-0 space-y-2 rounded border-gray-200 dark:border-zinc-700">
+            <section className="border-border min-w-0 space-y-2 rounded">
               <div className="flex h-37 items-end gap-1 overflow-x-auto">
                 {gamesByXl.map(({ xl, count }) => {
                   const height = `${(count / maxXlCount) * 100}%`
@@ -141,19 +139,17 @@ export default async function LiveGamesPage() {
                       key={xl}
                       className="flex min-w-4 flex-1 flex-col items-center justify-end gap-1"
                     >
-                      <div className="relative flex h-28 w-full items-end rounded bg-gray-100 dark:bg-zinc-800">
+                      <div className="bg-surface-muted relative flex h-28 w-full items-end rounded">
                         <div
-                          className="relative w-full rounded bg-gray-400 dark:bg-zinc-500"
+                          className="bg-muted-foreground/60 relative w-full rounded"
                           style={{ height }}
                         >
-                          <div className="text-2xs absolute -top-4 right-0 left-0 text-center text-gray-600 tabular-nums dark:text-zinc-300">
+                          <div className="text-2xs text-muted-foreground absolute -top-4 right-0 left-0 text-center tabular-nums">
                             {count}
                           </div>
                         </div>
                       </div>
-                      <div className="text-2xs text-gray-500 tabular-nums dark:text-zinc-400">
-                        {xl}
-                      </div>
+                      <div className="text-2xs text-muted-foreground tabular-nums">{xl}</div>
                     </div>
                   )
                 })}

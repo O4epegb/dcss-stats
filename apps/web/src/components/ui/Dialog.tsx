@@ -31,13 +31,13 @@ export const DialogContent = ({
     <DialogPrimitive.Portal>
       <DialogPrimitive.Backdrop
         className={cn(
-          'fixed inset-0 z-10 bg-black/50 transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0',
+          'bg-overlay fixed inset-0 z-10 transition-opacity data-ending-style:opacity-0 data-starting-style:opacity-0',
           backdropClassName,
         )}
       />
       <DialogPrimitive.Popup
         className={cn(
-          'fixed inset-0 z-10 flex h-dvh max-h-dvh w-screen max-w-none flex-col overflow-hidden rounded-none bg-white text-gray-900 outline-hidden transition-all data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:h-auto sm:max-h-[85vh] sm:w-fit sm:max-w-[90vw] sm:min-w-[20rem] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-sm dark:border-zinc-700 dark:bg-black dark:text-white sm:dark:border',
+          'border-dialog-border bg-dialog font-interface text-dialog-foreground outline-dialog-outline fixed inset-0 z-10 flex h-dvh max-h-dvh w-screen max-w-none flex-col overflow-hidden rounded-none border outline-2 transition-all data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:h-auto sm:max-h-[85vh] sm:w-fit sm:max-w-[90vw] sm:min-w-[20rem] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-sm',
           className,
         )}
       >
@@ -46,7 +46,7 @@ export const DialogContent = ({
             {(title || showCloseButton) && (
               <div className="flex items-center justify-between gap-4">
                 {title ? (
-                  <DialogPrimitive.Title className="m-0 text-xl font-medium">
+                  <DialogPrimitive.Title className="text-dialog-title m-0 text-xl font-medium">
                     {title}
                   </DialogPrimitive.Title>
                 ) : (
@@ -55,7 +55,7 @@ export const DialogContent = ({
                 {showCloseButton && (
                   <DialogPrimitive.Close
                     aria-label="Close"
-                    className="flex size-6 appearance-none items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 focus:shadow-[0_0_0_2px] focus:shadow-gray-400 focus:outline-hidden"
+                    className="text-muted-foreground hover:bg-surface-hover focus:shadow-focus-ring flex size-6 appearance-none items-center justify-center rounded-full focus:shadow-[0_0_0_2px] focus:outline-hidden"
                   >
                     <XMarkIcon className="size-5" />
                   </DialogPrimitive.Close>
@@ -63,7 +63,7 @@ export const DialogContent = ({
               </div>
             )}
             {description ? (
-              <DialogPrimitive.Description className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              <DialogPrimitive.Description className="text-muted-foreground mt-2 text-sm">
                 {description}
               </DialogPrimitive.Description>
             ) : null}

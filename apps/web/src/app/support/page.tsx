@@ -30,40 +30,31 @@ const DonationList = ({
 
   return (
     <div className="space-y-3">
-      <h4 className={`text-lg font-medium ${titleColor}`}>{title}</h4>
+      <h4 className={cn('text-lg font-medium', titleColor)}>{title}</h4>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {displayedDonations.map((donation) => (
           <div
             key={`${showDurationType ? 'subscription' : 'onetime'}-${donation.id}`}
-            className="rounded border border-zinc-600 bg-zinc-50 p-3 dark:bg-zinc-800"
+            className="border-border-strong bg-surface-muted rounded border p-3"
           >
             <div className="flex items-center justify-between gap-1">
               <span className="font-medium">{showDurationType ? 'Subscriber' : 'Supporter'}</span>
-              <span
-                className={cn(
-                  'text-amber-500 dark:text-amber-400',
-                  donation.amount >= 10 && 'font-semibold',
-                )}
-              >
+              <span className={cn('text-warning', donation.amount >= 10 && 'font-semibold')}>
                 {donation.currency} {donation.amount.toFixed(2)}
               </span>
             </div>
-            <div className="text-sm text-zinc-500 dark:text-zinc-400">
+            <div className="text-muted-foreground text-sm">
               {showDurationType && donation.durationType && <>{donation.durationType} • Since </>}
               <span suppressHydrationWarning>
                 {new Date(donation.createdAt).toLocaleDateString()}
               </span>
             </div>
-            {donation.isActiveNow && (
-              <div className="mt-1 text-xs text-green-600 dark:text-green-400">Active</div>
-            )}
+            {donation.isActiveNow && <div className="text-success mt-1 text-xs">Active</div>}
           </div>
         ))}
       </div>
       {remainingCount > 0 && (
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          ... and {remainingCount} more supporters
-        </p>
+        <p className="text-muted-foreground text-sm">... and {remainingCount} more supporters</p>
       )}
     </div>
   )
@@ -101,24 +92,21 @@ const SupportPage = async () => {
 
       <div className="mx-auto max-w-3xl space-y-8 px-4 pt-0 md:pt-8">
         <div className="space-y-4 text-center">
-          <h2 className="flex items-center justify-center gap-3 text-3xl font-bold">
+          <h2 className="text-page-heading flex items-center justify-center gap-3 text-3xl font-bold">
             Support DCSS Stats App
           </h2>
-          <div className="text-zinc-500 dark:text-zinc-400">
+          <div className="text-muted-foreground">
             Help us keep the data crunching and the servers running
           </div>
           <div className="text-xl">
-            Current monthly goal:{' '}
-            <span className="text-amber-500 dark:text-amber-400">${data.total}</span> of{' '}
-            <span className="text-amber-500 dark:text-amber-400">${data.goal}</span>
+            Current monthly goal: <span className="text-warning">${data.total}</span> of{' '}
+            <span className="text-warning">${data.goal}</span>
           </div>
         </div>
-        <div className="space-y-4 rounded-sm border border-zinc-500 p-6">
+        <div className="border-border-strong space-y-4 rounded-sm border p-6">
           <div className="flex flex-col space-y-2">
             <h3 className="text-2xl leading-none font-semibold">Why Support Us?</h3>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Your support directly contributes to:
-            </p>
+            <p className="text-muted-foreground text-sm">Your support directly contributes to:</p>
           </div>
           <ul className="m-0 list-disc space-y-2 pl-6">
             <li>Server and infrastructure costs</li>
@@ -126,14 +114,14 @@ const SupportPage = async () => {
             <li>Maintenance and updates to keep everything running smoothly</li>
           </ul>
         </div>
-        <div className="flex flex-col items-center justify-center gap-4 rounded-sm border-zinc-500">
+        <div className="border-border-strong flex flex-col items-center justify-center gap-4 rounded-sm">
           <h3 className="text-2xl leading-none font-semibold">Methods</h3>
           {buyMeACoffeeUrl && (
             <a
               target="_blank"
               href={buyMeACoffeeUrl}
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#ffdd00] px-6 py-3 font-medium text-black transition-all hover:bg-[#ffc800]"
+              className="bg-brand-coffee text-on-light hover:bg-brand-coffee-hover flex items-center justify-center gap-2 rounded-full px-6 py-3 font-medium transition-all"
             >
               <span>
                 Support on <b>Buy Me a Coffee</b>
@@ -146,7 +134,7 @@ const SupportPage = async () => {
               target="_blank"
               href={githubSponsorUrl}
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#24292e] px-6 py-3 font-medium text-white transition-all hover:bg-[#1b1f23]"
+              className="bg-brand-github text-on-dark hover:bg-brand-github-hover flex items-center justify-center gap-2 rounded-full px-6 py-3 font-medium transition-all"
             >
               <span>
                 Sponsor on <b>GitHub</b>
@@ -159,7 +147,7 @@ const SupportPage = async () => {
               target="_blank"
               href={kofiUrl}
               rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full bg-[#29abe0] px-6 py-3 font-medium text-white transition-all hover:bg-[#3b9fc6]"
+              className="bg-brand-kofi text-on-dark hover:bg-brand-kofi-hover flex items-center justify-center gap-2 rounded-full px-6 py-3 font-medium transition-all"
             >
               <span>
                 Support on <b>Ko-fi</b>
@@ -171,12 +159,12 @@ const SupportPage = async () => {
         </div>
 
         {(listData.oneTimeDonations.length > 0 || listData.subscriptionDonations.length > 0) && (
-          <div className="space-y-4 rounded-sm border border-zinc-500 p-6">
+          <div className="border-border-strong space-y-4 rounded-sm border p-6">
             {listData.subscriptionDonations.length > 0 && (
               <DonationList
                 donations={listData.subscriptionDonations}
                 title="Subscribers"
-                titleColor="text-amber-500 dark:text-amber-400"
+                titleColor="text-warning"
                 showDurationType={true}
               />
             )}
@@ -185,14 +173,14 @@ const SupportPage = async () => {
               <DonationList
                 donations={listData.oneTimeDonations}
                 title="Recent One-Time Donations"
-                titleColor="text-blue-500 dark:text-blue-400"
+                titleColor="text-info"
                 maxItems={12}
               />
             )}
           </div>
         )}
 
-        <div className="space-y-2 text-center text-zinc-500 dark:text-zinc-400">
+        <div className="text-muted-foreground space-y-2 text-center">
           <p>Thank you for your contribution!</p>
           <p className="text-sm">
             Code source on{' '}

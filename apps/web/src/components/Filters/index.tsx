@@ -14,7 +14,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { useUpdateEffect } from '@react-hookz/web'
-import clsx from 'clsx'
 import { first, last } from 'lodash-es'
 import { useSearchParams } from 'next/navigation'
 import qs from 'qs'
@@ -22,7 +21,7 @@ import { Dispatch, ReactNode, SetStateAction, useEffect, useMemo, useState } fro
 import { Select } from '~/components/ui/Select'
 import { HelpBubble, Tooltip } from '~/components/ui/Tooltip'
 import { StaticData } from '~/types'
-import { notEmpty, stringifyQuery } from '~/utils'
+import { cn, notEmpty, stringifyQuery } from '~/utils'
 import { operators } from './constants'
 import { SortableItem } from './SortableItem'
 
@@ -215,15 +214,15 @@ export const Filters = ({
         <HelpBubble
           content={
             <>
-              Filters are grouped by{' '}
-              <code className="rounded bg-slate-600 px-1 dark:bg-slate-300">OR</code> operator
+              Filters are grouped by <code className="bg-surface-emphasis rounded px-1">OR</code>{' '}
+              operator
               <br />
               Groups are color coded for convenience
             </>
           }
         />
         <button
-          className="-mr-2 ml-auto rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-800"
+          className="hover:bg-surface-hover -mr-2 ml-auto rounded-sm px-2 py-1"
           onClick={() => setFilters(getDefaultFilters())}
         >
           Reset
@@ -259,9 +258,9 @@ export const Filters = ({
                   const isSingleFilter = filters.length === 1
 
                   const groupColors = [
-                    'bg-amber-50 dark:bg-amber-700',
-                    'bg-teal-50 dark:bg-teal-700',
-                    'bg-purple-50 dark:bg-purple-700',
+                    'bg-filter-group-one',
+                    'bg-filter-group-two',
+                    'bg-filter-group-three',
                   ]
 
                   const color =
@@ -270,7 +269,7 @@ export const Filters = ({
                       : null
 
                   return (
-                    <div key={groupIndex} className={clsx('space-y-3 p-1.5', color)}>
+                    <div key={groupIndex} className={cn('space-y-3 p-1.5', color)}>
                       {group.map((filter) => {
                         const option = options.find((x) => x.name === filter.option)
 
@@ -374,7 +373,7 @@ export const Filters = ({
                                 <input
                                   type={option.type}
                                   placeholder={option.placeholder}
-                                  className="w-full rounded-sm bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
+                                  className="bg-surface-emphasis w-full rounded-sm px-2 py-0.5"
                                   value={filter.value}
                                   onFocus={(e) => e.target.select()}
                                   onChange={(e) => {
@@ -394,7 +393,7 @@ export const Filters = ({
                                 <input
                                   type="datetime-local"
                                   placeholder={option.placeholder}
-                                  className="w-full rounded-sm bg-gray-200 px-2 py-0.5 dark:bg-zinc-700"
+                                  className="bg-surface-emphasis w-full rounded-sm px-2 py-0.5"
                                   value={filter.value}
                                   onFocus={(e) => e.target.select()}
                                   onChange={(e) => {
@@ -411,7 +410,7 @@ export const Filters = ({
                             )}
 
                             <Select
-                              className={clsx(
+                              className={cn(
                                 'transition-all',
                                 !isDragging && !isSingleFilter && 'translate-y-5',
                                 !isDragging && operatorDisabled && 'opacity-0',
@@ -442,7 +441,7 @@ export const Filters = ({
 
                             <Tooltip content="Remove filter">
                               <button
-                                className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-gray-200 text-xs text-red-900"
+                                className="bg-surface-active text-danger ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-sm text-xs"
                                 onClick={() => {
                                   setFilters((state) => state.filter((x) => x !== filter))
                                 }}
@@ -479,7 +478,7 @@ export const Filters = ({
           >
             <div>
               <button
-                className="rounded border px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
+                className="hover:bg-surface-hover rounded border px-4 py-2 transition-colors"
                 disabled={filters.length >= maxFilters}
                 onClick={() => {
                   setFilters((state) => {
@@ -515,7 +514,7 @@ export const Filters = ({
           </Tooltip>
           {onDelete && (
             <button
-              className="rounded border border-transparent px-4 py-2 transition-all hover:border-red-500 hover:text-red-500"
+              className="hover:border-danger hover:text-danger rounded border border-transparent px-4 py-2 transition-all"
               onClick={() => {
                 onDelete()
               }}
@@ -525,7 +524,7 @@ export const Filters = ({
           )}
           {onSubmit && (
             <button
-              className="rounded border border-current bg-gray-800 px-4 py-2 text-white transition-colors hover:bg-gray-700"
+              className="bg-primary text-primary-foreground hover:bg-primary-hover rounded border border-current px-4 py-2 transition-colors"
               onClick={() => {
                 const nonEmptyFilters = filters.filter((x) => x.value)
                 const currentQuery = qs.parse(searchParams?.toString() ?? '')

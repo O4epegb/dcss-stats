@@ -93,16 +93,13 @@ export const Table = ({
         </thead>
         <tbody>
           {games.map((game) => (
-            <tr
-              key={game.id}
-              className="relative odd:bg-gray-50 hover:bg-amber-100 dark:odd:bg-zinc-800 dark:hover:bg-zinc-700"
-            >
+            <tr key={game.id} className="odd:bg-surface-muted hover:bg-surface-hover relative">
               {tableData.map(({ title, getter }, index) => (
                 <td
                   key={title}
                   className={cn(
                     'text-left whitespace-nowrap tabular-nums md:overflow-visible',
-                    highlight === title && 'text-amber-700 dark:text-amber-600',
+                    highlight === title && 'text-warning',
                     index === 0 && 'relative',
                   )}
                 >

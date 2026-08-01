@@ -1,10 +1,9 @@
 import { useMediaQuery } from '@react-hookz/web'
-import clsx from 'clsx'
 import { PropsWithChildren, useEffect, useMemo, useRef, useState } from 'react'
 import { Tooltip } from '~/components/ui/Tooltip'
 import { allUnavailableCombos, Summary } from '~/screens/Player/utils'
 import { CharStat } from '~/types'
-import { formatNumber, notEmpty, pluralize } from '~/utils'
+import { cn, formatNumber, notEmpty, pluralize } from '~/utils'
 
 export const Matrix = ({
   stats,
@@ -93,16 +92,16 @@ export const Matrix = ({
   )
 
   return (
-    <div ref={ref} className={clsx('relative w-full', isSticky && 'sticky top-0')}>
+    <div ref={ref} className={cn('relative w-full', isSticky && 'sticky top-0')}>
       {children}
       <div className="flex flex-wrap items-center gap-2 py-6">
         <span className="font-medium">Matrix by</span>
         {categories.map(([name, key]) => (
           <button
             key={key}
-            className={clsx(
+            className={cn(
               'rounded-sm px-2 py-0.5 font-light',
-              category === key ? 'bg-amber-700 text-white' : 'bg-gray-100 dark:bg-zinc-700',
+              category === key ? 'bg-warning text-background' : 'bg-surface-emphasis',
             )}
             onClick={() => setCategory(key)}
           >
@@ -127,7 +126,7 @@ export const Matrix = ({
               </div>
             }
           >
-            <button className="ml-auto text-gray-400 transition hover:text-emerald-500">
+            <button className="text-muted-foreground hover:text-accent ml-auto transition">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-6 w-6"
@@ -153,19 +152,11 @@ export const Matrix = ({
             content={
               <div className="space-y-2">
                 <div>
-                  <span
-                    className={clsx(
-                      greatRaces?.[activeRace] && 'text-amber-300 dark:text-amber-700',
-                    )}
-                  >
+                  <span className={cn(greatRaces?.[activeRace] && 'text-matrix-great')}>
                     {greatRaces?.[activeRace] && !activeClass && 'Great '}
                     {racesToShow.find((x) => x.abbr === activeRace)?.name}
                   </span>{' '}
-                  <span
-                    className={clsx(
-                      greatClasses?.[activeClass] && 'text-amber-300 dark:text-amber-700',
-                    )}
-                  >
+                  <span className={cn(greatClasses?.[activeClass] && 'text-matrix-great')}>
                     {greatClasses?.[activeClass] && !activeRace && 'Great '}
                     {classesToShow.find((x) => x.abbr === activeClass)?.name}
                   </span>
@@ -226,12 +217,12 @@ export const Matrix = ({
               {classesToShow.map((klass) => (
                 <th
                   key={klass.abbr}
-                  className={clsx(
+                  className={cn(
                     'min-w-6 whitespace-nowrap',
                     greatClasses?.[klass.abbr]
-                      ? 'bg-amber-200 dark:bg-amber-700'
-                      : activeClass === klass.abbr && 'bg-amber-100 dark:bg-zinc-800',
-                    !klass.trunk && 'text-gray-400',
+                      ? 'bg-matrix-complete-strong'
+                      : activeClass === klass.abbr && 'bg-matrix-selected',
+                    !klass.trunk && 'text-muted-foreground/60',
                   )}
                   onMouseEnter={(e) => {
                     setActive(['', klass.abbr])
@@ -262,14 +253,12 @@ export const Matrix = ({
                 return (
                   <td
                     key={klass.abbr}
-                    className={clsx(
+                    className={cn(
                       backgroundClass,
                       highlightFirstWin
-                        ? 'bg-amber-200 dark:bg-amber-900'
-                        : isActiveClass && 'bg-amber-100 dark:bg-zinc-800',
-                      stats.classes[klass.abbr]?.wins > 0
-                        ? 'text-amber-600 dark:text-amber-500'
-                        : 'dark:text-gray-200',
+                        ? 'bg-matrix-complete'
+                        : isActiveClass && 'bg-matrix-selected',
+                      stats.classes[klass.abbr]?.wins > 0 ? 'text-matrix-great' : 'text-foreground',
                       getTextSizeClass(content),
                     )}
                     onMouseEnter={(e) => {
@@ -296,11 +285,11 @@ export const Matrix = ({
               return (
                 <tr key={race.abbr} className="h-6 *:p-px *:first:text-left *:first:font-bold">
                   <td
-                    className={clsx(
+                    className={cn(
                       greatRaces?.[race.abbr]
-                        ? 'bg-amber-200 dark:bg-amber-700'
-                        : activeRace === race.abbr && 'bg-amber-100 dark:bg-zinc-800',
-                      !race.trunk && 'text-gray-400',
+                        ? 'bg-matrix-complete-strong'
+                        : activeRace === race.abbr && 'bg-matrix-selected',
+                      !race.trunk && 'text-muted-foreground/60',
                     )}
                     onMouseEnter={(e) => {
                       setActive([race.abbr])
@@ -312,14 +301,12 @@ export const Matrix = ({
                     {race.abbr}
                   </td>
                   <td
-                    className={clsx(
+                    className={cn(
                       backgroundClass,
                       highlightFirstWin
-                        ? 'bg-amber-200 dark:bg-amber-900'
-                        : isActiveRace && 'bg-amber-100 dark:bg-zinc-800',
-                      stats.races[race.abbr]?.wins > 0
-                        ? 'text-amber-600 dark:text-amber-500'
-                        : 'dark:text-gray-200',
+                        ? 'bg-matrix-complete'
+                        : isActiveRace && 'bg-matrix-selected',
+                      stats.races[race.abbr]?.wins > 0 ? 'text-matrix-great' : 'text-foreground',
                       getTextSizeClass(content),
                     )}
                     onMouseEnter={(e) => {
@@ -352,22 +339,22 @@ export const Matrix = ({
                     return (
                       <td
                         key={char}
-                        className={clsx(
-                          'border dark:border-gray-600',
+                        className={cn(
+                          'border-border-strong border',
                           backgroundClass,
                           highlightFirstWin
-                            ? 'bg-amber-200 dark:bg-amber-900'
+                            ? 'bg-matrix-complete'
                             : isActiveCell
-                              ? 'bg-amber-100 dark:bg-zinc-800'
-                              : isUnavailable && 'bg-gray-50 dark:bg-zinc-900',
+                              ? 'bg-matrix-selected'
+                              : isUnavailable && 'bg-matrix-unavailable',
                           getTextSizeClass(content),
                           stats.combos[char]?.wins > 0
-                            ? 'text-amber-600 dark:text-amber-500'
+                            ? 'text-matrix-great'
                             : isUnavailable
-                              ? 'text-gray-200 select-none dark:text-gray-600'
+                              ? 'text-muted-foreground/60 select-none'
                               : isGreyContent
-                                ? 'text-gray-400 dark:text-gray-600'
-                                : 'dark:text-gray-200',
+                                ? 'text-muted-foreground/60'
+                                : 'text-foreground',
                         )}
                         onMouseEnter={(e) => {
                           setTooltipRef(e.currentTarget)
@@ -415,11 +402,11 @@ type ValueScale = {
 
 const COLOR_LEVELS = [
   '',
-  'bg-emerald-50/50 dark:bg-emerald-950/75',
-  'bg-emerald-100/50 dark:bg-emerald-900/75',
-  'bg-emerald-200/50 dark:bg-emerald-800/75',
-  'bg-emerald-300/50 dark:bg-emerald-700/75',
-  'bg-emerald-400/50 dark:bg-emerald-600/75',
+  'bg-matrix-heat-1',
+  'bg-matrix-heat-2',
+  'bg-matrix-heat-3',
+  'bg-matrix-heat-4',
+  'bg-matrix-heat-5',
 ] as const
 
 const invertedCategories = new Set<keyof CharStat>(['gamesToFirstWin'])

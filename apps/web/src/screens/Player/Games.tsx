@@ -1,9 +1,9 @@
-import clsx from 'clsx'
 import { orderBy, range, some } from 'lodash-es'
 import { useMemo, useState } from 'react'
 import { GamesList } from '~/components/GamesList'
 import { Select } from '~/components/ui/Select'
 import { Tooltip } from '~/components/ui/Tooltip'
+import { cn } from '~/utils'
 import { usePlayerPageContext } from './context'
 
 enum Filter {
@@ -79,7 +79,7 @@ export const Games = () => {
             </div>
           }
         >
-          <button className="text-gray-400 transition hover:text-emerald-500">
+          <button className="text-muted-foreground hover:text-accent transition">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5"
@@ -128,9 +128,9 @@ export const Games = () => {
         </label>
         <Tooltip content="Show more filters">
           <button
-            className={clsx(
-              'transition-colors hover:text-emerald-500',
-              isOptionEnabled('dcss-open-filters') ? 'text-emerald-600' : 'text-gray-400',
+            className={cn(
+              'hover:text-accent transition-colors',
+              isOptionEnabled('dcss-open-filters') ? 'text-accent' : 'text-muted-foreground',
             )}
             onClick={() => toggleOption('dcss-open-filters')}
           >

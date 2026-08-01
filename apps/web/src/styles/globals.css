@@ -1,7 +1,5 @@
 @import 'tailwindcss';
 
-@custom-variant dark (&:is(.dark *));
-
 @theme {
   --text-2xs: 0.625rem;
   --text-2xs--line-height: 1rem;
@@ -31,21 +29,427 @@
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+@theme inline {
+  --font-interface: var(--theme-font-family);
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-page-heading: var(--page-heading);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-emphasis: var(--surface-emphasis);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-active: var(--surface-active);
+  --color-overlay: var(--overlay);
+
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-focus-ring: var(--focus-ring);
+  --color-control-thumb: var(--control-thumb);
+  --color-glyph-background: var(--glyph-background);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-link: var(--link);
+  --color-link-hover: var(--link-hover);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-success: var(--success);
+  --color-success-surface: var(--success-surface);
+  --color-success-border: var(--success-border);
+  --color-success-foreground: var(--success-foreground);
+  --color-danger: var(--danger);
+  --color-danger-surface: var(--danger-surface);
+  --color-danger-border: var(--danger-border);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-warning: var(--warning);
+  --color-warning-surface: var(--warning-surface);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-surface: var(--info-surface);
+  --color-info-foreground: var(--info-foreground);
+  --color-special: var(--special);
+  --color-special-surface: var(--special-surface);
+  --color-special-foreground: var(--special-foreground);
+
+  --color-dialog: var(--dialog);
+  --color-dialog-foreground: var(--dialog-foreground);
+  --color-dialog-border: var(--dialog-border);
+  --color-dialog-outline: var(--dialog-outline);
+  --color-dialog-title: var(--dialog-title);
+  --color-tooltip: var(--tooltip);
+  --color-tooltip-foreground: var(--tooltip-foreground);
+  --color-tooltip-border: var(--tooltip-border);
+
+  --color-stat-wins: var(--stat-wins);
+  --color-stat-games: var(--stat-games);
+  --color-stat-winrate: var(--stat-winrate);
+  --color-stat-label: var(--stat-label);
+  --color-attribute-strength: var(--attribute-strength);
+  --color-attribute-intelligence: var(--attribute-intelligence);
+  --color-attribute-dexterity: var(--attribute-dexterity);
+  --color-attribute-armour: var(--attribute-armour);
+  --color-attribute-evasion: var(--attribute-evasion);
+  --color-attribute-shield: var(--attribute-shield);
+
+  --color-filter-group-one: var(--filter-group-one);
+  --color-filter-group-two: var(--filter-group-two);
+  --color-filter-group-three: var(--filter-group-three);
+  --color-matrix-complete: var(--matrix-complete);
+  --color-matrix-complete-strong: var(--matrix-complete-strong);
+  --color-matrix-selected: var(--matrix-selected);
+  --color-matrix-great: var(--matrix-great);
+  --color-matrix-unavailable: var(--matrix-unavailable);
+  --color-matrix-heat-1: var(--matrix-heat-1);
+  --color-matrix-heat-2: var(--matrix-heat-2);
+  --color-matrix-heat-3: var(--matrix-heat-3);
+  --color-matrix-heat-4: var(--matrix-heat-4);
+  --color-matrix-heat-5: var(--matrix-heat-5);
+
+  /* Fixed data and brand colors retain their identity across themes. */
+  --color-on-light: var(--color-black);
+  --color-on-dark: var(--color-white);
+  --color-shadow: var(--color-black);
+
+  --color-leaderboard-score: var(--color-teal-500);
+  --color-leaderboard-turncount: var(--color-cyan-500);
+  --color-leaderboard-duration: var(--color-violet-500);
+
+  --color-activity-loss: var(--color-amber-300);
+  --color-activity-win-1: var(--color-emerald-300);
+  --color-activity-win-2: var(--color-emerald-400);
+  --color-activity-win-3: var(--color-emerald-500);
+  --color-activity-win-4: var(--color-emerald-600);
+
+  --color-density-1: var(--color-amber-100);
+  --color-density-2: var(--color-amber-200);
+  --color-density-3: var(--color-amber-300);
+  --color-density-4: var(--color-green-500);
+  --color-density-5: var(--color-green-400);
+  --color-density-6: var(--color-green-600);
+  --color-density-7: var(--color-green-800);
+
+  --color-brand-coffee: #ffdd00;
+  --color-brand-coffee-hover: #ffc800;
+  --color-brand-github: #24292e;
+  --color-brand-github-hover: #1b1f23;
+  --color-brand-kofi: #29abe0;
+  --color-brand-kofi-hover: #3b9fc6;
+  --color-brand-bitcoin: #f7931a;
+  --color-tournament-background: #282020;
+  --color-tournament-border: var(--color-amber-400);
+}
+
+:root {
+  color-scheme: light;
+
+  --theme-font-family: ui-sans-serif, system-ui, sans-serif;
+  --background: var(--color-white);
+  --foreground: var(--color-gray-900);
+  --page-heading: var(--color-gray-900);
+  --muted-foreground: var(--color-gray-600);
+
+  --surface: var(--color-white);
+  --surface-muted: var(--color-gray-50);
+  --surface-emphasis: var(--color-gray-100);
+  --surface-hover: var(--color-gray-100);
+  --surface-active: var(--border);
+  --overlay: color-mix(in srgb, var(--color-black) 50%, transparent);
+
+  --border: var(--color-gray-200);
+  --border-strong: var(--color-gray-300);
+  --focus-ring: var(--color-blue-800);
+  --selection: var(--focus-ring);
+  --selection-foreground: var(--color-white);
+  --control-thumb: var(--color-white);
+  --glyph-background: var(--color-zinc-800);
+
+  --primary: var(--color-gray-800);
+  --primary-hover: var(--color-gray-700);
+  --primary-foreground: var(--color-white);
+  --link: var(--color-blue-600);
+  --link-hover: var(--color-blue-500);
+  --accent: var(--color-emerald-600);
+  --accent-hover: var(--color-emerald-500);
+  --accent-foreground: var(--color-white);
+
+  --success: var(--accent);
+  --success-surface: var(--color-emerald-50);
+  --success-border: var(--color-emerald-400);
+  --success-foreground: var(--color-emerald-800);
+  --danger: var(--color-red-600);
+  --danger-surface: var(--color-red-50);
+  --danger-border: var(--color-red-200);
+  --danger-foreground: var(--color-red-900);
+  --warning: var(--color-amber-600);
+  --warning-surface: var(--color-amber-100);
+  --warning-foreground: var(--color-amber-800);
+  --info: var(--color-blue-600);
+  --info-surface: var(--color-blue-100);
+  --info-foreground: var(--color-blue-800);
+  --special: var(--color-indigo-600);
+  --special-surface: var(--color-indigo-100);
+  --special-foreground: var(--color-indigo-800);
+
+  --dialog: var(--color-white);
+  --dialog-foreground: var(--color-gray-900);
+  --dialog-border: var(--color-gray-200);
+  --dialog-outline: transparent;
+  --dialog-title: var(--page-heading);
+  --tooltip: var(--color-slate-800);
+  --tooltip-foreground: var(--color-white);
+  --tooltip-border: transparent;
+
+  --stat-wins: var(--success);
+  --stat-games: var(--info);
+  --stat-winrate: var(--color-pink-600);
+  --stat-label: var(--color-gray-900);
+  --attribute-strength: var(--color-red-800);
+  --attribute-intelligence: var(--color-blue-800);
+  --attribute-dexterity: var(--color-green-800);
+  --attribute-armour: var(--color-yellow-800);
+  --attribute-evasion: var(--color-violet-800);
+  --attribute-shield: var(--color-sky-800);
+
+  --filter-group-one: var(--color-amber-50);
+  --filter-group-two: var(--color-teal-50);
+  --filter-group-three: var(--color-purple-50);
+  --matrix-complete: var(--color-amber-200);
+  --matrix-complete-strong: var(--color-amber-300);
+  --matrix-selected: var(--color-amber-100);
+  --matrix-great: var(--color-amber-600);
+  --matrix-unavailable: var(--color-gray-50);
+  --matrix-heat-1: color-mix(in srgb, var(--color-emerald-50) 50%, transparent);
+  --matrix-heat-2: color-mix(in srgb, var(--color-emerald-100) 50%, transparent);
+  --matrix-heat-3: color-mix(in srgb, var(--color-emerald-200) 50%, transparent);
+  --matrix-heat-4: color-mix(in srgb, var(--color-emerald-300) 50%, transparent);
+  --matrix-heat-5: color-mix(in srgb, var(--color-emerald-400) 50%, transparent);
+
+  --chart-background: var(--color-white);
+  --chart-grid: color-mix(in srgb, var(--color-black) 10%, transparent);
+  --chart-text: var(--color-black);
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --background: var(--color-black);
+  --foreground: var(--color-zinc-100);
+  --page-heading: var(--color-white);
+  --muted-foreground: var(--color-zinc-400);
+
+  --surface: var(--color-zinc-900);
+  --surface-muted: var(--color-zinc-800);
+  --surface-emphasis: var(--color-zinc-700);
+  --surface-hover: var(--color-zinc-800);
+  --overlay: color-mix(in srgb, var(--color-black) 70%, transparent);
+
+  --border: var(--color-zinc-700);
+  --border-strong: var(--color-zinc-500);
+  --focus-ring: var(--color-blue-400);
+  --selection-foreground: var(--color-black);
+  --control-thumb: var(--color-white);
+  --glyph-background: var(--color-zinc-800);
+
+  --primary: var(--color-zinc-200);
+  --primary-hover: var(--color-zinc-100);
+  --primary-foreground: var(--color-zinc-950);
+  --link: var(--color-blue-400);
+  --link-hover: var(--color-blue-300);
+  --accent: var(--color-emerald-400);
+  --accent-hover: var(--color-emerald-300);
+  --accent-foreground: var(--color-emerald-950);
+
+  --success-surface: color-mix(in srgb, var(--color-emerald-900) 20%, transparent);
+  --success-border: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-100);
+  --danger: var(--color-red-400);
+  --danger-surface: color-mix(in srgb, var(--color-red-900) 20%, transparent);
+  --danger-border: var(--color-red-900);
+  --danger-foreground: var(--color-red-100);
+  --warning: var(--color-amber-400);
+  --warning-surface: var(--color-amber-900);
+  --warning-foreground: var(--color-amber-200);
+  --info: var(--color-blue-400);
+  --info-surface: var(--color-blue-900);
+  --info-foreground: var(--color-indigo-200);
+  --special: var(--color-indigo-400);
+  --special-surface: var(--color-indigo-900);
+  --special-foreground: var(--color-indigo-200);
+
+  --dialog: var(--color-black);
+  --dialog-foreground: var(--color-white);
+  --dialog-border: var(--color-zinc-700);
+  --dialog-outline: transparent;
+  --tooltip: var(--color-zinc-100);
+  --tooltip-foreground: var(--color-black);
+  --tooltip-border: transparent;
+
+  --stat-winrate: var(--color-pink-400);
+  --stat-label: var(--color-zinc-100);
+  --attribute-strength: var(--color-red-300);
+  --attribute-intelligence: var(--color-blue-300);
+  --attribute-dexterity: var(--color-green-300);
+  --attribute-armour: var(--color-yellow-300);
+  --attribute-evasion: var(--color-violet-300);
+  --attribute-shield: var(--color-sky-300);
+
+  --filter-group-one: var(--color-amber-700);
+  --filter-group-two: var(--color-teal-700);
+  --filter-group-three: var(--color-purple-700);
+  --matrix-complete: var(--color-amber-900);
+  --matrix-complete-strong: var(--color-amber-700);
+  --matrix-selected: var(--color-zinc-800);
+  --matrix-great: var(--color-amber-500);
+  --matrix-unavailable: var(--color-zinc-900);
+  --matrix-heat-1: color-mix(in srgb, var(--color-emerald-950) 75%, transparent);
+  --matrix-heat-2: color-mix(in srgb, var(--color-emerald-900) 75%, transparent);
+  --matrix-heat-3: color-mix(in srgb, var(--color-emerald-800) 75%, transparent);
+  --matrix-heat-4: color-mix(in srgb, var(--color-emerald-700) 75%, transparent);
+  --matrix-heat-5: color-mix(in srgb, var(--color-emerald-600) 75%, transparent);
+
+  --chart-background: var(--color-neutral-900);
+  --chart-grid: color-mix(in srgb, var(--color-white) 10%, transparent);
+  --chart-text: var(--color-white);
+}
+
+html.crawl {
+  color-scheme: dark;
+
+  --crawl-black: #000000;
+  --crawl-canvas: #040204;
+  --crawl-dark-gray: #555753;
+  --crawl-blue: #5e78ff;
+  --crawl-green: #8ae234;
+  --crawl-cyan: #34e2e2;
+  --crawl-red: #ef2929;
+  --crawl-magenta: #fd59fa;
+  --crawl-brown: #8f5902;
+  --crawl-light-gray: #babdb6;
+  --crawl-yellow: #fce94f;
+  --crawl-white: #eeeeec;
+  --crawl-bronze: #7d623c;
+
+  accent-color: var(--crawl-bronze);
+  scrollbar-color: var(--crawl-bronze) var(--crawl-canvas);
+  scrollbar-width: thin;
+
+  --theme-font-family:
+    var(--font-crawl), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  --background: var(--crawl-black);
+  --foreground: var(--crawl-light-gray);
+  --page-heading: var(--crawl-yellow);
+  --muted-foreground: #a2a2a2;
+
+  --surface: var(--crawl-canvas);
+  --surface-muted: #111111;
+  --surface-emphasis: #292929;
+  --surface-hover: #1d1b15;
+  --overlay: rgb(0 0 0 / 70%);
+
+  --border: #292929;
+  --border-strong: var(--crawl-bronze);
+  --focus-ring: #b88d19;
+  --selection-foreground: var(--crawl-black);
+  --control-thumb: var(--crawl-white);
+  --glyph-background: var(--crawl-black);
+
+  --primary: var(--crawl-light-gray);
+  --primary-hover: var(--crawl-white);
+  --primary-foreground: var(--crawl-black);
+  --link: var(--crawl-blue);
+  --link-hover: var(--crawl-cyan);
+  --accent: var(--crawl-green);
+  --accent-hover: var(--crawl-cyan);
+  --accent-foreground: var(--crawl-black);
+
+  --success-surface: #0c1b08;
+  --success-border: #4e9a06;
+  --success-foreground: var(--crawl-green);
+  --danger: var(--crawl-red);
+  --danger-surface: #250006;
+  --danger-border: #b30009;
+  --danger-foreground: var(--crawl-red);
+  --warning: var(--crawl-yellow);
+  --warning-surface: #302300;
+  --warning-foreground: var(--crawl-yellow);
+  --info: var(--crawl-cyan);
+  --info-surface: #042526;
+  --info-foreground: var(--crawl-cyan);
+  --special: var(--crawl-magenta);
+  --special-surface: #310830;
+  --special-foreground: var(--crawl-magenta);
+
+  --dialog: var(--crawl-canvas);
+  --dialog-foreground: var(--crawl-light-gray);
+  --dialog-border: var(--crawl-black);
+  --dialog-outline: var(--crawl-bronze);
+  --tooltip: #1d1b15;
+  --tooltip-foreground: var(--crawl-light-gray);
+  --tooltip-border: var(--crawl-bronze);
+
+  --stat-winrate: var(--crawl-magenta);
+  --stat-label: var(--crawl-brown);
+  --attribute-strength: var(--crawl-red);
+  --attribute-intelligence: var(--crawl-blue);
+  --attribute-dexterity: var(--crawl-green);
+  --attribute-armour: var(--crawl-yellow);
+  --attribute-evasion: var(--crawl-magenta);
+  --attribute-shield: var(--crawl-cyan);
+
+  --filter-group-one: #302300;
+  --filter-group-two: #042526;
+  --filter-group-three: #310830;
+  --matrix-complete: #3d2900;
+  --matrix-complete-strong: var(--crawl-brown);
+  --matrix-selected: #1d1b15;
+  --matrix-great: var(--crawl-yellow);
+  --matrix-unavailable: var(--crawl-canvas);
+  --matrix-heat-1: rgb(78 154 6 / 15%);
+  --matrix-heat-2: rgb(78 154 6 / 25%);
+  --matrix-heat-3: rgb(78 154 6 / 40%);
+  --matrix-heat-4: rgb(138 226 52 / 50%);
+  --matrix-heat-5: rgb(138 226 52 / 65%);
+
+  --chart-background: var(--crawl-canvas);
+  --chart-grid: rgb(186 189 182 / 15%);
+  --chart-text: var(--crawl-light-gray);
+}
+
 @layer base {
+  html,
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  body {
+    font-family: var(--theme-font-family);
+  }
+
+  ::selection {
+    color: var(--selection-foreground);
+    background-color: var(--selection);
+  }
+
+  :focus-visible {
+    outline-color: var(--focus-ring);
+    outline-style: auto;
+    outline-offset: 2px;
+  }
+
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--border);
   }
 }
 
@@ -55,6 +459,134 @@
 
 @layer components {
   .dcss-list-item {
-    @apply -mx-1 flex justify-between px-1 transition-all odd:bg-gray-50 even:bg-white hover:rounded-sm hover:bg-amber-100 odd:dark:bg-zinc-800 even:dark:bg-zinc-900 dark:hover:bg-zinc-700;
+    @apply odd:bg-surface-muted even:bg-surface hover:bg-surface-hover -mx-1 flex justify-between px-1 transition-all hover:rounded-sm;
+  }
+
+  /* Composite badge styles keep multi-color rank palettes out of component markup. */
+  .badge-achievement,
+  .badge-achievement-major {
+    color: var(--color-black);
+    background-color: var(--color-amber-300);
+  }
+
+  .badge-achievement-major {
+    --tw-ring-color: var(--color-amber-600);
+  }
+
+  .badge-polytheist {
+    color: var(--color-black);
+    background-color: var(--color-sky-300);
+  }
+
+  .badge-tiamat {
+    color: var(--color-black);
+    background-color: var(--color-purple-300);
+  }
+
+  .rank-first {
+    color: var(--color-black);
+    background-color: var(--color-amber-300);
+    --tw-ring-color: var(--color-orange-600);
+  }
+
+  .rank-second {
+    color: var(--color-black);
+    background-color: var(--color-slate-300);
+    --tw-ring-color: var(--color-slate-500);
+  }
+
+  .rank-third {
+    color: var(--color-white);
+    background-color: var(--color-amber-600);
+    --tw-ring-color: var(--color-amber-800);
+  }
+
+  .rank-elite-10 {
+    color: var(--color-black);
+    background-color: var(--color-emerald-400);
+    --tw-ring-color: var(--color-emerald-600);
+  }
+
+  .rank-elite-25 {
+    color: var(--color-black);
+    background-color: var(--color-emerald-300);
+    --tw-ring-color: var(--color-emerald-500);
+  }
+
+  .rank-elite-50 {
+    color: var(--color-black);
+    background-color: var(--color-emerald-200);
+    --tw-ring-color: var(--color-emerald-400);
+  }
+
+  .rank-elite-100 {
+    color: var(--color-black);
+    background-color: var(--color-emerald-100);
+    --tw-ring-color: var(--color-emerald-300);
+  }
+
+  .leaderboard-score {
+    --leaderboard-rank-4-background: var(--color-teal-400);
+    --leaderboard-rank-4-ring: var(--color-teal-600);
+    --leaderboard-rank-10-background: var(--color-teal-300);
+    --leaderboard-rank-10-ring: var(--color-teal-500);
+    --leaderboard-rank-25-background: var(--color-teal-200);
+    --leaderboard-rank-25-ring: var(--color-teal-400);
+    --leaderboard-rank-100-background: var(--color-teal-100);
+    --leaderboard-rank-100-ring: var(--color-teal-300);
+  }
+
+  .leaderboard-turncount {
+    --leaderboard-rank-4-background: var(--color-cyan-400);
+    --leaderboard-rank-4-ring: var(--color-cyan-600);
+    --leaderboard-rank-10-background: var(--color-cyan-300);
+    --leaderboard-rank-10-ring: var(--color-cyan-500);
+    --leaderboard-rank-25-background: var(--color-cyan-200);
+    --leaderboard-rank-25-ring: var(--color-cyan-400);
+    --leaderboard-rank-100-background: var(--color-cyan-100);
+    --leaderboard-rank-100-ring: var(--color-cyan-300);
+  }
+
+  .leaderboard-duration {
+    --leaderboard-rank-4-background: var(--color-violet-400);
+    --leaderboard-rank-4-ring: var(--color-violet-600);
+    --leaderboard-rank-10-background: var(--color-violet-300);
+    --leaderboard-rank-10-ring: var(--color-violet-500);
+    --leaderboard-rank-25-background: var(--color-violet-200);
+    --leaderboard-rank-25-ring: var(--color-violet-400);
+    --leaderboard-rank-100-background: var(--color-violet-100);
+    --leaderboard-rank-100-ring: var(--color-violet-300);
+  }
+
+  .leaderboard-rank-4,
+  .leaderboard-rank-10,
+  .leaderboard-rank-25,
+  .leaderboard-rank-100,
+  .leaderboard-rank-default {
+    color: var(--color-black);
+  }
+
+  .leaderboard-rank-4 {
+    background-color: var(--leaderboard-rank-4-background);
+    --tw-ring-color: var(--leaderboard-rank-4-ring);
+  }
+
+  .leaderboard-rank-10 {
+    background-color: var(--leaderboard-rank-10-background);
+    --tw-ring-color: var(--leaderboard-rank-10-ring);
+  }
+
+  .leaderboard-rank-25 {
+    background-color: var(--leaderboard-rank-25-background);
+    --tw-ring-color: var(--leaderboard-rank-25-ring);
+  }
+
+  .leaderboard-rank-100 {
+    background-color: var(--leaderboard-rank-100-background);
+    --tw-ring-color: var(--leaderboard-rank-100-ring);
+  }
+
+  .leaderboard-rank-default {
+    background-color: var(--leaderboard-rank-100-background);
   }
 }

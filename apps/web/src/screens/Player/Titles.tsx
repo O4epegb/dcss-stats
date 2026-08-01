@@ -29,7 +29,7 @@ export const Titles = () => {
         {items.map((title) => (
           <li key={title.name}>
             <GameTooltip isWin title={title.name} player={player.name}>
-              <div className="rounded bg-gray-600 px-1 py-0.5 text-white">
+              <div className="bg-primary text-primary-foreground rounded px-1 py-0.5">
                 {title.name}
                 {title.count > 1 ? ` (${title.count})` : ''}
               </div>
@@ -45,7 +45,7 @@ export const Titles = () => {
                 }
               }}
             >
-              <DialogTrigger className="px-1 py-0.5 text-sm text-blue-400 hover:underline">
+              <DialogTrigger className="text-link px-1 py-0.5 text-sm hover:underline">
                 Show all
               </DialogTrigger>
               <TitlesDialogContent wasOpened={wasOpened} titles={titles} player={player} />
@@ -110,8 +110,8 @@ const TitlesDialogContent = ({
               className={cn(
                 'rounded border px-2 py-1 transition-colors',
                 view === item.id
-                  ? 'border-gray-700 bg-gray-700 text-white dark:border-zinc-200 dark:bg-zinc-200 dark:text-black'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100 dark:border-zinc-700 dark:text-gray-200 dark:hover:bg-zinc-900',
+                  ? 'border-primary bg-primary text-primary-foreground'
+                  : 'border-border-strong text-muted-foreground hover:bg-surface-hover',
               )}
               onClick={() => setView(item.id)}
             >
@@ -125,7 +125,7 @@ const TitlesDialogContent = ({
             {titles.map((title) => (
               <li key={title.name}>
                 <GameTooltip isWin title={title.name} player={player.name}>
-                  <div className="rounded bg-gray-600 px-1 py-0.5 text-white">
+                  <div className="bg-primary text-primary-foreground rounded px-1 py-0.5">
                     {title.name}
                     {title.count > 1 ? ` (${title.count})` : ''}
                   </div>
@@ -134,7 +134,7 @@ const TitlesDialogContent = ({
             ))}
           </ul>
         ) : !data ? (
-          <div className="text-sm text-gray-500">Loading title game breakdown...</div>
+          <div className="text-muted-foreground text-sm">Loading title game breakdown...</div>
         ) : (
           <BreakdownTable view={view} rows={currentRows} />
         )}
@@ -262,14 +262,14 @@ const BreakdownTable = ({ view, rows }: { view: ViewId; rows: BreakdownRow[] }) 
   }
 
   if (rows.length === 0) {
-    return <div className="text-sm text-gray-500">No title games found for this view.</div>
+    return <div className="text-muted-foreground text-sm">No title games found for this view.</div>
   }
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
-          <tr className="border-b border-gray-200 dark:border-zinc-700">
+          <tr className="border-border border-b">
             <th className="px-2 py-1 font-medium whitespace-nowrap">
               <button
                 className="inline-flex items-center whitespace-nowrap hover:underline"
@@ -302,9 +302,9 @@ const BreakdownTable = ({ view, rows }: { view: ViewId; rows: BreakdownRow[] }) 
             <tr
               key={row.label}
               className={cn(
-                'border-b border-gray-100 align-top last:border-none dark:border-zinc-800',
-                index % 2 === 1 && 'bg-gray-50/60 dark:bg-zinc-900/40',
-                'hover:bg-gray-100/60 dark:hover:bg-zinc-900/70',
+                'border-border border-b align-top last:border-none',
+                index % 2 === 1 && 'bg-surface-muted/60',
+                'hover:bg-surface-hover/60',
               )}
             >
               <td className="px-2 py-1 align-top whitespace-nowrap">{row.label}</td>
@@ -316,7 +316,7 @@ const BreakdownTable = ({ view, rows }: { view: ViewId; rows: BreakdownRow[] }) 
                     <li key={title.name}>
                       {title.gameIds[0] && (
                         <GameTooltip id={title.gameIds[0]}>
-                          <div className="rounded bg-gray-600 px-1 py-0.5 text-white">
+                          <div className="bg-primary text-primary-foreground rounded px-1 py-0.5">
                             {title.name}
                             {title.count > 1 ? ` (${title.count})` : ''}
                           </div>

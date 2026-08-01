@@ -22,9 +22,7 @@ export function PageTabs() {
           href={page.href}
           className={cn(
             'rounded px-3 py-1 text-base',
-            pathname === page.href
-              ? 'bg-gray-200 font-medium dark:bg-gray-700'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+            pathname === page.href ? 'bg-surface-active font-medium' : 'hover:bg-surface-hover',
           )}
         >
           {page.label}

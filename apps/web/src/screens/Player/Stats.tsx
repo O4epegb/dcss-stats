@@ -162,7 +162,7 @@ export const List = ({ items }: { items: [ReactNode, ReactNode, ReactNode?][] })
     {items.map(([title, text, tooltip], index) => {
       const content = (
         <li key={index}>
-          <span className="font-semibold">{title}:</span> {text}
+          <span className="text-stat-label font-semibold">{title}:</span> {text}
         </li>
       )
 

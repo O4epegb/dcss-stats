@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { first, last, orderBy } from 'lodash-es'
 import { useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
@@ -6,7 +5,7 @@ import { api } from '~/api'
 import { GameTooltip } from '~/components/GameTooltip'
 import { Loader } from '~/components/ui/Loader'
 import { Game } from '~/types'
-import { date, formatNumber, pluralize } from '~/utils'
+import { cn, date, formatNumber, pluralize } from '~/utils'
 import { usePlayerPageContext } from './context'
 import { List } from './Stats'
 
@@ -42,7 +41,7 @@ export const Streaks = () => {
           )}
         </h2>
         {streaks.current > 0 && (
-          <div className="text-right text-sm text-emerald-500">
+          <div className="text-success text-right text-sm">
             🔥 On streak: {streaks.current} wins in a row
           </div>
         )}
@@ -65,7 +64,7 @@ export const Streaks = () => {
           </div>
           <button
             disabled={isLoading}
-            className="ml-auto py-0.5 text-sm text-blue-400 hover:underline"
+            className="text-link ml-auto py-0.5 text-sm hover:underline"
             onClick={() => setIsVisible((state) => !state)}
           >
             {isVisible ? 'Hide' : 'Show'} streaks
@@ -73,7 +72,7 @@ export const Streaks = () => {
         </div>
       )}
       {isLoading && <Loader />}
-      {error && <div className="text-sm text-red-600">Error fetching data</div>}
+      {error && <div className="text-danger text-sm">Error fetching data</div>}
       {isVisible && streakGroups && (
         <div className="space-y-2">
           {orderBy(
@@ -89,12 +88,12 @@ export const Streaks = () => {
             return (
               <div
                 key={index}
-                className={clsx(
-                  'rounded-sm border border-gray-200 px-2 py-1 text-sm dark:border-gray-300',
-                  isActive && 'border-l-2 border-l-emerald-500 dark:border-l-emerald-500',
+                className={cn(
+                  'border-border rounded-sm border px-2 py-1 text-sm',
+                  isActive && 'border-l-success border-l-2',
                 )}
               >
-                {isActive && <div className="text-emerald-500">Active streak</div>}
+                {isActive && <div className="text-success">Active streak</div>}
                 <div>
                   <span className="font-medium">{streakLength} wins:</span>{' '}
                   <span>
@@ -119,7 +118,7 @@ export const Streaks = () => {
                   </div>
                 )}
                 {firstGame && (
-                  <div className="pt-0.5 text-xs text-gray-400">
+                  <div className="text-muted-foreground pt-0.5 text-xs">
                     From <span>{date(firstGame.endAt).format('DD MMM YYYY, HH:mm:ss')}</span>{' '}
                     {!isActive && lastGame && (
                       <>

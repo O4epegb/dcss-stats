@@ -27,12 +27,9 @@ const ServersPage = () => {
         <Suspense
           fallback={
             <>
-              <div className="h-7 w-full animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+              <div className="bg-surface-active h-7 w-full animate-pulse rounded" />
               {range(15).map((i) => (
-                <div
-                  key={i}
-                  className="h-[58px] w-full animate-pulse rounded bg-gray-200 dark:bg-zinc-700"
-                />
+                <div key={i} className="bg-surface-active h-[58px] w-full animate-pulse rounded" />
               ))}
             </>
           }

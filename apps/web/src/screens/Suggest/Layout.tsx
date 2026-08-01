@@ -15,7 +15,7 @@ export const Layout = ({
               <Logo />
               <MobileMenu />
             </header>
-            <div className="w-full max-w-md rounded-sm bg-blue-100 px-2 py-1 text-xs text-black">
+            <div className="bg-info-surface text-info-foreground w-full max-w-md rounded-sm px-2 py-1 text-xs">
               <span className="font-semibold">TL;DR:</span> Choose the race, class or god you want
               to play (or any combination of these). Press the button to see the win rate of your
               combination, as well as other people&apos;s games.

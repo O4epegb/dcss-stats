@@ -9,3 +9,5 @@ export const menuItems = [
   { href: '/search', label: 'Search' },
   { href: '/support', label: 'Support' },
 ] as const
+
+export const mobileMenuItems = [{ href: '/live-games', label: 'Live games' }, ...menuItems] as const

@@ -37,7 +37,7 @@ export const ServerFilter = () => {
         }
       }}
     >
-      <DialogTrigger className="flex items-center gap-1 rounded border border-gray-300 px-1 py-0.5 text-sm text-gray-600 transition hover:border-emerald-500 hover:text-emerald-600 dark:border-zinc-600 dark:text-gray-300 dark:hover:border-emerald-500 dark:hover:text-emerald-500">
+      <DialogTrigger className="border-border-strong text-muted-foreground hover:border-accent hover:text-accent flex items-center gap-1 rounded border px-1 py-0.5 text-sm transition">
         <ServerStackIcon className="h-4 w-4" />
         {filter.servers ? filter.servers.join(', ') : 'All servers'}
       </DialogTrigger>
@@ -54,7 +54,7 @@ export const ServerFilter = () => {
                 onChange={() => toggle(server.abbreviation)}
               />
               {server.abbreviation}
-              <span className="text-sm text-gray-400">
+              <span className="text-muted-foreground text-sm">
                 {formatNumber(server.games)} {pluralize('game', server.games)}
               </span>
             </label>
@@ -62,7 +62,7 @@ export const ServerFilter = () => {
         </div>
         <div className="mt-4 flex items-center justify-between gap-4">
           <button
-            className="text-sm text-blue-400 hover:underline"
+            className="text-link text-sm hover:underline"
             onClick={() =>
               setSelected(
                 selected.length === servers.length
@@ -75,7 +75,7 @@ export const ServerFilter = () => {
           </button>
           <DialogClose
             disabled={selected.length === 0}
-            className="rounded bg-emerald-600 px-3 py-1 text-sm text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="bg-accent text-accent-foreground hover:bg-accent-hover rounded px-3 py-1 text-sm transition disabled:cursor-not-allowed disabled:opacity-50"
             onClick={apply}
           >
             Apply

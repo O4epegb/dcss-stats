@@ -21,10 +21,10 @@ export const metadata: Metadata = {
 function Skeleton() {
   return (
     <div className="space-y-2">
-      <div className="h-10 w-full animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
-      <div className="h-4 w-32 animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+      <div className="bg-surface-active h-10 w-full animate-pulse rounded" />
+      <div className="bg-surface-active h-4 w-32 animate-pulse rounded" />
       {range(10).map((i) => (
-        <div key={i} className="h-10 w-full animate-pulse rounded bg-gray-200 dark:bg-zinc-700" />
+        <div key={i} className="bg-surface-active h-10 w-full animate-pulse rounded" />
       ))}
     </div>
   )
@@ -41,13 +41,13 @@ async function MonstersContent() {
   return (
     <div className="space-y-3">
       {catalog.crawlVersion && catalog.crawlCommit && (
-        <div className="text-xs text-gray-500 dark:text-zinc-400">
+        <div className="text-muted-foreground text-xs">
           Based on crawl {catalog.crawlVersion} (
           <a
             href={`https://github.com/crawl/crawl/tree/${catalog.crawlCommit}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline hover:text-gray-700 dark:hover:text-zinc-200"
+            className="hover:text-foreground underline"
           >
             {catalog.crawlCommit.slice(0, 10)}
           </a>
@@ -65,7 +65,7 @@ export default function MonstersPage() {
       <HeaderWithMenu />
 
       <div className="w-full space-y-4">
-        <h2 className="text-xl font-semibold">Monster Catalog</h2>
+        <h2 className="text-page-heading text-xl font-semibold">Monster Catalog</h2>
 
         <Suspense fallback={<Skeleton />}>
           <MonstersContent />

@@ -112,7 +112,7 @@ export default async function RecordsPage({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-gray-500 dark:text-gray-400">
+      <p className="text-muted-foreground text-sm">
         Players ranked by number of #1 placements on any character and rune tier.
       </p>
       <div className="flex flex-wrap items-center gap-2">
@@ -131,9 +131,7 @@ export default async function RecordsPage({
               }}
               className={cn(
                 'rounded px-2 py-0.5 text-sm',
-                kind === k.value
-                  ? 'bg-gray-200 font-medium dark:bg-gray-700'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                kind === k.value ? 'bg-surface-active font-medium' : 'hover:bg-surface-hover',
               )}
             >
               {k.label}
@@ -142,7 +140,7 @@ export default async function RecordsPage({
         </div>
         {runeTiers.length > 0 && (
           <>
-            <span className="text-gray-300 dark:text-gray-600">|</span>
+            <span className="text-border-strong">|</span>
             <div className="flex gap-1">
               {runeTiers.map((r) => (
                 <Link
@@ -159,8 +157,8 @@ export default async function RecordsPage({
                   className={cn(
                     'rounded px-2 py-0.5 text-sm',
                     params.runeTier === r.value || (!params.runeTier && !r.value)
-                      ? 'bg-gray-200 font-medium dark:bg-gray-700'
-                      : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                      ? 'bg-surface-active font-medium'
+                      : 'hover:bg-surface-hover',
                   )}
                 >
                   {r.label}
@@ -178,23 +176,18 @@ export default async function RecordsPage({
           name="search"
           defaultValue={search}
           placeholder="Search player..."
-          className="w-full rounded-sm border border-gray-200 bg-white px-3 py-1.5 text-sm text-black placeholder-gray-400 dark:border-gray-300 dark:bg-zinc-900 dark:text-white dark:placeholder-gray-500"
+          className="border-border bg-surface text-foreground placeholder:text-muted-foreground w-full rounded-sm border px-3 py-1.5 text-sm"
         />
       </form>
 
       {response.data.length === 0 ? (
-        <div className="py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-          No players found.
-        </div>
+        <div className="text-muted-foreground py-4 text-center text-sm">No players found.</div>
       ) : (
-        <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
+        <div className="divide-border divide-y overflow-hidden rounded-sm">
           {response.data.map((entry) => (
-            <div
-              key={entry.playerId}
-              className="bg-white py-2 text-sm text-black dark:bg-zinc-900 dark:text-white"
-            >
+            <div key={entry.playerId} className="bg-surface text-foreground py-2 text-sm">
               <div className="flex items-center gap-3">
-                <span className="w-8 shrink-0 text-right font-mono text-gray-500 dark:text-gray-400">
+                <span className="text-muted-foreground w-8 shrink-0 text-right font-mono">
                   #{entry.rank}
                 </span>
                 <Link
@@ -217,11 +210,11 @@ export default async function RecordsPage({
                     return (
                       <span
                         key={`${combo.char}-${combo.runeTier}-${i}`}
-                        className="text-2xs rounded bg-gray-100 px-1.5 py-0.5 font-mono font-medium md:text-xs dark:bg-zinc-800"
+                        className="text-2xs bg-surface-emphasis rounded px-1.5 py-0.5 font-mono font-medium md:text-xs"
                         title={tierLabel ? `${combo.char} (${tierLabel})` : combo.char}
                       >
                         {combo.char}
-                        <span className="ml-1 text-gray-500 dark:text-gray-400">
+                        <span className="text-muted-foreground ml-1">
                           {formatValue(kind, combo.value)}
                         </span>
                       </span>
@@ -240,7 +233,7 @@ export default async function RecordsPage({
             <Link
               prefetch={false}
               href={paginationQuery(1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               <ChevronDoubleLeftIcon className="h-4 w-4" />
             </Link>
@@ -249,19 +242,19 @@ export default async function RecordsPage({
             <Link
               prefetch={false}
               href={paginationQuery(page - 1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               ← Prev
             </Link>
           )}
-          <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-muted-foreground px-2 text-sm">
             {page} / {totalPages}
           </span>
           {page < totalPages && (
             <Link
               prefetch={false}
               href={paginationQuery(page + 1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               Next →
             </Link>
@@ -270,7 +263,7 @@ export default async function RecordsPage({
             <Link
               prefetch={false}
               href={paginationQuery(totalPages)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               <ChevronDoubleRightIcon className="h-4 w-4" />
             </Link>

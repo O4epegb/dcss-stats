@@ -10,7 +10,7 @@ export const HeaderWithMenu = ({ showSupportGoal = false }: { showSupportGoal?: 
     <header className="flex w-full flex-col gap-2">
       <div className="flex items-center justify-between lg:hidden">
         <Logo />
-        <MobileMenu items={menuItems} />
+        <MobileMenu />
       </div>
 
       <div className="hidden lg:block">

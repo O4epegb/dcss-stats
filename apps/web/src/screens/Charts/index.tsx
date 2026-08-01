@@ -90,6 +90,34 @@ type Dataset = {
 
 let copyTimeoutId: NodeJS.Timeout
 
+const defaultChartTheme = {
+  background: '#ffffff',
+  grid: 'rgb(0 0 0 / 10%)',
+  text: '#000000',
+}
+
+const useChartTheme = (activeTheme?: string) => {
+  const [colors, setColors] = useState(defaultChartTheme)
+
+  useEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      const styles = getComputedStyle(document.documentElement)
+      const readColor = (name: string, fallback: string) =>
+        styles.getPropertyValue(name).trim() || fallback
+
+      setColors({
+        background: readColor('--chart-background', defaultChartTheme.background),
+        grid: readColor('--chart-grid', defaultChartTheme.grid),
+        text: readColor('--chart-text', defaultChartTheme.text),
+      })
+    })
+
+    return () => cancelAnimationFrame(frameId)
+  }, [activeTheme])
+
+  return colors
+}
+
 export const ChartsScreen = ({
   staticData,
   defaultDatasets,
@@ -101,6 +129,7 @@ export const ChartsScreen = ({
   }[]
 }) => {
   const { resolvedTheme } = useTheme()
+  const chartTheme = useChartTheme(resolvedTheme)
 
   const [showValidations, setShowValidations] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
@@ -196,10 +225,6 @@ export const ChartsScreen = ({
   const isEmpty = data && (data.data.length === 0 || data.data.every((x) => x.items.length === 0))
   const lotsOfData = Boolean(data && data.data.some((x) => x.items.length > 50))
 
-  const chartTextColor = resolvedTheme === 'dark' ? 'white' : 'black'
-  const chartGridColor =
-    resolvedTheme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
-  const canvasBackgroundColor = resolvedTheme === 'dark' ? '#121212' : '#ffffff'
   const chartOptions: ChartOptions<'bar'> = {
     responsive: true,
     maintainAspectRatio: true,
@@ -207,7 +232,7 @@ export const ChartsScreen = ({
       x: {
         grid: {
           display: true,
-          color: chartGridColor,
+          color: chartTheme.grid,
         },
         ticks: {
           display: true,
@@ -217,16 +242,16 @@ export const ChartsScreen = ({
                 size: 10,
               }
             : undefined,
-          color: chartTextColor,
+          color: chartTheme.text,
           maxRotation: 90,
         },
       },
       y: {
         grid: {
-          color: chartGridColor,
+          color: chartTheme.grid,
         },
         ticks: {
-          color: chartTextColor,
+          color: chartTheme.text,
         },
       },
     },
@@ -235,19 +260,19 @@ export const ChartsScreen = ({
         display: true,
         position: 'top' as const,
         labels: {
-          color: chartTextColor,
+          color: chartTheme.text,
         },
       },
       title: {
         display: true,
         text: `${data?.aggregationType}(${data?.aggregationField}) by ${data?.groupBy}`,
-        color: chartTextColor,
+        color: chartTheme.text,
       },
       customCanvasBackgroundColor: {
-        color: canvasBackgroundColor,
+        color: chartTheme.background,
       },
     },
-    color: chartTextColor,
+    color: chartTheme.text,
   }
 
   const chartData: ChartData<
@@ -314,7 +339,7 @@ export const ChartsScreen = ({
                 </>
               )}
               <button
-                className="rounded border border-current bg-gray-800 px-2 py-2 text-white transition-colors hover:bg-gray-700 sm:px-4"
+                className="bg-primary text-primary-foreground hover:bg-primary-hover rounded border border-current px-2 py-2 transition-colors sm:px-4"
                 onClick={() => {
                   const raceFilter = filterOptions.find((x) => x.name === 'Race')
                   const endFilter = filterOptions.find((x) => x.name === 'End')
@@ -375,16 +400,14 @@ export const ChartsScreen = ({
         {isError(error) && (
           <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
             <div>Error occured, try to reload the page</div>
-            {error.message && (
-              <code className="bg-gray-100 p-2 dark:bg-zinc-700">{error.message}</code>
-            )}
+            {error.message && <code className="bg-surface-emphasis p-2">{error.message}</code>}
           </div>
         )}
       </div>
       <div className="m-auto w-full max-w-2xl space-y-4">
         <div className="grid grid-cols-2 gap-6 lg:grid-cols-4">
           <label className="space-y-1">
-            <div className={cn('w-max', showValidations && !mainParams.groupBy && 'text-red-500')}>
+            <div className={cn('w-max', showValidations && !mainParams.groupBy && 'text-danger')}>
               Group by
             </div>
             <Select
@@ -417,7 +440,7 @@ export const ChartsScreen = ({
             <div
               className={cn(
                 'w-max',
-                showValidations && !mainParams.aggregationType && 'text-red-500',
+                showValidations && !mainParams.aggregationType && 'text-danger',
               )}
             >
               Aggregation type
@@ -438,7 +461,7 @@ export const ChartsScreen = ({
             <div
               className={cn(
                 'w-max',
-                showValidations && !mainParams.aggregationField && 'text-red-500',
+                showValidations && !mainParams.aggregationField && 'text-danger',
               )}
             >
               Aggregation field
@@ -507,7 +530,7 @@ export const ChartsScreen = ({
                 <div
                   key={dataset.id}
                   id={dataset.id}
-                  className="rounded border border-gray-700 bg-zinc-50 p-4 pl-8 dark:border-zinc-700 dark:bg-gray-800"
+                  className="border-border bg-surface-muted rounded border p-4 pl-8"
                 >
                   <Filters
                     title={
@@ -547,10 +570,10 @@ export const ChartsScreen = ({
               )
             })}
         </div>
-        <div className="sticky bottom-4 flex items-center justify-between gap-2 rounded-sm border border-zinc-700 bg-[Canvas] p-2 sm:p-4">
+        <div className="border-border bg-background sticky bottom-4 flex items-center justify-between gap-2 rounded-sm border p-2 sm:p-4">
           <Tooltip disabled={datasets.length < 5} content="Maximum 5 datasets">
             <button
-              className="rounded border px-4 py-2 text-xs transition-colors hover:bg-gray-100 sm:text-base dark:hover:bg-zinc-800"
+              className="hover:bg-surface-hover rounded border px-4 py-2 text-xs transition-colors sm:text-base"
               disabled={datasets.length === 5}
               onClick={() => {
                 const newDataset = {
@@ -572,7 +595,7 @@ export const ChartsScreen = ({
           </Tooltip>
           {!isLoading && data && (
             <button
-              className="flex items-center justify-center gap-1 rounded-sm border px-2 py-2 text-xs transition-colors hover:bg-gray-100 sm:px-4 sm:text-base dark:hover:bg-zinc-800"
+              className="hover:bg-surface-hover flex items-center justify-center gap-1 rounded-sm border px-2 py-2 text-xs transition-colors sm:px-4 sm:text-base"
               onClick={() => {
                 const canvas = document.querySelector('canvas')
                 if (!canvas) {
@@ -605,7 +628,7 @@ export const ChartsScreen = ({
               }}
             >
               {isCopied ? (
-                <ClipboardDocumentCheckIcon className="size-4 shrink-0 text-green-500 sm:size-6" />
+                <ClipboardDocumentCheckIcon className="text-success size-4 shrink-0 sm:size-6" />
               ) : (
                 <ClipboardDocumentIcon className="size-4 shrink-0 sm:size-6" />
               )}
@@ -613,7 +636,7 @@ export const ChartsScreen = ({
             </button>
           )}
           <button
-            className="rounded border border-current bg-gray-800 px-2 py-2 text-xs text-white transition-colors hover:bg-gray-700 sm:px-4 sm:text-base"
+            className="bg-primary text-primary-foreground hover:bg-primary-hover rounded border border-current px-2 py-2 text-xs transition-colors sm:px-4 sm:text-base"
             onClick={() => {
               setParamsForSWR({
                 datasets,

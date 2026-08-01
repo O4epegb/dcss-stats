@@ -104,16 +104,14 @@ export default async function HighscoresPage({
               }}
               className={cn(
                 'rounded px-2 py-0.5 text-sm',
-                kind === k.value
-                  ? 'bg-gray-200 font-medium dark:bg-gray-700'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                kind === k.value ? 'bg-surface-active font-medium' : 'hover:bg-surface-hover',
               )}
             >
               {k.label}
             </Link>
           ))}
         </div>
-        <span className="text-gray-300 dark:text-gray-600">|</span>
+        <span className="text-border-strong">|</span>
         <div className="flex gap-1">
           {(runeTiersByKind[kind] ?? runeTiersByKind.HIGHSCORE).map((r) => (
             <Link
@@ -131,8 +129,8 @@ export default async function HighscoresPage({
               className={cn(
                 'rounded px-2 py-0.5 text-sm',
                 params.runeTier === r.value || (!params.runeTier && !r.value)
-                  ? 'bg-gray-200 font-medium dark:bg-gray-700'
-                  : 'hover:bg-gray-100 dark:hover:bg-gray-800',
+                  ? 'bg-surface-active font-medium'
+                  : 'hover:bg-surface-hover',
               )}
             >
               {r.label}
@@ -142,25 +140,25 @@ export default async function HighscoresPage({
       </div>
 
       {data.length === 0 && (
-        <div className="flex flex-col items-center gap-2 py-8 text-center text-gray-500 dark:text-gray-400">
+        <div className="text-muted-foreground flex flex-col items-center gap-2 py-8 text-center">
           <span className="text-xl">¯\_(ツ)_/¯</span>
           <div>No highscores found.</div>
         </div>
       )}
 
       {data.length > 0 && (
-        <div className="divide-y divide-gray-200 overflow-hidden rounded-sm dark:divide-gray-700">
+        <div className="divide-border divide-y overflow-hidden rounded-sm">
           {data.map((entry, index) => {
             const game = entry.game
 
             return (
               <div
                 key={`${entry.gameId}-${entry.breakdown}-${entry.runeTier}`}
-                className="flex gap-3 bg-white py-2 text-sm text-black dark:bg-zinc-900 dark:text-white"
+                className="bg-surface text-foreground flex gap-3 py-2 text-sm"
               >
                 <div className="min-w-0 flex-1">
                   <div className="font-medium">
-                    <span className="mr-1.5 shrink-0 font-mono text-gray-500 dark:text-gray-400">
+                    <span className="text-muted-foreground mr-1.5 shrink-0 font-mono">
                       {skip + index + 1}.
                     </span>
                     <Link
@@ -172,14 +170,14 @@ export default async function HighscoresPage({
                     </Link>
                   </div>
                   {params.player && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-muted-foreground text-xs">
                       #{entry.rank} in {entry.breakdown.toLowerCase()} breakdown
                     </div>
                   )}
                   <div>
                     {entry.char}
                     {game.god && <span className="font-light"> of {game.god}</span>},{' '}
-                    <span className={game.isWin ? 'text-emerald-500' : 'text-red-500'}>
+                    <span className={game.isWin ? 'text-success' : 'text-danger'}>
                       {game.isWin ? 'escaped' : game.endMessage}
                     </span>
                     {!game.isWin && game.lvl > 0 && (
@@ -189,14 +187,14 @@ export default async function HighscoresPage({
                       </span>
                     )}
                     {game.uniqueRunes > 0 && (
-                      <span className="text-indigo-600 dark:text-indigo-400">
+                      <span className="text-special">
                         {' '}
                         {game.isWin ? 'and' : 'with'} {game.uniqueRunes}{' '}
                         {pluralize('rune', game.uniqueRunes)}
                       </span>
                     )}
                     {game.gems > 0 && (
-                      <span className="text-indigo-600 dark:text-indigo-400">
+                      <span className="text-special">
                         {' '}
                         {game.uniqueRunes === 0 ? 'with' : 'and'} {game.gems}{' '}
                         {pluralize('gem', game.gems)}
@@ -204,7 +202,7 @@ export default async function HighscoresPage({
                     )}
                     {(game.uniqueRunes > 0 || game.gems > 0) && '!'}
                   </div>
-                  <div className="flex flex-wrap gap-x-2 text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-muted-foreground flex flex-wrap gap-x-2 text-xs">
                     <span>XL:{game.xl}</span>
                     <span>{formatNumber(game.turns)} turns</span>
                     <span>{formatDuration(game.duration)}</span>
@@ -220,7 +218,7 @@ export default async function HighscoresPage({
                         : formatNumber(entry.score)}
                   </span>
                   {game.server && (
-                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="text-muted-foreground flex items-center gap-1 text-xs">
                       <a
                         target="_blank"
                         rel="noopener noreferrer"
@@ -235,7 +233,7 @@ export default async function HighscoresPage({
                         rel="noopener noreferrer"
                         title="Morgue"
                         href={getMorgueUrl(game.server.morgueUrl, game)}
-                        className="hover:text-gray-700 dark:hover:text-gray-300"
+                        className="hover:text-foreground"
                       >
                         <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5" />
                       </a>
@@ -254,7 +252,7 @@ export default async function HighscoresPage({
             <Link
               prefetch={false}
               href={paginationQuery(1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               <ChevronDoubleLeftIcon className="h-4 w-4" />
             </Link>
@@ -263,19 +261,19 @@ export default async function HighscoresPage({
             <Link
               prefetch={false}
               href={paginationQuery(page - 1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               ← Prev
             </Link>
           )}
-          <span className="px-2 text-sm text-gray-500 dark:text-gray-400">
+          <span className="text-muted-foreground px-2 text-sm">
             {page} / {totalPages}
           </span>
           {page < totalPages && (
             <Link
               prefetch={false}
               href={paginationQuery(page + 1)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               Next →
             </Link>
@@ -284,7 +282,7 @@ export default async function HighscoresPage({
             <Link
               prefetch={false}
               href={paginationQuery(totalPages)}
-              className="rounded px-2 py-1 text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="hover:bg-surface-hover rounded px-2 py-1 text-sm"
             >
               <ChevronDoubleRightIcon className="h-4 w-4" />
             </Link>

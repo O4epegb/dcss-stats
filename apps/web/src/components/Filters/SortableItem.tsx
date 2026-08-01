@@ -1,7 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import clsx from 'clsx'
 import { FC, ReactNode } from 'react'
+import { cn } from '~/utils'
 
 export const SortableItem: FC<{ id: string; className: string; children: ReactNode }> = ({
   id,
@@ -18,17 +18,13 @@ export const SortableItem: FC<{ id: string; className: string; children: ReactNo
   }
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={clsx(className, 'relative', isDragging && 'z-10')}
-    >
+    <div ref={setNodeRef} style={style} className={cn(className, 'relative', isDragging && 'z-10')}>
       <button
         {...attributes}
         {...listeners}
-        className={clsx(
+        className={cn(
           isDragging ? 'cursor-grabbing' : 'cursor-grab',
-          'absolute right-full mr-1 flex h-6 w-6 items-center justify-center rounded-sm text-gray-300 transition-colors hover:bg-gray-200 hover:text-black',
+          'text-muted-foreground hover:bg-surface-active hover:text-foreground absolute right-full mr-1 flex h-6 w-6 items-center justify-center rounded-sm transition-colors',
         )}
       >
         <svg

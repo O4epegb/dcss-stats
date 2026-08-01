@@ -1,8 +1,7 @@
-import clsx from 'clsx'
 import { first, without } from 'lodash-es'
 import { forwardRef, memo } from 'react'
 import { Game } from '~/types'
-import { date, formatNumber, getMorgueUrl, pluralize } from '~/utils'
+import { cn, date, formatNumber, getMorgueUrl, pluralize } from '~/utils'
 
 type Props = {
   game: Game
@@ -36,9 +35,9 @@ const GameItemFull = memo(
     return (
       <div
         ref={ref}
-        className={clsx(
-          'flex-1 rounded-sm border border-gray-200 bg-white px-2 py-1 text-sm text-black dark:border-gray-300 dark:bg-zinc-900 dark:text-white',
-          game.isWin && 'border-l-2 border-l-emerald-500 dark:border-l-emerald-400',
+        className={cn(
+          'border-border bg-surface text-foreground flex-1 rounded-sm border px-2 py-1 text-sm',
+          game.isWin && 'border-l-success border-l-2',
           shadow && 'shadow-md',
         )}
       >
@@ -56,21 +55,19 @@ const GameItemFull = memo(
 
         <div>
           XL:{game.xl},{' '}
-          <span className={clsx(game.isWin ? 'text-emerald-500' : 'text-red-500')}>
-            {game.endMessage}
-          </span>{' '}
+          <span className={game.isWin ? 'text-success' : 'text-danger'}>{game.endMessage}</span>{' '}
           {!game.isWin && game.lvl > 0 && (
             <span>
               in {game.branch}:{game.lvl}{' '}
             </span>
           )}
           {game.uniqueRunes > 0 && (
-            <span className="text-indigo-600 dark:text-indigo-400">
+            <span className="text-special">
               {game.isWin ? 'and' : 'with'} {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}
             </span>
           )}
           {game.gems > 0 && (
-            <span className="text-indigo-600 dark:text-indigo-400">
+            <span className="text-special">
               {' '}
               {game.uniqueRunes === 0 ? 'with' : 'and'} {game.gems} {pluralize('gem', game.gems)}
             </span>
@@ -88,32 +85,23 @@ const GameItemFull = memo(
           )}
         </div>
         <div>
-          <span className="text-red-800 dark:text-red-300">str:{game.str}</span>{' '}
-          <span className="text-blue-800 dark:text-blue-300">int:{game.int}</span>{' '}
-          <span className="text-green-800 dark:text-green-300">dex:{game.dex}</span>{' '}
-          {game.ac != null && (
-            <span className="text-yellow-800 dark:text-yellow-300">ac:{game.ac}</span>
-          )}{' '}
-          {game.ev != null && (
-            <span className="text-violet-800 dark:text-violet-300">ev:{game.ev}</span>
-          )}{' '}
-          {game.sh != null && <span className="text-sky-800 dark:text-sky-300">sh:{game.sh}</span>}
+          <span className="text-attribute-strength">str:{game.str}</span>{' '}
+          <span className="text-attribute-intelligence">int:{game.int}</span>{' '}
+          <span className="text-attribute-dexterity">dex:{game.dex}</span>{' '}
+          {game.ac != null && <span className="text-attribute-armour">ac:{game.ac}</span>}{' '}
+          {game.ev != null && <span className="text-attribute-evasion">ev:{game.ev}</span>}{' '}
+          {game.sh != null && <span className="text-attribute-shield">sh:{game.sh}</span>}
         </div>
         {skills.length > 0 && (
           <div className="flex flex-wrap gap-x-2">
             {skills.map(({ name, isMax }) => (
-              <div
-                key={name}
-                className={clsx(
-                  isMax ? 'text-amber-700 dark:text-amber-600' : 'text-gray-700 dark:text-gray-100',
-                )}
-              >
+              <div key={name} className={isMax ? 'text-warning' : 'text-foreground'}>
                 {name}
               </div>
             ))}
           </div>
         )}
-        <div className="flex justify-between gap-2 pt-0.5 text-xs text-gray-400 dark:text-gray-300">
+        <div className="text-muted-foreground flex justify-between gap-2 pt-0.5 text-xs">
           <div>
             {formatNumber(game.score)} score points, {formatNumber(game.turns)} turns, lasted for{' '}
             {duration.format('D') !== '0' && (
@@ -125,7 +113,7 @@ const GameItemFull = memo(
           </div>
           <ServerLink game={game} />
         </div>
-        <div className="flex justify-between gap-2 pt-0.5 text-xs text-gray-400 dark:text-gray-300">
+        <div className="text-muted-foreground flex justify-between gap-2 pt-0.5 text-xs">
           <TimeAndVersion game={game} />
         </div>
       </div>
@@ -142,7 +130,7 @@ const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
         <MorgueLink game={game} />
         {game.char}
         {game.god && <span className="font-light"> of {game.god}</span>},{' '}
-        <span className={clsx(game.isWin ? 'text-emerald-500' : 'text-red-500')}>
+        <span className={game.isWin ? 'text-success' : 'text-danger'}>
           {game.isWin ? 'escaped' : game.endMessage}
         </span>{' '}
         {!game.isWin && game.lvl > 0 && (
@@ -151,19 +139,19 @@ const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
           </span>
         )}
         {game.uniqueRunes > 0 && (
-          <span className="text-indigo-600 dark:text-indigo-400">
+          <span className="text-special">
             with {game.uniqueRunes} {pluralize('rune', game.uniqueRunes)}
           </span>
         )}
         {game.gems > 0 && (
-          <span className="text-indigo-600 dark:text-indigo-400">
+          <span className="text-special">
             {' '}
             {game.uniqueRunes === 0 ? 'with' : 'and'} {game.gems} {pluralize('gem', game.gems)}
           </span>
         )}
         {(game.uniqueRunes > 0 || game.gems > 0) && '!'}
       </div>
-      <div className="flex justify-between gap-2 text-xs text-gray-400">
+      <div className="text-muted-foreground flex justify-between gap-2 text-xs">
         XL:{game.xl}; score {formatNumber(game.score)}; turns {formatNumber(game.turns)}; lasted for{' '}
         {duration.format('D') !== '0' && (
           <>
@@ -173,7 +161,7 @@ const CompactGameItem = forwardRef<HTMLDivElement, Props>(({ game }, ref) => {
         {duration.format('HH:mm:ss')}
         <ServerLink game={game} />
       </div>
-      <div className="flex justify-between gap-2 text-xs text-gray-400">
+      <div className="text-muted-foreground flex justify-between gap-2 text-xs">
         <TimeAndVersion compact game={game} />
       </div>
     </div>

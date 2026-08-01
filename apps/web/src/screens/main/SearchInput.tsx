@@ -57,7 +57,7 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
       <Autocomplete.InputGroup className="flex">
         <Autocomplete.Input
           placeholder={`Search player by nickname, e.g. "${nickname}"`}
-          className="block h-10 w-full rounded-l-sm border border-gray-400 px-2 text-ellipsis"
+          className="border-border-strong bg-surface block h-10 w-full rounded-l-sm border px-2 text-ellipsis"
           onFocus={(e) => {
             e.currentTarget.select()
           }}
@@ -70,7 +70,7 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
         />
         <button
           type="button"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-r-sm border border-l-0 border-gray-400 bg-gray-100 hover:bg-gray-200 dark:bg-zinc-700 dark:hover:bg-zinc-600"
+          className="border-border-strong bg-surface-emphasis hover:bg-surface-active flex h-10 w-10 shrink-0 items-center justify-center rounded-r-sm border border-l-0 select-none"
           onClick={() => query && goToPlayerPage(query)}
         >
           <Image
@@ -85,14 +85,14 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
 
       <Autocomplete.Portal>
         <Autocomplete.Positioner sideOffset={4} className="z-20">
-          <Autocomplete.Popup className="w-(--anchor-width) rounded-md border border-gray-200 bg-white shadow-lg dark:border-zinc-700 dark:bg-zinc-800">
+          <Autocomplete.Popup className="border-border bg-surface shadow-shadow/10 w-(--anchor-width) rounded-md border shadow-lg">
             {showLoader && (
-              <Autocomplete.Status className="px-3 py-2 text-sm text-gray-500 dark:text-zinc-400">
+              <Autocomplete.Status className="text-muted-foreground px-3 py-2 text-sm">
                 {query ? 'Loading...' : 'Type to search'}
               </Autocomplete.Status>
             )}
             {!showLoader && items.length === 0 && debouncedQuery && (
-              <Autocomplete.Empty className="px-3 py-2 text-sm text-gray-500 dark:text-zinc-400">
+              <Autocomplete.Empty className="text-muted-foreground px-3 py-2 text-sm">
                 Nothing found
               </Autocomplete.Empty>
             )}
@@ -102,7 +102,7 @@ export const SearchInput = ({ nickname }: { nickname: string }) => {
                   <Autocomplete.Item
                     key={item.name}
                     value={item}
-                    className="cursor-default rounded-sm px-3 py-1.5 text-sm data-highlighted:bg-gray-100 dark:data-highlighted:bg-zinc-700"
+                    className="data-highlighted:bg-surface-hover cursor-default rounded-sm px-3 py-1.5 text-sm"
                     onClick={() => {
                       goToPlayerPage(item.name)
                     }}

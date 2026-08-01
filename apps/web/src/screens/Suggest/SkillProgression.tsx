@@ -97,7 +97,7 @@ export const SkillProgression = ({
 
         {data && data.length > 0 && (
           <Dialog>
-            <DialogTrigger className="flex items-center gap-1 rounded-sm px-2 py-1 hover:bg-gray-100 dark:hover:bg-zinc-700">
+            <DialogTrigger className="hover:bg-surface-hover flex items-center gap-1 rounded-sm px-2 py-1">
               Show table view
             </DialogTrigger>
             <DialogContent title="Skill level progression">
@@ -135,11 +135,11 @@ export const SkillProgression = ({
         )}
       </div>
 
-      {error && <div className="text-red-500">Error loading skill progression data</div>}
+      {error && <div className="text-danger">Error loading skill progression data</div>}
       {data && !data.length && <div>No skill progression data</div>}
 
       {isValidating && (
-        <div className="m-auto w-full rounded-sm bg-blue-100 px-2 py-1 text-sm text-black">
+        <div className="bg-info-surface text-info-foreground m-auto w-full rounded-sm px-2 py-1 text-sm">
           This feature is experimental and may take up to a minute to load
         </div>
       )}
@@ -160,18 +160,18 @@ export const SkillProgression = ({
                   The <b>color</b> of the bar represents the number of players who who had such
                   skill at that <b>XL</b>.
                   <br />
-                  <b className="text-green-700">Green</b> means more players.{' '}
-                  <b className="text-amber-600">Yellow</b> means fewer players.
+                  <b className="text-success">Green</b> means more players.{' '}
+                  <b className="text-warning">Yellow</b> means fewer players.
                   <br />
                   <br />
                   <b>For example</b>, if the bar is <b>thick</b> and{' '}
-                  <b className="text-green-700">green</b>, it means that many players leveled and
-                  used a skill.
+                  <b className="text-success">green</b>, it means that many players leveled and used
+                  a skill.
                   <br />
-                  If the bar is <b>thick</b> and <b className="text-amber-600">yellow</b>, it means
+                  If the bar is <b>thick</b> and <b className="text-warning">yellow</b>, it means
                   that only a few players leveled and used a skill.
                   <br />
-                  If the bar is <b>thin</b> and <b className="text-amber-600">yellow</b>, it means
+                  If the bar is <b>thin</b> and <b className="text-warning">yellow</b>, it means
                   that almost no one leveled and used a skill.
                 </div>
               }
@@ -209,13 +209,13 @@ export const SkillProgression = ({
                                 height: Math.ceil(value),
                               }}
                               className={cn('w-full', {
-                                'bg-amber-100': dataPoints,
-                                'bg-amber-200': dataPoints >= maxDataPoints * 0.1,
-                                'bg-amber-300': dataPoints >= maxDataPoints * 0.25,
-                                'bg-green-500': dataPoints >= maxDataPoints * 0.35,
-                                'bg-green-400': dataPoints >= maxDataPoints * 0.5,
-                                'bg-green-600': dataPoints >= maxDataPoints * 0.7,
-                                'bg-green-800': dataPoints >= maxDataPoints * 0.9,
+                                'bg-density-1': dataPoints,
+                                'bg-density-2': dataPoints >= maxDataPoints * 0.1,
+                                'bg-density-3': dataPoints >= maxDataPoints * 0.25,
+                                'bg-density-4': dataPoints >= maxDataPoints * 0.35,
+                                'bg-density-5': dataPoints >= maxDataPoints * 0.5,
+                                'bg-density-6': dataPoints >= maxDataPoints * 0.7,
+                                'bg-density-7': dataPoints >= maxDataPoints * 0.9,
                               })}
                             />
                           )}

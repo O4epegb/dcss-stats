@@ -1,14 +1,9 @@
-import clsx from 'clsx'
 import { FC } from 'react'
+import { cn } from '~/utils'
 
 export const Select: FC<React.SelectHTMLAttributes<HTMLSelectElement>> = ({
   className,
   ...props
 }) => {
-  return (
-    <select
-      className={clsx(className, 'rounded-sm bg-gray-200 py-1 pl-1 dark:bg-zinc-700')}
-      {...props}
-    />
-  )
+  return <select className={cn('bg-surface-emphasis rounded-sm py-1 pl-1', className)} {...props} />
 }

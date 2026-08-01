@@ -28,7 +28,7 @@ export const Player = () => {
         </header>
         <div className="space-y-2">
           <section className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <h2 className="text-3xl font-bold">{player.name}</h2>
+            <h2 className="text-page-heading text-3xl font-bold">{player.name}</h2>
             <FavoriteButton />
             <ServerFilter />
           </section>
@@ -53,7 +53,7 @@ export const Player = () => {
           toggleShowTrunkData={() => toggleOption(trunkDataKey)}
         />
       </div>
-      <Footer className="col-span-full mt-0 border-t border-zinc-700 pt-4 pb-4" />
+      <Footer className="border-border col-span-full mt-0 border-t pt-4 pb-4" />
     </div>
   )
 }

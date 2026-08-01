@@ -166,28 +166,28 @@ export function MonsterTable({
           type="text"
           placeholder="Search monsters..."
           value={search}
-          className="w-full rounded border border-gray-300 bg-white px-3 py-2 text-sm outline-none placeholder:text-gray-400 focus:border-emerald-500 dark:border-zinc-700 dark:bg-zinc-900 dark:placeholder:text-zinc-500 dark:focus:border-emerald-500"
+          className="border-border bg-surface placeholder:text-muted-foreground focus:border-accent w-full rounded border px-3 py-2 text-sm outline-none"
           onChange={(e) => setSearch(e.target.value)}
         />
 
         <div className="flex items-center justify-between gap-3">
-          <div className="text-xs text-gray-500 dark:text-zinc-400">
+          <div className="text-muted-foreground text-xs">
             {filtered.length} {pluralize('monster', filtered.length)}
           </div>
           <button
             type="button"
-            className="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-gray-600 transition-colors hover:bg-gray-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="text-muted-foreground hover:bg-surface-hover flex items-center gap-1.5 rounded px-2 py-1 text-xs transition-colors"
             onClick={() => showTiles.set(!showTiles.value)}
           >
             <span
               className={cn(
                 'relative inline-flex h-4 w-7 shrink-0 rounded-full transition-colors',
-                showTiles.value ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-zinc-600',
+                showTiles.value ? 'bg-accent' : 'bg-surface-active',
               )}
             >
               <span
                 className={cn(
-                  'pointer-events-none mt-0.5 inline-block h-3 w-3 translate-x-0.5 rounded-full bg-white shadow transition-transform',
+                  'bg-control-thumb pointer-events-none mt-0.5 inline-block h-3 w-3 translate-x-0.5 rounded-full shadow transition-transform',
                   showTiles.value && 'translate-x-3.5',
                 )}
               />
@@ -207,7 +207,7 @@ export function MonsterTable({
             />
             <div>
               <p className="text-sm font-medium">No monsters found</p>
-              <p className="mt-1 text-xs text-gray-500 italic dark:text-zinc-400">
+              <p className="text-muted-foreground mt-1 text-xs italic">
                 You sense the presence of something unfriendly..
               </p>
             </div>
@@ -217,7 +217,7 @@ export function MonsterTable({
         <div className={cn('overflow-x-auto', filtered.length === 0 && 'hidden')}>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200 text-left text-xs font-medium text-gray-500 dark:border-zinc-700 dark:text-zinc-400">
+              <tr className="border-border text-muted-foreground border-b text-left text-xs font-medium">
                 <th className="py-2 pr-2"></th>
                 <SortTh
                   label="Name"
@@ -279,8 +279,8 @@ export function MonsterTable({
                 <tr
                   key={monster.id}
                   className={cn(
-                    'cursor-pointer border-b border-gray-100 transition-colors hover:bg-gray-50 dark:border-zinc-800 dark:hover:bg-zinc-800/60',
-                    selected?.id === monster.id && 'bg-emerald-50 dark:bg-emerald-900/20',
+                    'border-border hover:bg-surface-hover/60 cursor-pointer border-b transition-colors',
+                    selected?.id === monster.id && 'bg-success-surface',
                   )}
                   onClick={() => select(selected?.id === monster.id ? null : monster)}
                 >
@@ -298,7 +298,7 @@ export function MonsterTable({
                       ) : (
                         <SymbolGlyph symbol={monster.symbol} colour={monster.colour} size={32} />
                       )}
-                      <span className="absolute -right-0.5 -bottom-0.5 rounded-sm bg-gray-200 px-0.5 text-[9px] leading-3 font-medium text-gray-600 md:hidden dark:bg-zinc-600 dark:text-zinc-300">
+                      <span className="bg-surface-active text-muted-foreground absolute -right-0.5 -bottom-0.5 rounded-sm px-0.5 text-[9px] leading-3 font-medium md:hidden">
                         {monster.symbol}
                       </span>
                     </div>
@@ -306,9 +306,7 @@ export function MonsterTable({
                   <td className="px-2 py-2 font-medium">
                     {monster.name}
                     {monster.unfinished && (
-                      <span className="ml-1 text-xs text-amber-600 dark:text-amber-400">
-                        (unfinished)
-                      </span>
+                      <span className="text-warning ml-1 text-xs">(unfinished)</span>
                     )}
                   </td>
                   <td className="px-2 py-2 tabular-nums">{monster.hd ?? '-'}</td>
@@ -344,7 +342,7 @@ export function MonsterTable({
       >
         <Drawer.Portal>
           {isMobile && (
-            <Drawer.Backdrop className="fixed inset-0 min-h-dvh bg-black/20 transition-opacity duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] data-ending-style:opacity-0 data-ending-style:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-starting-style:opacity-0 data-swiping:duration-0 supports-[-webkit-touch-callout:none]:absolute dark:bg-black/70" />
+            <Drawer.Backdrop className="bg-overlay fixed inset-0 min-h-dvh transition-opacity duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] data-ending-style:opacity-0 data-ending-style:duration-[calc(var(--drawer-swipe-strength)*400ms)] data-starting-style:opacity-0 data-swiping:duration-0 supports-[-webkit-touch-callout:none]:absolute" />
           )}
           <Drawer.Viewport
             className={cn(
@@ -354,8 +352,7 @@ export function MonsterTable({
           >
             <Drawer.Popup
               className={cn(
-                'pointer-events-auto overflow-y-auto bg-white text-gray-900 outline-1 outline-gray-200',
-                'dark:bg-zinc-900 dark:text-zinc-100 dark:outline-zinc-700',
+                'bg-surface text-foreground outline-border pointer-events-auto overflow-y-auto outline-1',
                 // mobile: bottom sheet
                 'max-h-[85vh] w-full rounded-t-xl pb-[max(1rem,env(safe-area-inset-bottom,0px))]',
                 'px-4 pt-3',
@@ -374,11 +371,9 @@ export function MonsterTable({
                 'max-md:data-[ending-style]:[transform:translateY(calc(100%+2px))]',
               )}
             >
-              {isMobile && (
-                <div className="mx-auto mb-3 h-1 w-12 rounded-full bg-gray-300 dark:bg-zinc-600" />
-              )}
+              {isMobile && <div className="bg-surface-active mx-auto mb-3 h-1 w-12 rounded-full" />}
               <Drawer.Content className="relative">
-                <Drawer.Close className="absolute top-0 right-0 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-zinc-800 dark:hover:text-zinc-300">
+                <Drawer.Close className="text-muted-foreground hover:bg-surface-hover hover:text-foreground absolute top-0 right-0 rounded p-1">
                   <XMarkIcon className="size-6" />
                 </Drawer.Close>
 
@@ -403,7 +398,7 @@ export function MonsterTable({
                       )}
                       <div className="min-w-0 flex-1">
                         <h3 className="truncate pr-8 text-base font-semibold">{displayed.name}</h3>
-                        <div className="text-xs text-gray-500 dark:text-zinc-400">
+                        <div className="text-muted-foreground text-xs">
                           {/* hidden for now, redundant */}
                           {/* {displayed.symbol} &middot; {displayed.size} &middot;{' '}
                           {displayed.intelligence} */}
@@ -412,66 +407,64 @@ export function MonsterTable({
                     </div>
 
                     {displayed.description && (
-                      <p className="text-xs leading-relaxed text-gray-600 dark:text-zinc-400">
+                      <p className="text-muted-foreground text-xs leading-relaxed">
                         {displayed.description.split('\n\n')[0]}
                       </p>
                     )}
 
                     <InfoSection title="Found in" items={formatLocations(displayed.locations)} />
 
-                    <div className="rounded border border-gray-200 p-3 dark:border-zinc-700">
-                      <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">
-                        Stats
-                      </div>
+                    <div className="border-border rounded border p-3">
+                      <div className="text-muted-foreground text-xs font-medium">Stats</div>
                       <dl className="mt-1 space-y-1 text-sm">
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">HD</dt>
+                          <dt className="text-muted-foreground">HD</dt>
                           <dd>{displayed.hd ?? '-'}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">HP</dt>
+                          <dt className="text-muted-foreground">HP</dt>
                           <dd>{displayed.hp}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">AC</dt>
+                          <dt className="text-muted-foreground">AC</dt>
                           <dd>
                             {displayed.ac ?? '-'}
                             {displayed.ac_sim != null && displayed.ac_sim !== displayed.ac && (
-                              <span className="ml-1 text-gray-400 dark:text-zinc-500">
+                              <span className="text-muted-foreground ml-1">
                                 ({displayed.ac_sim})
                               </span>
                             )}
                           </dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">EV</dt>
+                          <dt className="text-muted-foreground">EV</dt>
                           <dd>
                             {displayed.ev ?? '-'}
                             {displayed.ev_sim != null && displayed.ev_sim !== displayed.ev && (
-                              <span className="ml-1 text-gray-400 dark:text-zinc-500">
+                              <span className="text-muted-foreground ml-1">
                                 ({displayed.ev_sim})
                               </span>
                             )}
                           </dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Speed</dt>
+                          <dt className="text-muted-foreground">Speed</dt>
                           <dd>{formatSpeed(displayed.speed)}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Size</dt>
+                          <dt className="text-muted-foreground">Size</dt>
                           <dd>{displayed.size}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Intelligence</dt>
+                          <dt className="text-muted-foreground">Intelligence</dt>
                           <dd>{displayed.intelligence}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">XP</dt>
+                          <dt className="text-muted-foreground">XP</dt>
                           <dd>{displayed.xp ?? '-'}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Willpower</dt>
+                          <dt className="text-muted-foreground">Willpower</dt>
                           <dd>
                             {displayed.willpower_invuln
                               ? '∞'
@@ -481,44 +474,44 @@ export function MonsterTable({
                           </dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Spell HD</dt>
+                          <dt className="text-muted-foreground">Spell HD</dt>
                           <dd>{displayed.spell_hd}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Species</dt>
+                          <dt className="text-muted-foreground">Species</dt>
                           <dd>{displayed.species}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Genus</dt>
+                          <dt className="text-muted-foreground">Genus</dt>
                           <dd>{displayed.genus}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Corpse</dt>
+                          <dt className="text-muted-foreground">Corpse</dt>
                           <dd>{displayed.corpse ? 'Yes' : 'No'}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Shape</dt>
+                          <dt className="text-muted-foreground">Shape</dt>
                           <dd>{displayed.shape}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Holiness</dt>
+                          <dt className="text-muted-foreground">Holiness</dt>
                           <dd>{displayed.holiness || '-'}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Habitat</dt>
+                          <dt className="text-muted-foreground">Habitat</dt>
                           <dd>{displayed.habitat}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Shout</dt>
+                          <dt className="text-muted-foreground">Shout</dt>
                           <dd>{displayed.shout}</dd>
                         </div>
                         <div className="flex justify-between">
-                          <dt className="text-gray-500 dark:text-zinc-400">Uses</dt>
+                          <dt className="text-muted-foreground">Uses</dt>
                           <dd>{displayed.uses.replace(/_/g, ' ')}</dd>
                         </div>
                         {Object.keys(displayed.resist_levels).length > 0 && (
                           <div className="flex justify-between">
-                            <dt className="text-gray-500 dark:text-zinc-400">Resistances</dt>
+                            <dt className="text-muted-foreground">Resistances</dt>
                             <dd>
                               {Object.entries(displayed.resist_levels)
                                 .map(([k, v]) => `${k}:${v}`)
@@ -530,10 +523,8 @@ export function MonsterTable({
                     </div>
 
                     {displayed.attacks && displayed.attacks.length > 0 && (
-                      <div className="rounded border border-gray-200 p-3 dark:border-zinc-700">
-                        <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">
-                          Attacks
-                        </div>
+                      <div className="border-border rounded border p-3">
+                        <div className="text-muted-foreground text-xs font-medium">Attacks</div>
                         <ul className="mt-1 space-y-1 text-sm">
                           {displayed.attacks.map((atk, i) => (
                             <li key={i}>
@@ -553,10 +544,8 @@ export function MonsterTable({
                       <InfoSection title="Defenses" items={displayed.defenses} />
 
                       {displayed.spells.length > 0 && (
-                        <div className="rounded border border-gray-200 p-3 dark:border-zinc-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">
-                            Spells
-                          </div>
+                        <div className="border-border rounded border p-3">
+                          <div className="text-muted-foreground text-xs font-medium">Spells</div>
                           <div className="mt-1">
                             <TagList items={formatSpells(displayed.spells)} />
                           </div>
@@ -565,7 +554,7 @@ export function MonsterTable({
                     </div>
 
                     {displayed.quote && (
-                      <blockquote className="border-l-2 border-gray-200 pl-2 text-xs leading-relaxed whitespace-pre-line text-gray-500 italic dark:border-zinc-700 dark:text-zinc-500">
+                      <blockquote className="border-border text-muted-foreground border-l-2 pl-2 text-xs leading-relaxed whitespace-pre-line italic">
                         {displayed.quote.split('\n\n')[0]}
                       </blockquote>
                     )}
@@ -630,7 +619,7 @@ function SymbolGlyph({
     <div
       className={cn(
         'flex items-center justify-center rounded font-mono',
-        colour ? 'bg-zinc-800' : 'bg-gray-100 dark:bg-zinc-800',
+        colour ? 'bg-glyph-background' : 'bg-surface-emphasis',
         className,
       )}
       style={{
@@ -647,13 +636,13 @@ function SymbolGlyph({
 
 function TagList({ items }: { items?: string[] }) {
   if (!items || items.length === 0) {
-    return <span className="text-gray-400 dark:text-zinc-600">-</span>
+    return <span className="text-muted-foreground/60">-</span>
   }
 
   return (
     <div className="flex flex-wrap gap-1">
       {items.map((item) => (
-        <span key={item} className="rounded bg-gray-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+        <span key={item} className="bg-surface-emphasis rounded px-1.5 py-0.5 text-xs">
           {item}
         </span>
       ))}
@@ -665,8 +654,8 @@ function InfoSection({ title, items }: { title: string; items?: string[] }) {
   if (!items || items.length === 0) return null
 
   return (
-    <div className="rounded border border-gray-200 p-3 dark:border-zinc-700">
-      <div className="text-xs font-medium text-gray-500 dark:text-zinc-400">{title}</div>
+    <div className="border-border rounded border p-3">
+      <div className="text-muted-foreground text-xs font-medium">{title}</div>
       <div className="mt-1 flex flex-wrap gap-1">
         <TagList items={items} />
       </div>
@@ -692,10 +681,7 @@ function SortTh({
   const isActive = active === sortKey
   return (
     <th
-      className={cn(
-        'cursor-pointer px-2 py-2 select-none hover:text-gray-700 dark:hover:text-zinc-300',
-        className,
-      )}
+      className={cn('hover:text-foreground cursor-pointer px-2 py-2 select-none', className)}
       onClick={() => onSort(sortKey)}
     >
       <span className="inline-flex items-center gap-0.5">

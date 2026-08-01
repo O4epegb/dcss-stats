@@ -95,9 +95,7 @@ export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'
             {isError(error) && (
               <div className="flex flex-col items-center justify-center gap-2 pt-8 pb-4">
                 <div>Error occured, try to reload the page</div>
-                {error.message && (
-                  <code className="bg-gray-100 p-2 dark:bg-zinc-700">{error.message}</code>
-                )}
+                {error.message && <code className="bg-surface-emphasis p-2">{error.message}</code>}
               </div>
             )}
           </div>

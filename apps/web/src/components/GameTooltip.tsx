@@ -53,7 +53,7 @@ export const GameTooltip = ({ children, ...rest }: GameTooltipProps) => {
       />
       <Popover.Portal>
         <Popover.Positioner side="top" sideOffset={8} className="z-20 outline-none">
-          <Popover.Popup className="max-w-[calc(100vw-8px)] origin-(--transform-origin) shadow-lg transition-[transform,scale,opacity] data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0 dark:shadow-none">
+          <Popover.Popup className="shadow-shadow/10 max-w-[calc(100vw-8px)] origin-(--transform-origin) shadow-lg transition-[transform,scale,opacity] data-ending-style:scale-90 data-ending-style:opacity-0 data-starting-style:scale-90 data-starting-style:opacity-0">
             {game ? (
               <GameCard game={game} />
             ) : (
