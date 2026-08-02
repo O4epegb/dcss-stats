@@ -1,9 +1,7 @@
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
-import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
-import { Loader } from '~/components/ui/Loader'
 import { defaultMetaDescription, defaultMetaTitle } from '~/constants'
 import PlayerPage from '~/screens/Player'
 import { cookiesStoreDefault } from '~/screens/Player/utils'
@@ -46,18 +44,7 @@ export default async function Page(props: PageProps<'/players/[slug]'>) {
   const [{ slug }, searchParams] = await Promise.all([props.params, props.searchParams])
   const servers = typeof searchParams.servers === 'string' ? searchParams.servers : undefined
 
-  return (
-    <Suspense
-      fallback={
-        <div className="flex min-h-dvh w-full flex-col items-center justify-center gap-4">
-          <Loader />
-          Loading player data
-        </div>
-      }
-    >
-      <PageContent slug={slug} servers={servers} />
-    </Suspense>
-  )
+  return <PageContent slug={slug} servers={servers} />
 }
 
 async function PageContent({ slug, servers }: { slug: string; servers?: string }) {

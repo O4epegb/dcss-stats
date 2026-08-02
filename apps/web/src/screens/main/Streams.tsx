@@ -6,7 +6,11 @@ import { cn, pluralize } from '~/utils'
 export const Streams = async () => {
   'use cache'
 
-  cacheLife('seconds')
+  cacheLife({
+    stale: 30,
+    revalidate: 60,
+    expire: 5 * 60,
+  })
 
   const response: { data: { streams: Array<Stream> } } = await fetchApi('/streams').then((r) =>
     r.json(),
