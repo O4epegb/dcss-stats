@@ -423,6 +423,8 @@ __metadata:
     tailwind-merge: "npm:^3.4.0"
     tailwindcss: "npm:^4.3.2"
     typescript: "npm:^5.9.3"
+    unbzip2-stream: "npm:^1.4.3"
+    vitest: "npm:^4.1.9"
   languageName: unknown
   linkType: soft
 
