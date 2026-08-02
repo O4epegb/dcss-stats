@@ -18,7 +18,8 @@
     "typegen": "turbo typegen",
     "dev:web": "turbo dev --filter=@dcss-stats/web",
     "dev:api": "turbo dev --filter=@dcss-stats/api",
-    "dev:extractor": "turbo dev --filter=@dcss-stats/extractor"
+    "dev:extractor": "turbo dev --filter=@dcss-stats/extractor",
+    "dev:extension": "turbo dev --filter=@dcss-stats/extension"
   },
   "devDependencies": {
     "husky": "^9.1.7",

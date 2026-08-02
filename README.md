@@ -86,6 +86,16 @@ Run only the backend with:
 yarn dev:api
 ```
 
+## Browser Extension
+
+Run the Vite development build for the browser extension with:
+
+```sh
+yarn dev:extension
+```
+
+Then load `apps/extension/dist` as an unpacked extension in Chrome. See the [extension README](./apps/extension/README.md) for production build and packaging commands.
+
 ## Environment Variables
 
 If you want to change some environment variables only for your local development then you need to make a `.env.local` file. Check other `.env*` files or search for `NEXT_PUBLIC_` to see what variables are being used.
