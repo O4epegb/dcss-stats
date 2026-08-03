@@ -5,7 +5,7 @@
     "dev": "next dev -p 7331",
     "build": "next build",
     "start": "next start -p 7331",
-    "type-check": "tsc --noEmit",
+    "type-check": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "lint": "oxlint",
     "test": "yarn lint && yarn type-check && vitest run",
@@ -15,7 +15,7 @@
     "*": [
       "prettier --write --ignore-unknown"
     ],
-    "!(next-env.d).{ts,tsx}": [
+    "*.{ts,tsx}": [
       "oxlint --deny-warnings --fix"
     ]
   },
