@@ -57,6 +57,7 @@ const getEyeImageForPlayer = (playerId: string) => {
 }
 
 const skeletonRows = Array.from({ length: 10 }, (_, i) => i)
+const tableRowClassName = 'border-border h-[33px] border-t'
 
 type LiveGamesTableProps = {
   games?: LiveGame[]
@@ -84,41 +85,41 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
         <tbody>
           {isSkeleton
             ? skeletonRows.map((row) => (
-                <tr key={row} className="border-border border-t">
-                  <td className="h-[33px] px-2 py-1.5">
+                <tr key={row} className={tableRowClassName}>
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-20 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-10 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-24 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-28 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-6 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-16 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-16 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-20 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active h-4 w-28 animate-pulse rounded" />
                   </td>
-                  <td className="h-[33px] px-2 py-1.5">
+                  <td className="px-2 py-1.5">
                     <div className="bg-surface-active ml-auto h-4 w-12 animate-pulse rounded" />
                   </td>
                 </tr>
               ))
             : games?.map((game) => (
-                <tr key={game.id} className="border-border border-t">
+                <tr key={game.id} className={tableRowClassName}>
                   <td className="px-2 py-1.5 whitespace-nowrap">
                     <Link
                       prefetch={false}
