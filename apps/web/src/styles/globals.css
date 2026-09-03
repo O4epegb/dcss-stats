@@ -345,14 +345,14 @@ html.crawl {
     var(--font-crawl), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
     'Courier New', monospace;
   --background: var(--crawl-black);
-  --foreground: var(--crawl-light-gray);
+  --foreground: var(--crawl-white);
   --page-heading: var(--crawl-yellow);
   --muted-foreground: #a2a2a2;
 
   --surface: var(--crawl-canvas);
-  --surface-muted: #111111;
+  --surface-muted: #1d1b15;
   --surface-emphasis: #292929;
-  --surface-hover: #1d1b15;
+  --surface-hover: #29251c;
   --overlay: rgb(0 0 0 / 70%);
 
   --border: #292929;

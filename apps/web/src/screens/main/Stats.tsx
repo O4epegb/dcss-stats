@@ -67,7 +67,7 @@ export const Stats = async () => {
       <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-1">
         <div className="space-y-1">
           <div className="flex justify-between gap-1">
-            <h3 className="text-xl font-semibold">
+            <h3 className="text-page-heading text-xl font-semibold">
               Top Players <span className="text-muted-foreground font-normal">(Last month)</span>
             </h3>
           </div>
@@ -76,7 +76,7 @@ export const Stats = async () => {
 
         <div className="space-y-1">
           <div className="flex justify-between gap-1">
-            <h3 className="text-xl font-semibold">
+            <h3 className="text-page-heading text-xl font-semibold">
               Top Players <span className="text-muted-foreground font-normal">(Last year)</span>
             </h3>
           </div>
@@ -85,7 +85,7 @@ export const Stats = async () => {
 
         <div className="space-y-1">
           <div className="flex justify-between gap-1">
-            <h3 className="text-xl font-semibold">
+            <h3 className="text-page-heading text-xl font-semibold">
               Top Players <span className="text-muted-foreground font-normal">(All Time)</span>
             </h3>
           </div>

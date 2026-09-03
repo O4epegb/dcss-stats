@@ -17,7 +17,11 @@ export const Table = ({
       title: 'Player',
       type: 'string',
       getter: (game: Game) => (
-        <Link prefetch={false} href={`/players/${game.name}`} className="relative hover:underline">
+        <Link
+          prefetch={false}
+          href={`/players/${game.name}`}
+          className="hover:text-link-hover relative hover:underline"
+        >
           {game.name}
         </Link>
       ),
@@ -74,7 +78,7 @@ export const Table = ({
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
-        <caption className="pb-1 text-left font-semibold">{title}:</caption>
+        <caption className="text-page-heading pb-1 text-left font-semibold">{title}:</caption>
         <thead>
           <tr>
             {tableData.map(({ title }, index) => (

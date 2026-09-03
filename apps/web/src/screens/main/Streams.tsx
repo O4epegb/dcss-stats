@@ -24,12 +24,12 @@ export const Streams = async () => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold">Live streams</h2>
+      <h2 className="text-page-heading text-xl font-semibold">Live streams</h2>
       <div className="flex gap-4 overflow-x-auto pt-2 pb-3 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-x-visible sm:pb-0 xl:grid-cols-3">
         {streams.map((stream) => (
           <a
             key={stream.id}
-            className="flex w-48 min-w-48 shrink-0 flex-col gap-1 sm:w-full sm:min-w-0"
+            className="group flex w-48 min-w-48 shrink-0 flex-col gap-1 sm:w-full sm:min-w-0"
             target="_blank"
             rel="noreferrer"
             href={stream.url}
@@ -47,7 +47,7 @@ export const Streams = async () => {
               )}
             />
             <div className="flex justify-between gap-2 whitespace-nowrap">
-              <span className="min-w-0 overflow-hidden font-semibold text-ellipsis">
+              <span className="group-hover:text-link-hover min-w-0 overflow-hidden font-semibold text-ellipsis transition-colors">
                 {stream.username}
                 <span className="text-muted-foreground text-sm font-extralight">
                   {' '}

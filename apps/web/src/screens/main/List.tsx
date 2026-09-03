@@ -33,9 +33,11 @@ export const List = ({
             key={item.name}
             prefetch={false}
             href={`/players/${item.name}`}
-            className="dcss-list-item"
+            className="dcss-list-item group"
           >
-            <span className="overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</span>
+            <span className="group-hover:text-link-hover overflow-hidden text-ellipsis whitespace-nowrap transition-colors">
+              {item.name}
+            </span>
             {item.count && (
               <span className="ml-auto tabular-nums">
                 {item.secondaryCount && (

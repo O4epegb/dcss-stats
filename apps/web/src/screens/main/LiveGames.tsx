@@ -124,7 +124,7 @@ export const LiveGamesTable = ({ games, isSkeleton = false }: LiveGamesTableProp
                     <Link
                       prefetch={false}
                       href={`/players/${game.username}`}
-                      className="font-medium hover:underline"
+                      className="hover:text-link-hover font-medium hover:underline"
                     >
                       {game.username}
                     </Link>
@@ -203,9 +203,12 @@ const LiveGamesSection = ({ children, total }: PropsWithChildren<{ total?: numbe
   return (
     <section className="space-y-2">
       <div className="flex items-end justify-between gap-3">
-        <h2 className="text-xl font-semibold">Live games</h2>
+        <h2 className="text-page-heading text-xl font-semibold">Live games</h2>
         {Boolean(total) && (
-          <Link href="/live-games" className="text-sm font-medium hover:underline">
+          <Link
+            href="/live-games"
+            className="text-link hover:text-link-hover text-sm font-medium hover:underline"
+          >
             Browse all ({total})
           </Link>
         )}
