@@ -397,7 +397,7 @@ html.crawl {
   --tooltip-border: var(--crawl-bronze);
 
   --stat-winrate: var(--crawl-magenta);
-  --stat-label: var(--crawl-brown);
+  --stat-label: #b97a20;
   --attribute-strength: var(--crawl-red);
   --attribute-intelligence: var(--crawl-blue);
   --attribute-dexterity: var(--crawl-green);

@@ -15,22 +15,34 @@ export const Footer = ({ className }: { className?: string }) => (
         href="https://crawl.develz.org/"
         target="_blank"
         rel="noopener noreferrer"
-        className="underline"
+        className="hover:text-link-hover underline transition-colors"
       >
         Dungeon Crawl Stone Soup
       </a>
     </div>
 
     <div className="grid grid-cols-2 gap-1 md:flex md:justify-end md:gap-4">
-      <Link prefetch={false} href="/servers" className="hover:underline">
+      <Link
+        prefetch={false}
+        href="/servers"
+        className="hover:text-link-hover transition-colors hover:underline"
+      >
         Tracked servers
       </Link>
 
-      <Link prefetch={false} href="/community" className="hover:underline">
+      <Link
+        prefetch={false}
+        href="/community"
+        className="hover:text-link-hover transition-colors hover:underline"
+      >
         Community links
       </Link>
 
-      <Link prefetch={false} href="/support" className="hover:underline">
+      <Link
+        prefetch={false}
+        href="/support"
+        className="hover:text-link-hover transition-colors hover:underline"
+      >
         Donate to support this app
       </Link>
 
@@ -38,7 +50,7 @@ export const Footer = ({ className }: { className?: string }) => (
         href="https://github.com/O4epegb/dcss-stats"
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-1 hover:underline"
+        className="hover:text-link-hover flex items-center gap-1 transition-colors hover:underline"
       >
         Github
         <ArrowTopRightOnSquareIcon className="size-4" />
@@ -51,7 +63,7 @@ export const Footer = ({ className }: { className?: string }) => (
         href="https://discord.gg/pKCNTunFeW"
         target="_blank"
         rel="noopener noreferrer"
-        className="underline"
+        className="hover:text-link-hover underline transition-colors"
       >
         RL Discord
       </a>{' '}

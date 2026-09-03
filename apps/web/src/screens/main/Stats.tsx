@@ -135,7 +135,7 @@ export const Stats = async () => {
           </div> */}
       </div>
 
-      <hr />
+      <hr className="border-border-strong/50" />
 
       <HighscoreTables />
     </div>

@@ -7,7 +7,7 @@ import { ThemeSelector } from '~/components/ThemeSelector'
 import { mobileMenuItems } from './menuItems'
 
 const itemClassName =
-  'block rounded px-3 py-2 text-sm leading-5 outline-none data-[highlighted]:bg-surface-hover'
+  'block rounded px-3 py-2 text-sm leading-5 outline-none transition-colors data-[highlighted]:bg-surface-hover data-[highlighted]:text-link-hover'
 
 export const MobileMenu = ({
   items = mobileMenuItems,

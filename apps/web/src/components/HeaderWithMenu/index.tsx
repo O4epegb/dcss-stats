@@ -25,7 +25,7 @@ export const HeaderWithMenu = ({ showSupportGoal = false }: { showSupportGoal?: 
                 <Link
                   key={item.href}
                   prefetch={false}
-                  className="group relative flex items-center justify-center"
+                  className="group hover:text-link-hover relative flex items-center justify-center transition-colors"
                   href={item.href}
                 >
                   <span className="flex items-center justify-center gap-1 group-hover:underline">
@@ -40,7 +40,7 @@ export const HeaderWithMenu = ({ showSupportGoal = false }: { showSupportGoal?: 
               <Link
                 key={item.href}
                 prefetch={false}
-                className="group relative flex items-center justify-center"
+                className="group hover:text-link-hover relative flex items-center justify-center transition-colors"
                 href={item.href}
               >
                 <span className="group-hover:underline">{item.label}</span>
