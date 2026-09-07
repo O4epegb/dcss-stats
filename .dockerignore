@@ -13,3 +13,4 @@ apps/extractor/crawl
 apps/api/logfiles
 apps/api/morgues
 apps/web
+.tmp

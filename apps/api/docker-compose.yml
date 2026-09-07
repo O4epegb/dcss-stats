@@ -27,7 +27,7 @@ services:
       crawl_data:
         condition: service_completed_successfully
         restart: true
-      postgres:
+      postgres18:
         condition: service_healthy
     volumes:
       - /app-volume:/usr/src/app/apps/api/logfiles
