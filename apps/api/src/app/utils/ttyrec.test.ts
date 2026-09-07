@@ -104,6 +104,20 @@ describe('decodeTtyrecFromUrl', () => {
       'No ttyrec frames parsed from payload',
     )
   })
+
+  test('ignores non-string content-type headers', async () => {
+    axiosGetMock.mockResolvedValue({
+      data: buildFrame(100, 0, Buffer.from('Player: Hero\n')),
+      headers: {
+        'content-type': 42,
+      },
+    })
+
+    const result = await decodeTtyrecFromUrl('https://example.com/game.ttyrec')
+
+    expect(result.stats.frameCount).toBe(1)
+    expect(result.textClean).toBe('Player: Hero\n')
+  })
 })
 
 describe('parseTimestampBinary', () => {

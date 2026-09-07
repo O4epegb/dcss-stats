@@ -47,6 +47,14 @@ const gzipMagic = Buffer.from([0x1f, 0x8b])
 const startsWith = (value: Buffer, prefix: Buffer) =>
   value.byteLength >= prefix.byteLength && value.subarray(0, prefix.byteLength).equals(prefix)
 
+const normalizeContentType = (value: unknown) => {
+  if (Array.isArray(value)) {
+    return value.join(';')
+  }
+
+  return typeof value === 'string' ? value : undefined
+}
+
 const decompressBzip2 = async (input: Buffer) => {
   const chunks: Buffer[] = []
 
@@ -246,9 +254,7 @@ export const getTtyrecBufferFromUrl = async (url: string) => {
   })
 
   const compressedBuffer = Buffer.from(response.data)
-  const sourceContentType = Array.isArray(response.headers?.['content-type'])
-    ? response.headers['content-type'].join(';')
-    : response.headers?.['content-type']
+  const sourceContentType = normalizeContentType(response.headers?.['content-type'])
 
   const ttyrecBuffer = await maybeDecompress(compressedBuffer, url, sourceContentType)
 
@@ -299,9 +305,7 @@ export const extractTimestampDataFromUrl = async (url: string) => {
   })
 
   const inputBuffer = Buffer.from(response.data)
-  const sourceContentType = Array.isArray(response.headers?.['content-type'])
-    ? response.headers['content-type'].join(';')
-    : response.headers?.['content-type']
+  const sourceContentType = normalizeContentType(response.headers?.['content-type'])
   const decodedBuffer = await maybeDecompress(inputBuffer, url, sourceContentType)
 
   return parseTimestampBinary(decodedBuffer)
