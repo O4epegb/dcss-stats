@@ -8,6 +8,15 @@ import { logger } from '~/utils'
 
 const LIMIT = 10
 
+const excludedHighscoreGameIds = [
+  // Bugged CPO game: https://crawl.project357.org/morgue/Wizard1ke/morgue-Wizard1ke-20260413-010047.txt
+  'dfb7bfb9e4d7dae9c2196da5ec8985baf2beded521ec970c6bdf7a90b78b2663',
+] as const
+
+const excludedGamesFilter = excludedHighscoreGameIds.length
+  ? `AND id NOT IN (${excludedHighscoreGameIds.map((_, index) => `$${index + 1}`).join(', ')})`
+  : ''
+
 type HighscoreRow = {
   gameId: string
   playerId: string
@@ -66,7 +75,8 @@ export const getHighscores = async (kind: HighscoreKind = 'HIGHSCORE') => {
       const partition = partitionBy[breakdown]
       const order = orderBy[kind]
 
-      const rows = await prisma.$queryRawUnsafe<HighscoreRow[]>(`
+      const rows = await prisma.$queryRawUnsafe<HighscoreRow[]>(
+        `
         SELECT * FROM (
           SELECT
             id AS "gameId",
@@ -83,10 +93,13 @@ export const getHighscores = async (kind: HighscoreKind = 'HIGHSCORE') => {
           FROM "Game"
           WHERE "isWin" = true
             AND "playerId" NOT IN (SELECT id FROM "Player" WHERE "isBot" = true)
+            ${excludedGamesFilter}
             ${filter}
         ) ranked
         WHERE rank <= ${LIMIT}
-      `)
+      `,
+        ...excludedHighscoreGameIds,
+      )
 
       results.push({ kind, breakdown, runeTier, rows })
 
