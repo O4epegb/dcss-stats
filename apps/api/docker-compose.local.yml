@@ -13,11 +13,13 @@ services:
       - monster-catalog-storage:/catalog
 
   postgres:
-    container_name: postgres16
+    container_name: postgres18
     restart: no
-    image: postgres:16
+    image: postgres:18
     ports:
       - '5432:5432'
+    volumes:
+      - postgres18-local-volume:/var/lib/postgresql
     environment:
       - POSTGRES_PASSWORD=postgres
     healthcheck:
@@ -96,5 +98,6 @@ services:
       - prometheus
 
 volumes:
+  postgres18-local-volume:
   grafana-storage:
   monster-catalog-storage:
