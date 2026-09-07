@@ -33,55 +33,6 @@ services:
       - /app-volume:/usr/src/app/apps/api/logfiles
       - crawl-data-volume:/catalog:ro
 
-  postgres:
-    container_name: postgres16
-    restart: on-failure:3
-    image: postgres:16
-    ports:
-      - '5432:5432'
-    volumes:
-      - postgres16-volume:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=postgres
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres']
-      interval: 1s
-      timeout: 5s
-      retries: 15
-    shm_size: '1gb'
-    command:
-      - 'postgres'
-      - '-c'
-      - 'random_page_cost=1.1'
-      - '-c'
-      - 'max_wal_size=8GB'
-      - '-c'
-      - 'min_wal_size=2GB'
-      - '-c'
-      - 'temp_file_limit=20GB'
-      - '-c'
-      - 'wal_buffers=16MB'
-      - '-c'
-      - 'effective_io_concurrency=200'
-      - '-c'
-      - 'bgwriter_delay=50ms'
-      - '-c'
-      - 'bgwriter_lru_maxpages=200'
-      - '-c'
-      - 'shared_buffers=2GB'
-      - '-c'
-      - 'work_mem=32MB'
-      - '-c'
-      - 'maintenance_work_mem=256MB'
-      - '-c'
-      - 'effective_cache_size=3GB'
-      - '-c'
-      - 'default_statistics_target=100'
-      - '-c'
-      - 'checkpoint_timeout=15min'
-      - '-c'
-      - 'checkpoint_completion_target=0.9'
-
   postgres18:
     container_name: postgres18
     restart: on-failure:3
@@ -167,7 +118,6 @@ services:
 
 volumes:
   app-volume:
-  postgres16-volume:
   postgres18-volume:
   grafana-storage:
   crawl-data-volume:
