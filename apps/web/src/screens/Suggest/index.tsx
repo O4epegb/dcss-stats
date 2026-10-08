@@ -17,8 +17,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
+import { ComboStats } from '~/components/ComboStats'
 import { FilterItemType, Filters, filtersToQuery } from '~/components/Filters'
-import { Matrix } from '~/components/Matrix'
 import { Loader } from '~/components/ui/Loader'
 import { Select } from '~/components/ui/Select'
 import { HelpBubble } from '~/components/ui/Tooltip'
@@ -497,12 +497,12 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     })
   }, [matrixData?.matrix])
 
-  const matrixComponent = matrixError ? (
+  const comboStatsComponent = matrixError ? (
     <div className="text-danger flex items-center justify-center p-8">
       Error fetching matrix data
     </div>
   ) : (
-    <Matrix
+    <ComboStats
       coloredHeatMap
       stats={statsData.stats}
       allActualClasses={statsData.allActualClasses}
@@ -514,11 +514,11 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
           <Loader />
         </div>
       )}
-    </Matrix>
+    </ComboStats>
   )
 
   return (
-    <Layout rightColumn={matrixComponent}>
+    <Layout rightColumn={comboStatsComponent}>
       <div className="flex w-full flex-wrap gap-2 md:justify-center">
         I want to play
         <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>

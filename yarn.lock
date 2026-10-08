@@ -412,6 +412,7 @@ __metadata:
     asciinema-player: "npm:^3.17.0"
     axios: "npm:^1.18.1"
     chart.js: "npm:^4.5.1"
+    chartjs-plugin-zoom: "npm:^2.2.0"
     clsx: "npm:^2.1.1"
     dayjs: "npm:^1.11.21"
     eslint-plugin-better-tailwindcss: "npm:^4.7.0"
@@ -3053,6 +3054,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/hammerjs@npm:^2.0.45":
+  version: 2.0.46
+  resolution: "@types/hammerjs@npm:2.0.46"
+  checksum: 10/1b6502d668f45ca49fb488c01f7938d3aa75e989d70c64801c8feded7d659ca1a118f745c1b604d220efe344c93231767d5cc68c05e00e069c14539b6143cfd9
+  languageName: node
+  linkType: hard
+
 "@types/jsonfile@npm:*":
   version: 6.1.4
   resolution: "@types/jsonfile@npm:6.1.4"
@@ -3899,6 +3907,18 @@ __metadata:
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
   checksum: 10/a8dd3385371ad7e4c173d35176b7aed457ae27b45550248ecc854bf60a794541f56f3921850dc1f3c65985ef43beea37172b73899eb620d9cb4908de2ce93136
+  languageName: node
+  linkType: hard
+
+"chartjs-plugin-zoom@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "chartjs-plugin-zoom@npm:2.2.0"
+  dependencies:
+    "@types/hammerjs": "npm:^2.0.45"
+    hammerjs: "npm:^2.0.8"
+  peerDependencies:
+    chart.js: ">=3.2.0"
+  checksum: 10/4a549b1b21ed5433f9ba67038d6176ed545b2881521e12d6b8024cd2ab08fb008c36fe388ab2ac7ee2ac334bf44a8d785703570388fa0e0b4c22c18602536f9c
   languageName: node
   linkType: hard
 
@@ -5069,6 +5089,13 @@ __metadata:
   version: 1.1.1
   resolution: "graphmatch@npm:1.1.1"
   checksum: 10/1c26f61bfab87c5ba6370805baaba4da7596379841f1b86f55c45b5d186e00d66896761c331aa1b8ec249118e0299567f3b447aff05a5414634dc261cad95290
+  languageName: node
+  linkType: hard
+
+"hammerjs@npm:^2.0.8":
+  version: 2.0.8
+  resolution: "hammerjs@npm:2.0.8"
+  checksum: 10/9155d056f252ef35e8ca258dbb5ee2c9d8794f6805d083da7d1d9763d185e3e149459ecc2b36ccce584e3cd5f099fd9fa55056e3bcc7724046390f2e5ae25815
   languageName: node
   linkType: hard
 

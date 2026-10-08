@@ -36,6 +36,7 @@
     "asciinema-player": "^3.17.0",
     "axios": "^1.18.1",
     "chart.js": "^4.5.1",
+    "chartjs-plugin-zoom": "^2.2.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
     "fast-xml-parser": "^5.10.1",

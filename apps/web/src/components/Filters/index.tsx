@@ -270,8 +270,9 @@ export const Filters = ({
 
                   return (
                     <div key={groupIndex} className={cn('space-y-3 p-1.5', color)}>
-                      {group.map((filter) => {
+                      {group.map((filter, index) => {
                         const option = options.find((x) => x.name === filter.option)
+                        const label = `Filter ${firstItemIndex + index + 1}`
 
                         if (!option) {
                           return null
@@ -283,9 +284,11 @@ export const Filters = ({
                           <SortableItem
                             key={filter.id}
                             id={filter.id}
-                            className="flex items-center gap-2"
+                            className="flex flex-wrap items-center gap-2 sm:flex-nowrap"
                           >
                             <Select
+                              aria-label={`${label} field`}
+                              className="min-w-0 flex-1 basis-1/2 sm:flex-none"
                               value={filter.option}
                               onChange={(e) => {
                                 setFilters((state) =>
@@ -308,6 +311,7 @@ export const Filters = ({
 
                             {option.suboptions.length > 0 && (
                               <Select
+                                aria-label={`${label} suboption`}
                                 className="max-w-[min(30%,100px)]"
                                 value={filter.suboption}
                                 onChange={(e) => {
@@ -329,6 +333,7 @@ export const Filters = ({
                             )}
 
                             <Select
+                              aria-label={`${label} condition`}
                               value={filter.condition}
                               onChange={(e) => {
                                 setFilters((state) =>
@@ -349,7 +354,8 @@ export const Filters = ({
 
                             {option.type === 'select' && (
                               <Select
-                                className="min-w-0 flex-1"
+                                aria-label={`${label} value`}
+                                className="order-1 min-w-0 flex-1 basis-1/2 sm:order-none sm:basis-auto"
                                 value={filter.value}
                                 disabled={!filter.condition}
                                 onChange={(e) => {
@@ -369,8 +375,9 @@ export const Filters = ({
                               </Select>
                             )}
                             {(option.type === 'text' || option.type === 'number') && (
-                              <div className="flex-1">
+                              <div className="order-1 min-w-0 flex-1 basis-1/2 sm:order-none sm:basis-auto">
                                 <input
+                                  aria-label={`${label} value`}
                                   type={option.type}
                                   placeholder={option.placeholder}
                                   className="bg-surface-emphasis w-full rounded-sm px-2 py-0.5"
@@ -389,8 +396,9 @@ export const Filters = ({
                               </div>
                             )}
                             {option.type === 'datetime' && (
-                              <div className="flex-1">
+                              <div className="order-1 min-w-0 flex-1 basis-1/2 sm:order-none sm:basis-auto">
                                 <input
+                                  aria-label={`${label} value`}
                                   type="datetime-local"
                                   placeholder={option.placeholder}
                                   className="bg-surface-emphasis w-full rounded-sm px-2 py-0.5"
@@ -410,9 +418,10 @@ export const Filters = ({
                             )}
 
                             <Select
+                              aria-label={`${label} operator`}
                               className={cn(
-                                'transition-all',
-                                !isDragging && !isSingleFilter && 'translate-y-5',
+                                'order-2 transition-all sm:order-none',
+                                !isDragging && !isSingleFilter && 'sm:translate-y-5',
                                 !isDragging && operatorDisabled && 'opacity-0',
                               )}
                               disabled={operatorDisabled}
@@ -441,6 +450,7 @@ export const Filters = ({
 
                             <Tooltip content="Remove filter">
                               <button
+                                aria-label={`Remove filter ${firstItemIndex + index + 1}`}
                                 className="bg-surface-active text-danger ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-sm text-xs"
                                 onClick={() => {
                                   setFilters((state) => state.filter((x) => x !== filter))

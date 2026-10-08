@@ -20,8 +20,8 @@ export const Layout = ({
               to play (or any combination of these). Press the button to see the win rate of your
               combination, as well as other people&apos;s games.
               <br />
-              The Matrix displays information for all races and backgrounds, but applies other
-              selected filters.
+              The Matrix and scatter plot display information for all races and backgrounds, but
+              apply other selected filters.
               <br />
               <br />
               This tool is under development, for bugs and suggestions DM @totalnoob on{' '}

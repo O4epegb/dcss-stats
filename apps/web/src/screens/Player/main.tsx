@@ -1,7 +1,7 @@
+import { ComboStats } from '~/components/ComboStats'
 import { Footer } from '~/components/Footer'
 import { MobileMenu } from '~/components/HeaderWithMenu/MobileMenu'
 import { Logo } from '~/components/Logo'
-import { Matrix } from '~/components/Matrix'
 import { Badges } from './Badges'
 import { Calendar } from './Calendar'
 import { usePlayerPageContext } from './context'
@@ -43,7 +43,8 @@ export const Player = () => {
         </div>
       </div>
       <div className="min-w-0 xl:col-span-2">
-        <Matrix
+        <ComboStats
+          enableFilters
           stats={summary.stats}
           allActualRaces={summary.allActualRaces}
           allActualClasses={summary.allActualClasses}
