@@ -87,7 +87,6 @@ export const data = {
     ['He', 'Healer', false],
     ['Sk', 'Skald', false],
     ['DK', 'Death Knight', false],
-    ['St', 'Stalker', false],
     ['Pr', 'Priest', false],
     ['Cr', 'Crusader', false],
     ['Pa', 'Paladin', false],
