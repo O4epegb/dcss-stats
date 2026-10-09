@@ -81,6 +81,8 @@ export const data = {
     ['CA', 'Cinder Acolyte'],
     ['Re', 'Reaver'],
     ['Fw', 'Forgewright'],
+    ['St', 'Stalker'],
+    ['My', 'Mystic'],
     ['Tm', 'Transmuter', false],
     ['He', 'Healer', false],
     ['Sk', 'Skald', false],
