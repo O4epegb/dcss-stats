@@ -44,7 +44,7 @@ export const ComboStats = ({
   const [isSticky, setIsSticky] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const [matrixMetric, setMatrixMetric] = useState<keyof CharStat>('wins')
-  const [scatterMetric, setScatterMetric] = useState<ScatterMetric>('wins')
+  const [scatterMetric, setScatterMetric] = useState<ScatterMetric>('winRate')
   const [filters, setFilters] = useState<FilterItemType[]>([])
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [highlight, setHighlight] = useState<ComboHighlight>()
@@ -236,8 +236,8 @@ export const ComboStats = ({
         <span className="font-medium">{showScatter ? 'Y axis' : 'Matrix by'}</span>
         {(showScatter
           ? ([
-              ['wins', 'wins'],
               ['win rate %', 'winRate'],
+              ['wins', 'wins'],
             ] as const)
           : categories
         ).map(([name, key]) => (

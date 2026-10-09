@@ -29,7 +29,6 @@ export const Matrix = ({
   const formatter = (value: number) =>
     metric === 'winRate'
       ? formatNumber(value * 100, {
-          minimumFractionDigits: 1,
           maximumFractionDigits: 1,
         })
       : String(value)
