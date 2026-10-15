@@ -4,6 +4,7 @@ const rootUrl = process.env.NEXT_PUBLIC_ROOT_URL
 const config = {
   transpilePackages: ['lodash-es'],
   cacheComponents: true,
+  partialPrefetching: false,
   images: {
     qualities: [75, 100],
   },
