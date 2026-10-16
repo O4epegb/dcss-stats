@@ -217,12 +217,7 @@ const getYoutubeStreams = async (apiKey: string, searchCache: CacheManager): Pro
 }
 
 const isDcssVideo = (video: YoutubeVideo) => {
-  const searchableText = [
-    video.snippet.title,
-    video.snippet.description,
-    video.snippet.channelTitle,
-    ...(video.snippet.tags ?? []),
-  ].join(' ')
+  const searchableText = [video.snippet.title, ...(video.snippet.tags ?? [])].join(' ')
 
   return /\bdcss\b|dungeon crawl stone soup/i.test(searchableText)
 }

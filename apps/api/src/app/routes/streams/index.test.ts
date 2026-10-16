@@ -53,6 +53,7 @@ const createYoutubeVideo = ({
   title = 'Dungeon Crawl Stone Soup run',
   description = '',
   channelTitle = `YouTube ${id}`,
+  tags,
   concurrentViewers = '250',
   liveBroadcastContent = 'live',
 }: {
@@ -60,6 +61,7 @@ const createYoutubeVideo = ({
   title?: string
   description?: string
   channelTitle?: string
+  tags?: string[]
   concurrentViewers?: string | null
   liveBroadcastContent?: 'live' | 'none' | 'upcoming'
 }) => ({
@@ -68,6 +70,7 @@ const createYoutubeVideo = ({
     title,
     description,
     channelTitle,
+    tags,
     liveBroadcastContent,
     thumbnails: {
       high: { url: `https://youtube-image/${id}` },
@@ -177,7 +180,7 @@ describe('streamsRoute', () => {
         createYoutubeVideo({
           id: 'hidden-viewers',
           title: 'Friday run',
-          description: 'Playing DCSS today',
+          tags: ['DCSS'],
           concurrentViewers: null,
         }),
         createYoutubeVideo({
@@ -250,6 +253,39 @@ describe('streamsRoute', () => {
           'X-Goog-Api-Key': 'youtube-key',
         },
       })
+    } finally {
+      await app.close()
+    }
+  })
+
+  test('ignores DCSS mentions in descriptions and channel names', async () => {
+    mockSuccessfulProviders({
+      twitchStreams: [],
+      youtubeVideos: [
+        createYoutubeVideo({
+          id: 'art-credit',
+          title: 'Another game',
+          description: 'Art from Dungeon Crawl Stone Soup (CC0)',
+        }),
+        createYoutubeVideo({
+          id: 'description-only',
+          title: 'Friday run',
+          description: 'Playing DCSS today',
+        }),
+        createYoutubeVideo({
+          id: 'channel-only',
+          title: 'Another game',
+          channelTitle: 'DCSS player',
+        }),
+      ],
+    })
+
+    const { app } = await registerStreamsRoute()
+
+    try {
+      const response = await app.inject({ method: 'GET', url: '/api/streams' })
+      expect(response.statusCode).toBe(200)
+      expect(response.json()).toEqual({ data: { streams: [] } })
     } finally {
       await app.close()
     }
