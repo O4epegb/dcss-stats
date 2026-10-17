@@ -1,10 +1,10 @@
-import { execSync } from 'child_process'
+import { execFileSync } from 'child_process'
 import path from 'path'
 import fs from 'fs-extra'
 import { logger } from '~/utils'
 
 const CRAWL_REPOSITORY = 'https://github.com/crawl/crawl.git'
-const CRAWL_COMMIT = '80f85d7f2857ebb13d1213f4e24cfba16bc13407'
+const CRAWL_COMMIT = '77a9b5a25eb2a2dea80ed447a925931ba8783c73'
 const CRAWL_DIR = path.resolve(process.cwd(), 'crawl')
 const CRAWL_SOURCE_DIR = path.resolve(CRAWL_DIR, 'crawl-ref', 'source')
 const CRAWL_GIT_DIR = path.join(CRAWL_DIR, '.git')
@@ -14,29 +14,41 @@ const CJSON_DEST_DIR = path.resolve(process.cwd(), 'crawl-customizations', 'cont
 
 logger('Installing Crawl sources...')
 
-if (!fs.existsSync(CRAWL_DIR)) {
-  logger(`Cloning Crawl from ${CRAWL_REPOSITORY}...`)
-  execSync(`git clone --filter=blob:none --no-checkout ${CRAWL_REPOSITORY} crawl`, {
-    cwd: process.cwd(),
-    stdio: 'inherit',
-  })
-
-  logger(`Checking out Crawl commit ${CRAWL_COMMIT}...`)
-  execSync(`git -c advice.detachedHead=false checkout ${CRAWL_COMMIT}`, {
-    cwd: CRAWL_DIR,
-    stdio: 'inherit',
-  })
-}
-
-if (!fs.existsSync(CRAWL_SOURCE_DIR)) {
-  logger(`Crawl source directory not found at ${CRAWL_SOURCE_DIR}.`)
-  process.exit(1)
-}
-
 try {
+  if (!fs.existsSync(CRAWL_DIR)) {
+    logger(`Cloning Crawl from ${CRAWL_REPOSITORY}...`)
+    execFileSync(
+      'git',
+      ['clone', '--filter=blob:none', '--no-checkout', CRAWL_REPOSITORY, 'crawl'],
+      {
+        cwd: process.cwd(),
+        stdio: 'inherit',
+      },
+    )
+  }
+
   if (fs.existsSync(CRAWL_GIT_DIR)) {
+    try {
+      execFileSync('git', ['cat-file', '-e', `${CRAWL_COMMIT}^{commit}`], {
+        cwd: CRAWL_DIR,
+        stdio: 'ignore',
+      })
+    } catch {
+      logger(`Fetching Crawl commit ${CRAWL_COMMIT}...`)
+      execFileSync('git', ['fetch', 'origin', CRAWL_COMMIT], {
+        cwd: CRAWL_DIR,
+        stdio: 'inherit',
+      })
+    }
+
+    logger(`Checking out Crawl commit ${CRAWL_COMMIT}...`)
+    execFileSync('git', ['checkout', '--detach', CRAWL_COMMIT], {
+      cwd: CRAWL_DIR,
+      stdio: 'inherit',
+    })
+
     logger('Initializing Crawl submodules...')
-    execSync('git submodule update --init --recursive', {
+    execFileSync('git', ['submodule', 'update', '--init', '--recursive'], {
       cwd: CRAWL_DIR,
       stdio: 'inherit',
     })
@@ -46,14 +58,26 @@ try {
     )
   }
 
+  if (!fs.existsSync(CRAWL_SOURCE_DIR)) {
+    throw new Error(`Crawl source directory not found at ${CRAWL_SOURCE_DIR}.`)
+  }
+
   logger('Downloading cJSON v1.7.19...')
   fs.ensureDirSync(CJSON_DEST_DIR)
-  execSync(`curl -sfL ${CJSON_BASE_URL}/cJSON.c -o ${path.join(CJSON_DEST_DIR, 'cJSON.c')}`, {
-    stdio: 'inherit',
-  })
-  execSync(`curl -sfL ${CJSON_BASE_URL}/cJSON.h -o ${path.join(CJSON_DEST_DIR, 'cJSON.h')}`, {
-    stdio: 'inherit',
-  })
+  execFileSync(
+    'curl',
+    ['-sfL', `${CJSON_BASE_URL}/cJSON.c`, '-o', path.join(CJSON_DEST_DIR, 'cJSON.c')],
+    {
+      stdio: 'inherit',
+    },
+  )
+  execFileSync(
+    'curl',
+    ['-sfL', `${CJSON_BASE_URL}/cJSON.h`, '-o', path.join(CJSON_DEST_DIR, 'cJSON.h')],
+    {
+      stdio: 'inherit',
+    },
+  )
   logger('cJSON downloaded successfully.')
 
   logger('✅ Crawl sources installed successfully!')

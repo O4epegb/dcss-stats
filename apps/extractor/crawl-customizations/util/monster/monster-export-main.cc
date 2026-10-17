@@ -63,8 +63,7 @@ static string attack_flavour_name(const attack_flavour flavour)
   case AF_RAGE:          return "rage";
   case AF_CHAOTIC:       return "chaotic";
   case AF_STEAL:         return "steal";
-  case AF_CRUSH:         return "crush";
-  case AF_REACH:         return "reach";
+  case AF_CONSTRICT:     return "constrict";
   case AF_HOLY:          return "holy";
   case AF_ANTIMAGIC:     return "antimagic";
   case AF_PAIN:          return "pain";
@@ -77,7 +76,6 @@ static string attack_flavour_name(const attack_flavour flavour)
   case AF_CORRODE:       return "corrode";
   case AF_SCARAB:        return "scarab";
   case AF_TRAMPLE:       return "trample";
-  case AF_REACH_TONGUE:  return "reach_tongue";
   case AF_WEAKNESS:      return "weakness";
   case AF_SWOOP:         return "swoop";
   case AF_FOUL_FLAME:    return "foul_flame";
@@ -90,14 +88,12 @@ static string attack_flavour_name(const attack_flavour flavour)
   case AF_AIRSTRIKE:     return "airstrike";
   case AF_ALEMBIC:       return "alembic";
   case AF_BOMBLET:       return "bomblet";
-  case AF_RIFT:          return "rift";
   case AF_HELL_HUNT:     return "hell_hunt";
   case AF_FLANK:         return "flank";
   case AF_DRAG:          return "drag";
   case AF_SWARM:         return "swarm";
   case AF_TRICKSTER:     return "trickster";
-  case AF_REACH_STING:   return "poison";
-  case AF_REACH_CLEAVE_UGLY: return "ugly";
+  case AF_UGLY_THING:    return "ugly";
   case AF_FLOOD:         return "flood";
   case AF_DOOM:          return "doom";
   case AF_SLIMIFY:       return "slimify";
@@ -928,13 +924,13 @@ static cJSON *export_monster_json(mons_spec spec, string target, string &error)
         cJSON_AddTrueToObject(atk, "constrict");
       if (attk.type == AT_CLAW && mon.has_claws() >= 3)
         cJSON_AddTrueToObject(atk, "claw");
-      if (_monster_has_reachcleave(mon))
+      if (attk.reach > 1)
       {
-        cJSON_AddTrueToObject(atk, "cleave");
         cJSON_AddTrueToObject(atk, "reach");
+        cJSON_AddNumberToObject(atk, "reach_range", attk.reach);
       }
-      else if (flavour_has_reach(attk.flavour))
-        cJSON_AddTrueToObject(atk, "reach");
+      if (attk.cleaves)
+        cJSON_AddTrueToObject(atk, "cleave");
 
       if (x == 0 && mon.has_hydra_multi_attack())
         cJSON_AddTrueToObject(atk, "per_head");

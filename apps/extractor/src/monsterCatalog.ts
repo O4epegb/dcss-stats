@@ -50,6 +50,8 @@ export interface MonsterData {
     constrict?: boolean
     claw?: boolean
     reach?: boolean
+    reach_range?: number
+    cleave?: boolean
     per_head?: boolean
   }>
   flags: string[]
