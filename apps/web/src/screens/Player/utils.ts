@@ -31,6 +31,10 @@ export const allUnavailableCombos = keyBy([
   'FeHs',
   'PoSh',
   'ReSh',
+  // Since Stalker's return in 0.35; MuSt was playable through 0.11.
+  'MuSt',
+  'PoSt',
+  'ReSt',
 ])
 
 export const getSummary = (data: PlayerInfoResponse) => {
