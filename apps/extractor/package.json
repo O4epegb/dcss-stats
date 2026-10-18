@@ -9,6 +9,7 @@
     "install-crawl": "tsx ./scripts/install-crawl.ts",
     "apply-crawl-customizations": "tsx ./scripts/apply-crawl-customizations.ts",
     "build-crawl": "tsx ./scripts/build-crawl.ts",
+    "check-trunk-data": "tsx ./scripts/check-trunk-data.ts",
     "extract-monsters": "tsx ./scripts/extract-monsters.ts",
     "copy-catalog-to-api": "tsx ./scripts/copy-catalog-to-api.ts",
     "all": "yarn install-crawl && yarn apply-crawl-customizations && yarn build-crawl && yarn extract-monsters && yarn copy-catalog-to-api",

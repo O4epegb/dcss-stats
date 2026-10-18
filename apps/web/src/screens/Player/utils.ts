@@ -1,4 +1,5 @@
 import { keyBy, keys, orderBy, reduce, uniqBy } from 'lodash-es'
+import unavailableCombos from '~/screens/Player/unavailableCombos.json'
 import {
   CharStat,
   Class,
@@ -15,27 +16,7 @@ export const cookiesStoreDefault = {
   'dcss-show-trunk-data': false,
 } as const
 
-export const allUnavailableCombos = keyBy([
-  'GhTm',
-  'MuTm',
-  'GhSh',
-  'MuSh',
-  'DgMo',
-  'DgCK',
-  'DgCA',
-  'DgBe',
-  'DgAK',
-  'FeHu',
-  'FeGl',
-  'FeBr',
-  'FeHs',
-  'PoSh',
-  'ReSh',
-  // Since Stalker's return in 0.35; MuSt was playable through 0.11.
-  'MuSt',
-  'PoSt',
-  'ReSt',
-])
+export const allUnavailableCombos = keyBy(unavailableCombos)
 
 export const getSummary = (data: PlayerInfoResponse) => {
   const { races: allRaces, classes, gods, gamesToFirstWin, tiamat } = data

@@ -16,6 +16,7 @@
     "start:api": "yarn workspace @dcss-stats/api start",
     "migrate": "yarn workspace @dcss-stats/api migrate",
     "typegen": "turbo typegen",
+    "check-trunk-data": "yarn workspace @dcss-stats/extractor check-trunk-data",
     "dev:web": "turbo dev --filter=@dcss-stats/web",
     "dev:api": "turbo dev --filter=@dcss-stats/api",
     "dev:extractor": "turbo dev --filter=@dcss-stats/extractor",
