@@ -3,7 +3,6 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Metadata } from 'next'
 import localFont from 'next/font/local'
-import Script from 'next/script'
 import { defaultMetaDescription, defaultMetaTitle } from '~/constants'
 import { Providers } from './providers'
 import { sharedOGMetadata } from './shared-metadata'
@@ -44,12 +43,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Providers>
         {process.env.NODE_ENV === 'production' && <Analytics />}
         {process.env.NODE_ENV === 'production' && <SpeedInsights />}
-        {process.env.NODE_ENV === 'production' && (
-          <Script
-            src="https://analytics.umami.is/script.js"
-            data-website-id="ddb2a2da-618f-4c49-b230-c7b9b66ccd7c"
-          />
-        )}
       </body>
     </html>
   )
