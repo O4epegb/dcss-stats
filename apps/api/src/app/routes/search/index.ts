@@ -294,9 +294,11 @@ export const getFilterOptions = async () => {
       placeholder: 'Enter name',
       transformValue: (value: string) => value,
       getValue: (item: FilterItem, condition: (typeof defaultConditions)[number]) => {
+        const name = item.value.trim().replace(/^(?:a|an)\s+/i, '')
+
         return {
           killer: {
-            [condition.toSql]: item.value,
+            [condition.toSql === 'not' ? 'notIn' : 'in']: [name, `a ${name}`, `an ${name}`],
             mode: 'insensitive' as const,
           },
         }
