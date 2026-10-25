@@ -1,4 +1,4 @@
-ARG NODE_IMAGE=node:22-alpine3.19
+ARG NODE_IMAGE=node:22.23.4-alpine
 
 FROM ${NODE_IMAGE}
 

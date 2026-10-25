@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:24.14.0-bookworm-slim AS builder
+FROM node:24.22.1-bookworm-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
   binutils-gold \
