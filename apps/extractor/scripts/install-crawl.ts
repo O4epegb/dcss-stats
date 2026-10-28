@@ -4,7 +4,7 @@ import fs from 'fs-extra'
 import { logger } from '~/utils'
 
 const CRAWL_REPOSITORY = 'https://github.com/crawl/crawl.git'
-const CRAWL_COMMIT = '77a9b5a25eb2a2dea80ed447a925931ba8783c73'
+const CRAWL_COMMIT = '7e0203f8234604c36b3f5f646f2f7c4221005135'
 const CRAWL_DIR = path.resolve(process.cwd(), 'crawl')
 const CRAWL_SOURCE_DIR = path.resolve(CRAWL_DIR, 'crawl-ref', 'source')
 const CRAWL_GIT_DIR = path.join(CRAWL_DIR, '.git')

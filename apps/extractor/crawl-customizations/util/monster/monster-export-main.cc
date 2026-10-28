@@ -13,18 +13,16 @@
 #include "coordit.h"
 #include "database.h"  // databaseSystemInit, getQuoteString
 #include "describe.h" // get_size_adj
+#include "describe-spells.h" // spell_effect_string
 #include "initfile.h" // SysEnv
 #include "fight.h"    // spines_damage
 #include "item-name.h" // init_item_name_cache, make_name
 #include "items.h"
 #include "los.h"
 #include "message.h"
-#include "mon-explode.h" // ball_lightning_damage
 #include "mon-pick.h"
 #include "mon-pick-data.h" // spawn population tables, same include as crawl's mon-pick.cc
 #include "mon-project.h"
-#include "spl-damage.h"
-#include "spl-summoning.h" // mons_ball_lighting_hd
 #include "spl-zap.h"
 #include "syscalls.h"
 #include "tag-version.h"
@@ -334,138 +332,15 @@ static string dice_def_string(dice_def dice)
   return dice.num == 1 ? make_stringf("d%d", dice.size) : make_stringf("%dd%d", dice.num, dice.size);
 }
 
-static dice_def mi_calc_iood_damage(monster *mons)
-{
-  const int pow = mons_power_for_hd(SPELL_IOOD, mons->get_hit_dice());
-  return iood_damage(pow, INFINITE_DISTANCE);
-}
-
-static string mi_calc_smiting_damage(monster * /*mons*/) { return "7-17"; }
-static string mi_calc_brain_bite_damage(monster * /*mons*/) { return "4-8*"; }
-static string mi_calc_pyre_arrow_damage(monster *mons)
-{
-  return make_stringf("2d%d*", 2 + mons->get_hit_dice() * 12 / 14);
-}
-static string mi_calc_gaze_drain(monster *mons, spell_type spell_cast)
-{
-  const int pow = mons_power_for_hd(spell_cast, mons->get_hit_dice());
-  return make_stringf("0-%d MP", pow / 8);
-}
-static string mi_calc_airstrike_damage(monster *mons, spell_type spell_cast)
-{
-  const int pow = mons_power_for_hd(spell_cast, mons->get_hit_dice());
-  dice_def dice = base_airstrike_damage(pow);
-  return make_stringf("%dd%d+(%d/space)", dice.num, dice.size,
-                      spell_cast == SPELL_SLEETSTRIKE ? 3 : 2);
-}
-static string mi_calc_glaciate_damage(monster *mons)
-{
-  int pow = 12 * mons->get_experience_level();
-  int minimum = min(10, (54 + 3 * pow / 2) / 6);
-  int max = (54 + 3 * pow / 2) / 3;
-
-  return make_stringf("%d-%d", minimum, max);
-}
-static string mi_calc_chain_lightning_damage(monster *mons)
-{
-  const spell_type spell = SPELL_CHAIN_LIGHTNING;
-  const zap_type zap = spell_to_zap(spell);
-  const int pow = mons_power_for_hd(spell, mons->spell_hd(spell));
-  const dice_def dice = zap_damage(zap, pow, true, false);
-  return dice_def_string(dice);
-}
-static string mi_calc_vampiric_drain_damage(monster *mons)
-{
-  int pow = 12 * mons->get_experience_level();
-  int min = 4;
-  int max = 12 + (pow - 1) / 7;
-  return make_stringf("%d-%d", min, max);
-}
-static string mi_calc_major_healing(monster *mons)
-{
-  const int min = 50;
-  const int max = min + mons->spell_hd(SPELL_MAJOR_HEALING) * 10;
-  return make_stringf("%d-%d", min, max);
-}
-static string mi_calc_scorch_damage(monster *mons)
-{
-  const int pow = mons_power_for_hd(SPELL_SCORCH, mons->get_hit_dice());
-  return dice_def_string(scorch_damage(pow, false));
-}
-static string mi_calc_irradiate_damage(const monster &mon)
-{
-  const int pow = mons_power_for_hd(SPELL_IRRADIATE, mon.get_hit_dice());
-  return dice_def_string(irradiate_damage(pow));
-}
-static string mi_calc_resonance_strike_damage(monster *mons)
-{
-  const int pow = mons->spell_hd(SPELL_RESONANCE_STRIKE);
-  dice_def dice = resonance_strike_base_damage(pow);
-  return describe_resonance_strike_dam(dice);
-}
-
-static string mons_human_readable_spell_damage_string(monster *monster,
+static string mons_human_readable_spell_damage_string(const monster *mon,
                                                       spell_type sp)
 {
-  const int pow = mons_power_for_hd(sp, monster->spell_hd(sp));
-  bolt spell_beam = mons_spell_beam(monster, sp, pow, true);
-  switch (sp)
-  {
-  case SPELL_PORTAL_PROJECTILE:
-  case SPELL_LRD:
-    return "";
-  case SPELL_SCORCH:
-    return mi_calc_scorch_damage(monster);
-  case SPELL_SMITING:
-    return mi_calc_smiting_damage(monster);
-  case SPELL_BRAIN_BITE:
-    return mi_calc_brain_bite_damage(monster);
-  case SPELL_PYRE_ARROW:
-    return mi_calc_pyre_arrow_damage(monster);
-  case SPELL_ANTIMAGIC_GAZE:
-  case SPELL_DRAINING_GAZE:
-    return mi_calc_gaze_drain(monster, sp);
-  case SPELL_AIRSTRIKE:
-  case SPELL_SLEETSTRIKE:
-    return mi_calc_airstrike_damage(monster, sp);
-  case SPELL_GLACIATE:
-    return mi_calc_glaciate_damage(monster);
-  case SPELL_CHAIN_LIGHTNING:
-    return mi_calc_chain_lightning_damage(monster);
-  case SPELL_CONJURE_BALL_LIGHTNING:
-    return "3x" + dice_def_string(ball_lightning_damage(mons_ball_lightning_hd(pow, false)));
-  case SPELL_MARSHLIGHT:
-    return "2x" + dice_def_string(zap_damage(ZAP_FOXFIRE, pow, true));
-  case SPELL_PLASMA_BEAM:
-    return "2x" + dice_def_string(zap_damage(ZAP_PLASMA, pow, true));
-  case SPELL_PERMAFROST_ERUPTION:
-    return "2x" + dice_def_string(zap_damage(ZAP_PERMAFROST_ERUPTION_COLD, pow, true));
-  case SPELL_WATERSTRIKE:
-    spell_beam.damage = waterstrike_damage(monster->spell_hd(sp));
-    break;
-  case SPELL_RESONANCE_STRIKE:
-    return mi_calc_resonance_strike_damage(monster);
-  case SPELL_IOOD:
-    spell_beam.damage = mi_calc_iood_damage(monster);
-    break;
-  case SPELL_POLAR_VORTEX:
-    return dice_def_string(polar_vortex_dice(pow, true)) + "*";
-  case SPELL_IRRADIATE:
-    return mi_calc_irradiate_damage(*monster);
-  case SPELL_VAMPIRIC_DRAINING:
-    return mi_calc_vampiric_drain_damage(monster);
-  case SPELL_MAJOR_HEALING:
-    return mi_calc_major_healing(monster);
-  case SPELL_MINOR_HEALING:
-  case SPELL_HEAL_OTHER:
-    return dice_def_string(spell_beam.damage) + "+3";
-  default:
-    break;
-  }
-
-  if (spell_beam.damage.size && spell_beam.damage.num)
-    return dice_def_string(spell_beam.damage);
-  return "";
+  const monster_info info(mon, MILEV_SKIP_SAFE);
+  string effect = spell_effect_string(sp, &info);
+  // The catalog's consumers add their own parentheses around spell effects.
+  if (effect.size() >= 2 && effect.front() == '(' && effect.back() == ')')
+    effect = effect.substr(1, effect.size() - 2);
+  return effect;
 }
 
 struct SpellInfo
@@ -490,7 +365,7 @@ static SpellInfo make_spell_info(monster *mp, const string &name, spell_type sp,
     spell_difficulty(sp),
     spell_mana(sp),
     freq,
-    spell_has_variable_range(sp) ? 0 : spell_range(sp),
+    spell_range(sp, mp, -1), // -1 requests the caster's actual spell power.
     mons_human_readable_spell_damage_string(mp, sp),
     (bool)(flags & MON_SPELL_ANTIMAGIC_MASK),
     (bool)(flags & MON_SPELL_SILENCE_MASK),

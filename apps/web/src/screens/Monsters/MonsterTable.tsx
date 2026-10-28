@@ -7,6 +7,7 @@ import { useLocalStorageValue, useMediaQuery } from '@react-hookz/web'
 import { orderBy } from 'lodash-es'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
+import { MonsterSpells } from '~/screens/Monsters/MonsterSpells'
 import { cn, pluralize } from '~/utils'
 
 function getTileUrl(tilePath: string | undefined, crawlCommit: string | undefined): string | null {
@@ -75,20 +76,6 @@ function formatLocations(locations: MonsterData['locations']): string[] {
     }
     if (l.habitat) label += ` (${l.habitat})`
     return label
-  })
-}
-
-function formatSpells(spells: MonsterData['spells']): string[] {
-  // freq is a relative weight crawl uses to pick which spell to cast;
-  // show it as each spell's share of casts
-  const totalFreq = spells.reduce((sum, s) => sum + (s.freq ?? 0), 0)
-
-  return spells.map((s) => {
-    let str = s.name
-    if (s.damage) str += ` (${s.damage})`
-    if (s.range) str += ` [${s.range}]`
-    if (s.freq && totalFreq > 0) str += ` · ${Math.round((s.freq / totalFreq) * 100)}%`
-    return str
   })
 }
 
@@ -544,12 +531,7 @@ export function MonsterTable({
                       <InfoSection title="Defenses" items={displayed.defenses} />
 
                       {displayed.spells.length > 0 && (
-                        <div className="border-border rounded border p-3">
-                          <div className="text-muted-foreground text-xs font-medium">Spells</div>
-                          <div className="mt-1">
-                            <TagList items={formatSpells(displayed.spells)} />
-                          </div>
-                        </div>
+                        <MonsterSpells key={displayed.id} spells={displayed.spells} />
                       )}
                     </div>
 
