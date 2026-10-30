@@ -1,5 +1,4 @@
 import { Metadata } from 'next'
-import { Suspense } from 'react'
 import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
 import type { FilterItemType } from '~/components/Filters'
@@ -10,6 +9,8 @@ import { StaticData } from '~/types'
 import { getShortId } from '~/utils'
 
 const title = `Charts | ${defaultMetaTitle}`
+
+export const instant = false
 
 export const metadata: Metadata = {
   title,
@@ -47,9 +48,5 @@ export default async function ChartsPage() {
     },
   ]
 
-  return (
-    <Suspense fallback={null}>
-      <ChartsScreen staticData={staticData} defaultDatasets={defaultDatasets} />
-    </Suspense>
-  )
+  return <ChartsScreen staticData={staticData} defaultDatasets={defaultDatasets} />
 }

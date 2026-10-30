@@ -60,6 +60,8 @@ const DonationList = ({
   )
 }
 
+export const instant = false
+
 export const metadata: Metadata = {
   title,
   openGraph: {

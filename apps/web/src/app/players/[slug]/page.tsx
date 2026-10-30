@@ -8,6 +8,8 @@ import { cookiesStoreDefault } from '~/screens/Player/utils'
 import { PlayerInfoResponse } from '~/types'
 import { formatNumber } from '~/utils'
 
+export const instant = false
+
 const serversQuery = (servers?: string) =>
   servers ? `?servers=${encodeURIComponent(servers)}` : ''
 

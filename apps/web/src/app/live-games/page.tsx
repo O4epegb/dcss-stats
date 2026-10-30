@@ -10,6 +10,8 @@ import { cn, formatNumber } from '~/utils'
 
 const title = `Live games | ${defaultMetaTitle}`
 
+export const instant = false
+
 export const metadata: Metadata = {
   title,
   openGraph: {

@@ -9,6 +9,8 @@ import { cn, formatNumber } from '~/utils'
 
 const title = `Highscores Leaderboard | ${defaultMetaTitle}`
 
+export const instant = false
+
 export const metadata: Metadata = {
   title,
   openGraph: {
