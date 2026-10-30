@@ -17,10 +17,8 @@
     "noUnusedParameters": false,
     "strict": true,
     // "noUncheckedIndexedAccess": true,
-    "baseUrl": "./src",
     "paths": {
-      // "~*": ["*"]
-      "~/*": ["./*"]
+      "~/*": ["./src/*"]
     },
     "plugins": [
       {
