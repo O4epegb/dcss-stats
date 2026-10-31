@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/turbo/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "outputs": ["src/generated/prisma/client/**"]
+    },
+    "typegen": {
+      "outputs": ["src/generated/prisma/client/**"]
+    }
+  }
+}

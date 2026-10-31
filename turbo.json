@@ -1,22 +1,28 @@
 {
-  "$schema": "https://v2-10-4.turborepo.dev/schema.json",
+  "$schema": "node_modules/turbo/schema.json",
+  "ui": "tui",
   "globalDependencies": [".oxlintrc.json"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
       "env": ["NODE_ENV"]
     },
-    "deploy": {
-      "dependsOn": ["build", "test", "lint"]
-    },
     "test": {
-      "inputs": ["src/**/*.tsx", "src/**/*.ts", "test/**/*.ts", "test/**/*.tsx"]
+      "dependsOn": ["lint", "type-check"]
     },
     "lint": {},
-    "format": {},
-    "type-check": {},
-    "typegen": {},
+    "format": {
+      "cache": false
+    },
+    "type-check": {
+      "dependsOn": ["^type-check", "typegen"]
+    },
+    "typegen": {
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "env": ["NODE_ENV"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

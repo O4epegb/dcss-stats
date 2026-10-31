@@ -8,8 +8,7 @@
     "package": "yarn build && cd dist && zip -FSr ../extension.zip .",
     "type-check": "tsc --noEmit",
     "format": "prettier --write .",
-    "lint": "oxlint",
-    "test": "yarn lint && yarn type-check"
+    "lint": "oxlint"
   },
   "lint-staged": {
     "*": [
