@@ -69,5 +69,17 @@ export const Footer = ({ className }: { className?: string }) => (
       </a>{' '}
       with bugs and suggestions
     </div>
+
+    <div className="col-span-full">
+      <a
+        href="https://tavern.dcss.io/t/dcss-stats-website/157"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="hover:text-link-hover inline-flex items-center gap-1 underline transition-colors"
+      >
+        Request a Feature
+        <ArrowTopRightOnSquareIcon className="size-4" />
+      </a>
+    </div>
   </footer>
 )
