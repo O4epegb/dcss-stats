@@ -143,8 +143,8 @@ services:
     restart: on-failure:3
     environment:
       GF_SERVER_HTTP_PORT: 3333
-      # Ignore unused Drilldown apps, including older copies in grafana-storage.
       GF_PLUGINS_DISABLE_PLUGINS: >-
+        grafana-assistant-app,
         grafana-exploretraces-app,
         grafana-lokiexplore-app,
         grafana-metricsdrilldown-app,
