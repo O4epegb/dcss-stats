@@ -1,7 +1,7 @@
 import { CronJob } from 'cron'
 import { Type } from 'typebox'
 import { AppType } from '~/app'
-import { createCache, type CacheManager } from '~/app/cache'
+import { createCache, getRouteCacheKey, type CacheManager } from '~/app/cache'
 import { getHighscores } from '~/app/getters/getHighscores'
 import { getCombinedLeaderboard, getLeaderboard, getTopRecords } from '~/app/getters/getLeaderboard'
 import {
@@ -141,7 +141,7 @@ export const highscoresRoute = (
     },
     async (request) => {
       return cache.get({
-        key: request.url,
+        key: getRouteCacheKey(request.url, request.query),
         skipCache: request.query.noCache !== undefined,
         loader: async () => {
           const where: Prisma.HighscoreWhereInput = {}

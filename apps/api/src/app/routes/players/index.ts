@@ -1,6 +1,6 @@
 import { first, groupBy, orderBy, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { createCache, type CacheManager } from '~/app/cache'
+import { createCache, getRouteCacheKey, type CacheManager } from '~/app/cache'
 import { draconians, LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 import { getAggregatedPlayerStats } from '~/app/getters/getAggregatedPlayerStats'
@@ -16,7 +16,7 @@ import { isDefined } from '~/utils'
 export const playersRoute = (
   app: AppType,
   {
-    cache = createCache({ revalidate: Infinity, expire: 300 }),
+    cache = createCache({ revalidate: Infinity, expire: 300, maxEntries: 64 }),
     minimalCache = createCache({ revalidate: Infinity, expire: 12 * 60 * 60 }),
   }: { cache?: CacheManager; minimalCache?: CacheManager } = {},
 ) => {
@@ -48,7 +48,7 @@ export const playersRoute = (
     }
   }>('/api/players/:slug', async (request, reply) => {
     const { slug } = request.params
-    const cacheKey = request.url.toLowerCase()
+    const cacheKey = getRouteCacheKey(request.url.toLowerCase(), request.query)
 
     if (request.query.clearData !== undefined) {
       getStaticData.cache.clear?.()
@@ -336,7 +336,7 @@ export const playersRoute = (
     const data = await (isMinimal ? minimalCache : cache).get({
       key: cacheKey,
       loader: async () => (isMinimal ? getDataMinimal() : getDataFull()),
-      skipCache: request.query.noCache !== undefined,
+      skipCache: request.query.noCache !== undefined || request.query.clearData !== undefined,
     })
 
     return data ?? reply.status(404).send('Not found')
@@ -351,7 +351,7 @@ export const playersRoute = (
     }
   }>('/api/players/:slug/streaks', async (request, reply) => {
     const { slug } = request.params
-    const cacheKey = request.url.toLowerCase()
+    const cacheKey = getRouteCacheKey(request.url.toLowerCase(), request.query)
 
     const getData = async () => {
       const player = await prisma.player.findFirst({
@@ -392,7 +392,7 @@ export const playersRoute = (
     }
   }>('/api/players/:slug/calendar', async (request, reply) => {
     const { slug } = request.params
-    const cacheKey = request.url.toLowerCase()
+    const cacheKey = getRouteCacheKey(request.url.toLowerCase(), request.query)
 
     const getData = async () => {
       const player = await prisma.player.findUnique({

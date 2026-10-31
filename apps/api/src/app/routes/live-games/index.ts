@@ -2,7 +2,7 @@ import { constants, createInflateRaw, type InflateRaw } from 'node:zlib'
 import { orderBy, uniq } from 'lodash-es'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
-import { createCache, type CacheManager } from '~/app/cache'
+import { createCache, getRouteCacheKey, type CacheManager } from '~/app/cache'
 import { prisma } from '~/prisma'
 import { logger, trackError } from '~/utils'
 import { trunkGameVersion } from '../../../../prisma/seedData'
@@ -316,7 +316,7 @@ export const liveGamesRoute = (
         }
       }
 
-      return cache.get({ key: request.url, loader: load })
+      return cache.get({ key: getRouteCacheKey(request.url, request.query), loader: load })
     },
   )
 }

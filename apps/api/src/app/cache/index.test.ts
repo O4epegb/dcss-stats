@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
-import { createCache, defaultCacheOptions } from '~/app/cache'
+import { createCache, defaultCacheOptions, getRouteCacheKey } from '~/app/cache'
 
 const flushMicrotasks = async () => {
   await Promise.resolve()
@@ -20,11 +20,12 @@ afterEach(() => {
 
 describe('createCache', () => {
   test('deduplicates inflight requests for the same key', async () => {
-    const cache = createCache({ revalidate: Infinity, expire: 10 })
+    const cache = createCache({ revalidate: Infinity, expire: 10, maxEntries: 1 })
     const deferred = Promise.withResolvers<string>()
     const loader = vi.fn<() => Promise<string>>().mockReturnValue(deferred.promise)
 
     const first = cache.get({ key: 'players', loader })
+    expect(await cache.get({ key: 'other', loader: async () => 'other' })).toBe('other')
     advanceSeconds(11)
     const second = cache.get({ key: 'players', loader })
 
@@ -97,7 +98,7 @@ describe('createCache', () => {
     expect(loader).toHaveBeenCalledTimes(3)
   })
 
-  test('skipCache bypasses the store but backfills the latest value', async () => {
+  test('skipCache refreshes the normalized route key and backfills the latest value', async () => {
     const cache = createCache()
     const loader = vi
       .fn<() => Promise<string>>()
@@ -105,12 +106,22 @@ describe('createCache', () => {
       .mockResolvedValueOnce('bypass')
       .mockResolvedValueOnce('should-not-be-used')
 
-    expect(await cache.get({ key: 'supporters', loader })).toBe('cached')
+    const key = getRouteCacheKey('/api/top?since=2026-01-01&minGamesThresholdForWinrate=75', {
+      since: '2026-01-01',
+      minGamesThresholdForWinrate: 75,
+    })
+    const refreshKey = getRouteCacheKey('/api/top?noCache=true', {
+      noCache: 'true',
+      minGamesThresholdForWinrate: 75,
+      since: '2026-01-01',
+    })
+    expect(refreshKey).toBe(key)
+    expect(await cache.get({ key, loader })).toBe('cached')
 
-    expect(await cache.get({ key: 'supporters', loader, skipCache: true })).toBe('bypass')
+    expect(await cache.get({ key: refreshKey, loader, skipCache: true })).toBe('bypass')
     expect(loader).toHaveBeenCalledTimes(2)
 
-    expect(await cache.get({ key: 'supporters', loader })).toBe('bypass')
+    expect(await cache.get({ key, loader })).toBe('bypass')
     expect(loader).toHaveBeenCalledTimes(2)
   })
 
@@ -208,24 +219,31 @@ describe('createCache', () => {
     expect(loader).toHaveBeenCalledTimes(5)
   })
 
-  test('clear removes individual keys as well as the entire store', async () => {
-    const cache = createCache()
+  test('evicts least recently used entries and supports clearing keys or the entire store', async () => {
+    const cache = createCache({ maxEntries: 2 })
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('first')
       .mockResolvedValueOnce('second')
       .mockResolvedValueOnce('third')
       .mockResolvedValueOnce('fourth')
+      .mockResolvedValueOnce('fifth')
+      .mockResolvedValueOnce('sixth')
 
     expect(await cache.get({ key: 'matrix', loader })).toBe('first')
     cache.clear('matrix')
     expect(await cache.get({ key: 'matrix', loader })).toBe('second')
 
     expect(await cache.get({ key: 'players', loader })).toBe('third')
-    cache.clear()
-    expect(await cache.get({ key: 'players', loader })).toBe('fourth')
+    expect(await cache.get({ key: 'matrix', loader })).toBe('second')
+    expect(await cache.get({ key: 'top', loader })).toBe('fourth')
+    expect(await cache.get({ key: 'matrix', loader })).toBe('second')
+    expect(await cache.get({ key: 'players', loader })).toBe('fifth')
 
-    expect(loader).toHaveBeenCalledTimes(4)
+    cache.clear()
+    expect(await cache.get({ key: 'players', loader })).toBe('sixth')
+
+    expect(loader).toHaveBeenCalledTimes(6)
   })
 
   test('applies the default revalidation window of 300 seconds', async () => {

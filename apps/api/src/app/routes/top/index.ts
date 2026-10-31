@@ -1,7 +1,7 @@
 import { uniq } from 'lodash-es'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
-import { createCache, type CacheManager } from '~/app/cache'
+import { createCache, getRouteCacheKey, type CacheManager } from '~/app/cache'
 import { Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
@@ -20,7 +20,7 @@ export const topRoute = (
   app.get<{
     Querystring: Static<typeof Querystring>
   }>('/api/top', { schema: { querystring: Querystring } }, async (request) => {
-    const cacheKey = request.url.toLowerCase()
+    const cacheKey = getRouteCacheKey(request.url, request.query)
 
     const getData = async () => {
       const top = await getTopStats({

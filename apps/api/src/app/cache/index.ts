@@ -1,3 +1,5 @@
+export { getRouteCacheKey } from './routeKey'
+
 export type CacheKey = string
 
 export interface CacheRequest<TValue> {
@@ -7,17 +9,14 @@ export interface CacheRequest<TValue> {
 }
 
 export interface CacheOptions {
-  /**
-   * Seconds since the last successful load before background revalidation starts.
-   * Defaults to 300 seconds
-   */
+  /** Seconds since the last successful load before background revalidation starts. */
   revalidate?: number
-  /**
-   * Maximum seconds since the last successful load before requests must wait for fresh data.
-   * Cache hits do not extend this deadline; an in-flight refresh is shared.
-   * Defaults to never (Infinity).
-   */
+  /** Seconds since the last successful load before requests must wait for fresh data. */
   expire?: number
+  /**
+   * Retained-entry limit. In-flight loads can temporarily exceed it.
+   */
+  maxEntries?: number
 }
 
 export interface CacheManager {
@@ -28,6 +27,7 @@ export interface CacheManager {
 export const defaultCacheOptions: Required<CacheOptions> = {
   revalidate: 300,
   expire: Infinity,
+  maxEntries: 256,
 }
 
 type CacheEntry<TValue = unknown> = {
@@ -38,6 +38,9 @@ type CacheEntry<TValue = unknown> = {
 
 export function createCache(options?: CacheOptions): CacheManager {
   const resolvedOptions = { ...defaultCacheOptions, ...options }
+  if (!Number.isSafeInteger(resolvedOptions.maxEntries) || resolvedOptions.maxEntries < 1) {
+    throw new RangeError('maxEntries must be a positive safe integer')
+  }
   const revalidateMs = Number.isFinite(resolvedOptions.revalidate)
     ? resolvedOptions.revalidate * 1000
     : Infinity
@@ -49,15 +52,19 @@ export function createCache(options?: CacheOptions): CacheManager {
 
   return {
     async get<TValue>({ key, loader, skipCache }: CacheRequest<TValue>): Promise<TValue> {
-      if (skipCache) {
-        return refreshNow(key, loader)
-      }
-
       const entry = store.get(key) as CacheEntry<TValue> | undefined
       const now = Date.now()
 
       if (!entry) {
         return loadAndStore(key, loader)
+      }
+
+      // Map insertion order is the LRU order.
+      store.delete(key)
+      store.set(key, entry)
+
+      if (skipCache) {
+        return refreshEntity(entry, key, loader)
       }
 
       if (
@@ -94,12 +101,20 @@ export function createCache(options?: CacheOptions): CacheManager {
       return entry.value
     },
     clear(key?: CacheKey) {
-      if (key) {
+      if (key !== undefined) {
         store.delete(key)
       } else {
         store.clear()
       }
     },
+  }
+
+  function trimStore() {
+    for (const [key, entry] of store) {
+      if (store.size <= resolvedOptions.maxEntries) break
+      // Evicting a pending load would allow another request to start a duplicate.
+      if (!entry.pendingPromise) store.delete(key)
+    }
   }
 
   function loadAndStore<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
@@ -109,6 +124,7 @@ export function createCache(options?: CacheOptions): CacheManager {
     }
 
     store.set(key, entry)
+    trimStore()
 
     loaderPromise
       .then((value) => {
@@ -126,16 +142,6 @@ export function createCache(options?: CacheOptions): CacheManager {
       })
 
     return loaderPromise
-  }
-
-  function refreshNow<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
-    const entry = store.get(key) as CacheEntry<TValue> | undefined
-
-    if (!entry) {
-      return loadAndStore(key, loader)
-    }
-
-    return refreshEntity(entry, key, loader)
   }
 
   function refreshEntity<TValue>(
@@ -168,6 +174,7 @@ export function createCache(options?: CacheOptions): CacheManager {
       .finally(() => {
         if (entry.pendingPromise === refreshPromise) {
           entry.pendingPromise = undefined
+          trimStore()
         }
       })
 
@@ -180,5 +187,6 @@ export function createCache(options?: CacheOptions): CacheManager {
     entry.value = value
     entry.resolvedAt = resolvedAt
     entry.pendingPromise = undefined
+    trimStore()
   }
 }
