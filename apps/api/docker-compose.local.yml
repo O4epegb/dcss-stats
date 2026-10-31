@@ -62,21 +62,41 @@ services:
       - '-c'
       - 'checkpoint_completion_target=0.9'
 
+  postgres_exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.20.1
+    restart: no
+    profiles:
+      - metrics
+    environment:
+      DATA_SOURCE_URI: postgres:5432/dcssstats?sslmode=disable
+      DATA_SOURCE_USER: postgres
+      DATA_SOURCE_PASS: postgres
+    command:
+      - '--collector.stat_checkpointer'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   prometheus:
     image: prom/prometheus:v3.13.5
     restart: no
     stop_grace_period: 1m
+    command:
+      - '--config.file=/etc/prometheus/prometheus.local.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--config.auto-reload'
     profiles:
       - metrics
     ports:
       - '9090:9090'
     volumes:
-      - ./prometheus.local.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus:/etc/prometheus:ro
       - prometheus-local-storage:/prometheus
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - node_exporter
+      - postgres_exporter
 
   node_exporter:
     image: quay.io/prometheus/node-exporter:v1.12.1
@@ -104,6 +124,8 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
       - prometheus
 
