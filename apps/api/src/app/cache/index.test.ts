@@ -20,11 +20,12 @@ afterEach(() => {
 
 describe('createCache', () => {
   test('deduplicates inflight requests for the same key', async () => {
-    const cache = createCache()
+    const cache = createCache({ revalidate: Infinity, expire: 10 })
     const deferred = Promise.withResolvers<string>()
     const loader = vi.fn<() => Promise<string>>().mockReturnValue(deferred.promise)
 
     const first = cache.get({ key: 'players', loader })
+    advanceSeconds(11)
     const second = cache.get({ key: 'players', loader })
 
     expect(loader).toHaveBeenCalledTimes(1)
@@ -33,6 +34,10 @@ describe('createCache', () => {
 
     await expect(first).resolves.toBe('ok')
     await expect(second).resolves.toBe('ok')
+
+    advanceSeconds(9)
+    expect(await cache.get({ key: 'players', loader })).toBe('ok')
+    expect(loader).toHaveBeenCalledTimes(1)
   })
 
   test('serves stale values while revalidating in the background', async () => {
@@ -54,19 +59,42 @@ describe('createCache', () => {
     expect(await cache.get({ key: 'matrix', loader })).toBe('revalidated')
   })
 
-  test('drops entries that receive no traffic before the expire window', async () => {
-    const cache = createCache({ revalidate: 10, expire: 30 })
+  test('expires values by age despite traffic and shares blocking refreshes', async () => {
+    const cache = createCache({ revalidate: 30, expire: 30 })
+    const refresh = Promise.withResolvers<string>()
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('initial')
-      .mockResolvedValueOnce('recomputed')
+      .mockReturnValueOnce(refresh.promise)
+      .mockResolvedValueOnce('next')
 
     expect(await cache.get({ key: 'top', loader })).toBe('initial')
 
-    advanceSeconds(31)
+    advanceSeconds(20)
+    expect(await cache.get({ key: 'top', loader })).toBe('initial')
+    advanceSeconds(9)
+    expect(await cache.get({ key: 'top', loader })).toBe('initial')
+    expect(loader).toHaveBeenCalledTimes(1)
 
-    expect(await cache.get({ key: 'top', loader })).toBe('recomputed')
+    advanceSeconds(1)
+    const first = cache.get({ key: 'top', loader })
+    const second = cache.get({ key: 'top', loader })
+    const settled = vi.fn()
+    void first.then(settled)
+    await flushMicrotasks()
+
+    expect(settled).not.toHaveBeenCalled()
     expect(loader).toHaveBeenCalledTimes(2)
+
+    refresh.resolve('recomputed')
+    await expect(first).resolves.toBe('recomputed')
+    await expect(second).resolves.toBe('recomputed')
+
+    advanceSeconds(29)
+    expect(await cache.get({ key: 'top', loader })).toBe('recomputed')
+    advanceSeconds(1)
+    expect(await cache.get({ key: 'top', loader })).toBe('next')
+    expect(loader).toHaveBeenCalledTimes(3)
   })
 
   test('skipCache bypasses the store but backfills the latest value', async () => {
@@ -121,8 +149,8 @@ describe('createCache', () => {
     expect(await cache.get({ key: 'supporters', loader })).toBe('cached')
   })
 
-  test('normal requests share the revalidation promise when stale', async () => {
-    const cache = createCache({ revalidate: 10 })
+  test('normal requests share the revalidation promise across expiration', async () => {
+    const cache = createCache({ revalidate: 10, expire: 30 })
     const refresh = Promise.withResolvers<string>()
     const loader = vi
       .fn<() => Promise<string>>()
@@ -139,18 +167,25 @@ describe('createCache', () => {
     expect(loader).toHaveBeenCalledTimes(2)
     await expect(staleResponse).resolves.toBe('initial')
 
+    advanceSeconds(20)
+    const expired = cache.get({ key: 'matrix', loader })
+    expect(loader).toHaveBeenCalledTimes(2)
+
     refresh.resolve('fresh')
     await expect(pending).resolves.toBe('fresh')
+    await expect(expired).resolves.toBe('fresh')
   })
 
-  test('normal revalidation failure preserves the previous value', async () => {
-    const cache = createCache({ revalidate: 5 })
+  test('normal revalidation failure serves the previous value only before expiration', async () => {
+    const cache = createCache({ revalidate: 5, expire: 10 })
     const error = new Error('boom')
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('initial')
       .mockRejectedValueOnce(error)
       .mockResolvedValueOnce('recovered')
+      .mockRejectedValueOnce(error)
+      .mockResolvedValueOnce('fresh')
 
     await cache.get({ key: 'matrix', loader })
     advanceSeconds(6)
@@ -166,6 +201,11 @@ describe('createCache', () => {
 
     await flushMicrotasks()
     expect(await cache.get({ key: 'matrix', loader })).toBe('recovered')
+
+    advanceSeconds(10)
+    await expect(cache.get({ key: 'matrix', loader })).rejects.toThrow(error)
+    expect(await cache.get({ key: 'matrix', loader })).toBe('fresh')
+    expect(loader).toHaveBeenCalledTimes(5)
   })
 
   test('clear removes individual keys as well as the entire store', async () => {

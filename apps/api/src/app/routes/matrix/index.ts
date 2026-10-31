@@ -1,13 +1,16 @@
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
-import { legacyCache, ttl } from '~/app/cache'
+import { createCache, type CacheManager } from '~/app/cache'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
 import { Prisma } from '~/generated/prisma/client/client'
 import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 
-export const matrixRoute = (app: AppType) => {
+export const matrixRoute = (
+  app: AppType,
+  { cache = createCache({ revalidate: Infinity, expire: 300 }) }: { cache?: CacheManager } = {},
+) => {
   const querystringSchema = Type.Object({
     race: Type.Optional(Type.String()),
     class: Type.Optional(Type.String()),
@@ -29,7 +32,6 @@ export const matrixRoute = (app: AppType) => {
       const versionShort = versions.find((v) => v === version) ?? versions[0]
 
       const cacheKey = request.url.toLowerCase()
-      const cached = request.query.noCache ? false : legacyCache.get(cacheKey)
 
       const getData = async () => {
         const groupByList: Prisma.GameScalarFieldEnum[] = ['char', 'god']
@@ -84,11 +86,11 @@ export const matrixRoute = (app: AppType) => {
         }
       }
 
-      if (!cached || Date.now() - cached.ttl > ttl) {
-        legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-      }
-
-      return legacyCache.get(cacheKey)?.promise
+      return cache.get({
+        key: cacheKey,
+        loader: getData,
+        skipCache: request.query.noCache,
+      })
     },
   )
 }

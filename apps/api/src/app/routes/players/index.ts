@@ -1,6 +1,6 @@
 import { first, groupBy, orderBy, transform } from 'lodash-es'
 import { AppType } from '~/app/app'
-import { legacyCache, ttl } from '~/app/cache'
+import { createCache, type CacheManager } from '~/app/cache'
 import { draconians, LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 import { getAggregatedPlayerStats } from '~/app/getters/getAggregatedPlayerStats'
@@ -13,7 +13,13 @@ import { Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 import { isDefined } from '~/utils'
 
-export const playersRoute = (app: AppType) => {
+export const playersRoute = (
+  app: AppType,
+  {
+    cache = createCache({ revalidate: Infinity, expire: 300 }),
+    minimalCache = createCache({ revalidate: Infinity, expire: 12 * 60 * 60 }),
+  }: { cache?: CacheManager; minimalCache?: CacheManager } = {},
+) => {
   app.get<{
     Querystring: {
       query?: string
@@ -43,7 +49,6 @@ export const playersRoute = (app: AppType) => {
   }>('/api/players/:slug', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = request.url.toLowerCase()
-    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     if (request.query.clearData !== undefined) {
       getStaticData.cache.clear?.()
@@ -327,16 +332,14 @@ export const playersRoute = (app: AppType) => {
       return result
     }
 
-    const getData = request.query.type === 'minimal' ? getDataMinimal : getDataFull
-    const ttl = 1000 * 60 * (request.query.type === 'minimal' ? 60 * 12 : 5)
-
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return legacyCache.get(cacheKey)?.promise.then((data: unknown) => {
-      return data || reply.status(404).send('Not found')
+    const isMinimal = request.query.type === 'minimal'
+    const data = await (isMinimal ? minimalCache : cache).get({
+      key: cacheKey,
+      loader: async () => (isMinimal ? getDataMinimal() : getDataFull()),
+      skipCache: request.query.noCache !== undefined,
     })
+
+    return data ?? reply.status(404).send('Not found')
   })
 
   app.get<{
@@ -349,8 +352,6 @@ export const playersRoute = (app: AppType) => {
   }>('/api/players/:slug/streaks', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = request.url.toLowerCase()
-
-    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const player = await prisma.player.findFirst({
@@ -372,13 +373,13 @@ export const playersRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return legacyCache.get(cacheKey)?.promise.then((data: ReturnType<typeof getData>) => {
-      return data || reply.status(404).send('Not found')
+    const data = await cache.get({
+      key: cacheKey,
+      loader: getData,
+      skipCache: request.query.noCache !== undefined,
     })
+
+    return data ?? reply.status(404).send('Not found')
   })
 
   app.get<{
@@ -392,7 +393,6 @@ export const playersRoute = (app: AppType) => {
   }>('/api/players/:slug/calendar', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = request.url.toLowerCase()
-    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const player = await prisma.player.findUnique({
@@ -425,13 +425,13 @@ export const playersRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return legacyCache.get(cacheKey)?.promise.then((data: unknown) => {
-      return data || reply.status(404).send('Not found')
+    const data = await cache.get({
+      key: cacheKey,
+      loader: getData,
+      skipCache: request.query.noCache !== undefined,
     })
+
+    return data ?? reply.status(404).send('Not found')
   })
 
   app.get<{

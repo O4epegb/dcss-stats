@@ -1,10 +1,3 @@
-/**
- * Legacy route-level cache. Kept for the current implementation until the new
- * cache helpers below are reviewed and adopted in each route.
- */
-export const legacyCache = new Map<string, { promise: Promise<any>; ttl: number }>()
-export const ttl = 1000 * 60 * 5
-
 export type CacheKey = string
 
 export interface CacheRequest<TValue> {
@@ -15,12 +8,13 @@ export interface CacheRequest<TValue> {
 
 export interface CacheOptions {
   /**
-   * Seconds until a stale-while-revalidate cycle starts.
+   * Seconds since the last successful load before background revalidation starts.
    * Defaults to 300 seconds
    */
   revalidate?: number
   /**
-   * Seconds without traffic before an entry expires forever.
+   * Maximum seconds since the last successful load before requests must wait for fresh data.
+   * Cache hits do not extend this deadline; an in-flight refresh is shared.
    * Defaults to never (Infinity).
    */
   expire?: number
@@ -40,7 +34,6 @@ type CacheEntry<TValue = unknown> = {
   pendingPromise?: Promise<TValue>
   value?: TValue
   resolvedAt?: number
-  lastHit: number
 }
 
 export function createCache(options?: CacheOptions): CacheManager {
@@ -67,12 +60,13 @@ export function createCache(options?: CacheOptions): CacheManager {
         return loadAndStore(key, loader)
       }
 
-      if (expireMs !== Infinity && now - entry.lastHit >= expireMs) {
-        store.delete(key)
-        return loadAndStore(key, loader)
+      if (
+        expireMs !== Infinity &&
+        entry.resolvedAt !== undefined &&
+        now - entry.resolvedAt >= expireMs
+      ) {
+        return refreshEntity(entry, key, loader)
       }
-
-      entry.lastHit = now
 
       if (entry.pendingPromise && entry.value === undefined) {
         return entry.pendingPromise
@@ -109,11 +103,9 @@ export function createCache(options?: CacheOptions): CacheManager {
   }
 
   function loadAndStore<TValue>(key: CacheKey, loader: () => Promise<TValue>): Promise<TValue> {
-    const now = Date.now()
     const loaderPromise = loader()
     const entry: CacheEntry = {
       pendingPromise: loaderPromise,
-      lastHit: now,
     }
 
     store.set(key, entry)
@@ -143,7 +135,6 @@ export function createCache(options?: CacheOptions): CacheManager {
       return loadAndStore(key, loader)
     }
 
-    entry.lastHit = Date.now()
     return refreshEntity(entry, key, loader)
   }
 
@@ -188,7 +179,6 @@ export function createCache(options?: CacheOptions): CacheManager {
     const resolvedAt = Date.now()
     entry.value = value
     entry.resolvedAt = resolvedAt
-    entry.lastHit = resolvedAt
     entry.pendingPromise = undefined
   }
 }

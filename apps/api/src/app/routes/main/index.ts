@@ -1,17 +1,19 @@
 import { AppType } from '~/app/app'
-import { legacyCache, ttl } from '~/app/cache'
+import { createCache, type CacheManager } from '~/app/cache'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 
 const LIMIT = 10
 
-export const mainRoute = (app: AppType) => {
+export const mainRoute = (
+  app: AppType,
+  { cache = createCache({ revalidate: Infinity, expire: 300 }) }: { cache?: CacheManager } = {},
+) => {
   app.get<{
     Querystring: {
       noCache?: string
     }
   }>('/api/main', async (request) => {
     const cacheKey = request.routeOptions.url ?? request.url
-    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const gamesByEndAt = await findGamesIncludeServer({
@@ -27,10 +29,10 @@ export const mainRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return legacyCache.get(cacheKey)?.promise
+    return cache.get({
+      key: cacheKey,
+      loader: getData,
+      skipCache: request.query.noCache !== undefined,
+    })
   })
 }

@@ -1,13 +1,16 @@
 import { uniq } from 'lodash-es'
 import { Static, Type } from 'typebox'
 import { AppType } from '~/app/app'
-import { legacyCache, ttl } from '~/app/cache'
+import { createCache, type CacheManager } from '~/app/cache'
 import { Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 
 const LIMIT = 10
 
-export const topRoute = (app: AppType) => {
+export const topRoute = (
+  app: AppType,
+  { cache = createCache({ revalidate: Infinity, expire: 300 }) }: { cache?: CacheManager } = {},
+) => {
   const Querystring = Type.Object({
     noCache: Type.Optional(Type.String()),
     since: Type.Optional(Type.String({ format: 'date-time' })),
@@ -18,7 +21,6 @@ export const topRoute = (app: AppType) => {
     Querystring: Static<typeof Querystring>
   }>('/api/top', { schema: { querystring: Querystring } }, async (request) => {
     const cacheKey = request.url.toLowerCase()
-    const cached = request.query.noCache === undefined ? legacyCache.get(cacheKey) : false
 
     const getData = async () => {
       const top = await getTopStats({
@@ -34,11 +36,11 @@ export const topRoute = (app: AppType) => {
       }
     }
 
-    if (!cached || Date.now() - cached.ttl > ttl) {
-      legacyCache.set(cacheKey, { promise: getData(), ttl: Date.now() })
-    }
-
-    return legacyCache.get(cacheKey)?.promise
+    return cache.get({
+      key: cacheKey,
+      loader: getData,
+      skipCache: request.query.noCache !== undefined,
+    })
   })
 }
 
