@@ -63,21 +63,23 @@ services:
       - 'checkpoint_completion_target=0.9'
 
   prometheus:
-    image: prom/prometheus:v3.6.0
+    image: prom/prometheus:v3.13.5
     restart: no
+    stop_grace_period: 1m
     profiles:
       - metrics
     ports:
       - '9090:9090'
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus.local.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-local-storage:/prometheus
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
       - node_exporter
 
   node_exporter:
-    image: quay.io/prometheus/node-exporter:v1.10.2
+    image: quay.io/prometheus/node-exporter:v1.12.1
     restart: no
     profiles:
       - metrics
@@ -101,5 +103,6 @@ services:
 
 volumes:
   postgres18-local-volume:
+  prometheus-local-storage:
   grafana-storage:
   monster-catalog-storage:

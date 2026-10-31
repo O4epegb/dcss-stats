@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 1m
+
+storage:
+  tsdb:
+    retention:
+      time: 15d
+
+scrape_configs:
+  - job_name: 'dcss-api'
+    static_configs:
+      - targets: ['host.docker.internal:9464']
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # This exporter observes its container, not the host.
+  - job_name: 'node-container'
+    static_configs:
+      - targets: ['node_exporter:9100']

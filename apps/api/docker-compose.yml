@@ -89,25 +89,33 @@ services:
       - 'checkpoint_completion_target=0.9'
 
   prometheus:
-    image: prom/prometheus:v3.6.0
-    restart: no
+    image: prom/prometheus:v3.13.5
+    restart: on-failure:3
+    stop_grace_period: 1m
     ports:
       - '9090:9090'
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-storage:/prometheus
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     depends_on:
       - node_exporter
 
   node_exporter:
-    image: quay.io/prometheus/node-exporter:v1.10.2
+    image: quay.io/prometheus/node-exporter:v1.12.1
     container_name: node_exporter
     restart: on-failure:3
+    network_mode: host
+    pid: host
+    uts: host
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     command:
       - '--path.rootfs=/host'
-      - '--collector.systemd'
+      - '--path.udev.data=/host/run/udev/data'
       - '--collector.processes'
-    ports:
-      - '9100:9100'
+      - '--web.listen-address=host.docker.internal:9100'
     volumes:
       - '/:/host:ro,rslave'
 
@@ -126,5 +134,6 @@ services:
 volumes:
   app-volume:
   postgres18-volume:
+  prometheus-storage:
   grafana-storage:
   crawl-data-volume:

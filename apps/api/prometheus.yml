@@ -1,18 +1,24 @@
 global:
   scrape_interval: 1m
 
+storage:
+  tsdb:
+    retention:
+      time: 15d
+
 scrape_configs:
   - job_name: 'dcss-api'
     static_configs:
       - targets:
           - 'app:9464'
-          # For local docker-compose monitoring:
-          # - 'host.docker.internal:9464'
 
-  # - job_name: prometheus
-  #   static_configs:
-  #     - targets: ['localhost:9090']
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
 
   - job_name: 'node'
     static_configs:
-      - targets: ['node_exporter:9100']
+      - targets: ['host.docker.internal:9100']
+        labels:
+          # Preserve dashboard selectors when moving to host networking.
+          instance: 'node_exporter:9100'
