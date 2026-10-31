@@ -215,7 +215,7 @@ const TopList = ({
             }),
           }))}
         />
-        {top.gamesTotal != undefined && (
+        {top.gamesTotal != null && (
           <h2 className="flex justify-between font-semibold">
             Total games: <span>{formatNumber(top.gamesTotal)}</span>
           </h2>
@@ -229,7 +229,7 @@ const TopList = ({
             count: formatNumber(item.wins),
           }))}
         />
-        {top.winsTotal != undefined && (
+        {top.winsTotal != null && (
           <h2 className="flex justify-between font-semibold">
             Total wins: <span>{formatNumber(top.winsTotal)}</span>
           </h2>

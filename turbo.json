@@ -1,5 +1,6 @@
 {
   "$schema": "https://v2-10-4.turborepo.dev/schema.json",
+  "globalDependencies": [".oxlintrc.json"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

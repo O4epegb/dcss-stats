@@ -85,13 +85,14 @@ export const Filters = ({
     }),
   )
   const [isDragging, setIsDragging] = useState(false)
+  const excludedFiltersKey = String(excludeFilters)
 
   const options = useMemo(
     () =>
       filterOptions.filter(
         (x) => !excludeFilters.includes(x.name) && (x.type !== 'select' || x.values.length > 0),
       ),
-    [filterOptions, String(excludeFilters)],
+    [filterOptions, excludedFiltersKey],
   )
 
   const [_filters, _setFilters] = useState<FilterItemType[]>(() => [])
@@ -141,7 +142,7 @@ export const Filters = ({
             (!suboption || optionItem.suboptions.some((x) => x === suboption))
 
           if (!isValid) {
-            return
+            return undefined
           }
 
           return {

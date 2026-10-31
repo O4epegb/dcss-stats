@@ -8,6 +8,8 @@ export const FavoritesList = () => {
   const [favorites, setFavorites] = useState<null | string[]>(null)
 
   useEffect(() => {
+    // Read browser-only favorites after hydration to match the server's initial output.
+    // oxlint-disable-next-line react/set-state-in-effect
     setFavorites(getFavorites().split(',').filter(Boolean))
   }, [])
 

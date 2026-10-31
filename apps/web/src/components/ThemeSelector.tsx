@@ -34,6 +34,8 @@ export const ThemeSelector = ({ className }: { className?: string }) => {
   const { theme, resolvedTheme, setTheme } = useTheme()
 
   useEffect(() => {
+    // next-themes resolves the browser's theme after hydration.
+    // oxlint-disable-next-line react/set-state-in-effect
     setMounted(true)
   }, [])
 

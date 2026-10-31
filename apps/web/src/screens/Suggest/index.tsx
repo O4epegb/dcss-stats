@@ -143,6 +143,8 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
       version: version || versions[0],
     } as const
 
+    // Synchronize the editable filters with navigation through the URL query.
+    // oxlint-disable-next-line react/set-state-in-effect
     setFilter(newFilter)
 
     setFilterForSearch((x) => ({

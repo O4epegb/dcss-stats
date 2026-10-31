@@ -301,11 +301,8 @@ async function parseSkills(filePath: string) {
     }
 
     for (const skill of skillLines) {
-      if (!skills.has(skill.name)) {
-        skills.set(skill.name, [])
-      }
-
-      const levels = skills.get(skill.name)!
+      const levels = skills.get(skill.name) ?? []
+      skills.set(skill.name, levels)
       const skillLevel = parseInt(skill.levelsPart.slice(i - 1, i + 1).trim(), 10)
       const normalizedLevel = isNaN(skillLevel) || skillLevel === 0 ? last(levels) || 0 : skillLevel
 

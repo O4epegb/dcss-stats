@@ -136,6 +136,8 @@ export const ChartsScreen = ({
   const [isCopied, setIsCopied] = useState(false)
 
   useEffect(() => {
+    // Defer browser-only chart rendering until the server markup has hydrated.
+    // oxlint-disable-next-line react/set-state-in-effect
     setIsMounted(() => true)
   }, [])
 

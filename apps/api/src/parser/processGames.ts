@@ -75,7 +75,10 @@ export const processGames = async (file: LogfileWithServer, lines: string[]) => 
       data: chunk.map((rawGame) => {
         const raceAbbr = normalizeRaceAbbr(rawGame)
         const classAbbr = normalizeClassAbbr(rawGame)
-        const versionShort = rawGame.v.match(versionRegExp)![0]
+        const versionShort = rawGame.v.match(versionRegExp)?.[0]
+        if (!versionShort) {
+          throw new Error(`Invalid game version: ${rawGame.v}`)
+        }
 
         return {
           id: rawGame.id,

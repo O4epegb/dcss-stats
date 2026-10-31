@@ -10,7 +10,9 @@ export class RaceConditionGuard {
     const currentPromise = this.lastPromise
     return (response: unknown) => {
       if (this.lastPromise !== currentPromise) {
-        return new Promise(() => null)
+        return new Promise(() => {
+          // Superseded requests intentionally never settle.
+        })
       }
       return response
     }

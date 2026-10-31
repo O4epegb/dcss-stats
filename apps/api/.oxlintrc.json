@@ -1,10 +1,8 @@
 {
   "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
   "plugins": ["typescript", "unicorn", "import"],
   "jsPlugins": ["eslint-plugin-no-relative-import-paths"],
-  "categories": {
-    "correctness": "error"
-  },
   "env": {
     "builtin": true,
     "es2018": true,
@@ -20,12 +18,7 @@
   ],
   "rules": {
     "unicorn/no-single-promise-in-promise-methods": "off",
-    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "ignoreRestSiblings": true }],
-    "no-duplicate-imports": ["error", { "includeExports": true }],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
-    "object-shorthand": ["warn", "always"],
-    "prefer-const": "warn",
-    "import/newline-after-import": ["warn", { "count": 1 }],
     "no-relative-import-paths/no-relative-import-paths": [
       "warn",
       { "allowSameFolder": true, "rootDir": "src", "prefix": "~" }

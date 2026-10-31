@@ -98,9 +98,13 @@ export const filterComboStats = <T extends Dimension>(
   for (const point of points) {
     const race = point.combo.slice(0, 2)
     const klass = point.combo.slice(2, 4)
+    const raceName = raceNames.get(race)
+    const className = classNames.get(klass)
+    if (raceName === undefined || className === undefined) continue
+
     const values: Record<string, number | string> = {
-      Race: raceNames.get(race)!,
-      Background: classNames.get(klass)!,
+      Race: raceName,
+      Background: className,
       Games: point.games,
       Wins: point.wins,
       // Scale counts before division to preserve exact percentage boundaries.
@@ -109,7 +113,9 @@ export const filterComboStats = <T extends Dimension>(
     const matches = groups.every((group) =>
       group.some((filter) => {
         const actual = values[filter.option]
-        const expected = typeof actual === 'number' ? Number(filter.value) : filter.value!
+        const value = filter.value
+        if (value === undefined) return false
+        const expected = typeof actual === 'number' ? Number(value) : value
         return compare(actual, filter.condition, expected)
       }),
     )

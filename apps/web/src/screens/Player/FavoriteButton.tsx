@@ -9,6 +9,8 @@ export const FavoriteButton = () => {
   const [isFavorite, setIsFavorite] = useState(false)
 
   useEffect(() => {
+    // Read browser-only favorites after hydration to match the server's initial output.
+    // oxlint-disable-next-line react/set-state-in-effect
     setIsFavorite(getFavorites().split(',').indexOf(player.name) !== -1)
   }, [])
 

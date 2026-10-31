@@ -1,0 +1,10 @@
+{
+  "$schema": "../../node_modules/oxlint/configuration_schema.json",
+  "extends": ["../../.oxlintrc.json"],
+  "plugins": ["typescript", "react", "unicorn", "oxc", "import"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "webextensions": true
+  }
+}

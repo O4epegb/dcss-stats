@@ -101,6 +101,8 @@ export const GamesList = (props: {
       return
     }
 
+    // Prop changes start an external request and update its loading state together.
+    // oxlint-disable-next-line react/set-state-in-effect
     loadData()
   }, [race, klass, god, isWin, String(version), String(server), runes])
 

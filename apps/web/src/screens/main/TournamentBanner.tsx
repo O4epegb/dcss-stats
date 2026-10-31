@@ -14,6 +14,8 @@ export const TournamentBanner = () => {
   const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
+    // Switch from server UTC formatting to the browser's timezone after hydration.
+    // oxlint-disable-next-line react/set-state-in-effect
     setHydrated(true)
   }, [])
 

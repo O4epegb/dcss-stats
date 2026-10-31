@@ -1,0 +1,39 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "import"],
+  "categories": {
+    "correctness": "error"
+  },
+  "options": {
+    "denyWarnings": true,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "rules": {
+    "array-callback-return": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-duplicate-imports": ["error", { "includeExports": true }],
+    "no-new-func": "error",
+    "no-promise-executor-return": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [{ "name": "lodash", "message": "Please use lodash-es instead." }],
+        "patterns": ["lodash-es/*"]
+      }
+    ],
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "error",
+    "no-throw-literal": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "ignoreRestSiblings": true }],
+    "no-var": "error",
+    "object-shorthand": ["error", "always"],
+    "prefer-const": "warn",
+    "prefer-promise-reject-errors": "error",
+    "import/newline-after-import": ["warn", { "count": 1 }],
+    "import/no-mutable-exports": "error",
+    "typescript/ban-ts-comment": "error",
+    "typescript/no-non-null-assertion": "error",
+    "typescript/no-unsafe-declaration-merging": "error"
+  }
+}

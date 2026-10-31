@@ -293,6 +293,8 @@ export default function ComboScatterPlot({
   useEffect(() => {
     // React Chart.js applies the new data/options before this effect runs.
     chartRef.current?.resetZoom('none')
+    // Synchronize the reset control with the imperative Chart.js viewport reset.
+    // oxlint-disable-next-line react/set-state-in-effect
     setIsZoomed(false)
   }, [options])
 

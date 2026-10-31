@@ -115,6 +115,8 @@ export const Tooltip = ({
   } = useFloating({
     placement,
     open,
+    // Floating UI reads this ref later in its positioning middleware, not during render.
+    // oxlint-disable-next-line react/refs
     middleware: [offset(6), flip(), shift({ padding: 16 }), arrow({ element: arrowRef })],
     whileElementsMounted: autoUpdate ? autoUpdateUtility : undefined,
     onOpenChange: (newOpen) => {
