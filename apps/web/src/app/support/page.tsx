@@ -1,8 +1,10 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import dayjs from 'dayjs'
 import { Metadata } from 'next'
 import { fetchApi } from '~/api/server'
 import { sharedOGMetadata } from '~/app/shared-metadata'
 import { Logo } from '~/components/Logo'
+import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/Dialog'
 import { defaultMetaTitle } from '~/constants'
 import { Donation, SupportersCurrentResponse, SupportersListResponse } from '~/types'
 import { cn } from '~/utils'
@@ -10,52 +12,55 @@ import { BitcoinBlock } from './BitcoinBlock'
 
 const title = `Support Us | ${defaultMetaTitle}`
 
-interface DonationListProps {
-  donations: Donation[]
-  title: string
-  titleColor: string
-  maxItems?: number
-  showDurationType?: boolean
+const donationSourceLabels: Record<Donation['source'], string> = {
+  buymeacoffee: 'Buy Me a Coffee',
+  github: 'GitHub Sponsors',
+  kofi: 'Ko-fi',
+  bitcoin: 'Bitcoin',
+  other: 'Other',
 }
 
-const DonationList = ({
-  donations,
-  title,
-  titleColor,
-  maxItems,
-  showDurationType = false,
-}: DonationListProps) => {
-  const displayedDonations = maxItems ? donations.slice(0, maxItems) : donations
-  const remainingCount = maxItems && donations.length > maxItems ? donations.length - maxItems : 0
+interface DonationListProps {
+  donations: Donation[]
+  title?: string
+  titleColor?: string
+}
 
+const DonationList = ({ donations, title, titleColor }: DonationListProps) => {
   return (
     <div className="space-y-3">
-      <h4 className={cn('text-lg font-medium', titleColor)}>{title}</h4>
+      {title && <h4 className={cn('text-lg font-medium', titleColor)}>{title}</h4>}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {displayedDonations.map((donation) => (
+        {donations.map((donation) => (
           <div
-            key={`${showDurationType ? 'subscription' : 'onetime'}-${donation.id}`}
+            key={`${donation.source}-${donation.type}-${donation.id}`}
             className="border-border-strong bg-surface-muted rounded border p-3"
           >
             <div className="flex items-center justify-between gap-1">
-              <span className="font-medium">{showDurationType ? 'Subscriber' : 'Supporter'}</span>
+              <span className="font-medium">
+                {donation.type === 'subscription' ? 'Subscriber' : 'Supporter'}
+              </span>
               <span className={cn('text-warning', donation.amount >= 10 && 'font-semibold')}>
                 {donation.currency} {donation.amount.toFixed(2)}
               </span>
             </div>
             <div className="text-muted-foreground text-sm">
-              {showDurationType && donation.durationType && <>{donation.durationType} • Since </>}
+              {donation.type === 'subscription' && donation.durationType && (
+                <>{donation.durationType} • Since </>
+              )}
               <span suppressHydrationWarning>
-                {new Date(donation.createdAt).toLocaleDateString()}
+                {new Date(donation.createdAt).toLocaleDateString(undefined, { timeZone: 'UTC' })}
               </span>
             </div>
-            {donation.isActiveNow && <div className="text-success mt-1 text-xs">Active</div>}
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <span className="border-border-strong text-muted-foreground rounded border px-1.5 py-0.5 text-xs">
+                {donationSourceLabels[donation.source]}
+              </span>
+              {donation.isActiveNow && <span className="text-success text-xs">Active</span>}
+            </div>
           </div>
         ))}
       </div>
-      {remainingCount > 0 && (
-        <p className="text-muted-foreground text-sm">... and {remainingCount} more supporters</p>
-      )}
     </div>
   )
 }
@@ -85,6 +90,10 @@ const SupportPage = async () => {
 
   const data: SupportersCurrentResponse = await res.json()
   const listData: SupportersListResponse = await listRes.json()
+  const oneYearAgo = dayjs().subtract(1, 'year')
+  const recentOneTimeDonations = listData.oneTimeDonations.filter((donation) =>
+    dayjs(donation.createdAt).isAfter(oneYearAgo),
+  )
 
   return (
     <div className="container mx-auto flex min-h-screen flex-col items-center space-y-4 py-4 pt-4">
@@ -167,17 +176,33 @@ const SupportPage = async () => {
                 donations={listData.subscriptionDonations}
                 title="Subscribers"
                 titleColor="text-warning"
-                showDurationType={true}
               />
             )}
 
             {listData.oneTimeDonations.length > 0 && (
-              <DonationList
-                donations={listData.oneTimeDonations}
-                title="Recent One-Time Donations"
-                titleColor="text-info"
-                maxItems={12}
-              />
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h4 className="text-info text-lg font-medium">Recent One-Time Donations</h4>
+                  <Dialog>
+                    <DialogTrigger className="text-link text-sm hover:underline">
+                      Show all
+                    </DialogTrigger>
+                    <DialogContent
+                      title="All One-Time Donations"
+                      className="sm:w-[90vw] sm:max-w-3xl"
+                    >
+                      <DonationList donations={listData.oneTimeDonations} />
+                    </DialogContent>
+                  </Dialog>
+                </div>
+                {recentOneTimeDonations.length > 0 ? (
+                  <DonationList donations={recentOneTimeDonations} />
+                ) : (
+                  <p className="text-muted-foreground text-sm">
+                    No one-time donations in the past year.
+                  </p>
+                )}
+              </div>
             )}
           </div>
         )}

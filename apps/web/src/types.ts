@@ -261,7 +261,7 @@ export type SupportersListResponse = {
 export type Donation = {
   id: number | string
   type: 'one-time' | 'subscription'
-  source: 'buymeacoffee' | 'kofi' | 'other'
+  source: 'buymeacoffee' | 'github' | 'kofi' | 'bitcoin' | 'other'
   amount: number
   currency: string
   createdAt: string

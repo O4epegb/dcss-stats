@@ -16,6 +16,7 @@ services:
       - TWITCH_SECRET
       - YOUTUBE_API_KEY
       - BUYMEACOFFEE_TOKEN
+      - GITHUB_SPONSORS_TOKEN
       - MONSTER_CATALOG_FILE_PATH=/catalog/monsters.json
     build:
       context: ../../

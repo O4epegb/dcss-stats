@@ -19,6 +19,7 @@ vi.mock('~/utils', () => ({
 
 const ORIGINAL_ENV = {
   BUYMEACOFFEE_TOKEN: process.env.BUYMEACOFFEE_TOKEN,
+  GITHUB_SPONSORS_TOKEN: process.env.GITHUB_SPONSORS_TOKEN,
 }
 
 beforeEach(() => {
@@ -26,21 +27,29 @@ beforeEach(() => {
   axiosMock.get.mockReset()
   trackError.mockReset()
   process.env.BUYMEACOFFEE_TOKEN = 'token-123'
+  delete process.env.GITHUB_SPONSORS_TOKEN
 })
 
 afterEach(() => {
-  process.env.BUYMEACOFFEE_TOKEN = ORIGINAL_ENV.BUYMEACOFFEE_TOKEN
+  for (const [key, value] of Object.entries(ORIGINAL_ENV)) {
+    if (value === undefined) delete process.env[key]
+    else process.env[key] = value
+  }
 })
 
 const createSubscriptionsResponse = <T>(data: T[] = []) => ({
   data: {
     data,
+    current_page: 1,
+    last_page: 1,
   },
 })
 
-const createSupportersResponse = <T>(data: T[] = []) => ({
+const createSupportersResponse = <T>(data: T[] = [], page = 1, lastPage = 1) => ({
   data: {
     data,
+    current_page: page,
+    last_page: lastPage,
   },
 })
 
@@ -71,8 +80,9 @@ describe('supportersRoute', () => {
   test('returns aggregate totals for /api/supporters/current', async () => {
     const subscription = {
       subscription_id: 1,
-      subscription_current_period_start: dayjs('2024-01-01').toISOString(),
-      subscription_current_period_end: dayjs('2024-02-01').toISOString(),
+      subscription_created_on: '2026-10-01T00:00:00Z',
+      subscription_current_period_start: '2026-10-01T00:00:00Z',
+      subscription_current_period_end: '2026-11-01T00:00:00Z',
       subscription_coffee_price: '10',
       subscription_currency: 'USD',
       subscription_duration_type: 'monthly',
@@ -146,7 +156,14 @@ describe('supportersRoute', () => {
 
     axiosMock.get
       .mockResolvedValueOnce(createSubscriptionsResponse(subscriptions))
-      .mockResolvedValueOnce(createSupportersResponse(supporters))
+      .mockResolvedValueOnce(createSupportersResponse(supporters, 1, 2))
+      .mockResolvedValueOnce(
+        createSupportersResponse(
+          [{ ...supporters[0], support_id: 2, support_created_on: '2023-01-01T00:00:00Z' }],
+          2,
+          2,
+        ),
+      )
 
     const { app } = await registerSupportersRoute()
 
@@ -159,16 +176,28 @@ describe('supportersRoute', () => {
         subscriptionDonations: Array<Record<string, unknown>>
       }
 
-      expect(payload.oneTimeDonations).toHaveLength(2)
+      expect(payload.oneTimeDonations).toHaveLength(4)
       expect(payload.oneTimeDonations[0]).toMatchObject({
+        id: 'bitcoin-1',
+        amount: 20,
+        currency: 'USD',
+        createdAt: '2026-04-05T00:00:00.000Z',
+        source: 'bitcoin',
+      })
+      expect(payload.oneTimeDonations[1]).toMatchObject({
         id: 'kofi-1',
         source: 'kofi',
       })
-      expect(payload.oneTimeDonations[1]).toMatchObject({
+      expect(payload.oneTimeDonations[2]).toMatchObject({
         id: '1',
         amount: 5,
         source: 'buymeacoffee',
       })
+      expect(payload.oneTimeDonations[3]).toMatchObject({ id: '2', source: 'buymeacoffee' })
+      expect(axiosMock.get).toHaveBeenLastCalledWith(
+        'https://developers.buymeacoffee.com/api/v1/supporters',
+        expect.objectContaining({ params: { page: 2 } }),
+      )
 
       expect(payload.subscriptionDonations).toHaveLength(1)
       expect(payload.subscriptionDonations[0]).toMatchObject({
