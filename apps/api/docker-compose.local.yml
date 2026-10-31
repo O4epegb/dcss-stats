@@ -17,7 +17,7 @@ services:
     restart: no
     image: postgres:18
     ports:
-      - '5432:5432'
+      - '127.0.0.1:${POSTGRES_PORT:?Run Compose through yarn compose}:5432'
     volumes:
       - postgres18-local-volume:/var/lib/postgresql
     environment:

@@ -62,16 +62,18 @@ yarn dev:web
 
 ## Backend
 
-Start Postgres with Docker Compose:
+Postgres uses port `5432` by default. To change it for the API, Compose, and Prisma, add this to `apps/api/.env.local`:
 
-```sh
-yarn workspace @dcss-stats/api compose
+```dotenv
+POSTGRES_PORT=15432
 ```
 
-If you want to run backend with different Postgres database, you can change `DATABASE_URL` env variable in `.env.local` file (create it if it doesn't exist in `apps/api` folder):
+Remove any existing `DATABASE_URL` override to use this port. To connect to another database, set `DATABASE_URL` instead.
 
-```yml
-DATABASE_URL='postgresql://postgres:postgres@localhost:5432/dcssstats'
+Start Postgres with Docker Compose (rerun after changing the port, then restart the API):
+
+```sh
+yarn workspace @dcss-stats/api compose up -d
 ```
 
 Then you can run migrations and seed the database:
@@ -84,6 +86,12 @@ Run only the backend with:
 
 ```sh
 yarn dev:api
+```
+
+Run other Prisma commands with:
+
+```sh
+yarn workspace @dcss-stats/api prisma <command>
 ```
 
 ## Browser Extension

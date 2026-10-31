@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export const Logo = () => {
   return (
-    <Link className="inline-flex items-center space-x-2" href="/">
+    <Link className="inline-flex items-center space-x-2" href="/" prefetch={false}>
       <Image
         priority
         alt="DCSS Stats app logo"
