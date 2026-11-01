@@ -33,7 +33,7 @@ export type RecordsEntry = {
   }>
 }
 
-const cache = createCache({ revalidate: 300 })
+const cache = createCache({ revalidate: 300, expire: 15 * 60 })
 
 export const getLeaderboard = async (
   kind: HighscoreKind = 'HIGHSCORE',
@@ -67,81 +67,76 @@ export const getLeaderboard = async (
 export const getCombinedLeaderboard = async (
   runeTier?: HighscoreRuneTier,
 ): Promise<CombinedLeaderboardEntry[]> => {
-  return cache.get({
-    key: `leaderboard:combined:${runeTier ?? 'ALL'}`,
-    loader: async () => {
-      const [highscores, turncounts, durations] = await Promise.all([
-        getLeaderboard('HIGHSCORE', runeTier),
-        getLeaderboard('TURN_COUNT', runeTier),
-        getLeaderboard('DURATION', runeTier),
-      ])
+  const [highscores, turncounts, durations] = await Promise.all([
+    getLeaderboard('HIGHSCORE', runeTier),
+    getLeaderboard('TURN_COUNT', runeTier),
+    getLeaderboard('DURATION', runeTier),
+  ])
 
-      const playerMap = new Map<
-        string,
-        {
-          playerName: string
-          highscorePoints: number
-          turncountPoints: number
-          durationPoints: number
-        }
-      >()
+  const playerMap = new Map<
+    string,
+    {
+      playerName: string
+      highscorePoints: number
+      turncountPoints: number
+      durationPoints: number
+    }
+  >()
 
-      for (const entry of highscores) {
-        const existing = playerMap.get(entry.playerId)
-        if (existing) {
-          existing.highscorePoints = entry.points
-        } else {
-          playerMap.set(entry.playerId, {
-            playerName: entry.playerName,
-            highscorePoints: entry.points,
-            turncountPoints: 0,
-            durationPoints: 0,
-          })
-        }
-      }
+  for (const entry of highscores) {
+    const existing = playerMap.get(entry.playerId)
+    if (existing) {
+      existing.highscorePoints = entry.points
+    } else {
+      playerMap.set(entry.playerId, {
+        playerName: entry.playerName,
+        highscorePoints: entry.points,
+        turncountPoints: 0,
+        durationPoints: 0,
+      })
+    }
+  }
 
-      for (const entry of turncounts) {
-        const existing = playerMap.get(entry.playerId)
-        if (existing) {
-          existing.turncountPoints = entry.points
-        } else {
-          playerMap.set(entry.playerId, {
-            playerName: entry.playerName,
-            highscorePoints: 0,
-            turncountPoints: entry.points,
-            durationPoints: 0,
-          })
-        }
-      }
+  for (const entry of turncounts) {
+    const existing = playerMap.get(entry.playerId)
+    if (existing) {
+      existing.turncountPoints = entry.points
+    } else {
+      playerMap.set(entry.playerId, {
+        playerName: entry.playerName,
+        highscorePoints: 0,
+        turncountPoints: entry.points,
+        durationPoints: 0,
+      })
+    }
+  }
 
-      for (const entry of durations) {
-        const existing = playerMap.get(entry.playerId)
-        if (existing) {
-          existing.durationPoints = entry.points
-        } else {
-          playerMap.set(entry.playerId, {
-            playerName: entry.playerName,
-            highscorePoints: 0,
-            turncountPoints: 0,
-            durationPoints: entry.points,
-          })
-        }
-      }
+  for (const entry of durations) {
+    const existing = playerMap.get(entry.playerId)
+    if (existing) {
+      existing.durationPoints = entry.points
+    } else {
+      playerMap.set(entry.playerId, {
+        playerName: entry.playerName,
+        highscorePoints: 0,
+        turncountPoints: 0,
+        durationPoints: entry.points,
+      })
+    }
+  }
 
-      const sorted = Array.from(playerMap.entries())
-        .map(([playerId, data]) => ({
-          playerId,
-          ...data,
-          totalPoints: data.highscorePoints + data.turncountPoints + data.durationPoints,
-        }))
-        .sort((a, b) => b.totalPoints - a.totalPoints)
+  const sorted = Array.from(playerMap.entries())
+    .map(([playerId, data]) => ({
+      playerId,
+      ...data,
+      totalPoints: data.highscorePoints + data.turncountPoints + data.durationPoints,
+    }))
+    .sort((a, b) => b.totalPoints - a.totalPoints)
 
-      return sorted.map((entry, index) => ({ ...entry, rank: index + 1 }))
-    },
-  })
+  return sorted.map((entry, index) => ({ ...entry, rank: index + 1 }))
 }
 
-const recordsCache = createCache({ revalidate: 300 })
+const recordsCache = createCache({ revalidate: 300, expire: 15 * 60 })
 
 export const getTopRecords = async (
   kind: HighscoreKind = 'HIGHSCORE',

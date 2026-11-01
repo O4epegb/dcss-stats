@@ -42,7 +42,7 @@ describe('createCache', () => {
   })
 
   test('serves stale values while revalidating in the background', async () => {
-    const cache = createCache({ revalidate: 10 })
+    const cache = createCache({ revalidate: 10, expire: Infinity })
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('initial')
@@ -99,7 +99,7 @@ describe('createCache', () => {
   })
 
   test('skipCache refreshes the normalized route key and backfills the latest value', async () => {
-    const cache = createCache()
+    const cache = createCache({ expire: Infinity })
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('cached')
@@ -126,7 +126,7 @@ describe('createCache', () => {
   })
 
   test('skipCache deduplicates concurrent refreshes', async () => {
-    const cache = createCache()
+    const cache = createCache({ expire: Infinity })
     const refresh = Promise.withResolvers<string>()
     const loader = vi
       .fn<() => Promise<string>>()
@@ -147,7 +147,7 @@ describe('createCache', () => {
   })
 
   test('skipCache keeps the previous value when refresh fails', async () => {
-    const cache = createCache()
+    const cache = createCache({ expire: Infinity })
     const error = new Error('refresh failed')
     const loader = vi
       .fn<() => Promise<string>>()
@@ -220,7 +220,7 @@ describe('createCache', () => {
   })
 
   test('evicts least recently used entries and supports clearing keys or the entire store', async () => {
-    const cache = createCache({ maxEntries: 2 })
+    const cache = createCache({ expire: Infinity, maxEntries: 2 })
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('first')
@@ -247,7 +247,7 @@ describe('createCache', () => {
   })
 
   test('applies the default revalidation window of 300 seconds', async () => {
-    const cache = createCache()
+    const cache = createCache({ expire: Infinity })
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('initial')
@@ -264,9 +264,8 @@ describe('createCache', () => {
     expect(loader).toHaveBeenCalledTimes(2)
   })
 
-  test('never expires entries when expire is not provided', async () => {
-    // Use a huge revalidation window so we can focus on the absence of expire.
-    const cache = createCache({ revalidate: Number.MAX_SAFE_INTEGER })
+  test('never expires entries when expire is explicitly Infinity', async () => {
+    const cache = createCache({ revalidate: Infinity, expire: Infinity })
     const loader = vi.fn<() => Promise<string>>().mockResolvedValue('stable')
 
     expect(await cache.get({ key: 'supporters', loader })).toBe('stable')

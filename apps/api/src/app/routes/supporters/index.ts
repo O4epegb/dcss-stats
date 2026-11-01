@@ -34,7 +34,11 @@ const manualDonations: Donation[] = [
 
 export const supportersRoute = (
   app: AppType,
-  { cache = createCache() }: { cache?: ReturnType<typeof createCache> } = {},
+  {
+    cache = createCache({ revalidate: 300, expire: 60 * 60 }),
+  }: {
+    cache?: ReturnType<typeof createCache>
+  } = {},
 ) => {
   const coffeeToken = process.env.BUYMEACOFFEE_TOKEN
   const githubToken = process.env.GITHUB_SPONSORS_TOKEN

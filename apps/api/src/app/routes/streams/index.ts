@@ -38,9 +38,12 @@ type StreamsRouteOptions = {
 export const streamsRoute = (
   app: AppType,
   {
-    twitchCache = createCache(),
-    youtubeCache = createCache(),
-    youtubeSearchCache = createCache({ revalidate: YOUTUBE_SEARCH_CACHE_SECONDS }),
+    twitchCache = createCache({ revalidate: 300, expire: 10 * 60 }),
+    youtubeCache = createCache({ revalidate: 300, expire: 10 * 60 }),
+    youtubeSearchCache = createCache({
+      revalidate: Infinity,
+      expire: YOUTUBE_SEARCH_CACHE_SECONDS,
+    }),
   }: StreamsRouteOptions = {},
 ) => {
   app.get('/api/streams', async (_request, reply) => {

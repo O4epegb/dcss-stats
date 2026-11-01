@@ -2,18 +2,28 @@ import { CacheManager, defaultCacheOptions } from '~/app/cache'
 import { trackError } from '~/utils'
 import { SupportersData } from './types'
 
+const MAX_FALLBACK_AGE_MS = 24 * 60 * 60 * 1000
+
 export function createCachedSupportersLoader(
   cache: CacheManager,
   key: string,
   loader: () => Promise<SupportersData>,
 ) {
-  let lastData: SupportersData | undefined
+  let lastSuccess: { data: SupportersData; resolvedAt: number } | undefined
   let lastError: Error | undefined
   let retryAt = 0
 
+  const getFallback = () => {
+    if (lastSuccess && Date.now() - lastSuccess.resolvedAt < MAX_FALLBACK_AGE_MS) {
+      return lastSuccess.data
+    }
+    return undefined
+  }
+
   return async (): Promise<SupportersData> => {
     if (lastError && Date.now() < retryAt) {
-      if (lastData) return lastData
+      const fallback = getFallback()
+      if (fallback) return fallback
       throw lastError
     }
 
@@ -23,7 +33,7 @@ export function createCachedSupportersLoader(
         loader: async () => {
           try {
             const data = await loader()
-            lastData = data
+            lastSuccess = { data, resolvedAt: Date.now() }
             lastError = undefined
             return data
           } catch (error) {
@@ -36,7 +46,8 @@ export function createCachedSupportersLoader(
       })
     } catch (error) {
       // Concurrent requests can await a failed refresh even when the cache has older data.
-      if (lastData) return lastData
+      const fallback = getFallback()
+      if (fallback) return fallback
       throw error
     }
   }

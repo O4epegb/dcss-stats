@@ -55,7 +55,7 @@ const createSupportersResponse = <T>(data: T[] = [], page = 1, lastPage = 1) => 
 
 const registerSupportersRoute = async () => {
   const { supportersRoute } = await import('./index')
-  const cache = createCache()
+  const cache = createCache({ revalidate: 300, expire: 60 * 60 })
   const app = fastify() as unknown as AppType
   supportersRoute(app, { cache })
   await app.ready()

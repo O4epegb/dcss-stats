@@ -91,7 +91,7 @@ type HighscoresRouteOptions = {
 
 export const highscoresRoute = (
   app: AppType,
-  { cache = createCache() }: HighscoresRouteOptions = {},
+  { cache = createCache({ revalidate: 300, expire: 15 * 60 }) }: HighscoresRouteOptions = {},
 ) => {
   app.addHook('onListen', async () => {
     highscoresCronJob.start()

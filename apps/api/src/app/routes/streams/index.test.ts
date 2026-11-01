@@ -112,9 +112,9 @@ const mockSuccessfulProviders = ({
 
 const registerStreamsRoute = async () => {
   const { streamsRoute } = await import('./index')
-  const twitchCache = createCache()
-  const youtubeCache = createCache()
-  const youtubeSearchCache = createCache({ revalidate: 20 * 60 })
+  const twitchCache = createCache({ revalidate: 300, expire: 10 * 60 })
+  const youtubeCache = createCache({ revalidate: 300, expire: 10 * 60 })
+  const youtubeSearchCache = createCache({ revalidate: Infinity, expire: 20 * 60 })
   const testApp = fastify() as unknown as AppType
   streamsRoute(testApp, { twitchCache, youtubeCache, youtubeSearchCache })
   await testApp.ready()

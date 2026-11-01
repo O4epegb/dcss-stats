@@ -12,7 +12,7 @@ export interface CacheOptions {
   /** Seconds since the last successful load before background revalidation starts. */
   revalidate?: number
   /** Seconds since the last successful load before requests must wait for fresh data. */
-  expire?: number
+  expire: number
   /**
    * Retained-entry limit. In-flight loads can temporarily exceed it.
    */
@@ -24,9 +24,8 @@ export interface CacheManager {
   clear(key?: CacheKey): void
 }
 
-export const defaultCacheOptions: Required<CacheOptions> = {
+export const defaultCacheOptions: Required<Omit<CacheOptions, 'expire'>> = {
   revalidate: 300,
-  expire: Infinity,
   maxEntries: 256,
 }
 
@@ -36,17 +35,21 @@ type CacheEntry<TValue = unknown> = {
   resolvedAt?: number
 }
 
-export function createCache(options?: CacheOptions): CacheManager {
+export function createCache(options: CacheOptions): CacheManager {
   const resolvedOptions = { ...defaultCacheOptions, ...options }
+  if (
+    resolvedOptions.expire !== Infinity &&
+    (!Number.isFinite(resolvedOptions.expire) || resolvedOptions.expire < 0)
+  ) {
+    throw new RangeError('expire must be a non-negative finite number or Infinity')
+  }
   if (!Number.isSafeInteger(resolvedOptions.maxEntries) || resolvedOptions.maxEntries < 1) {
     throw new RangeError('maxEntries must be a positive safe integer')
   }
   const revalidateMs = Number.isFinite(resolvedOptions.revalidate)
     ? resolvedOptions.revalidate * 1000
     : Infinity
-  const expireMs = Number.isFinite(resolvedOptions.expire)
-    ? resolvedOptions.expire * 1000
-    : Infinity
+  const expireMs = resolvedOptions.expire * 1000
 
   const store = new Map<CacheKey, CacheEntry>()
 
