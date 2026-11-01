@@ -5,7 +5,7 @@ datasource db {
 generator client {
   provider        = "prisma-client"
   output          = "../src/generated/prisma/client"
-  previewFeatures = []
+  previewFeatures = ["partialIndexes"]
 }
 
 model Server {
@@ -101,7 +101,8 @@ model Game {
   @@index([playerId, startAt])
   @@index([playerId, endAt])
   @@index([startAt])
-  @@index([endAt])
+  @@index([endAt, playerId, isWin])
+  @@index([endAt(sort: Desc), playerId, title, isWin], where: { isWin: true })
   @@index([versionShort])
   @@index([versionInteger, endAt])
   @@index([normalizedClass])

@@ -1,0 +1,1 @@
+DROP INDEX CONCURRENTLY "Game_endAt_idx";

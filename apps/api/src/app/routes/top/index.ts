@@ -20,27 +20,31 @@ export const topRoute = (
   app.get<{
     Querystring: Static<typeof Querystring>
   }>('/api/top', { schema: { querystring: Querystring } }, async (request) => {
-    const cacheKey = getRouteCacheKey(request.url, request.query)
+    const { minGamesThresholdForWinrate, noCache } = request.query
+    const since = request.query.since ? new Date(request.query.since) : undefined
+    const period = { since: since?.toISOString() }
+    const skipCache = noCache !== undefined
 
-    const getData = async () => {
-      const top = await getTopStats({
-        since: request.query.since ? new Date(request.query.since) : undefined,
-        minGamesThresholdForWinrate: request.query.minGamesThresholdForWinrate,
-      })
+    const [common, byWinrate] = await Promise.all([
+      cache.get({
+        key: getRouteCacheKey('/api/top/common', period),
+        loader: () => getCommonTopStats(since),
+        skipCache,
+      }),
+      cache.get({
+        key: getRouteCacheKey('/api/top/winrates', { ...period, minGamesThresholdForWinrate }),
+        loader: () => getTopWinrates(minGamesThresholdForWinrate, since),
+        skipCache,
+      }),
+    ])
 
-      return {
-        data: {
-          minGamesThresholdForWinrate: request.query.minGamesThresholdForWinrate,
-          ...top,
-        },
-      }
+    return {
+      data: {
+        minGamesThresholdForWinrate,
+        ...common,
+        byWinrate,
+      },
     }
-
-    return cache.get({
-      key: cacheKey,
-      loader: getData,
-      skipCache: request.query.noCache !== undefined,
-    })
   })
 }
 
@@ -56,7 +60,9 @@ const getTopTitles = async (since?: Date) => {
 }
 
 const getTopWinrates = async (minGamesThresholdForWinrate: number, since?: Date) => {
-  return prisma.$queryRaw<Array<{ playerId: string; winrate: number; games: number }>>`
+  const winrates = await prisma.$queryRaw<
+    Array<{ playerId: string; winrate: number; games: number }>
+  >`
     SELECT "playerId",
            CAST(COUNT("playerId") AS INTEGER) AS games,
            1.0 * SUM(CASE WHEN "isWin" THEN 1 ELSE 0 END) / COUNT("playerId") AS winrate
@@ -67,6 +73,16 @@ const getTopWinrates = async (minGamesThresholdForWinrate: number, since?: Date)
     ORDER BY winrate DESC
     LIMIT ${LIMIT};
   `
+
+  const players = await prisma.player.findMany({
+    where: { id: { in: winrates.map((row) => row.playerId) } },
+  })
+
+  return winrates.map(({ playerId, winrate, games }) => ({
+    winrate,
+    games,
+    name: players.find((player) => player.id === playerId)?.name,
+  }))
 }
 
 const getTopWinners = async (since?: Date) => {
@@ -79,16 +95,9 @@ const getTopWinners = async (since?: Date) => {
   })
 }
 
-const getTopStats = async ({
-  since,
-  minGamesThresholdForWinrate,
-}: {
-  since?: Date
-  minGamesThresholdForWinrate: number
-}) => {
-  const [titles, winrates, winners, gamesTotal, winsTotal] = await Promise.all([
+const getCommonTopStats = async (since?: Date) => {
+  const [titles, winners, gamesTotal, winsTotal] = await Promise.all([
     getTopTitles(since),
-    getTopWinrates(minGamesThresholdForWinrate, since),
     getTopWinners(since),
     // At the time of writing, prisma.game.count() is much slower than the raw query for unknown reason
     prisma.$queryRaw<[{ count: bigint }]>`
@@ -101,7 +110,7 @@ const getTopStats = async ({
   const players = await prisma.player.findMany({
     where: {
       id: {
-        in: uniq([...titles, ...winrates, ...winners].map((x) => x.playerId)),
+        in: uniq([...titles, ...winners].map((x) => x.playerId)),
       },
     },
   })
@@ -109,11 +118,6 @@ const getTopStats = async ({
   return {
     gamesTotal,
     winsTotal,
-    byWinrate: winrates.map(({ playerId, winrate, games }) => ({
-      winrate,
-      games,
-      name: players.find((x) => x.id === playerId)?.name,
-    })),
     byWins: winners.map(({ playerId, _count }) => ({
       name: players.find((x) => x.id === playerId)?.name,
       wins: _count.isWin,
