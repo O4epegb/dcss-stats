@@ -1,13 +1,11 @@
 import { Popover } from '@base-ui/react/popover'
 import { useState, type JSX } from 'react'
 import useSWRImmutable from 'swr/immutable'
-import { api } from '~/api'
+import { getGames } from '~/api/generated/axios'
 import { Game } from '~/types'
 import { GameCard } from './GameCard'
 
-type GameTooltipProps = {
-  children: JSX.Element
-} & (
+type GameTooltipData =
   | {
       isWin: boolean
       title: string
@@ -19,15 +17,15 @@ type GameTooltipProps = {
   | {
       game: Game
     }
-)
 
-const useGameTooltipData = (rest: Omit<GameTooltipProps, 'children'>) => {
+type GameTooltipProps = { children: JSX.Element } & GameTooltipData
+
+const useGameTooltipData = (rest: GameTooltipData) => {
   const isGameProvided = 'game' in rest
   const [isActive, setIsActive] = useState(false)
   const { data, error, isLoading } = useSWRImmutable(
-    !isGameProvided && isActive ? ['/games', rest] : null,
-    ([url, params]) =>
-      api.get<{ data: Game[]; count: number }>(url, { params }).then((res) => res.data),
+    !isGameProvided && isActive ? (['/games', rest] as const) : null,
+    ([, params]) => getGames(params),
   )
 
   return {

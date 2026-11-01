@@ -1,13 +1,39 @@
 import { castArray } from 'lodash-es'
-import { Static, Type } from 'typebox'
+import { Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { LIMIT } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
+import { ApiError } from '~/app/schemas/api-error'
+import { Game } from '~/app/schemas/game'
+import { schemaRef } from '~/app/schemas/ref'
 import { Prisma } from '~/generated/prisma/client/client'
 import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 
+const GamesResponse = Type.Object(
+  {
+    count: Type.Integer(),
+    data: Type.Array(
+      Type.Intersect([
+        schemaRef(Game),
+        Type.Object({
+          player: Type.Optional(
+            Type.Object({
+              id: Type.String(),
+              name: Type.String(),
+              isBot: Type.Boolean(),
+            }),
+          ),
+        }),
+      ]),
+    ),
+  },
+  { $id: 'GamesResponse' },
+)
+
 export const gamesRoute = (app: AppType) => {
+  app.addSchema(GamesResponse)
+
   const GamesQuerystring = Type.Object({
     id: Type.Optional(Type.String()),
     player: Type.Optional(Type.String()),
@@ -24,13 +50,17 @@ export const gamesRoute = (app: AppType) => {
     orderBy: Type.Optional(Type.Union([Type.Literal('startAt'), Type.Literal('endAt')])),
   })
 
-  app.get<{
-    Querystring: Static<typeof GamesQuerystring>
-  }>(
+  app.get(
     '/api/games',
     {
       schema: {
+        operationId: 'getGames',
         querystring: GamesQuerystring,
+        response: {
+          200: schemaRef(GamesResponse),
+          400: schemaRef(ApiError),
+          500: schemaRef(ApiError),
+        },
       },
     },
     async (request) => {
@@ -81,24 +111,46 @@ export const gamesRoute = (app: AppType) => {
 
       return {
         count,
-        data,
+        data: data.map((game) => ({
+          ...game,
+          startAt: game.startAt.toISOString(),
+          endAt: game.endAt.toISOString(),
+        })),
       }
     },
   )
 
-  app.get<{
-    Params: {
-      id: string
-    }
-  }>('/api/games/:id', async (request, reply) => {
-    const [game] = await findGamesIncludeServer({
-      where: { id: request.params.id },
-    })
+  app.get(
+    '/api/games/:id',
+    {
+      schema: {
+        operationId: 'getGame',
+        params: Type.Object({ id: Type.String() }),
+        response: {
+          200: schemaRef(Game),
+          404: schemaRef(ApiError),
+          500: schemaRef(ApiError),
+        },
+      },
+    },
+    async (request, reply) => {
+      const [game] = await findGamesIncludeServer({
+        where: { id: request.params.id },
+      })
 
-    if (!game) {
-      return reply.status(404).send('Not found')
-    }
+      if (!game) {
+        return reply.status(404).send({
+          statusCode: 404,
+          error: 'Not Found',
+          message: 'Game not found',
+        })
+      }
 
-    return game
-  })
+      return {
+        ...game,
+        startAt: game.startAt.toISOString(),
+        endAt: game.endAt.toISOString(),
+      }
+    },
+  )
 }

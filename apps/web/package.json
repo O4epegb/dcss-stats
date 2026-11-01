@@ -9,7 +9,8 @@
     "format": "prettier --write .",
     "lint": "oxlint",
     "test": "vitest run",
-    "typegen": "next typegen"
+    "typegen": "next typegen",
+    "api:generate": "yarn workspace @dcss-stats/api openapi && orval && prettier --write src/api/generated"
   },
   "lint-staged": {
     "*": [
@@ -34,7 +35,7 @@
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "asciinema-player": "^3.17.0",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "chart.js": "^4.5.1",
     "chartjs-plugin-zoom": "^2.2.0",
     "clsx": "^2.1.1",
@@ -63,6 +64,7 @@
     "@types/react": "19.2.17",
     "eslint-plugin-better-tailwindcss": "^4.7.0",
     "eslint-plugin-no-relative-import-paths": "^1.6.1",
+    "orval": "8.44.0",
     "oxlint": "^1.89.0",
     "postcss": "^8.5.23",
     "prettier": "^3.9.6",

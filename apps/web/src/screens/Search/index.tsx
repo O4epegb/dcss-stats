@@ -1,34 +1,38 @@
 'use client'
 
-import { first, flatten, isError, last, omit } from 'lodash-es'
+import { first, flatten, isError, last } from 'lodash-es'
 import { useState } from 'react'
 import useSWRInfinite from 'swr/infinite'
-import { api } from '~/api'
+import { searchGames } from '~/api/generated/axios'
+import type { SearchGamesResponse, StaticData } from '~/api/generated/models'
 import { FilterItemType, Filters } from '~/components/Filters'
 import { GameCard } from '~/components/GameCard'
 import { HeaderWithMenu } from '~/components/HeaderWithMenu'
 import { Loader } from '~/components/ui/Loader'
 import { HelpBubble } from '~/components/ui/Tooltip'
-import { Game, StaticData } from '~/types'
 import { formatNumber } from '~/utils'
 
 export const SearchScreen = ({ filterOptions }: Pick<StaticData, 'filterOptions'>) => {
   const [filterForSearch, setFilterForSearch] = useState<FilterItemType[] | null>(() => null)
 
   const { data, error, size, setSize } = useSWRInfinite(
-    (pageIndex, previousPageData: { data: Game[]; count: number }) => {
+    (pageIndex, previousPageData: SearchGamesResponse | null) => {
       if (!filterForSearch || (previousPageData && previousPageData.data.length === 0)) {
         return null
       }
 
-      return ['/search', { filter: filterForSearch, after: last(previousPageData?.data)?.id }]
+      return [
+        '/search',
+        { filter: filterForSearch, after: last(previousPageData?.data)?.id },
+      ] as const
     },
-    ([url, { filter, after }]) =>
-      api
-        .get<{ data: Game[]; count: number }>(url, {
-          params: { filter: filter.map((x: FilterItemType) => omit(x, 'id')), after },
-        })
-        .then((res) => res.data),
+    ([, { filter, after }]) =>
+      searchGames({
+        filter: filter.flatMap(({ id, value, ...item }) =>
+          value === undefined ? [] : [{ ...item, value }],
+        ),
+        after,
+      }),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,

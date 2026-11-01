@@ -1,16 +1,16 @@
 import { flatten, isError, last, omit } from 'lodash-es'
 import useSWRInfinite from 'swr/infinite'
 import { api } from '~/api'
+import type { SearchGamesResponse } from '~/api/generated/models'
 import { FilterItemType } from '~/components/Filters'
 import { GameCard } from '~/components/GameCard'
 import { Loader } from '~/components/ui/Loader'
-import { Game } from '~/types'
 
 export const GameList = (props: { filter: null | FilterItemType[] }) => {
   const filter = props.filter?.map((item) => omit(item, 'id'))
 
   const { data, error, size, setSize } = useSWRInfinite(
-    (pageIndex, previousPageData: { data: Game[]; count: number }) => {
+    (pageIndex, previousPageData: SearchGamesResponse | null) => {
       if (!filter || (previousPageData && previousPageData.data.length === 0)) {
         return null
       }
@@ -18,9 +18,7 @@ export const GameList = (props: { filter: null | FilterItemType[] }) => {
       return ['/search', { filter, after: last(previousPageData?.data)?.id }]
     },
     ([url, { filter, after }]) =>
-      api
-        .get<{ data: Game[]; count: number }>(url, { params: { filter, after } })
-        .then((res) => res.data),
+      api.get<SearchGamesResponse>(url, { params: { filter, after } }).then((res) => res.data),
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,

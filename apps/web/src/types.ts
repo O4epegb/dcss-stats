@@ -1,3 +1,7 @@
+import type { Game, StaticData } from '~/api/generated/models'
+
+export type { Game, StaticData }
+
 export type Without<T, U> = { [P in Exclude<keyof T, keyof U>]?: never }
 
 export type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U
@@ -91,49 +95,6 @@ export interface Player {
   name: string
 }
 
-export interface Game {
-  id: string
-  isWin: boolean
-  startAt: string
-  endAt: string
-  playerId: string
-  player?: Player
-  version: string
-  versionShort: string
-  versionInteger: number
-  score: number
-  xl: number
-  race: string
-  class: string
-  normalizedRace: string
-  normalizedClass: string
-  raceAbbr: string
-  classAbbr: string
-  char: string
-  title: string
-  god: string | null
-  piety: number | null
-  endMessage: string
-  logfileId: string
-  turns: number
-  duration: number
-  branch: string
-  lvl: number
-  runes: number
-  uniqueRunes: number
-  gems: number
-  fifteenskills: string[]
-  maxskills: string[]
-  name: string
-  str: number
-  int: number
-  dex: number
-  ac?: number
-  ev?: number
-  sh?: number
-  server?: Server
-}
-
 export interface Stats {
   lastMonth: {
     wins: number
@@ -169,18 +130,9 @@ export interface Stats {
   }
 }
 
-export interface Race {
-  name: string
-  abbr: string
-  trunk: boolean
-  isSubRace: boolean
-}
+export type Race = StaticData['races'][number]
 
-export interface Class {
-  name: string
-  abbr: string
-  trunk: boolean
-}
+export type Class = StaticData['classes'][number]
 
 export type MatrixRecordType = Record<string, CharStat>
 
@@ -192,51 +144,17 @@ export interface CharStat {
   gamesToFirstWin: number | undefined
 }
 
-export type Server = {
-  abbreviation: string
-  id: string
-  morgueUrl: string
-  url: string
-  baseUrl: string
-  name: string
-}
+export type Server = Game['server']
 
-export type God = {
-  name: string
-  trunk: boolean
-}
+export type God = StaticData['gods'][number]
 
-export type Skill = {
-  name: string
-  trunk: boolean
-}
+export type Skill = StaticData['skills'][number]
 
 export type Logfile = {
   games: number
   path: string
   version: string
   lastFetched?: string
-}
-
-export type StaticData = {
-  races: Race[]
-  classes: Class[]
-  gods: God[]
-  skills: Skill[]
-  versions: string[]
-  servers: {
-    url: string
-    abbreviation: string
-    ttyrecUrl: string | null
-  }[]
-  filterOptions: {
-    name: string
-    type: string
-    suboptions: string[]
-    conditions: string[]
-    placeholder: string
-    values: string[]
-  }[]
 }
 
 export type Stream = {

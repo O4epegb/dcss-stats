@@ -201,8 +201,11 @@ export const playersRoute = (
       })
 
       const wins = games.filter((x) => x.isWin)
-      const firstWin = wins[0]
-      const gamesBeforeFirstWin = firstWin ? games.indexOf(firstWin) : 0
+      const firstWinningGame = wins[0]
+      const gamesBeforeFirstWin = firstWinningGame ? games.indexOf(firstWinningGame) : 0
+      const [firstWin] = firstWinningGame
+        ? await findGamesIncludeServer({ where: { id: firstWinningGame.id } })
+        : []
       const winsByGodName = groupBy(wins, (g) => g.god)
       const gamesByGodName = groupBy(games, (g) => g.god)
 

@@ -1,0 +1,909 @@
+{
+  "openapi": "3.2.1",
+  "info": {
+    "title": "DCSS Stats Swagger API",
+    "description": "Scalar Swagger UI for https://dcss-stats.com/",
+    "version": "WIP"
+  },
+  "components": {
+    "schemas": {
+      "Game": {
+        "type": "object",
+        "required": [
+          "id",
+          "isWin",
+          "startAt",
+          "endAt",
+          "version",
+          "versionShort",
+          "versionInteger",
+          "score",
+          "xl",
+          "race",
+          "class",
+          "normalizedRace",
+          "normalizedClass",
+          "raceAbbr",
+          "classAbbr",
+          "char",
+          "title",
+          "endMessage",
+          "turns",
+          "duration",
+          "uniqueRunes",
+          "runes",
+          "gems",
+          "intactGems",
+          "branch",
+          "lvl",
+          "fifteenskills",
+          "maxskills",
+          "name",
+          "str",
+          "int",
+          "dex",
+          "ac",
+          "ev",
+          "sh",
+          "god",
+          "piety",
+          "killer",
+          "killerType",
+          "scrollsused",
+          "potionsused",
+          "gold",
+          "goldfound",
+          "goldspent",
+          "playerId",
+          "serverAbbreviation",
+          "server"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "isWin": {
+            "type": "boolean"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "endAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "version": {
+            "type": "string"
+          },
+          "versionShort": {
+            "type": "string"
+          },
+          "versionInteger": {
+            "type": "integer"
+          },
+          "score": {
+            "type": "integer"
+          },
+          "xl": {
+            "type": "integer"
+          },
+          "race": {
+            "type": "string"
+          },
+          "class": {
+            "type": "string"
+          },
+          "normalizedRace": {
+            "type": "string"
+          },
+          "normalizedClass": {
+            "type": "string"
+          },
+          "raceAbbr": {
+            "type": "string"
+          },
+          "classAbbr": {
+            "type": "string"
+          },
+          "char": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "endMessage": {
+            "type": "string"
+          },
+          "turns": {
+            "type": "integer"
+          },
+          "duration": {
+            "type": "integer"
+          },
+          "uniqueRunes": {
+            "type": "integer"
+          },
+          "runes": {
+            "type": "integer"
+          },
+          "gems": {
+            "type": "integer"
+          },
+          "intactGems": {
+            "type": "integer"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "lvl": {
+            "type": "integer"
+          },
+          "fifteenskills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "maxskills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "name": {
+            "type": "string"
+          },
+          "str": {
+            "type": "integer"
+          },
+          "int": {
+            "type": "integer"
+          },
+          "dex": {
+            "type": "integer"
+          },
+          "ac": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ev": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sh": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "god": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "piety": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "killer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "killerType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scrollsused": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "potionsused": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "gold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "goldfound": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "goldspent": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "playerId": {
+            "type": "string"
+          },
+          "serverAbbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "server": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "abbreviation",
+              "url",
+              "baseUrl",
+              "morgueUrl",
+              "ttyrecUrl",
+              "isDormant"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "abbreviation": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "baseUrl": {
+                "type": "string"
+              },
+              "morgueUrl": {
+                "type": "string"
+              },
+              "ttyrecUrl": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "isDormant": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "required": ["statusCode", "error", "message"],
+        "properties": {
+          "statusCode": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          }
+        }
+      },
+      "StaticData": {
+        "type": "object",
+        "required": ["races", "classes", "gods", "versions", "skills", "servers", "filterOptions"],
+        "properties": {
+          "races": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "abbr", "trunk", "isSubRace"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "abbr": {
+                  "type": "string"
+                },
+                "trunk": {
+                  "type": "boolean"
+                },
+                "isSubRace": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "classes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "abbr", "trunk"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "abbr": {
+                  "type": "string"
+                },
+                "trunk": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "gods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "trunk"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "trunk": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "versions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "trunk"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "trunk": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "servers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["abbreviation", "url", "ttyrecUrl"],
+              "properties": {
+                "abbreviation": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "ttyrecUrl": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "filterOptions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "suboptions", "conditions", "placeholder", "values"],
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "suboptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "placeholder": {
+                  "type": "string"
+                },
+                "values": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "SearchGamesResponse": {
+        "type": "object",
+        "required": ["count", "data"],
+        "properties": {
+          "count": {
+            "type": "number"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Game"
+            }
+          }
+        }
+      },
+      "GamesResponse": {
+        "type": "object",
+        "required": ["count", "data"],
+        "properties": {
+          "count": {
+            "type": "integer"
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/Game"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "player": {
+                      "type": "object",
+                      "required": ["id", "name", "isBot"],
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "isBot": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/static-data": {
+      "get": {
+        "operationId": "getStaticData",
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaticData"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/search": {
+      "get": {
+        "operationId": "searchGames",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "after",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["startAt"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["endAt"]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "orderBy",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["option", "condition", "value", "operator"],
+                "properties": {
+                  "option": {
+                    "type": "string"
+                  },
+                  "suboption": {
+                    "type": "string"
+                  },
+                  "condition": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  },
+                  "operator": {
+                    "type": "string"
+                  }
+                }
+              },
+              "maxItems": 15
+            },
+            "in": "query",
+            "name": "filter",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "skipCount",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchGamesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/games": {
+      "get": {
+        "operationId": "getGames",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "id",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "player",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "after",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "isWin",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "race",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "class",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "god",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "title",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "in": "query",
+            "name": "version",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "in": "query",
+            "name": "server",
+            "required": false
+          },
+          {
+            "schema": {
+              "type": "boolean"
+            },
+            "in": "query",
+            "name": "includePlayer",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "in": "query",
+            "name": "runes",
+            "required": false
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "enum": ["startAt"]
+                },
+                {
+                  "type": "string",
+                  "enum": ["endAt"]
+                }
+              ]
+            },
+            "in": "query",
+            "name": "orderBy",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GamesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/games/{id}": {
+      "get": {
+        "operationId": "getGame",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Game"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Default Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

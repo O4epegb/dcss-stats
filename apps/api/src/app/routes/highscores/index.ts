@@ -93,7 +93,12 @@ export const highscoresRoute = (
   app: AppType,
   { cache = createCache() }: HighscoresRouteOptions = {},
 ) => {
-  highscoresCronJob.start()
+  app.addHook('onListen', async () => {
+    highscoresCronJob.start()
+  })
+  app.addHook('onClose', async () => {
+    await highscoresCronJob.stop()
+  })
 
   app.get('/api/highscores/recalc', async (_request, reply) => {
     if (isRecalculating) {

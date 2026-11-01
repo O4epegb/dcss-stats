@@ -1,7 +1,7 @@
 import { useFirstMountState } from '@react-hookz/web'
 import { last, throttle } from 'lodash-es'
 import { useEffect, useState } from 'react'
-import { api } from '~/api'
+import { getGames } from '~/api/generated/axios'
 import { Game } from '~/types'
 import { GameCard } from './GameCard'
 import { Loader } from './ui/Loader'
@@ -51,26 +51,23 @@ export const GamesList = (props: {
   const loadData = (after?: string) => {
     setIsLoading(true)
 
-    api
-      .get<{ data: Game[]; count: number }>('/games', {
-        params: {
-          player: playerName,
-          after,
-          isWin,
-          race,
-          class: klass,
-          god,
-          version,
-          server,
-          runes,
-          orderBy,
-        },
-      })
+    getGames({
+      player: playerName,
+      after,
+      isWin,
+      race,
+      class: klass,
+      god,
+      version,
+      server,
+      runes,
+      orderBy,
+    })
       .then((res) => {
-        const newGames = after ? [...games, ...res.data.data] : res.data.data
+        const newGames = after ? [...games, ...res.data] : res.data
         setGames(newGames)
-        setCount(res.data.count)
-        onChange?.(newGames, res.data.count)
+        setCount(res.count)
+        onChange?.(newGames, res.count)
       })
       .catch((e) => {
         alert('Error while loading games')

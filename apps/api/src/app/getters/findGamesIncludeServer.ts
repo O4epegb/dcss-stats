@@ -1,4 +1,4 @@
-import { Prisma } from '~/generated/prisma/client/client'
+import { Player, Prisma } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
 import { GameWithLogfileAndServer } from '~/types'
 
@@ -23,7 +23,7 @@ export const findGamesIncludeServer = async (
     })
 }
 
-const processGamesWithLogfile = (games: GameWithLogfileAndServer[]) => {
+const processGamesWithLogfile = (games: (GameWithLogfileAndServer & { player?: Player })[]) => {
   return games.map(({ logfile, logfileId, ...rest }) => {
     return Object.assign(rest, {
       server: {

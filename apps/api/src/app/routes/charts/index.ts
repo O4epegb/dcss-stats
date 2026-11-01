@@ -1,17 +1,16 @@
 import semver from 'semver'
-import { Static, Type } from 'typebox'
+import { Type } from 'typebox'
 import { AppType } from '~/app/app'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
+import { validateQuery } from '~/app/utils/validateQuery'
 import { Prisma } from '~/generated/prisma/client/client'
 import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
 import { isDefined } from '~/utils'
 
-export const chartRoute = async (app: AppType) => {
-  const { versions } = await getStaticData()
-
-  const Query = Type.Object({
+const createQuery = (data?: Awaited<ReturnType<typeof getStaticData>>) =>
+  Type.Object({
     noCache: Type.Optional(Type.Boolean()),
     datasets: Type.Optional(
       Type.Array(
@@ -26,13 +25,16 @@ export const chartRoute = async (app: AppType) => {
     groupBy: Type.String(),
     aggregationType: Type.String(),
     aggregationField: Type.String(),
-    version: Type.Enum(versions),
+    version: data ? Type.Enum(data.versions) : Type.String(),
   })
-  type QueryType = Static<typeof Query>
 
-  app.get<{ Querystring: QueryType }>(
+export const chartRoute = (app: AppType) => {
+  app.get(
     '/api/charts',
-    { schema: { querystring: Query } },
+    {
+      schema: { querystring: createQuery() },
+      preHandler: validateQuery(getStaticData, createQuery),
+    },
     async (request) => {
       const { version, datasets, groupBy, aggregationField, aggregationType } = request.query
 

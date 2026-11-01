@@ -5,6 +5,9 @@ import { AppType } from '~/app/app'
 import { skills } from '~/app/constants'
 import { findGamesIncludeServer } from '~/app/getters/findGamesIncludeServer'
 import { getStaticData } from '~/app/getters/getStaticData'
+import { ApiError } from '~/app/schemas/api-error'
+import { Game } from '~/app/schemas/game'
+import { schemaRef } from '~/app/schemas/ref'
 import { Prisma } from '~/generated/prisma/client/client'
 import { getVersionIntegerFromString } from '~/parser/utils'
 import { prisma } from '~/prisma'
@@ -13,20 +16,13 @@ import { isDefined } from '~/utils'
 
 export const filterQuerystringPart = Type.Optional(
   Type.Array(
-    Type.Union([
-      // Type.Object({
-      //   option: Type.Literal('Win'),
-      //   condition: Type.String(),
-      //   value: Type.Boolean(),
-      // }),
-      Type.Object({
-        option: Type.String(),
-        suboption: Type.Optional(Type.String()),
-        condition: Type.String(),
-        value: Type.String(),
-        operator: Type.String(),
-      }),
-    ]),
+    Type.Object({
+      option: Type.String(),
+      suboption: Type.Optional(Type.String()),
+      condition: Type.String(),
+      value: Type.String(),
+      operator: Type.String(),
+    }),
     { maxItems: 15 },
   ),
 )
@@ -34,19 +30,30 @@ export const filterQuerystringPart = Type.Optional(
 type Filter = Static<typeof filterQuerystringPart>
 type FilterItem = UnpackedArray<Filter>
 
+const SearchGamesResponse = Type.Object(
+  { count: Type.Number(), data: Type.Array(schemaRef(Game)) },
+  { $id: 'SearchGamesResponse' },
+)
+
 export const searchRoute = (app: AppType) => {
-  const SearchQuerystring = Type.Object({
-    after: Type.Optional(Type.String()),
-    orderBy: Type.Optional(Type.Union([Type.Literal('startAt'), Type.Literal('endAt')])),
-    filter: filterQuerystringPart,
-    skipCount: Type.Optional(Type.Boolean()),
-  })
+  app.addSchema(SearchGamesResponse)
 
   app.get(
     '/api/search',
     {
       schema: {
-        querystring: SearchQuerystring,
+        operationId: 'searchGames',
+        querystring: Type.Object({
+          after: Type.Optional(Type.String()),
+          orderBy: Type.Optional(Type.Union([Type.Literal('startAt'), Type.Literal('endAt')])),
+          filter: filterQuerystringPart,
+          skipCount: Type.Optional(Type.Boolean()),
+        }),
+        response: {
+          200: schemaRef(SearchGamesResponse),
+          400: schemaRef(ApiError),
+          500: schemaRef(ApiError),
+        },
       },
     },
     async (request) => {
@@ -73,7 +80,11 @@ export const searchRoute = (app: AppType) => {
 
       return {
         count: typeof count === 'number' ? count : (count?.[0]?.estimate ?? 0),
-        data,
+        data: data.map((game) => ({
+          ...game,
+          startAt: game.startAt.toISOString(),
+          endAt: game.endAt.toISOString(),
+        })),
       }
     },
   )

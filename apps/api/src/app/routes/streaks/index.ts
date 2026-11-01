@@ -91,11 +91,15 @@ const streaksCronJob = CronJob.from({
 })
 
 export const streaksRoute = async (app: AppType) => {
-  if (!process.env.DCSS_SKIP_STREAKS_BACKFILL) {
-    startBackFillQueue()
-  }
-
-  streaksCronJob.start()
+  app.addHook('onListen', async () => {
+    streaksCronJob.start()
+    if (!process.env.DCSS_SKIP_STREAKS_BACKFILL) {
+      await startBackFillQueue()
+    }
+  })
+  app.addHook('onClose', async () => {
+    await streaksCronJob.stop()
+  })
 
   app.get('/api/streaks/meta', async () => {
     const playersWithStreaks = await prisma.player.count({

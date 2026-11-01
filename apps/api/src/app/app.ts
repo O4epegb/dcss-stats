@@ -1,6 +1,8 @@
 import { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 import fastify from 'fastify'
 import qs from 'qs'
+import { ApiError } from './schemas/api-error'
+import { Game } from './schemas/game'
 
 export const app = fastify({
   logger: true,
@@ -12,9 +14,11 @@ export const app = fastify({
   ajv: {
     customOptions: {
       strict: 'log',
-      keywords: ['kind', 'modifier'],
     },
   },
 }).withTypeProvider<TypeBoxTypeProvider>()
+
+app.addSchema(Game)
+app.addSchema(ApiError)
 
 export type AppType = typeof app

@@ -18,7 +18,7 @@
     "browser": true,
     "node": true
   },
-  "ignorePatterns": ["**/out/*", "**/.*", "next-env.d.ts"],
+  "ignorePatterns": ["**/out/*", "**/.*", "next-env.d.ts", "src/api/generated/**"],
   "rules": {
     "react-hooks/exhaustive-deps": "off",
     "no-console": "warn",

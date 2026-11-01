@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import useSWRImmutable from 'swr/immutable'
 import { api } from '~/api'
+import type { SearchGamesResponse } from '~/api/generated/models'
 import { FilterItemType, Filters } from '~/components/Filters'
 import { GameCard } from '~/components/GameCard'
 import { HeaderWithMenu } from '~/components/HeaderWithMenu'
@@ -67,7 +68,7 @@ export default function RecordingsPage() {
     },
     ([url, { filter }]) =>
       api
-        .get<{ data: Game[]; count: number }>(url, {
+        .get<SearchGamesResponse>(url, {
           params: filter
             ? {
                 skipCount: true,
@@ -103,7 +104,7 @@ export default function RecordingsPage() {
     },
     ([url, filters]) =>
       api
-        .get<{ data: Game[]; count: number }>(url, {
+        .get<SearchGamesResponse>(url, {
           params: {
             skipCount: true,
             filter: [

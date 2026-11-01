@@ -8,8 +8,7 @@ import { usePlayerPageContext } from './context'
 import { Summary } from './utils'
 
 export const Stats = ({ summary }: { summary: Summary }) => {
-  const { firstGame, firstWin, gamesBeforeFirstWin, lowestXlWin, stats, player } =
-    usePlayerPageContext()
+  const { firstGame, firstWin, gamesBeforeFirstWin, lowestXlWin, stats } = usePlayerPageContext()
   const {
     combosCompleted,
     totalCombos,
@@ -122,7 +121,7 @@ export const Stats = ({ summary }: { summary: Summary }) => {
               [
                 'First win',
                 firstWin ? (
-                  <GameTooltip key="" id={firstWin.id} player={player.name}>
+                  <GameTooltip key="" game={firstWin}>
                     <span>
                       {firstWin.char}
                       {firstWin.god ? ` of ${firstWin.god}` : ''}, won after {gamesBeforeFirstWin}{' '}
