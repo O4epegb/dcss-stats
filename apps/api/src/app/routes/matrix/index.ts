@@ -16,7 +16,6 @@ export const matrixRoute = (
     class: Type.Optional(Type.String()),
     god: Type.Optional(Type.String()),
     version: Type.Optional(Type.String()),
-    noCache: Type.Optional(Type.Boolean()),
     filter: filterQuerystringPart,
   })
   type QuerystringType = Static<typeof querystringSchema>
@@ -89,7 +88,6 @@ export const matrixRoute = (
       return cache.get({
         key: cacheKey,
         loader: getData,
-        skipCache: request.query.noCache,
       })
     },
   )

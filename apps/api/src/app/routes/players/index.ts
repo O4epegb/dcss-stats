@@ -43,16 +43,10 @@ export const playersRoute = (
     }
     Querystring: PlayerFilterQuerystring & {
       type?: 'minimal'
-      noCache?: string
-      clearData?: string
     }
   }>('/api/players/:slug', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = getRouteCacheKey(request.url.toLowerCase(), request.query)
-
-    if (request.query.clearData !== undefined) {
-      getStaticData.cache.clear?.()
-    }
 
     const getDataMinimal = async () => {
       const player = await prisma.player.findUnique({
@@ -339,7 +333,6 @@ export const playersRoute = (
     const data = await (isMinimal ? minimalCache : cache).get({
       key: cacheKey,
       loader: async () => (isMinimal ? getDataMinimal() : getDataFull()),
-      skipCache: request.query.noCache !== undefined || request.query.clearData !== undefined,
     })
 
     return data ?? reply.status(404).send('Not found')
@@ -349,9 +342,7 @@ export const playersRoute = (
     Params: {
       slug: string
     }
-    Querystring: PlayerFilterQuerystring & {
-      noCache?: string
-    }
+    Querystring: PlayerFilterQuerystring
   }>('/api/players/:slug/streaks', async (request, reply) => {
     const { slug } = request.params
     const cacheKey = getRouteCacheKey(request.url.toLowerCase(), request.query)
@@ -379,7 +370,6 @@ export const playersRoute = (
     const data = await cache.get({
       key: cacheKey,
       loader: getData,
-      skipCache: request.query.noCache !== undefined,
     })
 
     return data ?? reply.status(404).send('Not found')
@@ -391,7 +381,6 @@ export const playersRoute = (
     }
     Querystring: PlayerFilterQuerystring & {
       from?: string
-      noCache?: string
     }
   }>('/api/players/:slug/calendar', async (request, reply) => {
     const { slug } = request.params
@@ -431,7 +420,6 @@ export const playersRoute = (
     const data = await cache.get({
       key: cacheKey,
       loader: getData,
-      skipCache: request.query.noCache !== undefined,
     })
 
     return data ?? reply.status(404).send('Not found')

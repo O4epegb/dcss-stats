@@ -8,11 +8,7 @@ export const mainRoute = (
   app: AppType,
   { cache = createCache({ revalidate: Infinity, expire: 300 }) }: { cache?: CacheManager } = {},
 ) => {
-  app.get<{
-    Querystring: {
-      noCache?: string
-    }
-  }>('/api/main', async (request) => {
+  app.get('/api/main', async (request) => {
     const cacheKey = request.routeOptions.url ?? request.url
 
     const getData = async () => {
@@ -32,7 +28,6 @@ export const mainRoute = (
     return cache.get({
       key: cacheKey,
       loader: getData,
-      skipCache: request.query.noCache !== undefined,
     })
   })
 }

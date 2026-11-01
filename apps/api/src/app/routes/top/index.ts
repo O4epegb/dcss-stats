@@ -12,7 +12,6 @@ export const topRoute = (
   { cache = createCache({ revalidate: Infinity, expire: 300 }) }: { cache?: CacheManager } = {},
 ) => {
   const Querystring = Type.Object({
-    noCache: Type.Optional(Type.String()),
     since: Type.Optional(Type.String({ format: 'date-time' })),
     minGamesThresholdForWinrate: Type.Number({ minimum: 0, default: 75 }),
   })
@@ -20,21 +19,18 @@ export const topRoute = (
   app.get<{
     Querystring: Static<typeof Querystring>
   }>('/api/top', { schema: { querystring: Querystring } }, async (request) => {
-    const { minGamesThresholdForWinrate, noCache } = request.query
+    const { minGamesThresholdForWinrate } = request.query
     const since = request.query.since ? new Date(request.query.since) : undefined
     const period = { since: since?.toISOString() }
-    const skipCache = noCache !== undefined
 
     const [common, byWinrate] = await Promise.all([
       cache.get({
         key: getRouteCacheKey('/api/top/common', period),
         loader: () => getCommonTopStats(since),
-        skipCache,
       }),
       cache.get({
         key: getRouteCacheKey('/api/top/winrates', { ...period, minGamesThresholdForWinrate }),
         loader: () => getTopWinrates(minGamesThresholdForWinrate, since),
-        skipCache,
       }),
     ])
 

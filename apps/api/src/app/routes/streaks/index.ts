@@ -4,6 +4,7 @@ import { uniq } from 'lodash-es'
 import PQueue from 'p-queue'
 import { Type } from 'typebox'
 import { AppType } from '~/app'
+import { createCache, getRouteCacheKey, type CacheManager } from '~/app/cache'
 import { getStreaksByPlayer } from '~/app/getters/getStreaks'
 import { StreakType } from '~/generated/prisma/client/client'
 import { prisma } from '~/prisma'
@@ -90,7 +91,12 @@ const streaksCronJob = CronJob.from({
   },
 })
 
-export const streaksRoute = async (app: AppType) => {
+export const streaksRoute = async (
+  app: AppType,
+  {
+    cache = createCache({ revalidate: 300, expire: 900, maxEntries: 12 }),
+  }: { cache?: CacheManager } = {},
+) => {
   app.addHook('onListen', async () => {
     streaksCronJob.start()
     if (!process.env.DCSS_SKIP_STREAKS_BACKFILL) {
@@ -168,43 +174,50 @@ export const streaksRoute = async (app: AppType) => {
       },
     },
     async (request) => {
-      const streaks = await prisma.streak.findMany({
-        take: 100,
-        orderBy: {
-          length: 'desc',
-        },
-        where: {
-          isBroken: request.query.isBroken,
-          type: request.query.type,
-          length: {
-            gt: 0,
-          },
-        },
-        include: {
-          player: true,
-          games: {
+      const { isBroken, type } = request.query
+
+      return cache.get({
+        key: getRouteCacheKey('/api/streaks', { isBroken, type }),
+        loader: async () => {
+          const streaks = await prisma.streak.findMany({
+            take: 100,
             orderBy: {
-              game: {
-                startAt: 'asc',
+              length: 'desc',
+            },
+            where: {
+              isBroken,
+              type,
+              length: {
+                gt: 0,
               },
             },
-            select: {
-              gameId: true,
-              game: {
+            include: {
+              player: true,
+              games: {
+                orderBy: {
+                  game: {
+                    startAt: 'asc',
+                  },
+                },
                 select: {
-                  char: true,
-                  isWin: true,
-                  endAt: true,
+                  gameId: true,
+                  game: {
+                    select: {
+                      char: true,
+                      isWin: true,
+                      endAt: true,
+                    },
+                  },
                 },
               },
             },
-          },
+          })
+
+          return {
+            data: streaks,
+          }
         },
       })
-
-      return {
-        data: streaks,
-      }
     },
   )
 

@@ -28,7 +28,6 @@ const currentFetches = new Map<string, Promise<unknown>>()
 export const suggestExperimentalRoute = (app: AppType) => {
   const Query = Type.Object({
     version: Type.Optional(Type.String()),
-    noCache: Type.Optional(Type.Boolean()),
     filter: filterQuerystringPart,
   })
   type QueryType = Static<typeof Query>

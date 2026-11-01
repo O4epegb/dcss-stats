@@ -98,66 +98,38 @@ describe('createCache', () => {
     expect(loader).toHaveBeenCalledTimes(3)
   })
 
-  test('skipCache refreshes the normalized route key and backfills the latest value', async () => {
+  test('normalizes query order and keeps distinct route keys independent', async () => {
     const cache = createCache({ expire: Infinity })
     const loader = vi
       .fn<() => Promise<string>>()
       .mockResolvedValueOnce('cached')
-      .mockResolvedValueOnce('bypass')
+      .mockResolvedValueOnce('fresh')
       .mockResolvedValueOnce('should-not-be-used')
 
     const key = getRouteCacheKey('/api/top?since=2026-01-01&minGamesThresholdForWinrate=75', {
       since: '2026-01-01',
       minGamesThresholdForWinrate: 75,
     })
-    const refreshKey = getRouteCacheKey('/api/top?noCache=true', {
-      noCache: 'true',
+    const reorderedKey = getRouteCacheKey('/api/top', {
       minGamesThresholdForWinrate: 75,
       since: '2026-01-01',
     })
-    expect(refreshKey).toBe(key)
+    const distinctKey = getRouteCacheKey('/api/top', {
+      minGamesThresholdForWinrate: 75,
+      since: '2026-01-01',
+      revision: '1',
+    })
+    expect(reorderedKey).toBe(key)
+    expect(distinctKey).not.toBe(key)
     expect(await cache.get({ key, loader })).toBe('cached')
+    expect(await cache.get({ key: reorderedKey, loader })).toBe('cached')
 
-    expect(await cache.get({ key: refreshKey, loader, skipCache: true })).toBe('bypass')
+    expect(await cache.get({ key: distinctKey, loader })).toBe('fresh')
     expect(loader).toHaveBeenCalledTimes(2)
 
-    expect(await cache.get({ key, loader })).toBe('bypass')
+    expect(await cache.get({ key, loader })).toBe('cached')
+    expect(await cache.get({ key: distinctKey, loader })).toBe('fresh')
     expect(loader).toHaveBeenCalledTimes(2)
-  })
-
-  test('skipCache deduplicates concurrent refreshes', async () => {
-    const cache = createCache({ expire: Infinity })
-    const refresh = Promise.withResolvers<string>()
-    const loader = vi
-      .fn<() => Promise<string>>()
-      .mockResolvedValueOnce('cached')
-      .mockReturnValueOnce(refresh.promise)
-
-    await cache.get({ key: 'supporters', loader })
-
-    const first = cache.get({ key: 'supporters', loader, skipCache: true })
-    const second = cache.get({ key: 'supporters', loader, skipCache: true })
-
-    expect(loader).toHaveBeenCalledTimes(2)
-    expect(first).toStrictEqual(second)
-
-    refresh.resolve('refreshed')
-    await expect(first).resolves.toBe('refreshed')
-    expect(await cache.get({ key: 'supporters', loader })).toBe('refreshed')
-  })
-
-  test('skipCache keeps the previous value when refresh fails', async () => {
-    const cache = createCache({ expire: Infinity })
-    const error = new Error('refresh failed')
-    const loader = vi
-      .fn<() => Promise<string>>()
-      .mockResolvedValueOnce('cached')
-      .mockRejectedValueOnce(error)
-
-    await cache.get({ key: 'supporters', loader })
-
-    await expect(cache.get({ key: 'supporters', loader, skipCache: true })).rejects.toThrow(error)
-    expect(await cache.get({ key: 'supporters', loader })).toBe('cached')
   })
 
   test('normal requests share the revalidation promise across expiration', async () => {

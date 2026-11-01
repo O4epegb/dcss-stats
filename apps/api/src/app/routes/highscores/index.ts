@@ -127,7 +127,6 @@ export const highscoresRoute = (
   })
 
   const Querystring = Type.Object({
-    noCache: Type.Optional(Type.String()),
     kind: Type.Optional(Type.Enum(HighscoreKind)),
     breakdown: Type.Optional(Type.Enum(HighscoreBreakdown)),
     runeTier: Type.Optional(Type.Enum(HighscoreRuneTier)),
@@ -147,7 +146,6 @@ export const highscoresRoute = (
     async (request) => {
       return cache.get({
         key: getRouteCacheKey(request.url, request.query),
-        skipCache: request.query.noCache !== undefined,
         loader: async () => {
           const where: Prisma.HighscoreWhereInput = {}
 

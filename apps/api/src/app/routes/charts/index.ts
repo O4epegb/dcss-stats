@@ -1,6 +1,7 @@
 import semver from 'semver'
 import { Type } from 'typebox'
 import { AppType } from '~/app/app'
+import { createCache, getRouteCacheKey, type CacheManager } from '~/app/cache'
 import { getStaticData } from '~/app/getters/getStaticData'
 import { filterQuerystringPart, getWhereQueryFromFilter } from '~/app/routes/search'
 import { validateQuery } from '~/app/utils/validateQuery'
@@ -11,7 +12,6 @@ import { isDefined } from '~/utils'
 
 const createQuery = (data?: Awaited<ReturnType<typeof getStaticData>>) =>
   Type.Object({
-    noCache: Type.Optional(Type.Boolean()),
     datasets: Type.Optional(
       Type.Array(
         Type.Object({
@@ -28,7 +28,12 @@ const createQuery = (data?: Awaited<ReturnType<typeof getStaticData>>) =>
     version: data ? Type.Enum(data.versions) : Type.String(),
   })
 
-export const chartRoute = (app: AppType) => {
+export const chartRoute = (
+  app: AppType,
+  {
+    cache = createCache({ revalidate: 300, expire: 900, maxEntries: 64 }),
+  }: { cache?: CacheManager } = {},
+) => {
   app.get(
     '/api/charts',
     {
@@ -36,54 +41,66 @@ export const chartRoute = (app: AppType) => {
       preHandler: validateQuery(getStaticData, createQuery),
     },
     async (request) => {
-      const { version, datasets, groupBy, aggregationField, aggregationType } = request.query
+      const {
+        version,
+        datasets = [{ filters: [] }],
+        groupBy,
+        aggregationField,
+        aggregationType,
+      } = request.query
 
-      const data = await Promise.all(
-        (
-          datasets ?? [
-            {
-              filters: [],
-            },
-          ]
-        ).map(async (dataset) => {
-          if (!dataset.filters) {
-            return null
-          }
-
-          const where = await getWhereQueryFromFilter(dataset.filters)
-          const aggregation = {
-            [`_${aggregationType}`]: {
-              [aggregationField]: true,
-            },
-          }
-
-          return prisma.game.groupBy({
-            by: [groupBy as Prisma.GameScalarFieldEnum],
-            where: {
-              ...where,
-              versionShort: undefined,
-              versionInteger:
-                groupBy === 'versionShort' ? undefined : getVersionIntegerFromString(version),
-            },
-            ...aggregation,
-          })
+      return cache.get({
+        key: getRouteCacheKey('/api/charts', {
+          version,
+          // qs drops empty arrays, but [] and [{ filters: [] }] produce different results.
+          datasets: JSON.stringify(datasets),
+          groupBy,
+          aggregationField,
+          aggregationType,
         }),
-      )
+        loader: async () => {
+          const data = await Promise.all(
+            datasets.map(async (dataset) => {
+              if (!dataset.filters) {
+                return null
+              }
 
-      return {
-        data: data.filter(isDefined).map((set) => {
-          if (groupBy === 'versionShort') {
-            return set.sort((a, b) => {
-              return semver.compare(
-                semver.coerce(a.versionShort) ?? a.versionShort,
-                semver.coerce(b.versionShort) ?? b.versionShort,
-              )
-            })
-          } else {
-            return set
+              const where = await getWhereQueryFromFilter(dataset.filters)
+              const aggregation = {
+                [`_${aggregationType}`]: {
+                  [aggregationField]: true,
+                },
+              }
+
+              return prisma.game.groupBy({
+                by: [groupBy as Prisma.GameScalarFieldEnum],
+                where: {
+                  ...where,
+                  versionShort: undefined,
+                  versionInteger:
+                    groupBy === 'versionShort' ? undefined : getVersionIntegerFromString(version),
+                },
+                ...aggregation,
+              })
+            }),
+          )
+
+          return {
+            data: data.filter(isDefined).map((set) => {
+              if (groupBy === 'versionShort') {
+                return set.sort((a, b) => {
+                  return semver.compare(
+                    semver.coerce(a.versionShort) ?? a.versionShort,
+                    semver.coerce(b.versionShort) ?? b.versionShort,
+                  )
+                })
+              } else {
+                return set
+              }
+            }),
           }
-        }),
-      }
+        },
+      })
     },
   )
 }

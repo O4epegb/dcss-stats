@@ -5,7 +5,6 @@ export type CacheKey = string
 export interface CacheRequest<TValue> {
   key: CacheKey
   loader: () => Promise<TValue>
-  skipCache?: boolean
 }
 
 export interface CacheOptions {
@@ -54,7 +53,7 @@ export function createCache(options: CacheOptions): CacheManager {
   const store = new Map<CacheKey, CacheEntry>()
 
   return {
-    async get<TValue>({ key, loader, skipCache }: CacheRequest<TValue>): Promise<TValue> {
+    async get<TValue>({ key, loader }: CacheRequest<TValue>): Promise<TValue> {
       const entry = store.get(key) as CacheEntry<TValue> | undefined
       const now = Date.now()
 
@@ -65,10 +64,6 @@ export function createCache(options: CacheOptions): CacheManager {
       // Map insertion order is the LRU order.
       store.delete(key)
       store.set(key, entry)
-
-      if (skipCache) {
-        return refreshEntity(entry, key, loader)
-      }
 
       if (
         expireMs !== Infinity &&
