@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@react-hookz/web'
 import {
   Chart as ChartJS,
   ChartOptions,
@@ -132,6 +133,7 @@ export default function ComboScatterPlot({
   highlight?: ComboHighlight
 }) {
   const { resolvedTheme } = useTheme()
+  const isTouchInput = useMediaQuery('(pointer: coarse)', { initializeWithValue: false })
   const [colors, setColors] = useState(defaultColors)
   const [selectedCombo, setSelectedCombo] = useState('')
   const [isZoomed, setIsZoomed] = useState(false)
@@ -332,7 +334,7 @@ export default function ComboScatterPlot({
           <button
             type="button"
             aria-label="Zoom in"
-            className="bg-surface-emphasis hover:bg-surface-hover rounded-sm px-3 py-1"
+            className="bg-surface-emphasis hover:bg-surface-hover min-h-11 min-w-11 rounded-sm px-3 py-1 sm:min-h-0 sm:min-w-0"
             onClick={() => zoom(1.5)}
           >
             +
@@ -340,7 +342,7 @@ export default function ComboScatterPlot({
           <button
             type="button"
             aria-label="Zoom out"
-            className="bg-surface-emphasis hover:bg-surface-hover rounded-sm px-3 py-1 disabled:opacity-40"
+            className="bg-surface-emphasis hover:bg-surface-hover min-h-11 min-w-11 rounded-sm px-3 py-1 disabled:opacity-40 sm:min-h-0 sm:min-w-0"
             disabled={!isZoomed}
             onClick={() => zoom(0)}
           >
@@ -348,7 +350,7 @@ export default function ComboScatterPlot({
           </button>
           <button
             type="button"
-            className="bg-surface-emphasis hover:bg-surface-hover rounded-sm px-3 py-1 disabled:opacity-40"
+            className="bg-surface-emphasis hover:bg-surface-hover min-h-11 rounded-sm px-3 py-1 disabled:opacity-40 sm:min-h-0"
             disabled={!isZoomed}
             onClick={() => chartRef.current?.resetZoom('none')}
           >
@@ -361,7 +363,9 @@ export default function ComboScatterPlot({
         </span>
       </div>
       <p className="text-muted-foreground text-sm">
-        Drag a box to zoom · Shift-drag to pan · Ctrl-scroll or pinch to zoom
+        {isTouchInput
+          ? 'Pinch to zoom · Drag to pan · Swipe above or below the plot to scroll the page'
+          : 'Drag a box to zoom · Shift-drag to pan · Ctrl-scroll or pinch to zoom'}
       </p>
       {hasHighlight && (
         <p role="status" className="text-muted-foreground text-sm">
@@ -406,7 +410,7 @@ export default function ComboScatterPlot({
         <Select
           id={selectId}
           value={selected?.combo ?? ''}
-          className="max-w-full min-w-0"
+          className="min-h-11 max-w-full min-w-0 sm:min-h-0"
           onChange={(event) => setSelectedCombo(event.target.value)}
         >
           <option value="">Choose a combo</option>

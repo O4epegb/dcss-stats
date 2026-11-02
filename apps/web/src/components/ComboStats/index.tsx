@@ -130,7 +130,7 @@ export const ComboStats = ({
             type="button"
             aria-pressed={presentation === currentView}
             className={cn(
-              'rounded-sm px-3 py-1',
+              'min-h-11 rounded-sm px-3 py-1 sm:min-h-0',
               presentation === currentView
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-surface-emphasis',
@@ -146,7 +146,7 @@ export const ComboStats = ({
             aria-expanded={filtersOpen}
             aria-controls={filtersId}
             className={cn(
-              'ml-auto rounded-sm px-3 py-1',
+              'ml-auto min-h-11 rounded-sm px-3 py-1 sm:min-h-0',
               isFiltered || (showScatter && hasHighlight)
                 ? 'bg-warning text-background'
                 : 'bg-surface-emphasis',
@@ -161,7 +161,7 @@ export const ComboStats = ({
         <div
           id={filtersId}
           hidden={!filtersOpen}
-          className="border-border mt-3 rounded border py-3 pr-3 pl-8"
+          className="border-border mt-3 rounded border py-3 pr-3 pl-8 max-sm:[&_input]:min-h-11 max-sm:[&_select]:min-h-11"
         >
           <Filters
             title="Combination filters"
@@ -246,7 +246,7 @@ export const ComboStats = ({
             type="button"
             aria-pressed={(showScatter ? scatterMetric : matrixMetric) === key}
             className={cn(
-              'rounded-sm px-2 py-0.5 font-light',
+              'min-h-11 rounded-sm px-2 py-0.5 font-light sm:min-h-0',
               (showScatter ? scatterMetric : matrixMetric) === key
                 ? 'bg-warning text-background'
                 : 'bg-surface-emphasis',

@@ -505,6 +505,7 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
     </div>
   ) : (
     <ComboStats
+      enableFilters
       coloredHeatMap
       stats={statsData.stats}
       allActualClasses={statsData.allActualClasses}
@@ -520,90 +521,95 @@ export function SuggestScreen({ classes, gods, races, filterOptions, versions }:
   )
 
   return (
-    <Layout rightColumn={comboStatsComponent}>
-      <div className="flex w-full flex-wrap gap-2 md:justify-center">
-        I want to play
-        <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>
-          <option value={FilterValue.Any}>any race</option>
-          {renderOptionList(races)}
-        </Select>
-        <Select value={filter.class} onChange={(e) => changeFilter('class', e.target.value)}>
-          <option value={FilterValue.Any}>some class</option>
-          {renderOptionList(classes)}
-        </Select>
-        and
-        <Select value={filter.god} onChange={(e) => changeFilter('god', e.target.value)}>
-          <option value={FilterValue.Any}>whatever god</option>
-          {renderOptionList(gods)}
-        </Select>
-      </div>
+    <Layout
+      rightColumn={comboStatsComponent}
+      controls={
+        <>
+          <div className="flex w-full flex-wrap gap-2 md:justify-center">
+            I want to play
+            <Select value={filter.race} onChange={(e) => changeFilter('race', e.target.value)}>
+              <option value={FilterValue.Any}>any race</option>
+              {renderOptionList(races)}
+            </Select>
+            <Select value={filter.class} onChange={(e) => changeFilter('class', e.target.value)}>
+              <option value={FilterValue.Any}>some class</option>
+              {renderOptionList(classes)}
+            </Select>
+            and
+            <Select value={filter.god} onChange={(e) => changeFilter('god', e.target.value)}>
+              <option value={FilterValue.Any}>whatever god</option>
+              {renderOptionList(gods)}
+            </Select>
+          </div>
 
-      <div className="flex w-full max-w-lg items-center gap-2">
-        <button
-          className="hover:bg-surface-hover -ml-2 flex items-center gap-1 rounded-sm px-2 py-1 text-sm"
-          onClick={() => setShowAdvancedFilters((x) => !x)}
-        >
-          {showAdvancedFilters ? 'Hide' : 'Show'} advanced filters{' '}
-          {advancedFilter && advancedFilter.length > 0 && (
-            <div className="bg-primary text-primary-foreground rounded-full px-2 text-xs">
-              {advancedFilter.length}
-            </div>
-          )}
-        </button>
-        <Select
-          className="ml-auto"
-          value={filter.version}
-          onChange={(e) => changeFilter('version', e.target.value)}
-        >
-          {versions.map((version) => (
-            <option key={version} value={version}>
-              v{version}
-            </option>
-          ))}
-        </Select>
-      </div>
+          <div className="flex w-full max-w-lg items-center gap-2">
+            <button
+              className="hover:bg-surface-hover -ml-2 flex items-center gap-1 rounded-sm px-2 py-1 text-sm"
+              onClick={() => setShowAdvancedFilters((x) => !x)}
+            >
+              {showAdvancedFilters ? 'Hide' : 'Show'} advanced filters{' '}
+              {advancedFilter && advancedFilter.length > 0 && (
+                <div className="bg-primary text-primary-foreground rounded-full px-2 text-xs">
+                  {advancedFilter.length}
+                </div>
+              )}
+            </button>
+            <Select
+              className="ml-auto"
+              value={filter.version}
+              onChange={(e) => changeFilter('version', e.target.value)}
+            >
+              {versions.map((version) => (
+                <option key={version} value={version}>
+                  v{version}
+                </option>
+              ))}
+            </Select>
+          </div>
 
-      <div className={cn('w-full max-w-lg space-y-4', !showAdvancedFilters && 'hidden')}>
-        <hr />
-        <Filters
-          filterOptions={filterOptions}
-          excludeFilters={['Class', 'Race', 'God', 'End', 'Player', 'Version']}
-          onInit={(filters) => {
-            setAdvancedFilter(filters)
-            setFilterForSearch((x) => ({ ...x, advanced: filters }))
-          }}
-          onFiltersChange={setAdvancedFilter}
-        />
-      </div>
+          <div className={cn('w-full max-w-lg space-y-4', !showAdvancedFilters && 'hidden')}>
+            <hr />
+            <Filters
+              filterOptions={filterOptions}
+              excludeFilters={['Class', 'Race', 'God', 'End', 'Player', 'Version']}
+              onInit={(filters) => {
+                setAdvancedFilter(filters)
+                setFilterForSearch((x) => ({ ...x, advanced: filters }))
+              }}
+              onFiltersChange={setAdvancedFilter}
+            />
+          </div>
 
-      <div className="flex w-full max-w-lg items-center justify-center gap-2">
-        <button
-          type="button"
-          className={cn(
-            'bg-primary text-primary-foreground flex items-center gap-x-2 rounded-sm border px-4 py-2 transition-colors',
-          )}
-          onClick={() => {
-            setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
+          <div className="flex w-full max-w-lg items-center justify-center gap-2">
+            <button
+              type="button"
+              className={cn(
+                'bg-primary text-primary-foreground flex items-center gap-x-2 rounded-sm border px-4 py-2 transition-colors',
+              )}
+              onClick={() => {
+                setFilterForSearch({ ...filter, advanced: advancedFilter ?? [] })
 
-            const query = pickBy(
-              {
-                race: filter.race,
-                class: filter.class,
-                god: filter.god,
-                version: filter.version,
-                filter: advancedFilter ? filtersToQuery(advancedFilter) : FilterValue.Any,
-              },
-              (value) => value !== FilterValue.Any,
-            )
+                const query = pickBy(
+                  {
+                    race: filter.race,
+                    class: filter.class,
+                    god: filter.god,
+                    version: filter.version,
+                    filter: advancedFilter ? filtersToQuery(advancedFilter) : FilterValue.Any,
+                  },
+                  (value) => value !== FilterValue.Any,
+                )
 
-            window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
-          }}
-        >
-          Time to have some fun!
-          {tableIsValidating && <Loader />}
-        </button>
-      </div>
-
+                window.history.replaceState(null, '', `?${stringifyQuery(query)}`)
+              }}
+            >
+              Time to have some fun!
+              {tableIsValidating && <Loader />}
+            </button>
+          </div>
+        </>
+      }
+    >
       {dataForTable && (
         <>
           <div className="m-auto w-full max-w-lg space-y-2">

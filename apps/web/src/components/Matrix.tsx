@@ -200,6 +200,7 @@ export const Matrix = ({
               <tr key={race.abbr} className="h-6 *:p-px *:first:text-left *:first:font-bold">
                 <td
                   className={cn(
+                    'bg-background sticky left-0 z-1 xl:static',
                     greatRaces?.[race.abbr]
                       ? 'bg-matrix-complete-strong'
                       : activeRace === race.abbr && 'bg-matrix-selected',
