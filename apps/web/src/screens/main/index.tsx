@@ -19,9 +19,7 @@ export const MainPage = () => {
           <TournamentBanner />
         </Suspense>
 
-        <Suspense fallback={null}>
-          <Streams />
-        </Suspense>
+        <Streams />
 
         <Suspense fallback={<LiveGamesSkeleton />}>
           <LiveGames />
