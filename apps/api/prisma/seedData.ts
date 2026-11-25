@@ -1,6 +1,6 @@
 import { range } from 'lodash-es'
 
-export const trunkGameVersion = 34
+export const trunkGameVersion = 35
 
 const rangeToTrunk = (from: number) => range(from, trunkGameVersion + 1)
 

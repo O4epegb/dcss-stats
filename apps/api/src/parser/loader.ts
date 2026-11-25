@@ -4,7 +4,7 @@ import PQueue from 'p-queue'
 import semver from 'semver'
 import { prisma } from '~/prisma'
 import { LogfileWithServer } from '~/types'
-import { getLocalLogPath, getRemoteLogPath, isDefined, logger } from '~/utils'
+import { getLocalLogPath, getRemoteLogPath, isDefined, logger, trackError } from '~/utils'
 import { fetchLogfile } from './fetchLogfile'
 
 const oneMinuteInMs = 60 * 1000
@@ -71,16 +71,14 @@ export const startFetchQueue = async () => {
     })
 
     for (const file of shuffle(logfiles)) {
-      queue.add(() =>
-        fetchFile(file, latestVersion).catch((err) => {
-          if (err instanceof Error) {
-            err.message = `loader: ${file.server.abbreviation}@${file.version}, ${err.message}`
-            console.error(err.message)
-          }
-
-          throw err
-        }),
-      )
+      queue
+        .add(() => fetchFile(file, latestVersion))
+        .catch((err: unknown) => {
+          const error = err instanceof Error ? err : new Error(String(err))
+          error.message = `loader: ${file.server.abbreviation}@${file.version}, ${error.message}`
+          console.error(error.message)
+          trackError(error)
+        })
     }
   }
 
