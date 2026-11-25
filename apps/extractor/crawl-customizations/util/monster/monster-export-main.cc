@@ -860,17 +860,11 @@ static cJSON *export_monster_json(mons_spec spec, string target, string &error)
   cJSON *resistances = cJSON_CreateArray();
   const resists_t res(shapeshifter ? me->resists : get_mons_resists(mon));
 
-  if (mons_invuln_will(mon))
+  const int willpower = mon.willpower(false);
+  if (willpower == WILL_INVULN)
     cJSON_AddItemToArray(resistances, cJSON_CreateString("will(invuln)"));
-  else
-  {
-    const int wl = mons_class_willpower(mon.type, draconian_base);
-    if (wl > 0)
-    {
-      cJSON_AddItemToArray(resistances,
-                           cJSON_CreateString(make_stringf("will(%d)", wl).c_str()));
-    }
-  }
+  else if (willpower > 0)
+    cJSON_AddItemToArray(resistances, cJSON_CreateString(make_stringf("will(%d)", willpower).c_str()));
 
   add_resist_string(resistances, get_resist(res, MR_RES_FIRE), "fire");
   add_resist_string(resistances, get_resist(res, MR_RES_DAMNATION), "damnation");
@@ -945,7 +939,7 @@ static cJSON *export_monster_json(mons_spec spec, string target, string &error)
   }
   cJSON_AddItemToObject(root, "spells", spells);
 
-  cJSON_AddStringToObject(root, "size", get_size_adj(mon.body_size()));
+  cJSON_AddStringToObject(root, "size", get_size_adj(mon.body_size(PSIZE_BODY)));
   string intel = lowercase_string(intelligence_description(mons_intel(mon)));
   cJSON_AddStringToObject(root, "intelligence", intel.c_str());
 
@@ -955,10 +949,10 @@ static cJSON *export_monster_json(mons_spec spec, string target, string &error)
   cJSON_AddBoolToObject(root, "shapeshifter", shapeshifter);
   cJSON_AddBoolToObject(root, "unique", mons_is_unique(spec_type));
 
-  if (mons_invuln_will(mon))
+  if (willpower == WILL_INVULN)
     cJSON_AddTrueToObject(root, "willpower_invuln");
   else
-    cJSON_AddNumberToObject(root, "willpower", mons_class_willpower(mon.type, draconian_base));
+    cJSON_AddNumberToObject(root, "willpower", willpower);
 
   cJSON_AddStringToObject(root, "shape", get_mon_shape_str(me->shape).c_str());
   cJSON_AddStringToObject(root, "holiness", holiness_description(me->holiness).c_str());

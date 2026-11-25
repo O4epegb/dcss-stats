@@ -126,12 +126,14 @@ export function MonsterTable({
   }
 
   const filtered = useMemo(() => {
-    const list = search
+    const query = search.toLowerCase()
+    const list = query
       ? monsters.filter(
           (m) =>
-            m.name.toLowerCase().includes(search.toLowerCase()) ||
-            m.flags.some((f) => f.toLowerCase().includes(search.toLowerCase())) ||
-            m.resistances.some((r) => r.toLowerCase().includes(search.toLowerCase())),
+            m.name.toLowerCase().includes(query) ||
+            m.species.toLowerCase().includes(query) ||
+            m.flags.some((f) => f.toLowerCase().includes(query)) ||
+            m.resistances.some((r) => r.toLowerCase().includes(query)),
         )
       : monsters
 
@@ -452,13 +454,7 @@ export function MonsterTable({
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-muted-foreground">Willpower</dt>
-                          <dd>
-                            {displayed.willpower_invuln
-                              ? '∞'
-                              : displayed.willpower
-                                ? displayed.willpower
-                                : '-'}
-                          </dd>
+                          <dd>{displayed.willpower_invuln ? '∞' : (displayed.willpower ?? '-')}</dd>
                         </div>
                         <div className="flex justify-between">
                           <dt className="text-muted-foreground">Spell HD</dt>

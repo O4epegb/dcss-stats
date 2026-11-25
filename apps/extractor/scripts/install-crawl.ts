@@ -4,7 +4,8 @@ import fs from 'fs-extra'
 import { logger } from '~/utils'
 
 const CRAWL_REPOSITORY = 'https://github.com/crawl/crawl.git'
-const CRAWL_COMMIT = '7e0203f8234604c36b3f5f646f2f7c4221005135'
+const CRAWL_TAG = '0.36-a0'
+const CRAWL_COMMIT = '1400eb02e2f6b1260a6016d9d01e14284c6d2b7a'
 const CRAWL_DIR = path.resolve(process.cwd(), 'crawl')
 const CRAWL_SOURCE_DIR = path.resolve(CRAWL_DIR, 'crawl-ref', 'source')
 const CRAWL_GIT_DIR = path.join(CRAWL_DIR, '.git')
@@ -28,20 +29,29 @@ try {
   }
 
   if (fs.existsSync(CRAWL_GIT_DIR)) {
+    const tagRef = `refs/tags/${CRAWL_TAG}`
     try {
-      execFileSync('git', ['cat-file', '-e', `${CRAWL_COMMIT}^{commit}`], {
+      execFileSync('git', ['show-ref', '--verify', '--quiet', tagRef], {
         cwd: CRAWL_DIR,
         stdio: 'ignore',
       })
     } catch {
-      logger(`Fetching Crawl commit ${CRAWL_COMMIT}...`)
-      execFileSync('git', ['fetch', 'origin', CRAWL_COMMIT], {
+      logger(`Fetching Crawl tag ${CRAWL_TAG}...`)
+      execFileSync('git', ['fetch', 'origin', 'tag', CRAWL_TAG], {
         cwd: CRAWL_DIR,
         stdio: 'inherit',
       })
     }
 
-    logger(`Checking out Crawl commit ${CRAWL_COMMIT}...`)
+    const taggedCommit = execFileSync('git', ['rev-parse', `${tagRef}^{commit}`], {
+      cwd: CRAWL_DIR,
+      encoding: 'utf-8',
+    }).trim()
+    if (taggedCommit !== CRAWL_COMMIT) {
+      throw new Error(`Crawl tag ${CRAWL_TAG} points to ${taggedCommit}, expected ${CRAWL_COMMIT}.`)
+    }
+
+    logger(`Checking out Crawl tag ${CRAWL_TAG}...`)
     execFileSync('git', ['checkout', '--detach', CRAWL_COMMIT], {
       cwd: CRAWL_DIR,
       stdio: 'inherit',
